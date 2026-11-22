@@ -14,7 +14,9 @@ use astronomy::{
     },
     surya_siddhanta::{Body, Crossing, ayanamsha},
 };
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
+
+use common::pyjson::Style;
 
 use serde_json::{Map, Value, json};
 use timescale::{CivilDay, JdInstant, Moment, PyInstant, UtcInstant, Zone};
@@ -23,13 +25,13 @@ use crate::{
     angas::{NAKSHATRA_SPAN, Paksha, Tithi, karana, nakshatra, tithi, vara, yoga},
     blocks_bala::{ChandrabalaTable, Rashifal, TarabalaTable, chandrabalam, tarabalam},
     blocks_lagna::{
-        PlanetTable, lagna, lagna_rows_value, lagna_spans, lagna_spans_plain, panchaka_rahita,
+        PlanetTable, lagna, lagna_rows, lagna_spans, lagna_spans_plain, panchaka_rahita,
         udaya_lagna,
     },
     blocks_muhurta::{Muhurta, muhurta, muhurta_basic},
     blocks_nivas::nivas_shool,
     blocks_solar::{civil_probe_day, solar_corrections},
-    blocks_time::{aayan, aayan_vedic, choghadiya, hora, ritu, ritu_vedic},
+    blocks_time::{aayan, aayan_vedic, choghadiya_list, hora_slot_list, ritu, ritu_vedic},
     boundaries::{
         karana_end, karana_start, moon_pada_end, moon_rashi_end, nakshatra_end, nakshatra_start,
         tithi_end, tithi_start, yoga_end, yoga_start,
@@ -37,7 +39,7 @@ use crate::{
     lunar_month::{calendar_layers, merge_for_day},
     names::{KARANA_NAMES, NAKSHATRA_NAMES, VAARA_ENGLISH, VAARA_NAMES, YOGA_NAMES},
     nepal_sambat::{NsInput, ns_date},
-    payload::to_value,
+    payload::{Field, Fields},
     pyfloat::{py_floordiv, py_int, py_mod, py_round, py_round_int},
     samvatsara::samvatsara_payload,
 };
@@ -947,6 +949,47 @@ pub const PAYLOAD_KEYS: [&str; 54] = [
     "ayanamsa",
 ];
 
+/// A day's payload: its typed fields, and the JSON tree of them built on first need.
+///
+/// Routes that write the payload (or share its blocks into a day's state) use the
+/// fields and never build the tree; callers that still read the payload as a tree get
+/// it once per day and keep it with the cached payload.
+#[derive(Debug)]
+pub struct Daily {
+    fields: Fields,
+    tree: std::sync::OnceLock<Value>,
+}
+
+impl Daily {
+    fn new(fields: Fields) -> Self {
+        Self {
+            fields,
+            tree: std::sync::OnceLock::new(),
+        }
+    }
+
+    /// A payload read back as a tree (from storage, or a builder that makes trees).
+    #[must_use]
+    pub fn from_tree(value: Value) -> Self {
+        let tree = std::sync::OnceLock::new();
+        let fields = Fields::from_value(value.clone());
+        let _ = tree.set(value);
+        Self { fields, tree }
+    }
+
+    /// The payload's fields, in the Python key order.
+    #[must_use]
+    pub fn fields(&self) -> &Fields {
+        &self.fields
+    }
+
+    /// The payload as a JSON tree (built on first call, then kept).
+    #[must_use]
+    pub fn tree(&self) -> &Value {
+        self.tree.get_or_init(|| self.fields.to_value())
+    }
+}
+
 /// `build_daily_panchanga(target, location)` for a CE day (1582-10-15 on): every block
 /// ported so far, in the Python key order (see [`PAYLOAD_KEYS`]).
 ///
@@ -955,24 +998,31 @@ pub const PAYLOAD_KEYS: [&str; 54] = [
 /// [`DailyError::BeforeGregorian`] for earlier days (use [`build_daily_civil`]),
 /// [`DailyError::NoSunrise`] where the Sun does not rise, [`DailyError::NepalSambat`]
 /// when the NS new year cannot be placed, and calendar errors from the BS conversion.
-pub fn build_daily(day: CivilDay, location: &Location) -> Result<Value, DailyError> {
+pub fn build_daily(day: CivilDay, location: &Location) -> Result<Arc<Daily>, DailyError> {
     if !day.is_datetime_range() {
         return Err(DailyError::BeforeGregorian(day));
     }
     let key = DailyKey::of(day, location);
     // A day's panchanga never changes for its key; day routes, month grids, the
-    // civil timeline and the midnight view all rebuild the same days.
+    // civil timeline and the midnight view all read the same days, and share one tree
+    // (a deep copy of it on every hit cost as much as building a small one).
     (*DAILY_MEMO.get_or_insert_with(&key, || {
         let stored_key = key.stored();
         if let Some(payload) = crate::store::get(&stored_key) {
-            return std::sync::Arc::new(Ok(payload));
+            return Arc::new(Ok(Arc::new(Daily::from_tree(payload))));
         }
         let built = day_times(day, location)
             .and_then(|times| assemble(day, times, location, None, Detail::Full));
-        if let Ok(payload) = &built {
-            crate::store::put(&stored_key, location.city_id, payload);
+        if let Ok(fields) = &built
+            && crate::store::enabled()
+        {
+            crate::store::put_text(
+                &stored_key,
+                location.city_id,
+                &fields.to_text(Style::Compact),
+            );
         }
-        std::sync::Arc::new(built)
+        Arc::new(built.map(|fields| Arc::new(Daily::new(fields))))
     }))
     .clone()
 }
@@ -983,15 +1033,16 @@ pub fn build_daily(day: CivilDay, location: &Location) -> Result<Value, DailyErr
 /// # Errors
 ///
 /// As [`build_daily`].
-pub fn build_daily_light(day: CivilDay, location: &Location) -> Result<Value, DailyError> {
+pub fn build_daily_light(day: CivilDay, location: &Location) -> Result<Arc<Daily>, DailyError> {
     if !day.is_datetime_range() {
         return Err(DailyError::BeforeGregorian(day));
     }
     let key = DailyKey::of(day, location);
     (*DAILY_LIGHT_MEMO.get_or_insert_with(&key, || {
-        std::sync::Arc::new(
+        Arc::new(
             day_times(day, location)
-                .and_then(|times| assemble(day, times, location, None, Detail::Light)),
+                .and_then(|times| assemble(day, times, location, None, Detail::Light))
+                .map(|fields| Arc::new(Daily::new(fields))),
         )
     }))
     .clone()
@@ -1016,7 +1067,7 @@ pub fn precompute_day(
         return Ok(false);
     }
     let payload = assemble(day, day_times(day, location)?, location, None, Detail::Full)?;
-    crate::store::put(&key, location.city_id, &payload);
+    crate::store::put_text(&key, location.city_id, &payload.to_text(Style::Compact));
     Ok(true)
 }
 
@@ -1087,12 +1138,13 @@ struct DailyKey {
 /// Recently built days. A day held as a JSON tree takes about 1 MB of memory
 /// (measured: 512 days held ~490 MB), so this keeps about three months; older days
 /// come back from the persistent day store or are rebuilt from the cached events.
-static DAILY_MEMO: std::sync::LazyLock<crate::memo::Memo<DailyKey, Result<Value, DailyError>>> =
-    std::sync::LazyLock::new(|| crate::memo::Memo::new(96));
+static DAILY_MEMO: std::sync::LazyLock<
+    crate::memo::Memo<DailyKey, Result<Arc<Daily>, DailyError>>,
+> = std::sync::LazyLock::new(|| crate::memo::Memo::new(96));
 
 /// Recently built light days (a few KB each): a year of month rows.
 static DAILY_LIGHT_MEMO: std::sync::LazyLock<
-    crate::memo::Memo<DailyKey, Result<Value, DailyError>>,
+    crate::memo::Memo<DailyKey, Result<Arc<Daily>, DailyError>>,
 > = std::sync::LazyLock::new(|| crate::memo::Memo::new(400));
 
 /// `build_daily_panchanga_civil`: the udaya panchanga of a civil day on the signed
@@ -1118,6 +1170,7 @@ pub fn build_daily_civil(
         Some(patro),
         Detail::Full,
     )
+    .map(|fields| fields.to_value())
 }
 
 /// The blocks Python builds differently for a `datetime` and a `UtInstant` sunrise.
@@ -1201,6 +1254,16 @@ fn display_headers_civil(date_ad: &str, bs: calendar::BsDate, vaara: usize, ns: 
     })
 }
 
+/// The payload's blocks by key while they are built, ordered at the end.
+#[derive(Default)]
+struct Blocks(HashMap<&'static str, Field>);
+
+impl Blocks {
+    fn insert(&mut self, key: &'static str, field: impl Into<Field>) {
+        self.0.insert(key, field.into());
+    }
+}
+
 #[expect(
     clippy::too_many_lines,
     reason = "one block per payload key, in the Python order"
@@ -1211,7 +1274,7 @@ fn assemble<I: DayInstant>(
     location: &Location,
     patro: Option<calendar::BsDate>,
     detail: Detail,
-) -> Result<Value, DailyError> {
+) -> Result<Fields, DailyError> {
     let full = detail == Detail::Full;
     let zone = &location.zone;
     let observer = location.observer();
@@ -1261,7 +1324,7 @@ fn assemble<I: DayInstant>(
         (bs, lunar, layers, ns, headers, day)
     };
 
-    let mut b: HashMap<&'static str, Value> = HashMap::new();
+    let mut b = Blocks::default();
     b.insert("date", json!(date_ad));
     b.insert("date_ad", json!(date_ad));
     b.insert("jd_ut", json!(day.to_jd_ut()));
@@ -1285,10 +1348,19 @@ fn assemble<I: DayInstant>(
     let day_ghati = (day_s / (day_s + night_s) * 60.0).min(60.0);
     b.insert("day_ghati", json!(day_ghati));
     if full {
-        b.insert("choghadiya", choghadiya(day_ghati, vaara.number));
+        b.insert(
+            "choghadiya",
+            Field::typed(choghadiya_list(day_ghati, vaara.number)),
+        );
         b.insert(
             "hora",
-            hora(sunrise, sunset, next_sunrise, vaara.number, zone),
+            Field::typed(hora_slot_list(
+                sunrise,
+                sunset,
+                next_sunrise,
+                vaara.number,
+                zone,
+            )),
         );
         b.insert(
             "solar_corrections",
@@ -1297,7 +1369,7 @@ fn assemble<I: DayInstant>(
     }
     b.insert(
         "muhurta",
-        to_value(&if full {
+        Field::typed(if full {
             I::muhurta_block(sunrise, sunset, next_sunrise, vaara.number, zone)
         } else {
             muhurta_basic(sunrise, sunset, vaara.number, zone)
@@ -1307,7 +1379,7 @@ fn assemble<I: DayInstant>(
     if full {
         b.insert(
             "nivas_shool",
-            to_value(&nivas_shool(sunrise, next_sunrise, weekday_py, zone)),
+            Field::typed(nivas_shool(sunrise, next_sunrise, weekday_py, zone)),
         );
     }
     b.insert(
@@ -1338,7 +1410,10 @@ fn assemble<I: DayInstant>(
     let nak_block = nakshatra_block(sunrise, sunrise, zone);
     if full {
         b.insert("tarabalam", tarabalam(sunrise, &nak_block, zone));
-        b.insert("tarabala_table", to_value(&TarabalaTable::new(&nak_block)));
+        b.insert(
+            "tarabala_table",
+            Field::typed(TarabalaTable::new(&nak_block)),
+        );
     }
     b.insert("nakshatra", nak_block);
     b.insert("yoga", yoga_block(sunrise, sunrise, zone));
@@ -1349,9 +1424,9 @@ fn assemble<I: DayInstant>(
         let bala_table = ChandrabalaTable::new(&chandra_rashi);
         b.insert(
             "rashifal",
-            to_value(&Rashifal::new(&bala_table, vaara.number)),
+            Field::typed(Rashifal::new(&bala_table, vaara.number)),
         );
-        b.insert("chandrabala_table", to_value(&bala_table));
+        b.insert("chandrabala_table", Field::typed(bala_table));
     }
     b.insert("chandra_rashi", chandra_rashi);
     b.insert("moon_phase", moon_phase(sunrise_jd));
@@ -1369,7 +1444,7 @@ fn assemble<I: DayInstant>(
     b.insert("ritu", ritu(sunrise_jd, location.lat));
     b.insert("ritu_vedic", ritu_vedic(sunrise_jd, location.lat));
     if full {
-        b.insert("planets", to_value(&PlanetTable::new(sunrise_jd)));
+        b.insert("planets", Field::typed(PlanetTable::new(sunrise_jd)));
         b.insert(
             "planets_anchor",
             json!({
@@ -1381,12 +1456,12 @@ fn assemble<I: DayInstant>(
         );
         b.insert("lagna", lagna(sunrise_jd, location.lat, location.lon));
         let spans = I::lagna_rows(sunrise, next_sunrise, location.lat, location.lon, zone);
-        b.insert("udaya_lagna", to_value(&udaya_lagna(&spans)));
+        b.insert("udaya_lagna", Field::typed(udaya_lagna(&spans)));
         b.insert(
             "panchaka_rahita",
             panchaka_rahita(sunrise, &spans, vaara.number, zone),
         );
-        b.insert("lagna_spans", lagna_rows_value(&spans));
+        b.insert("lagna_spans", Field::typed(lagna_rows(spans)));
     }
     b.insert("lunar_calendar", lunar_layers);
     b.insert("lunar_month", lunar);
@@ -1400,11 +1475,11 @@ fn assemble<I: DayInstant>(
     );
     b.insert("ayanamsa", ayanamsa);
 
-    let mut payload = Map::new();
+    let mut payload = Fields::new();
     for key in PAYLOAD_KEYS {
-        if let Some(value) = b.remove(key) {
-            payload.insert(key.to_owned(), value);
+        if let Some(field) = b.0.remove(key) {
+            payload.insert(key, field);
         }
     }
-    Ok(Value::Object(payload))
+    Ok(payload)
 }

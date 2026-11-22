@@ -22,7 +22,7 @@ use serde_json::{Value, json};
 use crate::{
     handlers::panchanga::{location, month_error, path_int, signed_browse_year},
     respond::{
-        Query, detail, detail_json, era_error, flag, json_plain_payload, json_response_payload,
+        Query, detail, detail_json, era_error, flag, json_plain_payload, json_response_fields,
         raw_payload, siddhanta_error,
     },
     state::AppState,
@@ -147,11 +147,11 @@ fn resolve_and_build_day(
         midnight,
         civil_timeline: civil,
     };
-    let payload = match patro::day::day_payload_for_jd_with(jd, &location, options, variant) {
-        Ok(value) => value,
+    let fields = match patro::day::day_fields_for_jd_with(jd, &location, options, variant) {
+        Ok(fields) => fields,
         Err(error) => return day_error(error),
     };
-    json_response_payload(&payload, q, headers, DAILY_CACHE_CONTROL, None, started)
+    json_response_fields(&fields, q, headers, DAILY_CACHE_CONTROL, None, started)
 }
 
 /// `GET /v1/panchanga/{date_key}`.

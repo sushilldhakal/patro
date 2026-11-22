@@ -183,6 +183,16 @@ pub fn render_for_era(payload: &Value, era: &str, language: &str) -> Value {
     out
 }
 
+/// [`render_for_era`] for a part of a payload below its top level (a month of a year),
+/// so a large payload can be rendered and written one part at a time: the same labels
+/// and alignment, without the top-level `date_parts`, `era` and `language`.
+#[must_use]
+pub fn render_part(part: &Value, era: &str) -> Value {
+    let mut out = render(part, era, Level::Nested);
+    align(&mut out);
+    out
+}
+
 /// `era_language`: Nepali for the Vikram eras, English for the Gregorian.
 #[must_use]
 pub fn era_language(era: &str) -> &'static str {

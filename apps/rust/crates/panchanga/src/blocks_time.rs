@@ -105,8 +105,8 @@ enum Phase {
 }
 
 /// One hora slot with its local clock and ghati span.
-#[derive(Debug, Serialize)]
-pub(crate) struct HoraSlot {
+#[derive(Debug, Clone, Serialize)]
+pub struct HoraSlot {
     index: usize,
     phase: &'static str,
     phase_ne: &'static str,
@@ -120,6 +120,14 @@ pub(crate) struct HoraSlot {
     end_local_time_short: String,
     start_g: f64,
     end_g: f64,
+}
+
+impl HoraSlot {
+    /// Whether the slot is in the daytime half.
+    #[must_use]
+    pub fn is_day(&self) -> bool {
+        self.phase == "day"
+    }
 }
 
 fn hora_slot<I: PyInstant>(

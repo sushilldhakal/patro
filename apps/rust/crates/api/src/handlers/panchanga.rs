@@ -13,15 +13,19 @@ use axum::{
 };
 use geography::{LocationError, LocationQuery};
 use panchanga::daily::Location;
+use panchanga::payload::Fields;
 use patro::presentation::{Locale, MonthStyle};
 use patro::{
-    month::{Embed, International, MonthError, month_calendar},
-    year::{YearShape, year_calendar, year_sun_times},
+    month::{Embed, International, MonthError, month_fields},
+    year::{YearShape, YearText, year_calendar_text, year_sun_times},
 };
 use timescale::CivilDay;
 
 use crate::{
-    respond::{IMMUTABLE, LIVE, Query, detail, era_error, flag, json_payload, siddhanta_error},
+    respond::{
+        IMMUTABLE, LIVE, Query, detail, era_error, era_language_of, era_of, flag, json_payload,
+        json_payload_fields, json_payload_text, siddhanta_error,
+    },
     state::AppState,
 };
 
@@ -171,16 +175,19 @@ pub(crate) async fn year(
     } else {
         YearShape::Lite
     };
-    let built = tokio::task::spawn_blocking(move || year_calendar(signed, &loc, shape)).await;
+    // The year is written straight to text a month at a time, rendered for the era a
+    // request names, instead of being held (and re-rendered) as one tree.
+    let era_name = era_of(&q);
+    let language = era_name.as_deref().map(|e| era_language_of(&q, e));
+    let built = tokio::task::spawn_blocking(move || {
+        let how = YearText {
+            era: era_name.as_deref().zip(language.as_deref()),
+        };
+        year_calendar_text(signed, &loc, shape, how)
+    })
+    .await;
     match built {
-        Ok(Ok(payload)) => json_payload(
-            &payload,
-            &q,
-            &headers,
-            year_directive(signed),
-            None,
-            started,
-        ),
+        Ok(Ok(text)) => json_payload_text(text, &headers, year_directive(signed), None, started),
         Ok(Err(e)) => month_error(e),
         Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
     }
@@ -283,8 +290,9 @@ pub(crate) async fn month(
                 &clock,
                 international,
                 embed,
-            ),
-            None => month_calendar(signed, month_u, &loc, international, embed),
+            )
+            .map(Fields::from_value),
+            None => month_fields(signed, month_u, &loc, international, embed),
         }
     })
     .await;
@@ -304,7 +312,7 @@ pub(crate) async fn month(
     } else {
         LIVE
     };
-    json_payload(&payload, &q, &headers, directive, None, started)
+    json_payload_fields(&payload, &q, &headers, directive, None, started)
 }
 
 /// `full` / `slim` as the month routes read them.

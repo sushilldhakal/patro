@@ -29,7 +29,8 @@ pub(crate) fn midnight_day_state(
     location: &Location,
     options: DayBuildOptions,
 ) -> Result<Value, DayError> {
-    let raw = build_daily(civil, location)?;
+    let daily = build_daily(civil, location)?;
+    let raw = daily.tree();
     let festivals = if options.festivals == FestivalMode::Include {
         FestivalMode::Include
     } else {
@@ -38,20 +39,21 @@ pub(crate) fn midnight_day_state(
     let mut state = build_daily_state(
         civil,
         location,
-        &raw,
+        &daily,
         DayBuildOptions {
             detail: DetailMode::Include,
             festivals,
             ..options
         },
-    );
+    )
+    .to_value();
     let vaara = raw
         .get("vaara")
         .and_then(|v| v.get("number"))
         .and_then(Value::as_u64)
         .and_then(|n| u32::try_from(n).ok())
         .unwrap_or(0);
-    let lunar = field(&raw, "lunar_month");
+    let lunar = field(raw, "lunar_month");
     let overlay = midnight_overlay(civil, location, &lunar, vaara)?;
 
     let Value::Object(map) = &mut state else {

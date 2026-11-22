@@ -189,7 +189,7 @@ fn abhijit<I: PyInstant>(sunrise: I, sunset: I, zone: &Zone, vaara: u32) -> Opti
 
 /// The muhurta block of the daily payload.
 #[derive(Debug, Serialize)]
-pub(crate) struct Muhurta {
+pub struct Muhurta {
     hora_duration_minutes: f64,
     #[serde(rename = "muhurta_duration_minutes")]
     each_minutes: f64,
@@ -201,6 +201,26 @@ pub(crate) struct Muhurta {
     auspicious_timings: Option<Vec<Entry>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     inauspicious_timings: Option<Vec<Entry>>,
+}
+
+impl Muhurta {
+    /// Local solar noon (`HH:MM`), when the day has an Abhijit muhurta.
+    #[must_use]
+    pub fn solar_noon(&self) -> Option<&str> {
+        self.abhijit.as_ref().map(|a| a.solar_noon.as_str())
+    }
+
+    /// The Abhijit muhurta's local start, end and solar noon (`HH:MM`), if the day has one.
+    #[must_use]
+    pub fn abhijit_times(&self) -> Option<(&str, &str, &str)> {
+        self.abhijit.as_ref().map(|a| {
+            (
+                a.start_time.as_str(),
+                a.end_time.as_str(),
+                a.solar_noon.as_str(),
+            )
+        })
+    }
 }
 
 /// `build_muhurta_block` alone: the periods and Abhijit without the extended timings.

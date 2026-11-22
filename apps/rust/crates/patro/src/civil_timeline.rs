@@ -294,14 +294,15 @@ fn clip_marker(minutes: Option<Minutes>) -> Value {
 ///
 /// [`DailyError`] when either day's panchanga cannot be built.
 pub fn build_civil_timeline(day: CivilDay, location: &Location) -> Result<Value, DailyError> {
-    let cur = build_daily(day, location)?;
-    let prev = build_daily(day.add_days(-1), location)?;
+    let cur_daily = build_daily(day, location)?;
+    let prev_daily = build_daily(day.add_days(-1), location)?;
+    let (cur, prev) = (cur_daily.tree(), prev_daily.tree());
     let midnight_wall =
         UtcInstant::from_utc(day, 0, 0, 0, 0).ok_or(DailyError::BeforeGregorian(day))?;
 
-    let sunrise_cur = hhmm_to_min(short_of(&cur, "sunrise")).unwrap_or(Minutes::Float(0.0));
-    let sunset_cur = hhmm_to_min(short_of(&cur, "sunset"));
-    let sunrise_prev = hhmm_to_min(short_of(&prev, "sunrise")).map(Minutes::as_f64);
+    let sunrise_cur = hhmm_to_min(short_of(cur, "sunrise")).unwrap_or(Minutes::Float(0.0));
+    let sunset_cur = hhmm_to_min(short_of(cur, "sunset"));
+    let sunrise_prev = hhmm_to_min(short_of(prev, "sunrise")).map(Minutes::as_f64);
     let sunrise_min = sunrise_cur.as_f64();
 
     let mut choghadiya = Vec::new();
@@ -355,17 +356,17 @@ pub fn build_civil_timeline(day: CivilDay, location: &Location) -> Result<Value,
         "date_ad": day.to_string(),
         "sunrise_min": sunrise_cur.rounded(),
         "sunset_min": sunset_cur.map_or(Value::Null, Minutes::rounded),
-        "moonrise_min": clip_marker(hhmm_to_min(short_of(&cur, "moonrise"))),
-        "moonset_min": clip_marker(hhmm_to_min(short_of(&cur, "moonset"))),
-        "weekday_ne": pick(&cur, "vaara", "name_ne"),
-        "weekday_en": pick(&cur, "vaara", "name_english"),
+        "moonrise_min": clip_marker(hhmm_to_min(short_of(cur, "moonrise"))),
+        "moonset_min": clip_marker(hhmm_to_min(short_of(cur, "moonset"))),
+        "weekday_ne": pick(cur, "vaara", "name_ne"),
+        "weekday_en": pick(cur, "vaara", "name_english"),
         "rows": {
             "tithi": row("tithi"),
             "nakshatra": row("nakshatra"),
             "yoga": row("yoga"),
             "karana": row("karana"),
         },
-        "paksha_ne": pick(&cur, "paksha", "label_ne"),
+        "paksha_ne": pick(cur, "paksha", "label_ne"),
         "choghadiya": choghadiya,
         "hora": hora,
         "lagna": lagna_segments(prev.get("lagna_spans"), cur.get("lagna_spans"), sunrise_prev, sunrise_cur),

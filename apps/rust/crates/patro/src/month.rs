@@ -1,7 +1,13 @@
 //! The BS month grid (`build_month_calendar`, `_month_row_from_panchanga`, `_stamp_month_grid`).
 
 use calendar::BsDate;
-use panchanga::daily::{DailyError, Location, build_daily, build_daily_civil, build_daily_light};
+use std::{borrow::Cow, sync::Arc};
+
+use panchanga::{
+    Muhurta,
+    daily::{Daily, DailyError, Location, build_daily, build_daily_civil, build_daily_light},
+    payload::{Field, Fields},
+};
 use serde_json::{Map, Value, json};
 use timescale::CivilDay;
 
@@ -88,7 +94,7 @@ enum Grid {
 /// The `full=true` embed of one row, trimmed when slim. The BS grid
 /// (`_month_row_from_panchanga`) re-copies the sunrise row's `lunar_calendar` and
 /// `lunar_month` into it; the Gregorian grid does not.
-fn embed_for(day: CivilDay, location: &Location, raw: &Value, embed: Embed, grid: Grid) -> Value {
+fn embed_for(day: CivilDay, location: &Location, raw: &Daily, embed: Embed, grid: Grid) -> Fields {
     let options = DayBuildOptions {
         detail: DetailMode::Exclude,
         slim: SlimMode::Keep,
@@ -100,19 +106,20 @@ fn embed_for(day: CivilDay, location: &Location, raw: &Value, embed: Embed, grid
         },
     };
     let mut state = build_daily_state(day, location, raw, options);
-    if let Value::Object(fields) = &mut state {
-        for key in ["lunar_calendar", "lunar_month"] {
-            if grid == Grid::Bs && truthy(raw.get(key)) {
-                fields.insert(key.into(), raw[key].clone());
-            }
+    for key in ["lunar_calendar", "lunar_month"] {
+        if grid == Grid::Bs
+            && truthy(raw.fields().get(key).as_deref())
+            && let Some(field) = raw.fields().field(key)
+        {
+            state.insert(key, field.clone());
         }
-        if embed == Embed::FullSlim {
-            for key in MONTH_EMBED_SLIM_DROP_KEYS {
-                fields.shift_remove(key);
-            }
-            if truthy(fields.get("udaya_lagna")) {
-                fields.shift_remove("lagna_spans");
-            }
+    }
+    if embed == Embed::FullSlim {
+        for key in MONTH_EMBED_SLIM_DROP_KEYS {
+            state.remove(key);
+        }
+        if truthy(state.get("udaya_lagna").as_deref()) {
+            state.remove("lagna_spans");
         }
     }
     state
@@ -146,7 +153,7 @@ pub(crate) fn patro_day_raw(
     location: &Location,
     bs: BsDate,
     detail: RawDetail,
-) -> Result<Value, DailyError> {
+) -> Result<std::sync::Arc<Daily>, DailyError> {
     if day.is_datetime_range() {
         if detail == RawDetail::Light {
             build_daily_light(day, location)
@@ -154,7 +161,7 @@ pub(crate) fn patro_day_raw(
             build_daily(day, location)
         }
     } else {
-        build_daily_civil(day, location, bs)
+        build_daily_civil(day, location, bs).map(|v| std::sync::Arc::new(Daily::from_tree(v)))
     }
 }
 
@@ -200,31 +207,51 @@ fn festival_names(day_festivals: &[Value], international: International) -> Valu
     )
 }
 
-fn abhijit_window(p: &Value) -> Option<Value> {
-    let ab = &p["muhurta"]["abhijit"];
-    let (start, end) = (ab["start_time"].as_str()?, ab["end_time"].as_str()?);
+fn abhijit_window(p: &Fields) -> Option<Value> {
+    let field = p.field("muhurta")?;
+    let tree;
+    let (start, end, noon) = if let Some(m) = field.typed_as::<Muhurta>() {
+        m.abhijit_times()?
+    } else {
+        tree = field.as_tree();
+        let ab = &tree["abhijit"];
+        (
+            ab["start_time"].as_str()?,
+            ab["end_time"].as_str()?,
+            ab["solar_noon"].as_str().unwrap_or_default(),
+        )
+    };
     if start.is_empty() || end.is_empty() {
         return None;
     }
     let mut out = Map::new();
     out.insert("start_time".into(), json!(start));
     out.insert("end_time".into(), json!(end));
-    if let Some(noon) = ab["solar_noon"].as_str().filter(|s| !s.is_empty()) {
+    if !noon.is_empty() {
         out.insert("solar_noon".into(), json!(noon));
     }
     Some(Value::Object(out))
+}
+
+/// `payload[key]` as a tree (`null` when absent).
+fn value_of(p: &Fields, key: &str) -> Value {
+    p.get(key).map_or(Value::Null, Cow::into_owned)
 }
 
 /// `_month_row_from_panchanga` without the `full` embed.
 fn row(
     bs_day: u32,
     date_ad: &str,
-    p: &Value,
+    p: &Fields,
     festivals: &[Value],
     international: International,
 ) -> Value {
-    let get = |block: &str, key: &str| p[block][key].clone();
-    let moon = |key: &str, field: &str| p[key].get(field).cloned().unwrap_or(Value::Null);
+    let get = |block: &str, key: &str| {
+        p.get(block)
+            .and_then(|v| v.get(key).cloned())
+            .unwrap_or(Value::Null)
+    };
+    let moon = get;
     let mut r = Map::new();
     for (k, v) in [
         ("day", json!(bs_day)),
@@ -248,7 +275,7 @@ fn row(
         ("sunset", get("sunset", "local_time_short")),
         ("aayan", get("aayan", "name")),
         ("aayan_ne", get("aayan", "name_ne")),
-        ("ayana_mark", json!(ayana_mark(&p["aayan"]))),
+        ("ayana_mark", json!(ayana_mark(&value_of(p, "aayan")))),
         ("moonrise", moon("moonrise", "local_time_short")),
         ("moonrise_local", moon("moonrise", "local")),
         ("moonset", moon("moonset", "local_time_short")),
@@ -301,6 +328,22 @@ pub fn month_calendar(
     international: International,
     embed: Embed,
 ) -> Result<Value, MonthError> {
+    month_fields(bs_year, bs_month, location, international, embed).map(|f| f.to_value())
+}
+
+/// [`month_calendar`] as typed fields: each row's embedded panchanga shares its day's
+/// payload blocks, and the month is written straight to text.
+///
+/// # Errors
+///
+/// As [`month_calendar`].
+pub fn month_fields(
+    bs_year: i32,
+    bs_month: u32,
+    location: &Location,
+    international: International,
+    embed: Embed,
+) -> Result<Fields, MonthError> {
     if !(1..=12).contains(&bs_month) {
         return Err(MonthError::BadRequest("bs_month must be 1..12".into()));
     }
@@ -324,51 +367,48 @@ pub fn month_calendar(
             month: bs_month,
             day: offset + 1,
         };
-        let p = patro_day_raw(day, location, bs, RawDetail::for_embed(embed))?;
+        let daily = patro_day_raw(day, location, bs, RawDetail::for_embed(embed))?;
+        let p = daily.fields();
         let todays = festivals
             .as_ref()
             .map(|f| f.on_day(day))
             .unwrap_or_default();
-        let mut r = row(offset + 1, &day.to_string(), &p, &todays, international);
-        if embed != Embed::Lite
-            && let Value::Object(fields) = &mut r
-        {
-            fields.insert(
-                "panchanga".into(),
-                embed_for(day, location, &p, embed, Grid::Bs),
+        let mut r =
+            Fields::from_value(row(offset + 1, &day.to_string(), p, &todays, international));
+        if embed != Embed::Lite {
+            r.insert(
+                "panchanga",
+                Field::Nested(Arc::new(embed_for(day, location, &daily, embed, Grid::Bs))),
             );
         }
         rows.push(r);
         if offset + 1 == length.min(15) {
-            mid_lunar = p["lunar_month"].clone();
+            mid_lunar = value_of(p, "lunar_month");
         }
     }
-    let mut out = Map::new();
-    out.insert("year_bs".into(), json!(bs_year));
-    out.insert("month_bs".into(), json!(bs_month));
-    out.insert(
-        "month_name".into(),
-        json!(BS_MONTH_NAMES[bs_month as usize - 1]),
-    );
-    out.insert(
-        "month_name_ne".into(),
+    let mut out = Fields::new();
+    out.insert_tree("year_bs", json!(bs_year));
+    out.insert_tree("month_bs", json!(bs_month));
+    out.insert_tree("month_name", json!(BS_MONTH_NAMES[bs_month as usize - 1]));
+    out.insert_tree(
+        "month_name_ne",
         json!(BS_MONTH_NAMES_NE[bs_month as usize - 1]),
     );
-    out.insert("month_start_ad".into(), json!(start.to_string()));
-    out.insert("month_length".into(), json!(length));
-    out.insert("lunar_month".into(), mid_lunar["name"].clone());
-    out.insert("lunar_month_full".into(), mid_lunar["full_name"].clone());
-    out.insert(
-        "lunar_month_is_adhik".into(),
+    out.insert_tree("month_start_ad", json!(start.to_string()));
+    out.insert_tree("month_length", json!(length));
+    out.insert_tree("lunar_month", mid_lunar["name"].clone());
+    out.insert_tree("lunar_month_full", mid_lunar["full_name"].clone());
+    out.insert_tree(
+        "lunar_month_is_adhik",
         mid_lunar.get("is_adhik").cloned().unwrap_or(json!(false)),
     );
-    out.insert("lunar_month_type".into(), mid_lunar["type"].clone());
-    out.insert("location".into(), location.as_json());
-    out.insert("calendar".into(), Value::Array(rows));
-    out.insert("grid_mode".into(), json!("full_panchanga"));
+    out.insert_tree("lunar_month_type", mid_lunar["type"].clone());
+    out.insert_tree("location", location.as_json());
+    out.insert("calendar", Field::List(rows.into()));
+    out.insert_tree("grid_mode", json!("full_panchanga"));
     if bs_year <= -1 {
-        out.insert("era".into(), json!("bbs"));
-        out.insert("bbs".into(), json!(-bs_year));
+        out.insert_tree("era", json!("bbs"));
+        out.insert_tree("bbs", json!(-bs_year));
     }
     #[expect(
         clippy::cast_possible_truncation,
@@ -376,9 +416,9 @@ pub fn month_calendar(
         reason = "a weekday index is 0-6"
     )]
     let first_weekday = ((start.to_jd_ut() + 0.5) % 7.0) as u32;
-    out.insert("first_weekday".into(), json!(first_weekday));
-    out.insert("limits".into(), browse_limits());
-    Ok(Value::Object(out))
+    out.insert_tree("first_weekday", json!(first_weekday));
+    out.insert_tree("limits", browse_limits());
+    Ok(out)
 }
 
 /// `instant_row_from_date`: one clock-mode grid row from the at-time payload at
@@ -509,7 +549,7 @@ pub fn month_calendar_at_clock(
         },
         RawDetail::Light,
     )?;
-    let lunar = &mid_raw["lunar_month"];
+    let lunar = &mid_raw.tree()["lunar_month"];
     let mut out = Map::new();
     out.insert("year_bs".into(), json!(bs_year));
     out.insert("month_bs".into(), json!(bs_month));
@@ -689,13 +729,14 @@ pub fn gregorian_month_calendar(
     for offset in 0..length {
         let day = start.add_days(offset);
         let bs = calendar::locate_patro_day(day)?;
-        let p = patro_day_raw(day, location, bs, RawDetail::for_embed(embed))?;
+        let daily = patro_day_raw(day, location, bs, RawDetail::for_embed(embed))?;
+        let p = daily.fields();
         let todays = if day.is_datetime_range() {
             festivals.on_day(day)
         } else {
             Vec::new()
         };
-        let base = row(day.day, &day.to_string(), &p, &todays, international);
+        let base = row(day.day, &day.to_string(), p, &todays, international);
         let mut r = Map::new();
         r.insert("day".into(), json!(day.day));
         r.insert("date_ad".into(), json!(day.to_string()));
@@ -712,12 +753,12 @@ pub fn gregorian_month_calendar(
         if embed != Embed::Lite {
             r.insert(
                 "panchanga".into(),
-                embed_for(day, location, &p, embed, Grid::Gregorian),
+                embed_for(day, location, &daily, embed, Grid::Gregorian).to_value(),
             );
         }
         rows.push(Value::Object(r));
         if offset == 14.min(length - 1) {
-            mid_lunar = p["lunar_month"].clone();
+            mid_lunar = value_of(p, "lunar_month");
         }
     }
     let label = AD_MONTH_NAMES[start.add_days(14.min(length - 1)).month as usize - 1];

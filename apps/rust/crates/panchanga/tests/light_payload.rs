@@ -48,8 +48,8 @@ fn light_keeps_every_shared_key_unchanged_and_drops_only_the_heavy_blocks() {
             let full = build_daily(day, &location).expect("full builds");
             let light = build_daily_light(day, &location).expect("light builds");
             let (full, light) = (
-                full.as_object().expect("object"),
-                light.as_object().expect("object"),
+                full.tree().as_object().expect("object"),
+                light.tree().as_object().expect("object"),
             );
             let dropped: Vec<&String> = full
                 .keys()

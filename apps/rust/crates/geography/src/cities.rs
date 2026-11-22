@@ -1,6 +1,9 @@
 //! The GeoNames `cities` table.
 
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    sync::{Arc, OnceLock},
+};
 
 use rusqlite::{Connection, OpenFlags, Row, params_from_iter, types::Value as SqlValue};
 use serde_json::{Value, json};
@@ -69,10 +72,28 @@ enum Cols {
     WithAdmin,
 }
 
+/// One city as the nearest-city search needs it.
+#[derive(Debug)]
+struct Point {
+    id: i64,
+    lat: f64,
+    lon: f64,
+    population: i64,
+    country: Box<str>,
+}
+
+/// Every city's position, sorted by (latitude, id): the order SQLite walks its
+/// `idx_cities_lat` index in, so the in-memory search breaks ties as the query did.
+type Points = Arc<[Point]>;
+
 /// Read-only access to `cities.db`.
 #[derive(Debug, Clone)]
 pub struct Cities {
     path: PathBuf,
+    /// Loaded on the first nearest-city search (about 5 MB for 120k cities): a search
+    /// is then a binary search and a short scan, where the database built a full row
+    /// for every city in the latitude band, worldwide.
+    points: Arc<OnceLock<Option<Points>>>,
 }
 
 fn haversine_km(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
@@ -120,7 +141,71 @@ impl Cities {
     pub fn new(path: impl AsRef<Path>) -> Self {
         Self {
             path: path.as_ref().to_path_buf(),
+            points: Arc::new(OnceLock::new()),
         }
+    }
+
+    fn points(&self) -> Option<&Points> {
+        self.points.get_or_init(|| self.load_points().ok()).as_ref()
+    }
+
+    fn load_points(&self) -> Result<Points, CitiesError> {
+        let conn = self.connect()?;
+        let mut stmt =
+            conn.prepare("SELECT id, lat, lon, population, country FROM cities ORDER BY lat, id")?;
+        let rows = stmt.query_map([], |r| {
+            Ok(Point {
+                id: r.get(0)?,
+                lat: r.get(1)?,
+                lon: r.get(2)?,
+                population: r.get(3)?,
+                country: r.get::<_, String>(4)?.into_boxed_str(),
+            })
+        })?;
+        Ok(rows.collect::<Result<Vec<_>, _>>()?.into())
+    }
+
+    /// The nearest city inside a box, as the bounding-box query finds it: candidates in
+    /// the order SQLite reads them (by latitude, or by id when a country index serves
+    /// the query), the last one at the least distance winning.
+    fn nearest_in_box(
+        &self,
+        (lat_q, lon_q): (f64, f64),
+        min_population: i64,
+        max_km: f64,
+        country: Option<&str>,
+    ) -> Result<Option<City>, CitiesError> {
+        let Some(points) = self.points() else {
+            return Err(CitiesError::Missing(self.path.clone()));
+        };
+        let dlat = max_km / 111.0;
+        let dlon = max_km / (111.0 * lat_q.to_radians().cos()).max(1e-6);
+        let (lat_lo, lat_hi) = (lat_q - dlat, lat_q + dlat);
+        let (lon_lo, lon_hi) = (lon_q - dlon, lon_q + dlon);
+        let start = points.partition_point(|p| p.lat < lat_lo);
+        let end = points.partition_point(|p| p.lat <= lat_hi);
+        let code = country.map(str::to_uppercase);
+        let mut candidates: Vec<&Point> = points[start..end]
+            .iter()
+            .filter(|p| {
+                p.population >= min_population
+                    && (lon_lo..=lon_hi).contains(&p.lon)
+                    && code.as_deref().is_none_or(|c| &*p.country == c)
+            })
+            .collect();
+        if code.is_some() {
+            candidates.sort_by_key(|p| p.id);
+        }
+        let mut best = None;
+        let mut best_km = max_km;
+        for p in candidates {
+            let km = haversine_km(lat_q, lon_q, p.lat, p.lon);
+            if km <= best_km {
+                best_km = km;
+                best = Some(p.id);
+            }
+        }
+        best.map_or(Ok(None), |id| self.by_id(id))
     }
 
     fn connect(&self) -> Result<Connection, CitiesError> {
@@ -328,29 +413,12 @@ impl Cities {
         min_population: i64,
         max_km: f64,
     ) -> Result<Option<City>, CitiesError> {
-        let (lat_q, lon_q) = (py_round(lat, 3), py_round(lon, 3));
-        let dlat = max_km / 111.0;
-        let dlon = max_km / (111.0 * lat_q.to_radians().cos()).max(1e-6);
-        let rows = self.query(
-            "WHERE population >= ? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?",
-            vec![
-                min_population.into(),
-                (lat_q - dlat).into(),
-                (lat_q + dlat).into(),
-                (lon_q - dlon).into(),
-                (lon_q + dlon).into(),
-            ],
-        )?;
-        let mut best = None;
-        let mut best_km = max_km;
-        for city in rows {
-            let km = haversine_km(lat_q, lon_q, city.lat, city.lon);
-            if km <= best_km {
-                best_km = km;
-                best = Some(city);
-            }
-        }
-        Ok(best)
+        self.nearest_in_box(
+            (py_round(lat, 3), py_round(lon, 3)),
+            min_population,
+            max_km,
+            None,
+        )
     }
 
     /// Nearest populated city with no distance limit (`nearest_city_global`).
@@ -385,33 +453,12 @@ impl Cities {
         max_km: f64,
         country: Option<&str>,
     ) -> Result<Option<City>, CitiesError> {
-        let (lat_q, lon_q) = (py_round(lat, 3), py_round(lon, 3));
-        let dlat = max_km / 111.0;
-        let dlon = max_km / (111.0 * lat_q.to_radians().cos()).max(1e-6);
-        let mut params: Vec<SqlValue> = vec![
-            min_population.into(),
-            (lat_q - dlat).into(),
-            (lat_q + dlat).into(),
-            (lon_q - dlon).into(),
-            (lon_q + dlon).into(),
-        ];
-        let mut where_sql =
-            String::from("WHERE population >= ? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?");
-        if let Some(code) = country {
-            where_sql.push_str(" AND country = ?");
-            params.push(code.to_uppercase().into());
-        }
-        let rows = self.query(&where_sql, params)?;
-        let mut best = None;
-        let mut best_km = max_km;
-        for city in rows {
-            let km = haversine_km(lat_q, lon_q, city.lat, city.lon);
-            if km <= best_km {
-                best_km = km;
-                best = Some(city);
-            }
-        }
-        Ok(best)
+        self.nearest_in_box(
+            (py_round(lat, 3), py_round(lon, 3)),
+            min_population,
+            max_km,
+            country,
+        )
     }
 
     fn full_scan_nearest(

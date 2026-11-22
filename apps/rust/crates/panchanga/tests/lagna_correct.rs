@@ -19,7 +19,8 @@ fn spans_tile_the_day_and_list_every_pushkara_crossing() {
     let location = Location::kathmandu();
     for k in 0..40 {
         let day = CivilDay::new(2026, 1, 1).add_days(k * 9);
-        let payload = build_daily(day, &location).expect("builds");
+        let daily = build_daily(day, &location).expect("builds");
+        let payload = daily.tree();
         let spans = payload["lagna_spans"].as_array().expect("spans");
         assert_eq!(spans.len(), 12, "{day}: twelve signs between sunrises");
         for pair in spans.windows(2) {

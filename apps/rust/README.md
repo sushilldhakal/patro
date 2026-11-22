@@ -111,6 +111,20 @@ from it instead of searching again.
   (`build_daily_light`: the same keys and values, without the blocks a row discards), which
   makes a lite month or year several times faster. `tests/light_payload.rs` pins that the
   light payload equals the full one on every key it has.
+- Typed payloads end to end: `panchanga::payload::Fields` is an ordered object whose
+  fields are small JSON trees, typed blocks or nested payloads, all behind `Arc`s.
+  `build_daily` returns a shared `Daily` (its fields, and a tree built only if a legacy
+  caller asks with `.tree()`); a day's state (`build_daily_state`) and a month's rows
+  (`month_fields`) share the payload's blocks instead of copying them, and the day,
+  month and year routes write them straight to text with `common::pyser` (the same
+  bytes as `pyjson::dumps`, checked against every recorded body in
+  `tests/pyser_matches_dumps.rs`). A request naming an era still renders a tree.
+- The year view is streamed (`year_calendar_text`): each month is built, written and
+  freed on its worker; `patro/tests/year_text.rs` pins the bytes against the tree path
+  in every era.
+- Nearest city: `geography::Cities` keeps every city's position in memory, sorted as
+  SQLite's latitude index, and searches it by binary search; `nearest_index.rs`
+  compares it with the old bounding-box query, ties included.
 - Contract: the API's shape is Python's, because the mobile and web apps read it:
   the same routes, keys in the same order, types, lists, names and integers. The
   *values* are the engine's own. Boundaries are the engine's solved times, printed

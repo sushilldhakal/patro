@@ -103,10 +103,14 @@ pub fn contains(key: &str) -> bool {
 
 /// Stores `payload` for `key` (a failure is ignored: the store is a cache).
 pub fn put(key: &str, city_id: Option<i64>, payload: &Value) {
+    if let Ok(text) = serde_json::to_string(payload) {
+        put_text(key, city_id, &text);
+    }
+}
+
+/// [`put`] for a payload already written as JSON text.
+pub fn put_text(key: &str, city_id: Option<i64>, text: &str) {
     let Some(store) = store() else {
-        return;
-    };
-    let Ok(text) = serde_json::to_string(payload) else {
         return;
     };
     let mut enc = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::new(6));

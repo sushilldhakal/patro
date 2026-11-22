@@ -3,6 +3,7 @@
 pub mod config;
 pub mod error;
 pub mod pyjson;
+pub mod pyser;
 
 pub use config::AppConfig;
 pub use error::{AppError, AppResult};

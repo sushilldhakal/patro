@@ -317,7 +317,8 @@ pub fn element_day(
 ) -> Result<Value, CatalogError> {
     let spec = element_spec(name)?;
     let day = greg_day_for_date_key(date_key, era)?;
-    let raw = daily_for(day, location)?;
+    let daily = daily_for(day, location)?;
+    let raw = daily.tree();
     let mut out = Map::new();
     out.insert("element".to_owned(), Value::String(name.to_owned()));
     out.insert(
@@ -353,7 +354,7 @@ pub fn element_day(
         "location".to_owned(),
         raw.get("location").cloned().unwrap_or(Value::Null),
     );
-    out.insert("data".to_owned(), spec.extract(&raw));
+    out.insert("data".to_owned(), spec.extract(raw));
     Ok(Value::Object(out))
 }
 
@@ -390,7 +391,8 @@ pub fn element_month(
     let mut days = Vec::with_capacity(length as usize);
     for i in 0..length {
         let day = start.add_days(i32::try_from(i).unwrap_or(0));
-        let raw = daily_for(day, location)?;
+        let daily = daily_for(day, location)?;
+        let raw = daily.tree();
         let vaara = raw.get("vaara").and_then(Value::as_object);
         days.push(json!({
             "date_ad": day.to_string(),
@@ -399,7 +401,7 @@ pub fn element_month(
             "weekday_en": vaara.and_then(|v| v.get("name_english")).cloned().unwrap_or(Value::Null),
             "sunrise": raw.get("sunrise").and_then(Value::as_object).and_then(|v| v.get("local_time_short")).cloned().unwrap_or(Value::Null),
             "sunset": raw.get("sunset").and_then(Value::as_object).and_then(|v| v.get("local_time_short")).cloned().unwrap_or(Value::Null),
-            "data": spec.extract(&raw),
+            "data": spec.extract(raw),
         }));
     }
     Ok(json!({
@@ -1168,7 +1170,10 @@ const TITHI_NAMES_NE: [&str; 15] = [
     "पूर्णिमा",
 ];
 
-fn daily_for(day: CivilDay, location: &Location) -> Result<Value, CatalogError> {
+fn daily_for(
+    day: CivilDay,
+    location: &Location,
+) -> Result<std::sync::Arc<panchanga::daily::Daily>, CatalogError> {
     build_daily(day, location).map_err(CatalogError::from)
 }
 

@@ -443,6 +443,11 @@ pub(crate) fn lagna_rows_value<I>(spans: &[LagnaSpan<I>]) -> Value {
     to_value(&spans.iter().map(|s| &s.row).collect::<Vec<_>>())
 }
 
+/// The spans' rows, typed.
+pub(crate) fn lagna_rows<I>(spans: Vec<LagnaSpan<I>>) -> Vec<LagnaRow> {
+    spans.into_iter().map(|s| s.row).collect()
+}
+
 /// `build_lagna_spans`: twelve lagna periods from sunrise, the twelfth stretched to
 /// the next sunrise. Python enriches them with pushkara navamsha crossings only for
 /// `datetime` instants ([`lagna_spans`]); a Julian Day day keeps them plain.

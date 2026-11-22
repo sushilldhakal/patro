@@ -680,8 +680,8 @@ pub fn ad_month_patro(
         })?;
         let mut m = serde_json::Map::new();
         m.insert("date_ad".into(), json!(day.to_string()));
-        if let Value::Object(fields) = daily {
-            m.extend(fields);
+        if let Value::Object(fields) = daily.tree() {
+            m.extend(fields.iter().map(|(k, v)| (k.clone(), v.clone())));
         }
         m.insert("_from_cache".into(), json!(false));
         let active: Vec<Value> = rows.iter().filter(|r| covers(r, day)).cloned().collect();

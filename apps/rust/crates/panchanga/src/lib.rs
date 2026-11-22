@@ -45,7 +45,8 @@ pub use names::{
 };
 
 pub use blocks_lagna::{GrahaPosition, ascendant_extras, graha_extras, graha_positions};
-pub use blocks_time::{aayan, hora as hora_slots};
+pub use blocks_muhurta::Muhurta;
+pub use blocks_time::{HoraSlot, aayan, hora as hora_slots};
 pub use daily::{
     NAKSHATRA_NAMES_NE, RASHI_NAMES, RASHI_NAMES_NE, SunTimes, nepali_digits, py_min, sun_times,
     sunrise_on,

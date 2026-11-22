@@ -9,6 +9,7 @@ publish.workspace = true
 [dependencies]
 astronomy.workspace = true
 calendar.workspace = true
+common.workspace = true
 flate2.workspace = true
 rusqlite.workspace = true
 serde.workspace = true

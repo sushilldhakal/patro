@@ -8,11 +8,16 @@ use std::{
     collections::HashMap,
     hash::BuildHasher,
     str::FromStr,
+    sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
 
 use calendar::BsDate;
-use panchanga::daily::{DailyError, Location, build_daily, build_daily_civil};
+use panchanga::{
+    HoraSlot, Muhurta,
+    daily::{Daily, DailyError, Location, build_daily, build_daily_civil},
+    payload::{Field, Fields},
+};
 use serde_json::{Map, Value, json};
 use timescale::{CivilDay, JdInstant, PyInstant, UtcInstant};
 
@@ -247,19 +252,34 @@ pub fn day_payload_for_jd_with(
     options: DayBuildOptions,
     variant: DayVariant,
 ) -> Result<Value, DayError> {
+    day_fields_for_jd_with(jd_ut, location, options, variant).map(|f| f.to_value())
+}
+
+/// [`day_payload_for_jd_with`] as typed fields: the day's own values, and its
+/// payload's blocks shared rather than copied, ready to be written straight to text.
+///
+/// # Errors
+///
+/// As [`day_payload_for_jd_with`].
+pub fn day_fields_for_jd_with(
+    jd_ut: f64,
+    location: &Location,
+    options: DayBuildOptions,
+    variant: DayVariant,
+) -> Result<Fields, DayError> {
     let civil = CivilDay::from_jd_ut(jd_ut);
     let mut payload = if civil.is_datetime_range() {
         let mut state = if variant.midnight {
-            crate::midnight::midnight_day_state(civil, location, options)?
+            Fields::from_value(crate::midnight::midnight_day_state(
+                civil, location, options,
+            )?)
         } else {
             let raw = build_daily(civil, location)?;
             build_daily_state(civil, location, &raw, options)
         };
-        if variant.civil_timeline
-            && let Value::Object(map) = &mut state
-        {
-            map.insert(
-                "civil_timeline".into(),
+        if variant.civil_timeline {
+            state.insert_tree(
+                "civil_timeline",
                 crate::civil_timeline::build_civil_timeline(civil, location)?,
             );
         }
@@ -271,7 +291,11 @@ pub fn day_payload_for_jd_with(
     } else {
         // `_bce_day_payload`: the signed patro axis; festivals are only ever
         // resolved for `datetime` days, so the civil state never carries them.
-        let raw = build_daily_civil(civil, location, calendar::locate_patro_day(civil)?)?;
+        let raw = Daily::from_tree(build_daily_civil(
+            civil,
+            location,
+            calendar::locate_patro_day(civil)?,
+        )?);
         build_daily_state(
             civil,
             location,
@@ -318,7 +342,8 @@ pub fn calendar_header(
             mid.year, mid.month, mid.day
         )));
     }
-    let mid_raw = build_daily(mid, location)?;
+    let mid_daily = build_daily(mid, location)?;
+    let mid_raw = mid_daily.tree();
     let lunar = mid_raw.get("lunar_month").cloned().unwrap_or(Value::Null);
     let ns = mid_raw.get("ns_date").cloned().unwrap_or(Value::Null);
     let mut ns_label = ns
@@ -459,301 +484,229 @@ pub fn convert_bs_to_ad(text: &str) -> Result<Value, DayError> {
 pub(crate) fn build_daily_state(
     civil: CivilDay,
     location: &Location,
-    raw: &Value,
+    raw: &Daily,
     options: DayBuildOptions,
-) -> Value {
-    let mut out = Map::new();
-    let bs = raw.get("bs_date").cloned().unwrap_or(Value::Null);
+) -> Fields {
+    let f = raw.fields();
+    let mut out = Fields::new();
+    let bs = value_of(f, "bs_date");
     let bs_year = bs.get("year").and_then(Value::as_i64).unwrap_or(0);
     let bs_month = bs.get("month").and_then(Value::as_u64).unwrap_or(1);
     let bs_day = bs.get("day").and_then(Value::as_u64).unwrap_or(1);
-    out.insert(
-        "date_bs".into(),
+    put(
+        &mut out,
+        "date_bs",
         json!(format!("{bs_year}-{bs_month:02}-{bs_day:02}")),
     );
-    out.insert("date_ad".into(), json!(civil.to_string()));
-    out.insert(
-        "jd_ut".into(),
-        raw.get("jd_ut").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "weekday".into(),
-        raw.get("vaara")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "weekday_en".into(),
-        raw.get("vaara")
-            .and_then(|v| v.get("name_english"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "sun".into(),
+    put(&mut out, "date_ad", json!(civil.to_string()));
+    put(&mut out, "jd_ut", pass(f, "jd_ut", Value::Null));
+    put(&mut out, "weekday", sub(f, "vaara", "name_ne"));
+    put(&mut out, "weekday_en", sub(f, "vaara", "name_english"));
+    put(
+        &mut out,
+        "sun",
         json!({
-            "sunrise": raw.get("sunrise").and_then(|v| v.get("local_time_short")).cloned().unwrap_or(Value::Null),
-            "sunset": raw.get("sunset").and_then(|v| v.get("local_time_short")).cloned().unwrap_or(Value::Null),
-            "noon": raw.get("muhurta").and_then(|v| v.get("abhijit")).and_then(|v| v.get("solar_noon")).cloned().unwrap_or(Value::Null),
+            "sunrise": sub(f, "sunrise", "local_time_short"),
+            "sunset": sub(f, "sunset", "local_time_short"),
+            "noon": solar_noon(f),
         }),
     );
-    out.insert(
-        "moon".into(),
+    put(
+        &mut out,
+        "moon",
         json!({
-            "rise": raw.get("moonrise").and_then(|v| v.get("local_time_short")).cloned().unwrap_or(Value::Null),
-            "set": raw.get("moonset").and_then(|v| v.get("local_time_short")).cloned().unwrap_or(Value::Null),
+            "rise": sub(f, "moonrise", "local_time_short"),
+            "set": sub(f, "moonset", "local_time_short"),
         }),
     );
-    out.insert(
-        "tithi".into(),
-        element_state(raw.get("tithi").unwrap_or(&Value::Null), &location.zone),
+    put(
+        &mut out,
+        "tithi",
+        element_state(&value_of(f, "tithi"), &location.zone),
     );
-    out.insert(
-        "nakshatra".into(),
-        element_state(raw.get("nakshatra").unwrap_or(&Value::Null), &location.zone),
+    put(
+        &mut out,
+        "nakshatra",
+        element_state(&value_of(f, "nakshatra"), &location.zone),
     );
-    out.insert(
-        "yoga".into(),
-        element_state(raw.get("yoga").unwrap_or(&Value::Null), &location.zone),
+    put(
+        &mut out,
+        "yoga",
+        element_state(&value_of(f, "yoga"), &location.zone),
     );
-    out.insert(
-        "karana".into(),
-        element_state(raw.get("karana").unwrap_or(&Value::Null), &location.zone),
+    put(
+        &mut out,
+        "karana",
+        element_state(&value_of(f, "karana"), &location.zone),
     );
-    out.insert(
-        "paksha".into(),
-        raw.get("paksha")
-            .and_then(|v| v.get("label_en"))
-            .cloned()
-            .unwrap_or(Value::Null),
+    put(&mut out, "paksha", sub(f, "paksha", "label_en"));
+    put(&mut out, "paksha_ne", sub(f, "paksha", "label_ne"));
+    put(&mut out, "chandra_rashi", sub(f, "chandra_rashi", "name"));
+    put(
+        &mut out,
+        "chandra_rashi_ne",
+        sub(f, "chandra_rashi", "name_ne"),
     );
-    out.insert(
-        "paksha_ne".into(),
-        raw.get("paksha")
-            .and_then(|v| v.get("label_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
+    put(
+        &mut out,
+        "chandra_rashi_spans",
+        pass(f, "chandra_rashi_spans", Value::Array(Vec::new())),
     );
-    out.insert(
-        "chandra_rashi".into(),
-        raw.get("chandra_rashi")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
+    put(&mut out, "surya_rashi", sub(f, "surya_rashi", "name"));
+    put(&mut out, "surya_rashi_ne", sub(f, "surya_rashi", "name_ne"));
+    put(&mut out, "ritu", sub(f, "ritu", "name"));
+    put(&mut out, "ritu_ne", sub(f, "ritu", "name_ne"));
+    put(&mut out, "ritu_vedic", sub(f, "ritu_vedic", "name"));
+    put(&mut out, "ritu_vedic_ne", sub(f, "ritu_vedic", "name_ne"));
+    put(&mut out, "aayan", sub(f, "aayan", "name"));
+    put(&mut out, "aayan_ne", sub(f, "aayan", "name_ne"));
+    put(&mut out, "aayan_vedic", sub(f, "aayan_vedic", "name"));
+    put(&mut out, "aayan_vedic_ne", sub(f, "aayan_vedic", "name_ne"));
+    put(&mut out, "ayana_mark", sub(f, "aayan", "kranti_mark"));
+    put(&mut out, "lagna", sub(f, "lagna", "name"));
+    put(&mut out, "lagna_ne", sub(f, "lagna", "name_ne"));
+    put(
+        &mut out,
+        "lagna_spans",
+        pass(f, "lagna_spans", Value::Array(Vec::new())),
     );
-    out.insert(
-        "chandra_rashi_ne".into(),
-        raw.get("chandra_rashi")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
+    put(
+        &mut out,
+        "udaya_lagna",
+        pass(f, "udaya_lagna", Value::Array(Vec::new())),
     );
-    out.insert(
-        "chandra_rashi_spans".into(),
-        raw.get("chandra_rashi_spans")
-            .cloned()
-            .unwrap_or_else(|| Value::Array(Vec::new())),
+    put(&mut out, "planets", pass(f, "planets", Value::Null));
+    put(
+        &mut out,
+        "planets_anchor",
+        pass(f, "planets_anchor", Value::Null),
     );
-    out.insert(
-        "surya_rashi".into(),
-        raw.get("surya_rashi")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
+    put(
+        &mut out,
+        "solar_corrections",
+        pass(f, "solar_corrections", Value::Null),
     );
-    out.insert(
-        "surya_rashi_ne".into(),
-        raw.get("surya_rashi")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
+    put(&mut out, "dinamaan", sub(f, "dinamaan", "label_en"));
+    put(&mut out, "muhurta", pass(f, "muhurta", Value::Null));
+    put(&mut out, "nivas_shool", pass(f, "nivas_shool", Value::Null));
+    put(&mut out, "location", pass(f, "location", Value::Null));
+    put(
+        &mut out,
+        "lunar_calendar",
+        pass(f, "lunar_calendar", Value::Null),
     );
-    out.insert(
-        "ritu".into(),
-        raw.get("ritu")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "ritu_ne".into(),
-        raw.get("ritu")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "ritu_vedic".into(),
-        raw.get("ritu_vedic")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "ritu_vedic_ne".into(),
-        raw.get("ritu_vedic")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "aayan".into(),
-        raw.get("aayan")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "aayan_ne".into(),
-        raw.get("aayan")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "aayan_vedic".into(),
-        raw.get("aayan_vedic")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "aayan_vedic_ne".into(),
-        raw.get("aayan_vedic")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "ayana_mark".into(),
-        raw.get("aayan")
-            .and_then(|v| v.get("kranti_mark"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "lagna".into(),
-        raw.get("lagna")
-            .and_then(|v| v.get("name"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "lagna_ne".into(),
-        raw.get("lagna")
-            .and_then(|v| v.get("name_ne"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "lagna_spans".into(),
-        raw.get("lagna_spans")
-            .cloned()
-            .unwrap_or_else(|| Value::Array(Vec::new())),
-    );
-    out.insert(
-        "udaya_lagna".into(),
-        raw.get("udaya_lagna")
-            .cloned()
-            .unwrap_or_else(|| Value::Array(Vec::new())),
-    );
-    out.insert(
-        "planets".into(),
-        raw.get("planets").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "planets_anchor".into(),
-        raw.get("planets_anchor").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "solar_corrections".into(),
-        raw.get("solar_corrections").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "dinamaan".into(),
-        raw.get("dinamaan")
-            .and_then(|v| v.get("label_en"))
-            .cloned()
-            .unwrap_or(Value::Null),
-    );
-    out.insert(
-        "muhurta".into(),
-        raw.get("muhurta").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "nivas_shool".into(),
-        raw.get("nivas_shool").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "location".into(),
-        raw.get("location").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "lunar_calendar".into(),
-        raw.get("lunar_calendar").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "lunar_month".into(),
-        raw.get("lunar_month").cloned().unwrap_or(Value::Null),
-    );
-    out.insert("bs_date".into(), bs);
-    out.insert("from_cache".into(), json!(false));
+    put(&mut out, "lunar_month", pass(f, "lunar_month", Value::Null));
+    put(&mut out, "bs_date", bs);
+    put(&mut out, "from_cache", json!(false));
 
     let festival_bundle = if options.festivals == FestivalMode::Exclude {
         None
     } else {
         let (slim, detail_rows, saits) = festival_rows(civil, location, options.festivals);
-        out.insert("festivals".into(), Value::Array(slim));
+        put(&mut out, "festivals", Value::Array(slim));
         Some((detail_rows, saits))
     };
     if options.detail == DetailMode::Include {
-        let mut detail = raw.clone();
-        if let (Some((detail_rows, _)), Value::Object(map)) =
-            (festival_bundle.as_ref(), &mut detail)
-        {
-            map.insert("festivals".into(), Value::Array(detail_rows.clone()));
+        // The payload's own fields, shared, with this day's festival rows.
+        let mut detail = f.clone();
+        if let Some((detail_rows, _)) = festival_bundle.as_ref() {
+            detail.insert_tree("festivals", Value::Array(detail_rows.clone()));
         }
-        out.insert("detail".into(), detail);
+        put(&mut out, "detail", Field::Nested(Arc::new(detail)));
     }
 
-    let hora = raw
-        .get("hora")
-        .and_then(Value::as_array)
+    let (hora, hora_day) = hora_fields(f);
+    put(&mut out, "hora", hora);
+    put(&mut out, "hora_day", hora_day);
+    put(
+        &mut out,
+        "choghadiya",
+        pass(f, "choghadiya", Value::Array(Vec::new())),
+    );
+    put(
+        &mut out,
+        "tarabala_table",
+        pass(f, "tarabala_table", Value::Null),
+    );
+    put(
+        &mut out,
+        "chandrabala_table",
+        pass(f, "chandrabala_table", Value::Null),
+    );
+    put(&mut out, "rashifal", pass(f, "rashifal", Value::Null));
+    if let Some((_, Some(saits))) = festival_bundle {
+        put(&mut out, "festival_saits", Value::Array(saits));
+    }
+
+    put(&mut out, "jd_ut", json!(civil.to_jd_ut()));
+    put(&mut out, "date_ad", json!(civil.to_string()));
+    out
+}
+
+/// Sets `key` on a day's state.
+fn put(out: &mut Fields, key: &'static str, field: impl Into<Field>) {
+    out.insert(key, field.into());
+}
+
+/// The payload's field `key`, shared, or `default` when it has none.
+fn pass(f: &Fields, key: &str, default: Value) -> Field {
+    f.field(key)
         .cloned()
-        .unwrap_or_default();
-    let hora_day = hora
+        .unwrap_or_else(|| Field::tree(default))
+}
+
+/// The payload's field `key` as a tree (`null` when absent).
+fn value_of(f: &Fields, key: &str) -> Value {
+    f.get(key).map_or(Value::Null, std::borrow::Cow::into_owned)
+}
+
+/// `payload[block][key]`, `null` when either is absent.
+fn sub(f: &Fields, block: &str, key: &str) -> Value {
+    f.get(block)
+        .and_then(|v| v.get(key).cloned())
+        .unwrap_or(Value::Null)
+}
+
+/// The muhurta block's solar noon, read from the typed block when it is one.
+fn solar_noon(f: &Fields) -> Value {
+    match f.field("muhurta") {
+        Some(field) => match field.typed_as::<Muhurta>() {
+            Some(m) => m
+                .solar_noon()
+                .map_or(Value::Null, |n| Value::String(n.to_owned())),
+            None => field
+                .as_tree()
+                .get("abhijit")
+                .and_then(|a| a.get("solar_noon"))
+                .cloned()
+                .unwrap_or(Value::Null),
+        },
+        None => Value::Null,
+    }
+}
+
+/// The hora slots, and the daytime ones (`hora_day`), shared or filtered from the
+/// typed block when it is one.
+fn hora_fields(f: &Fields) -> (Field, Field) {
+    let Some(field) = f.field("hora") else {
+        let empty = || Field::tree(Value::Array(Vec::new()));
+        return (empty(), empty());
+    };
+    if let Some(slots) = field.typed_as::<Vec<HoraSlot>>() {
+        let day: Vec<HoraSlot> = slots.iter().filter(|s| s.is_day()).cloned().collect();
+        return (field.clone(), Field::typed(day));
+    }
+    let tree = field.as_tree();
+    let slots = tree.as_array().cloned().unwrap_or_default();
+    let day = slots
         .iter()
         .filter(|slot| slot.get("phase").and_then(Value::as_str) == Some("day"))
         .cloned()
         .collect();
-    out.insert("hora".into(), Value::Array(hora));
-    out.insert("hora_day".into(), Value::Array(hora_day));
-    out.insert(
-        "choghadiya".into(),
-        raw.get("choghadiya")
-            .cloned()
-            .unwrap_or_else(|| Value::Array(Vec::new())),
-    );
-    out.insert(
-        "tarabala_table".into(),
-        raw.get("tarabala_table").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "chandrabala_table".into(),
-        raw.get("chandrabala_table").cloned().unwrap_or(Value::Null),
-    );
-    out.insert(
-        "rashifal".into(),
-        raw.get("rashifal").cloned().unwrap_or(Value::Null),
-    );
-    if let Some((_, Some(saits))) = festival_bundle {
-        out.insert("festival_saits".into(), Value::Array(saits));
-    }
-
-    out.insert("jd_ut".into(), json!(civil.to_jd_ut()));
-    out.insert("date_ad".into(), json!(civil.to_string()));
-    Value::Object(out)
+    (
+        Field::tree(Value::Array(slots)),
+        Field::tree(Value::Array(day)),
+    )
 }
 
 /// Top-level slim festivals, detail occurrence rows, and (for [`FestivalMode::Include`]) the rows
@@ -935,39 +888,64 @@ pub(crate) fn parse_ephemeris_instant(text: &str) -> Option<PrintedInstant> {
     }
 }
 
-fn slim_day_payload(payload: Value) -> Value {
-    let Value::Object(top) = payload else {
+fn slim_day_payload(mut payload: Fields) -> Fields {
+    payload.remove("rashifal");
+    let Some(Field::Nested(detail)) = payload.field("detail").cloned() else {
+        if let Some(detail) = payload.field("detail").cloned() {
+            // A detail read back as a tree: slim it the same way.
+            return slim_tree_detail(payload, &detail.value());
+        }
         return payload;
     };
-
-    let mut slim = Map::new();
-    for (key, value) in &top {
-        if key != "rashifal" {
-            slim.insert(key.clone(), value.clone());
+    let mut kept = Fields::new();
+    let mut shared = Vec::new();
+    for (key, field) in detail.iter() {
+        if key == "rashifal" {
+            continue;
+        }
+        let same = key != "detail" && payload.field(key).is_some_and(|top| same_field(top, field));
+        if same {
+            shared.push(Value::String(key.to_owned()));
+        } else {
+            kept.insert(key.to_owned(), field.clone());
         }
     }
+    payload.insert("detail", Field::Nested(Arc::new(kept)));
+    payload.insert_tree("detail_shared", Value::Array(shared));
+    payload
+}
 
-    let mut detail_shared = Vec::new();
-    if let Some(Value::Object(detail_map)) = slim.get("detail").cloned() {
-        let mut kept = Map::new();
-        for (key, value) in detail_map {
-            if key == "rashifal" {
-                continue;
-            }
-            let shared =
-                key != "detail" && slim.get(&key).is_some_and(|existing| *existing == value);
-            if shared {
-                detail_shared.push(Value::String(key));
-            } else {
-                kept.insert(key, value);
-            }
-        }
-        if let Some(detail) = slim.get_mut("detail") {
-            *detail = Value::Object(kept);
-        }
-        slim.insert("detail_shared".into(), Value::Array(detail_shared));
+/// Whether two fields hold the same JSON: the same shared block, or equal trees.
+fn same_field(a: &Field, b: &Field) -> bool {
+    match (a, b) {
+        (Field::Tree(x), Field::Tree(y)) if Arc::ptr_eq(x, y) => true,
+        (Field::Typed(x), Field::Typed(y)) if Arc::ptr_eq(x, y) => true,
+        (Field::Nested(x), Field::Nested(y)) if Arc::ptr_eq(x, y) => true,
+        _ => a.as_tree() == b.as_tree(),
     }
-    Value::Object(slim)
+}
+
+/// [`slim_day_payload`] for a `detail` held as a tree.
+fn slim_tree_detail(mut payload: Fields, detail: &Value) -> Fields {
+    let Value::Object(detail_map) = detail else {
+        return payload;
+    };
+    let mut kept = Map::new();
+    let mut shared = Vec::new();
+    for (key, value) in detail_map {
+        if key == "rashifal" {
+            continue;
+        }
+        let same = key != "detail" && payload.get(key).is_some_and(|top| *top == *value);
+        if same {
+            shared.push(Value::String(key.clone()));
+        } else {
+            kept.insert(key.clone(), value.clone());
+        }
+    }
+    payload.insert_tree("detail", Value::Object(kept));
+    payload.insert_tree("detail_shared", Value::Array(shared));
+    payload
 }
 
 /// `_input_era`: the first non-empty of `inputEra`, `input_era`, `era`, else `bs`.

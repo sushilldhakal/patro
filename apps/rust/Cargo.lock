@@ -1456,6 +1456,7 @@ version = "0.1.0"
 dependencies = [
  "astronomy",
  "calendar",
+ "common",
  "criterion",
  "flate2",
  "rusqlite",
@@ -1500,6 +1501,7 @@ version = "0.1.0"
 dependencies = [
  "astronomy",
  "calendar",
+ "common",
  "festivals",
  "geography",
  "panchanga",

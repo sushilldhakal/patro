@@ -29,7 +29,8 @@ fn stored_days_round_trip_exactly() {
         let computed = build_daily(day, &location).expect("day builds");
         let stored = stored_day(day, &location).expect("stored");
         assert_eq!(
-            stored, computed,
+            &stored,
+            computed.tree(),
             "{day}: the stored payload reads back exactly"
         );
         assert_eq!(
@@ -38,7 +39,7 @@ fn stored_days_round_trip_exactly() {
             "{day} is already stored"
         );
         assert_eq!(precompute_day(day, &location, Precompute::Force), Ok(true));
-        assert_eq!(stored_day(day, &location), Some(computed));
+        assert_eq!(stored_day(day, &location), Some(computed.tree().clone()));
     }
     let stats = panchanga::store::stats();
     assert_eq!(stats["rows"], 3);

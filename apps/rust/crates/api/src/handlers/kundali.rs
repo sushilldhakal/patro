@@ -375,10 +375,11 @@ pub(crate) async fn kundali_day(
             &format!("{day}: days before 1582-10-15 are not ported to the Rust server yet"),
         );
     }
-    let raw = match panchanga::daily::build_daily(day, &loc) {
+    let daily = match panchanga::daily::build_daily(day, &loc) {
         Ok(r) => r,
         Err(e) => return detail(StatusCode::BAD_REQUEST, &e.to_string()),
     };
+    let raw = daily.tree();
     let mut planets = serde_json::Map::new();
     if let Some(rows) = raw["planets"].as_object() {
         for (name, pos) in rows {

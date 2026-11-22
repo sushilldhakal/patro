@@ -70,23 +70,36 @@ fn write_value(out: &mut String, value: &Value, style: Style) {
 }
 
 /// Python's `json` string escaping with `ensure_ascii=False`.
-fn write_str(out: &mut String, s: &str) {
+///
+/// Every character that needs escaping is ASCII, so the text is copied in runs of
+/// bytes between them rather than a character at a time.
+pub(crate) fn write_str(out: &mut String, s: &str) {
+    out.reserve(s.len() + 2);
     out.push('"');
-    for c in s.chars() {
-        match c {
-            '"' => out.push_str("\\\""),
-            '\\' => out.push_str("\\\\"),
-            '\n' => out.push_str("\\n"),
-            '\r' => out.push_str("\\r"),
-            '\t' => out.push_str("\\t"),
-            '\u{08}' => out.push_str("\\b"),
-            '\u{0c}' => out.push_str("\\f"),
-            c if (c as u32) < 0x20 => {
-                let _ = write!(out, "\\u{:04x}", c as u32);
-            }
-            c => out.push(c),
+    let bytes = s.as_bytes();
+    let mut run = 0;
+    for (i, &b) in bytes.iter().enumerate() {
+        let escaped = match b {
+            b'"' => "\\\"",
+            b'\\' => "\\\\",
+            b'\n' => "\\n",
+            b'\r' => "\\r",
+            b'\t' => "\\t",
+            0x08 => "\\b",
+            0x0c => "\\f",
+            0x00..=0x1f => "",
+            _ => continue,
+        };
+        // `i` is at an ASCII byte, so both slices end on character boundaries.
+        out.push_str(&s[run..i]);
+        if escaped.is_empty() {
+            let _ = write!(out, "\\u{b:04x}");
+        } else {
+            out.push_str(escaped);
         }
+        run = i + 1;
     }
+    out.push_str(&s[run..]);
     out.push('"');
 }
 
@@ -208,6 +221,11 @@ mod tests {
     #[test]
     fn separators_and_text() {
         let v = json!({"a": [1, 2.0, "नेपाल"], "b": null, "c": "q\"\\\n"});
+        assert_eq!(
+            dumps(&json!("a\u{1}\u{8}\u{c}\t\ré\"z"), Style::Compact),
+            r#""a\u0001\b\f\t\ré\"z""#,
+            "every escape, around multi-byte text"
+        );
         assert_eq!(
             dumps(&v, Style::Compact),
             r#"{"a":[1,2.0,"नेपाल"],"b":null,"c":"q\"\\\n"}"#

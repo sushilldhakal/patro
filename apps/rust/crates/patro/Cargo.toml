@@ -9,6 +9,7 @@ publish.workspace = true
 [dependencies]
 astronomy.workspace = true
 calendar.workspace = true
+common.workspace = true
 festivals.workspace = true
 geography.workspace = true
 panchanga.workspace = true

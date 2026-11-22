@@ -44,7 +44,8 @@ fn daily_payloads_match_python_within_the_allowed_drift() {
             city_id: loc["city_id"].as_i64(),
         };
         let day = CivilDay::new(i32::try_from(y).expect("year"), m, d);
-        let got = build_daily(day, &location).unwrap_or_else(|e| panic!("{date}: {e}"));
+        let daily = build_daily(day, &location).unwrap_or_else(|e| panic!("{date}: {e}"));
+        let got = daily.tree();
         let full = case["payload"].as_object().expect("payload object");
         let keys: Vec<&String> = got.as_object().expect("object").keys().collect();
         let python_order: Vec<&String> = full.keys().filter(|k| keys.contains(k)).collect();
@@ -54,11 +55,12 @@ fn daily_payloads_match_python_within_the_allowed_drift() {
                 .map(|k| ((*k).clone(), full[*k].clone()))
                 .collect(),
         );
-        if let Some(diff) = first_difference("", &got, want) {
+        if let Some(diff) = first_difference("", got, want) {
             panic!("{date} {}: {diff}", location.name);
         }
     }
-    let built = build_daily(CivilDay::new(2026, 11, 1), &Location::kathmandu()).expect("builds");
+    let daily = build_daily(CivilDay::new(2026, 11, 1), &Location::kathmandu()).expect("builds");
+    let built = daily.tree();
     let n = built.as_object().map_or(0, serde_json::Map::len);
     println!(
         "{} daily payloads match python (times within the allowed drift) on {n} of 54 keys",

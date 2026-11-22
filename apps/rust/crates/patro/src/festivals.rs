@@ -1162,7 +1162,8 @@ pub fn bs_year_summary_payload(bs_year: i32, location: &Location) -> Result<Valu
     let mut day = year_start;
     let mut rows = Vec::new();
     while day <= year_end {
-        let state = build_daily(day, location).map_err(|e| e.to_string())?;
+        let daily = build_daily(day, location).map_err(|e| e.to_string())?;
+        let state = daily.tree();
         rows.push(json!({
             "date_bs": format!("{}-{:02}-{:02}", state["bs_date"]["year"].as_i64().unwrap_or_default(), state["bs_date"]["month"].as_i64().unwrap_or_default(), state["bs_date"]["day"].as_i64().unwrap_or_default()),
             "date_ad": day.to_string(),

@@ -82,10 +82,7 @@ fn rendered_body(payload: &Value, q: &Query) -> (String, PreEraLen) {
     let Some(era) = era_of(q) else {
         return (compact, pre);
     };
-    let language = match q.get("language").map(|l| l.trim().to_lowercase()) {
-        Some(l) if l == "en" || l == "ne" => l,
-        _ => patro::era::era_language(&era).to_owned(),
-    };
+    let language = era_language_of(q, &era);
     (
         dumps(
             &patro::era::render_for_era(payload, &era, &language),
@@ -93,6 +90,15 @@ fn rendered_body(payload: &Value, q: &Query) -> (String, PreEraLen) {
         ),
         pre,
     )
+}
+
+/// The language the era layer renders in: `language=` when it is `en` or `ne`, else
+/// the era's own.
+pub(crate) fn era_language_of(q: &Query, era: &str) -> String {
+    match q.get("language").map(|l| l.trim().to_lowercase()) {
+        Some(l) if l == "en" || l == "ne" => l,
+        _ => patro::era::era_language(era).to_owned(),
+    }
 }
 
 /// The body size `GZipMiddleware` saw, before the era layer re-rendered it; read
@@ -288,6 +294,77 @@ pub(crate) fn json_response_payload(
     )
 }
 
+/// [`json_response_payload`] for a day state held as typed fields: written straight to
+/// text (sharing the day payload's blocks, never building the tree), or rendered as a
+/// tree for a request that names an era.
+pub(crate) fn json_response_fields(
+    fields: &panchanga::payload::Fields,
+    q: &Query,
+    request_headers: &HeaderMap,
+    cache_control: &str,
+    cdn_cache_control: Option<&str>,
+    started: Instant,
+) -> Response {
+    send_fields(
+        fields,
+        q,
+        request_headers,
+        (cache_control, cdn_cache_control),
+        started,
+        RouteVary::None,
+    )
+}
+
+/// [`json_payload`] for a payload held as typed fields (see [`json_response_fields`]).
+pub(crate) fn json_payload_fields(
+    fields: &panchanga::payload::Fields,
+    q: &Query,
+    request_headers: &HeaderMap,
+    cache_control: &str,
+    cdn_cache_control: Option<&str>,
+    started: Instant,
+) -> Response {
+    send_fields(
+        fields,
+        q,
+        request_headers,
+        (cache_control, cdn_cache_control),
+        started,
+        RouteVary::Set,
+    )
+}
+
+fn send_fields(
+    fields: &panchanga::payload::Fields,
+    q: &Query,
+    request_headers: &HeaderMap,
+    cache_headers: (&str, Option<&str>),
+    started: Instant,
+    route_vary: RouteVary,
+) -> Response {
+    let compact = fields.to_text(Style::Compact);
+    let pre = PreEraLen(compact.len());
+    let body = match era_of(q) {
+        None => compact,
+        Some(era) => {
+            drop(compact);
+            let language = era_language_of(q, &era);
+            dumps(
+                &patro::era::render_for_era(&fields.to_value(), &era, &language),
+                Style::Default,
+            )
+        }
+    };
+    send_cached(
+        body,
+        pre,
+        request_headers,
+        cache_headers,
+        started,
+        route_vary,
+    )
+}
+
 /// Whether the route sets `Vary: Accept-Encoding` itself (the response cache does).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum RouteVary {
@@ -295,15 +372,55 @@ enum RouteVary {
     None,
 }
 
+/// [`json_payload`] for a body the route already wrote as text (a payload too large to
+/// hold as a tree), rendered for the request's era if it named one. Every such body is
+/// far over `GZip`'s 1024-byte threshold, so its own length stands for the size `GZip`
+/// judged.
+pub(crate) fn json_payload_text(
+    compact: String,
+    request_headers: &HeaderMap,
+    cache_control: &str,
+    cdn_cache_control: Option<&str>,
+    started: Instant,
+) -> Response {
+    let pre = PreEraLen(compact.len());
+    send_cached(
+        compact,
+        pre,
+        request_headers,
+        (cache_control, cdn_cache_control),
+        started,
+        RouteVary::Set,
+    )
+}
+
 fn cached_json(
     payload: &Value,
     q: &Query,
+    request_headers: &HeaderMap,
+    cache_headers: (&str, Option<&str>),
+    started: Instant,
+    route_vary: RouteVary,
+) -> Response {
+    let (body, pre) = rendered_body(payload, q);
+    send_cached(
+        body,
+        pre,
+        request_headers,
+        cache_headers,
+        started,
+        route_vary,
+    )
+}
+
+fn send_cached(
+    body: String,
+    pre: PreEraLen,
     request_headers: &HeaderMap,
     (cache_control, cdn_cache_control): (&str, Option<&str>),
     started: Instant,
     route_vary: RouteVary,
 ) -> Response {
-    let (body, pre) = rendered_body(payload, q);
     let directive = with_stale_if_error(cache_control);
     let cdn_directive = with_stale_if_error(cdn_cache_control.unwrap_or(cache_control));
     let mut headers = HeaderMap::new();
