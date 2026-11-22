@@ -1,1 +1,6 @@
 /target
+
+# Our own ephemeris files (built by scripts/ephdata/build.sh; large, not in git)
+*.veph
+*.vidx
+*.bsp

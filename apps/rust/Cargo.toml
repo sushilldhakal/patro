@@ -46,6 +46,7 @@ regex = "1"
 rusqlite = { version = "0.41", features = ["bundled"] }
 accounts = { path = "crates/accounts" }
 ephemeris = { path = "crates/ephemeris" }
+ephdata = { path = "crates/ephdata" }
 swiss-eph = "=0.2.1"
 tokio-postgres = "0.7"
 deadpool-postgres = "0.14"
@@ -122,3 +123,19 @@ tower.workspace = true
 [profile.release]
 lto = "thin"
 codegen-units = 1
+
+# The ephemeris crate evaluates millions of Chebyshev series when it builds the event
+# index; a debug build of it would take hours. Optimised in the dev profile only (no
+# --release build, same floating-point results).
+[profile.dev.package.ephdata]
+opt-level = 3
+
+# Benchmarks of the event index against the solver need the same optimisation level on
+# both sides, but optimising `astronomy` or `timescale` in the dev profile changes the
+# last ulp of the solver's iterates (compile-time versus run-time libm), which moves a
+# boundary by tens of microseconds. So the optimised build is its own profile, used only
+# by `cargo run --profile benchdev -p astronomy --example bench_index`.
+[profile.benchdev]
+inherits = "dev"
+opt-level = 3
+debug = false

@@ -11,6 +11,7 @@ publish.workspace = true
 drik = ["dep:ephemeris"]
 
 [dependencies]
+ephdata.workspace = true
 ephemeris = { workspace = true, optional = true }
 thiserror.workspace = true
 timescale.workspace = true

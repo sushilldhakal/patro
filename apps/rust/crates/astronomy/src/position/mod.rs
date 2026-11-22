@@ -5,10 +5,12 @@
 
 #[cfg(feature = "drik")]
 mod drik;
+mod own_drik;
 mod surya_siddhanta;
 
 #[cfg(feature = "drik")]
 pub use drik::Drik;
+pub use own_drik::OwnDrik;
 pub use surya_siddhanta::SuryaSiddhanta;
 
 /// The Sun and the Moon at one instant: sidereal longitudes in [0, 360).
@@ -27,4 +29,10 @@ pub trait Ephemeris: Sync {
 
     /// The Sun and the Moon at `jd_ut`.
     fn pos(&self, jd_ut: f64) -> Pos;
+
+    /// Every boundary this source has already solved and stored, if it has them: the
+    /// event engine reads these instead of solving again.
+    fn index(&self) -> Option<&ephdata::Index> {
+        None
+    }
 }

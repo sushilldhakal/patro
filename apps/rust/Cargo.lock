@@ -112,6 +112,7 @@ name = "astronomy"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "ephdata",
  "ephemeris",
  "serde_json",
  "thiserror",
@@ -652,6 +653,13 @@ name = "email_address"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5ab6bbd053d3cdc62ba3de82aae11530a97bbd5b3a572fbdbcd0f0e545e3ff21"
+
+[[package]]
+name = "ephdata"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "ephemeris"
