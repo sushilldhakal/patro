@@ -10,12 +10,21 @@ use crate::{
     rules::{is_public_holiday, overrides, rule, rules},
 };
 
-/// `festival_location`: Nepal observers get the national (Kathmandu) calendar; anyone
-/// else their own, snapped to 0.1°.
+/// `festival_location`: the location a festival calendar is computed for: the observer's
+/// own, snapped to 0.1° so a metro area shares one cache bucket. Festivals are
+/// location-based, Nepali cities included (only the solar, sankranti-defined dates are
+/// fixed to Nepal, and those do not read this location). The default observer keeps
+/// its exact coordinates. Python gave every observer in the Kathmandu zone the
+/// Kathmandu calendar, so Pokhara got Kathmandu's tithi edges and Kathmandu's cache
+/// entry.
 #[must_use]
 pub fn festival_location(location: &Location) -> Location {
-    if location.zone.name() == "Asia/Kathmandu" {
-        return Location::kathmandu();
+    let kathmandu = Location::kathmandu();
+    if location.zone.name() == kathmandu.zone.name()
+        && location.lat.to_bits() == kathmandu.lat.to_bits()
+        && location.lon.to_bits() == kathmandu.lon.to_bits()
+    {
+        return kathmandu;
     }
     let round1 = |x: f64| format!("{x:.1}").parse().unwrap_or(x);
     Location {

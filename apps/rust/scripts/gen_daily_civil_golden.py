@@ -22,6 +22,11 @@ from engine.astronomy.siddhanta import SURYA_SIDDHANTA, use_siddhanta  # noqa: E
 from engine.calendar.bikram_sambat import locate_patro_day_for_civil  # noqa: E402
 from engine.panchanga.daily_civil import build_daily_panchanga_civil  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from rust_divergences import apply as _apply_divergences  # noqa: E402
+
+_apply_divergences()
+
 PLACES = [
     ObserverLocation(27.7, 85.32, "Asia/Kathmandu", "Kathmandu", 1283240),
     ObserverLocation(28.2096, 83.9856, "Asia/Kathmandu", "Pokhara", 1282898),

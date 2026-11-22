@@ -53,6 +53,9 @@ fn with(mut m: Map<String, Value>, extra: Value) -> Value {
     Value::Object(m)
 }
 
+/// Nepal's zone, parsed once.
+static NEPAL: std::sync::LazyLock<Zone> = std::sync::LazyLock::new(Zone::kathmandu);
+
 fn sunrise_at(day: CivilDay, lat: f64, lon: f64, zone: &Zone) -> Option<UtcInstant> {
     let observer = Observer {
         latitude: lat,
@@ -79,7 +82,7 @@ fn timezone_era(day: CivilDay) -> Value {
 ///
 /// `day` is the civil day for a `datetime`-range day. For a Julian Day sunrise
 /// Python cannot build a `date`, so it probes 2020-06-15 for the zone meridian,
-/// the timezone era and (a Python quirk kept here) the akshamsha sunrises:
+/// the timezone era and the akshamsha sunrises:
 /// pass [`civil_probe_day`] then.
 pub(crate) fn solar_corrections<I: PyInstant>(
     day: CivilDay,
@@ -91,9 +94,14 @@ pub(crate) fn solar_corrections<I: PyInstant>(
     let meridian = f64::from(zone.offset_at_local(day, 12)) / 3600.0 * 15.0;
     let belaantar = -(equation_of_time_days(sunrise.to_jd()) * 24.0 * 60.0);
     let deshaantar = (lon - meridian) * 4.0;
+    // Both sunrises are on the Gaurishankar meridian, so both start from that meridian's
+    // own midnight (Nepal's clock), whatever zone the observer keeps. Python anchored
+    // the observer's sunrise on the observer's zone: for a point outside Nepal the two
+    // differed by that zone's whole offset, and the correction came out as hours.
+    let nepal = &*NEPAL;
     let akshamsha = match (
-        sunrise_at(day, lat, GAURISHANKAR_MERIDIAN, zone),
-        sunrise_at(day, REFERENCE_LATITUDE, GAURISHANKAR_MERIDIAN, zone),
+        sunrise_at(day, lat, GAURISHANKAR_MERIDIAN, nepal),
+        sunrise_at(day, REFERENCE_LATITUDE, GAURISHANKAR_MERIDIAN, nepal),
     ) {
         (Some(obs), Some(reference)) => Some(obs.seconds_since(reference) / 60.0),
         _ => None,

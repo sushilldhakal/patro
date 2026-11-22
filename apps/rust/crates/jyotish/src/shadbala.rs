@@ -735,7 +735,7 @@ pub fn shadbala(instant: UtcInstant, location: &Location) -> Result<Value, Daily
             "average_rupas": py_round(avg / 60.0, 2), "average_virupas": py_round(avg, 2),
             "meeting_threshold": meeting, "total_planets": 7, "counts": counts,
         },
-        "method": "Parashari Shadbala (Lahiri sidereal, JPL — NASA's Jet Propulsion Laboratory)",
+        "method": "Parashari Shadbala (Surya Siddhanta sidereal longitudes)",
         "yuddha": {"wars": wars, "byPlanet": by_planet},
     }))
 }

@@ -21,6 +21,10 @@ sys.path.insert(0, str(Path.cwd()))
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app.main import app  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from rust_divergences import apply as _apply_divergences  # noqa: E402
+
+_apply_divergences()
 import engine.calendar.tropical_seasons as ts  # noqa: E402
 
 NOW = datetime(2026, 11, 15, 6, 30, 0, 123456, tzinfo=timezone.utc)

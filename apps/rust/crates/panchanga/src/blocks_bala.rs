@@ -334,7 +334,7 @@ impl Rashifal {
             anchor: "sunrise",
             vaara_num: vaara,
             method: Method {
-                frame: "drik_ganita",
+                frame: "surya_siddhanta",
                 ayanamsa: "Surya Siddhanta",
                 chandrabala: "transit_moon_house",
                 moorti: "transit_moon_house_from_janma_rashi",

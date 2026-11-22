@@ -472,6 +472,7 @@ fn shared_lines(rules: &Value, state: &Value, windows: &[Value]) -> Lines {
 }
 
 /// `build_day_guidance`.
+#[expect(clippy::too_many_lines, reason = "one field per payload key")]
 fn day_guidance(
     rules: &Value,
     day: CivilDay,
@@ -484,8 +485,23 @@ fn day_guidance(
         slim: patro::day::SlimMode::Keep,
         festivals: patro::day::FestivalMode::Exclude,
     };
-    let state =
-        patro::day::day_payload_for_jd(day.to_jd_ut(), location, options).map_err(bad_day)?;
+    let state = patro::day::day_fields_for_jd_with(
+        day.to_jd_ut(),
+        location,
+        options,
+        patro::day::DayVariant::default(),
+    )
+    .map_err(bad_day)?
+    // Guidance reads a few small blocks of the day, not the whole state.
+    .view(&[
+        "muhurta",
+        "weekday_en",
+        "weekday",
+        "tithi",
+        "karana",
+        "nakshatra",
+        "date_bs",
+    ]);
     let field = |obj: &str, key: &str| {
         state
             .get(obj)

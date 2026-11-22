@@ -135,8 +135,8 @@ def fixed_cases() -> list[dict]:
     post(hp, {"site": site(12, 15), "requirement": req(bedrooms=0, floors={"puja": "roof"})})
     post(hp, {"site": site(12, 15, north_bearing=360), "requirement": req(extras="living")})
     post(hp, {"site": site(12, 15), "requirement": req(bedrooms=2.5, toilets=True, storeys=2.0)})
-    # Python bug kept: an extra listed twice gives two spaces one id, and the band
-    # search deletes that dict key twice (KeyError -> 500).
+    # Python bug fixed (rust_divergences.py #26): an extra listed twice gave two spaces
+    # one id, and the band search deleted that dict key twice (KeyError -> 500).
     post(hp, {"site": site(30, 40, "ft"), "requirement": req(bedrooms="2", extras=["living", "living", "kitchen"])})
     # A 422 past GZipMiddleware's 1024-byte minimum comes back gzipped with Vary.
     post(hp, raw='{"site":{"plot_width":"abc","plot_depth":true,"unit":5,"floors":"2","entrance_preference":5,"north_bearing":null},"requirement":{"extras":[1,"a",null],"floors":[],"bedrooms":"x","mode":null}}')

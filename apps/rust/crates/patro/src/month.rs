@@ -331,6 +331,40 @@ pub fn month_calendar(
     month_fields(bs_year, bs_month, location, international, embed).map(|f| f.to_value())
 }
 
+/// A month as a tree for a reader that needs only some keys of each row's embedded
+/// panchanga: every other field is converted whole, but each `panchanga` is cut to
+/// `panchanga_keys` first (an empty list drops the heavy blocks entirely).
+#[must_use]
+pub fn month_tree_with(month: &Fields, panchanga_keys: &[&str]) -> Value {
+    let mut out = Map::new();
+    for (key, field) in month.iter() {
+        let value = match field {
+            Field::List(rows) if key == "calendar" => Value::Array(
+                rows.iter()
+                    .map(|row| {
+                        Value::Object(
+                            row.iter()
+                                .map(|(k, f)| {
+                                    let v = match f {
+                                        Field::Nested(inner) if k == "panchanga" => {
+                                            inner.view(panchanga_keys)
+                                        }
+                                        other => other.value(),
+                                    };
+                                    (k.to_owned(), v)
+                                })
+                                .collect(),
+                        )
+                    })
+                    .collect(),
+            ),
+            other => other.value(),
+        };
+        out.insert(key.to_owned(), value);
+    }
+    Value::Object(out)
+}
+
 /// [`month_calendar`] as typed fields: each row's embedded panchanga shares its day's
 /// payload blocks, and the month is written straight to text.
 ///

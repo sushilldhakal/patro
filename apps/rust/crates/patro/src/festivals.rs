@@ -107,8 +107,14 @@ fn is_public_holiday(id: &str) -> bool {
 /// A `YYYY-MM-DD` civil day.
 #[must_use]
 pub fn parse_iso_day(text: &str) -> Option<CivilDay> {
-    let mut parts = text.splitn(3, '-');
+    // A BCE year prints with a leading minus (`-0044-03-02`).
+    let (negative, body) = match text.strip_prefix('-') {
+        Some(rest) => (true, rest),
+        None => (false, text),
+    };
+    let mut parts = body.splitn(3, '-');
     let year = parts.next()?.parse::<i32>().ok()?;
+    let year = if negative { -year } else { year };
     let month = parts.next()?.parse::<u32>().ok()?;
     let day = parts.next()?.parse::<u32>().ok()?;
     Some(CivilDay::new(year, month, day))

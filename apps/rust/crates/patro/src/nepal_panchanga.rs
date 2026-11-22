@@ -3,20 +3,20 @@
 //! (`services/panchanga/presentation/registry.py`: canonical, toyanath, dayblock,
 //! the patro grid, and `apply_variant`).
 
-use panchanga::daily::Location;
+use panchanga::{daily::Location, payload::Fields};
 use serde_json::{Map, Value, json};
 use timescale::CivilDay;
 
 use crate::{
     day::{
-        DayBuildOptions, DayError, DetailMode, FestivalMode, SlimMode, calendar_header,
-        day_payload_for_jd,
+        DayBuildOptions, DayError, DayVariant, DetailMode, FestivalMode, SlimMode, calendar_header,
+        day_fields_for_jd_with,
     },
     festivals::sankrantis_on_date,
-    month::{Embed, International, MonthError, month_calendar},
+    month::{Embed, International, MonthError, month_fields, month_tree_with},
     presentation::{
-        Locale, day_block, end_time, month_stream, patro_grid, tithi_display, toyanath_month,
-        window,
+        DAY_BLOCK_KEYS, GRID_KEYS, Locale, day_block, end_time, month_stream, patro_grid,
+        tithi_display, toyanath_month, window,
     },
 };
 
@@ -87,15 +87,18 @@ pub fn apply_variant(payload: Value, variant: &str) -> Value {
 /// # Errors
 ///
 /// As [`day_payload_for_jd`] (days before 1582-10-15 are not ported).
-pub fn day_state_with_holidays(civil: CivilDay, location: &Location) -> Result<Value, DayError> {
+pub fn day_state_with_holidays(civil: CivilDay, location: &Location) -> Result<Fields, DayError> {
     let options = DayBuildOptions {
         detail: DetailMode::Exclude,
         slim: SlimMode::Keep,
         festivals: FestivalMode::Plain,
     };
-    let mut state = day_payload_for_jd(civil.to_jd_ut(), location, options)?;
+    let mut state =
+        day_fields_for_jd_with(civil.to_jd_ut(), location, options, DayVariant::default())?;
     let mut any = false;
-    if let Some(list) = state.get_mut("festivals").and_then(Value::as_array_mut) {
+    if let Some(mut festivals) = state.get("festivals").map(std::borrow::Cow::into_owned)
+        && let Some(list) = festivals.as_array_mut()
+    {
         for f in list {
             let holiday = f
                 .get("id")
@@ -106,11 +109,10 @@ pub fn day_state_with_holidays(civil: CivilDay, location: &Location) -> Result<V
                 obj.insert("is_public_holiday".into(), json!(holiday));
             }
         }
+        state.insert_tree("festivals", festivals);
     }
-    if let Some(obj) = state.as_object_mut() {
-        obj.insert("is_public_holiday".into(), json!(any));
-        obj.shift_remove("detail");
-    }
+    state.insert_tree("is_public_holiday", json!(any));
+    state.remove("detail");
     Ok(state)
 }
 
@@ -363,12 +365,18 @@ pub fn to_toyanath(state: &Value, location: &Location) -> Value {
 /// `render_panchanga(daily_state, style, variant, locale)`.
 #[must_use]
 pub fn render_day(
-    state: Value,
+    fields: &Fields,
     location: &Location,
     style: Style,
     variant: &str,
     locale: Locale,
 ) -> Value {
+    // The styles read a few blocks of the day's state: only those are turned into a tree.
+    let state = if style == Style::Raw {
+        fields.to_value()
+    } else {
+        fields.view(DAY_BLOCK_KEYS)
+    };
     let payload = match style {
         // The route returns the state before the registry: no variant.
         Style::Raw => return state,
@@ -421,7 +429,14 @@ pub fn render_month(
     } else {
         Embed::Lite
     };
-    let month = month_calendar(bs_year, bs_month, location, International::Include, embed)?;
+    let fields = month_fields(bs_year, bs_month, location, International::Include, embed)?;
+    // The styles read a few blocks of each row's state: only those are turned into a tree.
+    let month = match style {
+        Style::Raw => fields.to_value(),
+        Style::Dayblock => month_tree_with(&fields, DAY_BLOCK_KEYS),
+        Style::Toyanath => month_tree_with(&fields, &[]),
+        _ => month_tree_with(&fields, GRID_KEYS),
+    };
     let header = calendar_header(bs_year, bs_month, location)?;
     let payload = match style {
         // The route returns the month before the registry: no variant.

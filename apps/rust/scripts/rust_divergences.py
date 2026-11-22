@@ -86,6 +86,38 @@ fix, delete the entry here.
     400 (``Civil day CivilDay(...) is outside datetime.date range``); Rust reads each
     day at that clock on the Julian Day axis, as the at-time route does.
 
+Bugs the Rust server fixed after copying them for a while (2026-11-22):
+
+19. Akshamsha (``compute_akshamsha``): both sunrises are on the Gaurishankar meridian,
+    but Python anchored the observer's on the observer's own zone and the reference's
+    on Kathmandu's (the engine forces Kathmandu for the Nepal box), so a point outside
+    Nepal got the zone offset added to the "latitude correction" (hours, not minutes).
+    Both now start from Nepal's midnight.
+20. ``method.frame`` of the rashifal blocks said ``drik_ganita`` though the default
+    engine is the Surya Siddhanta; it now says ``surya_siddhanta``.
+21. The shadbala ``method`` string said "Lahiri sidereal, JPL"; it now names the
+    Surya Siddhanta longitudes it runs on.
+22. Personal rashifal: when the loudest favourable transit is Rahu or Ketu (no
+    Ashtakavarga row, so no bindu count) the sentence read "holds None bindus"; it now
+    drops the bindu clause.
+23. ``/kundali/yogas/reference?id=<unknown>``: the 404 was raised inside a ``try`` whose
+    ``except Exception`` turned it into a 500; it is the 404 it meant.
+24. ``/panchanga/at-time?datetime=`` with a date that does not exist (month 13, 30 Feb)
+    was read as UTC and rolled into the next real date; it is a 400 now.
+25. The festival calendar is the observer's own (snapped to 0.1°), Nepali cities
+    included; Python gave every Kathmandu-zone observer Kathmandu's calendar and cache
+    entry. The default observer keeps its exact coordinates.
+26. House plan with an extra listed twice (``["living", "living"]``) answered 500 (the
+    band search deleted one room key twice); a kind listed twice is one room now.
+
+27. Not patched: the lunar calendar is the Surya Siddhanta's and the Gregorian (Julian
+    before 1582-10-15) date is only a label read off it. ``lunar_year`` anchors on
+    15 February as that label reads and runs for any year, BCE included. So a day
+    before 1582-10-15 or before year 1 has its real lunar month (and the tithi
+    beside it); Python printed the solar month's name (``solar_month_stub``) and
+    ``/nepal/special-months`` answered 400 for BCE years (item 8). The parity rules
+    (tests/support/parity.rs) skip the lunar-month fields of Julian-axis payloads.
+
 The account layer (Postgres; not in any golden, the account recorder never sends these):
 
 16. Not patched: a password longer than 72 bytes. bcrypt 5 raises ``ValueError``,
@@ -209,6 +241,7 @@ def apply() -> None:
     _patch_kshaya_drops_festivals()
     _patch_midnight_utc_arithmetic()
     _patch_clock_gap_printing()
+    _patch_fixed_bugs()
 
     original_conjunct = sr._conjunct
     sr._conjunct = lambda chart, a, b: a != b and original_conjunct(chart, a, b)
@@ -460,3 +493,155 @@ def _patch_clock_gap_printing() -> None:
     at.parse_clock_on_date = parse
     inst.parse_clock_on_date = parse
     pat.parse_clock_on_date = parse
+
+
+def _replace_everywhere(original, replacement) -> None:
+    """Rebind ``original`` to ``replacement`` in every module that imported it by name."""
+    import sys
+
+    for module in list(sys.modules.values()):
+        namespace = getattr(module, "__dict__", None)
+        if not namespace:
+            continue
+        for key, value in list(namespace.items()):
+            if value is original:
+                namespace[key] = replacement
+
+
+def _patch_fixed_bugs() -> None:
+    import engine.jyotish.rashifal_engine as re_engine
+    import engine.jyotish.rashifal_personal as personal
+    import engine.jyotish.shadbala as shadbala
+    import engine.panchanga.at_time as at
+    import engine.panchanga.rashifal as daily_rashifal
+    import engine.panchanga.solar_corrections as solar
+    import services.festivals.holiday_generator as holidays
+    import services.vastu.vastu_house_plan as house_plan
+
+    # 19. Akshamsha on Nepal's own midnight.
+    original_akshamsha = solar.compute_akshamsha
+
+    def akshamsha(target, local_latitude, *, timezone_name, **kwargs):
+        return original_akshamsha(
+            target, local_latitude, timezone_name="Asia/Kathmandu", **kwargs
+        )
+
+    _replace_everywhere(original_akshamsha, akshamsha)
+
+    # 20. The frame label.
+    original_method = re_engine.method_block
+
+    def method_block(*args, **kwargs):
+        out = original_method(*args, **kwargs)
+        out["frame"] = "surya_siddhanta"
+        return out
+
+    _replace_everywhere(original_method, method_block)
+    original_daily = daily_rashifal.build_daily_rashifal
+
+    def build_daily_rashifal(*args, **kwargs):
+        out = original_daily(*args, **kwargs)
+        out["method"]["frame"] = "surya_siddhanta"
+        return out
+
+    _replace_everywhere(original_daily, build_daily_rashifal)
+
+    # 21. The shadbala method string.
+    original_shadbala = shadbala.compute_shadbala
+
+    def compute_shadbala(*args, **kwargs):
+        out = original_shadbala(*args, **kwargs)
+        out["method"] = "Parashari Shadbala (Surya Siddhanta sidereal longitudes)"
+        return out
+
+    _replace_everywhere(original_shadbala, compute_shadbala)
+
+    # 22. No "None bindus" for Rahu / Ketu.
+    original_prediction = personal._compose_prediction
+
+    def compose_prediction(*args, **kwargs):
+        text = original_prediction(*args, **kwargs)
+        if isinstance(text, str):
+            text = text.replace(", where your natal Ashtakavarga holds None bindus", "")
+            text = text.replace(", जहाँ तपाईंको जन्म अष्टकवर्गमा None बिन्दु छन्", "")
+        return text
+
+    _replace_everywhere(original_prediction, compose_prediction)
+
+    # 23. The 404 the yoga reference meant.
+    from fastapi import HTTPException
+
+    from app.main import app as fastapi_app
+    from services.jyotish import yoga_reference_db as yoga_db
+
+    for route in fastapi_app.routes:
+        if not getattr(route, "path", "").endswith("/kundali/yogas/reference"):
+            continue
+        original_call = route.dependant.call
+
+        def yoga_reference(id=None, q=None, _original=original_call):
+            if id and yoga_db.get_by_id(id) is None:
+                raise HTTPException(status_code=404, detail=f"No yoga combination with id {id!r}")
+            return _original(id=id, q=q)
+
+        route.dependant.call = yoga_reference
+
+    # 24. A date that does not exist is a bad request.
+    import re as _re
+
+    original_parse = at.parse_query_datetime
+    expanded = _re.compile(r"^(-?\d{1,8})-(\d{2})-(\d{2})[T ]\d{2}:\d{2}")
+
+    def real_date(year: int, month: int, day: int) -> bool:
+        if not 1 <= month <= 12 or day < 1:
+            return False
+        gregorian = (year, month, day) >= (1582, 10, 15)
+        leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) if gregorian else year % 4 == 0
+        length = 29 if month == 2 and leap else 28 if month == 2 else 30 if month in (4, 6, 9, 11) else 31
+        return day <= length
+
+    def parse_query_datetime(raw, **kwargs):
+        from datetime import datetime
+
+        if raw:
+            text = raw.strip()
+            if text.endswith("Z"):
+                text = f"{text[:-1]}+00:00"
+            match = expanded.match(text)
+            if match and not real_date(*(int(g) for g in match.groups())):
+                datetime.fromisoformat(text)
+                raise ValueError(f"Invalid isoformat string: {text!r}")
+        return original_parse(raw, **kwargs)
+
+    _replace_everywhere(original_parse, parse_query_datetime)
+
+    # 25. The festival calendar is the observer's own.
+    from engine.astronomy.location import ObserverLocation
+
+    original_festival_location = holidays.festival_location
+
+    def festival_location(location):
+        default = holidays.DEFAULT_LOCATION
+        if (location.lat, location.lon, location.timezone) == (
+            default.lat,
+            default.lon,
+            default.timezone,
+        ):
+            return default
+        return ObserverLocation(
+            lat=round(location.lat, 1),
+            lon=round(location.lon, 1),
+            timezone=location.timezone,
+            name="observer",
+        )
+
+    _replace_everywhere(original_festival_location, festival_location)
+
+    # 26. A room kind listed twice is one room.
+    original_build = house_plan.build_house_plan
+
+    def build_house_plan(site_input, requirement_input):
+        extras = list(dict.fromkeys(requirement_input.extras))
+        return original_build(site_input, requirement_input.model_copy(update={"extras": extras}))
+
+    _replace_everywhere(original_build, build_house_plan)

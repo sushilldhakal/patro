@@ -6,7 +6,7 @@ use serde_json::{Value, json};
 
 use crate::{
     day::{DayError, calendar_header},
-    month::{Embed, International, MonthError, month_calendar},
+    month::{Embed, International, MonthError, month_calendar, month_fields, month_tree_with},
 };
 
 impl From<DayError> for MonthError {
@@ -190,13 +190,14 @@ pub fn styled_month(
             Ok(toyanath_month(&month))
         }
         MonthStyle::Dayblock => {
-            let month = month_calendar(
+            let month = month_fields(
                 bs_year,
                 bs_month,
                 location,
                 International::Include,
                 Embed::Full,
             )?;
+            let month = month_tree_with(&month, DAY_BLOCK_KEYS);
             let header = calendar_header(bs_year, bs_month, location)?;
             Ok(month_stream(&month, &header, location, locale))
         }
@@ -218,6 +219,39 @@ fn falsy(v: &Value) -> bool {
 fn or<'a>(a: &'a Value, b: &'a Value) -> &'a Value {
     if falsy(a) { b } else { a }
 }
+
+/// The keys of a day's state the printable day block (and the canonical schema) read.
+pub(crate) const DAY_BLOCK_KEYS: &[&str] = &[
+    "aayan",
+    "bs_date",
+    "chandra_rashi",
+    "chandra_rashi_ne",
+    "date_ad",
+    "date_bs",
+    "festivals",
+    "karana",
+    "location",
+    "lunar_month",
+    "moon",
+    "muhurta",
+    "nakshatra",
+    "paksha",
+    "paksha_ne",
+    "ritu",
+    "ritu_ne",
+    "sun",
+    "surya_rashi",
+    "surya_rashi_ne",
+    "tithi",
+    "weekday",
+    "weekday_en",
+    "yoga",
+    "from_cache",
+    "is_public_holiday",
+];
+
+/// The keys of a row's embedded state the patro grid reads.
+pub(crate) const GRID_KEYS: &[&str] = &["tithi", "paksha", "nakshatra", "sun", "festivals"];
 
 /// `to_toyanath_month`.
 pub(crate) fn toyanath_month(month: &Value) -> Value {

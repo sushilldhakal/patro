@@ -408,7 +408,7 @@ pub(crate) fn method_block(period: Period, sample_step: usize, days: usize) -> V
         .map(|(g, w)| (g.key().to_owned(), json!(w)))
         .collect();
     json!({
-        "frame": "drik_ganita",
+        "frame": "surya_siddhanta",
         "ayanamsa": "Surya Siddhanta",
         "anchor": "sunrise",
         "engine": "rashifal_v2",

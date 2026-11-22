@@ -320,6 +320,15 @@ fn floors_map(v: &Value) -> HashMap<String, String> {
         .unwrap_or_default()
 }
 
+/// `values` without repeats, first occurrence kept.
+fn unique(values: Vec<String>) -> Vec<String> {
+    let mut seen = std::collections::HashSet::new();
+    values
+        .into_iter()
+        .filter(|v| seen.insert(v.clone()))
+        .collect()
+}
+
 fn requirement(r: &Value) -> Requirement {
     let bedrooms = count(r, "bedrooms");
     Requirement {
@@ -328,7 +337,9 @@ fn requirement(r: &Value) -> Requirement {
         toilets: count(r, "toilets"),
         bathrooms: count(r, "bathrooms"),
         combined_toilet_bath: count(r, "combined_toilet_bath"),
-        extras: strings(r, "extras"),
+        // A kind listed twice is still one room: the planner keys rooms by kind, and
+        // Python answered 500 when the band search deleted the same key twice.
+        extras: unique(strings(r, "extras")),
         mode: text(r, "mode").to_owned(),
         storeys: count(r, "storeys"),
         floors: floors_map(r),

@@ -365,7 +365,7 @@ pub(crate) async fn nepal_panchanga_day(
         .unwrap_or_else(|| "default".into());
     let locale = locale_of(&q);
     let built = tokio::task::spawn_blocking(move || {
-        day_state_with_holidays(civil, &loc).map(|s| render_day(s, &loc, style, &variant, locale))
+        day_state_with_holidays(civil, &loc).map(|s| render_day(&s, &loc, style, &variant, locale))
     })
     .await;
     match built {

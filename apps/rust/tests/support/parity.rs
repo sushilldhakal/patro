@@ -7,7 +7,65 @@
 //! recording by a second or two, a `HH:MM` display by a minute at a rounding edge,
 //! and a float derived from a time by a hair. Nothing else may differ.
 
+use std::cell::Cell;
+
 use serde_json::Value;
+
+thread_local! {
+    /// Whether the payload being compared is a day on the Julian or BCE axis, whose
+    /// lunar month Python labelled with the solar month's name (`solar_month_stub`).
+    static JULIAN_PAYLOAD: Cell<bool> = const { Cell::new(false) };
+}
+
+/// A payload dated before the Gregorian cutover (1582-10-15), read off the day or
+/// month it names.
+fn julian_payload(payload: &Value) -> bool {
+    if let Some(jd) = payload.get("jd_ut").and_then(Value::as_f64) {
+        return jd < 2_299_160.5;
+    }
+    ["date_ad", "month_start_ad", "date"]
+        .iter()
+        .find_map(|key| payload.get(key).and_then(Value::as_str))
+        .is_some_and(|text| {
+            if text.ends_with("BC") {
+                return true;
+            }
+            let (negative, body) = match text.strip_prefix('-') {
+                Some(rest) => (true, rest),
+                None => (false, text),
+            };
+            let mut parts = body.splitn(3, '-').map(|p| p.parse::<i64>().ok());
+            match (
+                parts.next().flatten(),
+                parts.next().flatten(),
+                parts.next().flatten(),
+            ) {
+                (Some(y), Some(m), Some(d)) => {
+                    let y = if negative { -y } else { y };
+                    (y, m, d) < (1582, 10, 15)
+                }
+                _ => false,
+            }
+        })
+}
+
+/// The lunar-month fields of a Julian-axis payload. Rust names the real lunar month of
+/// those days (the calendar is the Surya Siddhanta's, the Gregorian or Julian date only
+/// its label); Python printed the solar month's name there, and could not run before
+/// year 1. Their shape is still checked by the other fields around them.
+fn lunar_label_path(path: &str) -> bool {
+    let last = path.rsplit('.').next().unwrap_or(path);
+    matches!(
+        last,
+        "lunar_month"
+            | "lunar_calendar"
+            | "lunar_month_full"
+            | "lunar_month_type"
+            | "lunar_month_is_adhik"
+            | "paksha"
+            | "paksha_ne"
+    )
+}
 
 /// Largest drift (seconds) of a printed time of day or instant.
 const SECONDS_TOLERANCE: f64 = 2.5;
@@ -47,6 +105,11 @@ pub(crate) fn difference(rust: &str, python: &str) -> Option<String> {
 
 /// The first difference between two JSON values, beyond the allowed drift.
 pub(crate) fn value_difference(path: &str, rust: &Value, python: &Value) -> Option<String> {
+    if path == "$" || path.is_empty() {
+        JULIAN_PAYLOAD.with(|c| c.set(julian_payload(python)));
+    } else if JULIAN_PAYLOAD.with(Cell::get) && lunar_label_path(path) {
+        return None;
+    }
     match (rust, python) {
         (Value::Object(a), Value::Object(b)) => {
             let (ka, kb): (Vec<_>, Vec<_>) = (a.keys().collect(), b.keys().collect());

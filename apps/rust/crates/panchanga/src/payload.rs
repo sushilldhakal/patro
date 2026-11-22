@@ -253,6 +253,41 @@ impl Fields {
         out
     }
 
+    /// A tree of only the named top-level fields (those that exist), for a reader that
+    /// needs a few keys of a payload and not the heavy blocks beside them.
+    #[must_use]
+    pub fn view(&self, keys: &[&str]) -> Value {
+        Value::Object(
+            self.0
+                .iter()
+                .filter(|(k, _)| keys.contains(&&**k))
+                .map(|(k, f)| (k.to_string(), f.value()))
+                .collect::<Map<String, Value>>(),
+        )
+    }
+
+    /// The value at a path of keys through nested payloads, building a tree only for
+    /// the field the path ends at.
+    #[must_use]
+    pub fn path(&self, keys: &[&str]) -> Option<Cow<'_, Value>> {
+        let (first, rest) = keys.split_first()?;
+        let field = self.field(first)?;
+        if rest.is_empty() {
+            return Some(field.as_tree());
+        }
+        match field {
+            Field::Nested(inner) => inner.path(rest),
+            other => {
+                let tree = other.as_tree();
+                let mut node: &Value = &tree;
+                for key in rest {
+                    node = node.get(*key)?;
+                }
+                Some(Cow::Owned(node.clone()))
+            }
+        }
+    }
+
     /// The object as a JSON tree.
     #[must_use]
     pub fn to_value(&self) -> Value {

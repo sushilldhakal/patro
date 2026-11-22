@@ -136,6 +136,16 @@ from it instead of searching again.
 - JSON text: `pyjson::write_str` scans with a lookup table, and floats inside Python's
   fixed-notation range are written in place (`write_float`, Rust's shortest digits
   plus `.0`; 400k doubles checked against `float_repr`).
+- Bugs fixed that Python still has (each in `scripts/rust_divergences.py` #19–#27, applied to
+  Python in the recorders): akshamsha on Nepal's midnight, `surya_siddhanta` frame and
+  shadbala labels, no "None bindus" for Rahu/Ketu, 404 for an unknown yoga id, 400 for a
+  date that does not exist, festival calendars per observer (Nepali cities included),
+  duplicate house-plan extras, and the lunar calendar on any year (Julian and BCE days
+  get their real lunar month).
+- `/og-image` is drawn by the `og` crate (resvg, bundled Mukta fonts, the Pillow card's
+  layout; Python's Chromium chart screenshot has no Rust counterpart).
+- Share, guidance, kundali and the `nepal/patro` / `nepal/panchanga` formats read
+  `Fields::view` / `path` (only the blocks they use) instead of the whole day tree.
 - Festivals: `find_next_tithi` reads the next tithi entry from the event engine instead
   of scanning in 12-hour steps, and the kshaya windows of a masa-year are memoized
   (every festival of a masa asked the same question). Festival lists for 1950–2100

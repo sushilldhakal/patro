@@ -1,6 +1,6 @@
 //! Crawler-facing HTML for a shared `/panchanga` link (`api/og.py` `share_panchanga`,
-//! `services/sharing/share_copy.py`), and the routes not ported yet: `/og-image`
-//! and `/meta/provenance`.
+//! `services/sharing/share_copy.py`), the `/og-image` card, and `/meta/provenance`
+//! (not ported yet).
 
 use std::time::Instant;
 
@@ -12,7 +12,7 @@ use axum::{
 use geography::{LocationError, LocationQuery};
 use panchanga::daily::Location;
 use patro::day::{
-    DayBuildOptions, DayError, DetailMode, FestivalMode, SlimMode, day_payload_for_jd,
+    DayBuildOptions, DayError, DetailMode, FestivalMode, SlimMode, day_fields_for_jd_with,
 };
 use serde_json::{Value, json};
 use timescale::CivilDay;
@@ -427,11 +427,29 @@ pub async fn share_panchanga(
         slim: SlimMode::Keep,
         festivals: FestivalMode::Exclude,
     };
-    let payload = match day_payload_for_jd(greg.to_jd_ut(), &location, options) {
+    let payload = match day_fields_for_jd_with(
+        greg.to_jd_ut(),
+        &location,
+        options,
+        patro::day::DayVariant::default(),
+    ) {
         Ok(p) => p,
         Err(DayError::NotPorted(msg)) => return detail(StatusCode::NOT_IMPLEMENTED, &msg),
         Err(e) => return detail(StatusCode::BAD_REQUEST, &e.to_string()),
     };
+    // The share card reads a few small blocks of the day, not the whole state.
+    let payload = payload.view(&[
+        "paksha",
+        "bs_date",
+        "sun",
+        "weekday",
+        "tithi",
+        "nakshatra",
+        "yoga",
+        "karana",
+        "muhurta",
+        "planets",
+    ]);
     let date_ad = format!("{:04}-{:02}-{:02}", greg.year, greg.month, greg.day);
     let label = q
         .get("place")
@@ -470,13 +488,91 @@ pub async fn share_panchanga(
     )
 }
 
-/// `GET /og-image`: Python screenshots the web app's chart in headless Chromium,
-/// falling back to a Pillow-drawn card; neither renderer is ported.
-pub async fn og_image() -> Response {
-    detail(
-        StatusCode::NOT_IMPLEMENTED,
-        "/og-image is not ported to the Rust server yet",
-    )
+const PNG_CACHE_CONTROL: &str = "public, max-age=86400, s-maxage=604800, immutable";
+
+/// `GET /og-image`: the share card as a 1200×630 PNG. Python screenshots the web app's
+/// chart in headless Chromium and falls back to a Pillow-drawn card; the Rust server
+/// has no browser and always draws the card (the `og` crate, with the same Mukta fonts).
+pub async fn og_image(
+    State(state): State<AppState>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    let started = Instant::now();
+    let (city, lat, lon) = match parse_query(&q) {
+        Ok(v) => v,
+        Err(e) => return e,
+    };
+    if let Err(e) = crate::respond::flag(&q, "full") {
+        return e;
+    }
+    let greg = q
+        .get("date")
+        .filter(|d| !d.is_empty())
+        .and_then(|d| parse_iso_date(d))
+        .unwrap_or_else(|| state.now().fields().0);
+    let location = resolve(&state, city, lat, lon, q.get("tz").cloned());
+    let place = q
+        .get("place")
+        .filter(|p| !p.is_empty())
+        .cloned()
+        .unwrap_or_else(|| location.name.clone());
+    let drawn = tokio::task::spawn_blocking(move || {
+        let options = DayBuildOptions {
+            detail: DetailMode::Include,
+            slim: SlimMode::Keep,
+            festivals: FestivalMode::Exclude,
+        };
+        let payload = day_fields_for_jd_with(
+            greg.to_jd_ut(),
+            &location,
+            options,
+            patro::day::DayVariant::default(),
+        )
+        .map_err(|e| e.to_string())?
+        .view(&[
+            "paksha",
+            "bs_date",
+            "sun",
+            "weekday",
+            "tithi",
+            "nakshatra",
+            "yoga",
+            "karana",
+        ]);
+        let date_ad = format!("{:04}-{:02}-{:02}", greg.year, greg.month, greg.day);
+        let f = og_fields(&payload, &date_ad);
+        og::render_png(&og::Card {
+            weekday: f.weekday,
+            bs_line: f.bs_line,
+            ad_line: f.ad_line,
+            paksha: f.paksha.to_owned(),
+            tithi: f.tithi,
+            nakshatra: f.nakshatra,
+            yoga: f.yoga,
+            karana: f.karana,
+            sunrise: f.sunrise,
+            sunset: f.sunset,
+            location: place,
+        })
+        .map_err(|e| e.to_string())
+    })
+    .await;
+    match drawn {
+        Ok(Ok(png)) => crate::respond::raw_bytes_payload(
+            png,
+            "image/png",
+            &[
+                ("cache-control", PNG_CACHE_CONTROL),
+                ("cdn-cache-control", PNG_CACHE_CONTROL),
+            ],
+            &headers,
+            1024,
+            started,
+        ),
+        Ok(Err(message)) => detail(StatusCode::INTERNAL_SERVER_ERROR, &message),
+        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    }
 }
 
 /// `GET /meta/provenance`: Python reports the Swiss Ephemeris environment (swisseph

@@ -270,6 +270,27 @@ fn expanded_iso(text: &str) -> Option<ExpandedIso> {
     })
 }
 
+/// Whether the month and day exist in `year` (Gregorian from 1582-10-15, Julian before,
+/// both proleptic; astronomical year numbering, so year 0 is a leap year).
+fn real_date(year: i64, month: u32, day: u32) -> bool {
+    if !(1..=12).contains(&month) || day < 1 {
+        return false;
+    }
+    let gregorian = (year, month, day) >= (1582, 10, 15);
+    let leap = if gregorian {
+        year.rem_euclid(4) == 0 && (year.rem_euclid(100) != 0 || year.rem_euclid(400) == 0)
+    } else {
+        year.rem_euclid(4) == 0
+    };
+    let length = match month {
+        2 if leap => 29,
+        2 => 28,
+        4 | 6 | 9 | 11 => 30,
+        _ => 31,
+    };
+    day <= length
+}
+
 /// `date_if_supported(y, m, d) is not None`.
 fn date_supported(year: i64, month: u32, day: u32) -> bool {
     i32::try_from(year).is_ok_and(|y| CivilDay::new(y, month, day).is_datetime_range())
@@ -354,6 +375,19 @@ fn parse_datetime(
         ));
     }
     let parsed = match expanded_iso(&replaced) {
+        // A date that does not exist (month 13, 30 February) is a bad request. Python
+        // read it as UTC and rolled it over into the next month's real date.
+        Some(ex) if !real_date(ex.year, ex.month, ex.day) => {
+            return Err(from_isoformat(&replaced)
+                .or_else(|_| from_isoformat(&text))
+                .err()
+                .unwrap_or_else(|| {
+                    DayError::BadRequest(format!(
+                        "Invalid isoformat string: {}",
+                        py_repr_str(&text)
+                    ))
+                }));
+        }
         Some(ex) if !date_supported(ex.year, ex.month, ex.day) => {
             return rolled_over_wall(&ex, label_zone, zone);
         }
@@ -727,12 +761,19 @@ fn instant_fields(
     muhurta_now: impl FnOnce(&Map<String, Value>) -> Value,
 ) -> Fields {
     let mut detail = object_fields(state.field("detail"));
-    let muhurta: Map<String, Value> = match detail.get("muhurta").as_deref() {
-        Some(Value::Object(daily)) => MUHURTA_KEYS
-            .iter()
-            .filter_map(|k| daily.get(*k).map(|v| ((*k).to_owned(), v.clone())))
-            .collect(),
-        _ => Map::new(),
+    let muhurta: Map<String, Value> = match detail.field("muhurta") {
+        // The typed block hands over just the keys this reads.
+        Some(field) => match field.typed_as::<panchanga::Muhurta>() {
+            Some(block) => block.instant_keys(),
+            None => match field.as_tree().as_ref() {
+                Value::Object(daily) => MUHURTA_KEYS
+                    .iter()
+                    .filter_map(|k| daily.get(*k).map(|v| ((*k).to_owned(), v.clone())))
+                    .collect(),
+                _ => Map::new(),
+            },
+        },
+        None => Map::new(),
     };
     let now = Field::tree(muhurta_now(&muhurta));
     let planets_anchor = Field::tree(json!({

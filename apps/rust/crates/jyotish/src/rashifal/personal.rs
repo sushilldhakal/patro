@@ -372,6 +372,47 @@ fn min_house(domain: usize) -> usize {
         .unwrap_or(1)
 }
 
+/// What the sentence for a favourable loudest transit says.
+struct Support<'a> {
+    ne: bool,
+    graha: &'a str,
+    sign: &'a str,
+    house_text: &'a str,
+    house: usize,
+    /// The natal Ashtakavarga bindus of the sign, as printed. Rahu and Ketu have no
+    /// Ashtakavarga row, so they have none (Python printed "None bindus").
+    bindu: Option<String>,
+    theme: &'a str,
+}
+
+/// The sentence for a favourable loudest transit; without a bindu count it says only
+/// the support.
+fn favourable_sentence(s: &Support<'_>) -> String {
+    let Support {
+        ne,
+        graha,
+        sign,
+        house_text,
+        house,
+        theme,
+        ..
+    } = *s;
+    match (ne, s.bindu.as_deref()) {
+        (true, Some(bindu)) => format!(
+            "गोचरमा {graha} {sign} राशिबाट {house_text} भावमा छन्, जहाँ तपाईंको जन्म अष्टकवर्गमा {bindu} बिन्दु छन् — {theme}मा यसले प्रत्यक्ष साथ दिन्छ।"
+        ),
+        (false, Some(bindu)) => format!(
+            "{graha} transits {sign} into house {house}, where your natal Ashtakavarga holds {bindu} bindus — direct support for {theme}."
+        ),
+        (true, None) => format!(
+            "गोचरमा {graha} {sign} राशिबाट {house_text} भावमा छन् — {theme}मा यसले प्रत्यक्ष साथ दिन्छ।"
+        ),
+        (false, None) => {
+            format!("{graha} transits {sign} into house {house} — direct support for {theme}.")
+        }
+    }
+}
+
 /// The personal `_compose_prediction`. `domains` are (index, rounded score).
 #[expect(
     clippy::too_many_lines,
@@ -496,10 +537,6 @@ fn compose(
     } else {
         RASHI_NAMES[loud.sign]
     };
-    let bindu = loud.bindu.map_or_else(
-        || "None".to_owned(),
-        |b| if ne { nepali_digits(b) } else { b.to_string() },
-    );
     let loud_house = num(loud.house, lang);
     let house = loud.house;
     if let Some(blocker) = loud.vedha_by {
@@ -510,17 +547,18 @@ fn compose(
             format!("In transit {graha_name} moves through {sign_name} into house {house}, but {blocker} obstructs it, so the promised result stalls and arrives late.")
         });
     } else if loud.favourable {
-        parts.push(if ne {
-            format!(
-                "गोचरमा {graha_name} {sign_name} राशिबाट {loud_house} भावमा छन्, जहाँ तपाईंको जन्म अष्टकवर्गमा {bindu} बिन्दु छन् — {}मा यसले प्रत्यक्ष साथ दिन्छ।",
-                theme(house)
-            )
-        } else {
-            format!(
-                "{graha_name} transits {sign_name} into house {house}, where your natal Ashtakavarga holds {bindu} bindus — direct support for {}.",
-                theme(house)
-            )
-        });
+        let bindu = loud
+            .bindu
+            .map(|b| if ne { nepali_digits(b) } else { b.to_string() });
+        parts.push(favourable_sentence(&Support {
+            ne,
+            graha: graha_name,
+            sign: sign_name,
+            house_text: &loud_house,
+            house,
+            bindu,
+            theme: theme(house),
+        }));
     } else {
         parts.push(if ne {
             format!(
@@ -868,4 +906,42 @@ pub(crate) fn personal_window(
         json!(compose(natal, tone, period, mid, &domain_rounded, Lang::En)),
     );
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Support, favourable_sentence};
+
+    fn support(ne: bool, bindu: Option<&str>) -> String {
+        favourable_sentence(&Support {
+            ne,
+            graha: "Rahu",
+            sign: "Mesha",
+            house_text: "5",
+            house: 5,
+            bindu: bindu.map(str::to_owned),
+            theme: "children and study",
+        })
+    }
+
+    #[test]
+    fn a_bindu_count_is_quoted_when_the_graha_has_one() {
+        assert_eq!(
+            support(false, Some("4")),
+            "Rahu transits Mesha into house 5, where your natal Ashtakavarga holds 4 bindus — direct support for children and study."
+        );
+        assert!(support(true, Some("४")).contains("४ बिन्दु छन्"));
+    }
+
+    #[test]
+    fn rahu_and_ketu_never_read_none_bindus() {
+        for text in [support(false, None), support(true, None)] {
+            assert!(!text.contains("None"), "{text}");
+            assert!(!text.contains("bindus") && !text.contains("बिन्दु"), "{text}");
+        }
+        assert_eq!(
+            support(false, None),
+            "Rahu transits Mesha into house 5 — direct support for children and study."
+        );
+    }
 }

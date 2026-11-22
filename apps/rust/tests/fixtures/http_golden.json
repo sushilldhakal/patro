@@ -108,6 +108,6 @@
    "x-siddhanta": "surya_siddhanta",
    "x-ayanamsha": "surya_siddhanta"
   },
-  "body": "{\"status\":\"ok\",\"cities_db\":true,\"panchanga_cache\":{\"enabled\":false,\"rows\":16236,\"cities\":25},\"astronomy_memo\":{\"hits\":315969,\"misses\":191040,\"size\":16384,\"max_size\":16384}}"
+  "body": "{\"status\":\"ok\",\"cities_db\":true,\"panchanga_cache\":{\"enabled\":false,\"rows\":16238,\"cities\":25},\"astronomy_memo\":{\"hits\":1412499,\"misses\":239680,\"size\":16384,\"max_size\":16384}}"
  }
 ]

@@ -172,6 +172,25 @@ pub(crate) fn raw_payload(
     min_gzip: usize,
     started: Instant,
 ) -> Response {
+    raw_bytes_payload(
+        body.into_bytes(),
+        content_type,
+        extra,
+        request_headers,
+        min_gzip,
+        started,
+    )
+}
+
+/// [`raw_payload`] for a body that is not text (an image).
+pub(crate) fn raw_bytes_payload(
+    body: Vec<u8>,
+    content_type: &str,
+    extra: &[(&'static str, &str)],
+    request_headers: &HeaderMap,
+    min_gzip: usize,
+    started: Instant,
+) -> Response {
     let mut headers = HeaderMap::new();
     let set = |h: &mut HeaderMap, k: &'static str, v: &str| {
         if let Ok(v) = HeaderValue::from_str(v) {
@@ -196,7 +215,7 @@ pub(crate) fn raw_payload(
         && body.len() >= min_gzip;
     if gzip {
         let mut enc = GzEncoder::new(Vec::with_capacity(body.len() / 4), Compression::new(6));
-        if enc.write_all(body.as_bytes()).is_ok()
+        if enc.write_all(&body).is_ok()
             && let Ok(compressed) = enc.finish()
         {
             set(&mut headers, "content-encoding", "gzip");
@@ -204,7 +223,7 @@ pub(crate) fn raw_payload(
             return (StatusCode::OK, headers, compressed).into_response();
         }
     }
-    (StatusCode::OK, headers, body.into_bytes()).into_response()
+    (StatusCode::OK, headers, body).into_response()
 }
 
 /// A JSON 200 a route answers with `Cache-Control` and `CDN-Cache-Control` both set to

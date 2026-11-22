@@ -1297,8 +1297,17 @@ fn assemble<I: DayInstant>(
     let vaara_english = VAARA_ENGLISH[vaara.number as usize];
     let date_ad = day.to_string();
     let (bs, lunar, lunar_layers, ns, headers, solar_day) = if let Some(bs) = patro {
-        let lunar = lunar_stub(bs.month, paksha);
-        let layers = lunar_calendar_stub(&lunar, paksha);
+        // The lunar calendar is the Surya Siddhanta's, so a day on the Julian or BCE axis
+        // has its real lunar month (the Gregorian or Julian date is only its label).
+        // Python labelled these days with the solar month's name (`solar_month_stub`).
+        let real = merge_for_day(day, paksha, &observer);
+        let (lunar, layers) = if real["name"].is_null() {
+            let lunar = lunar_stub(bs.month, paksha);
+            let layers = lunar_calendar_stub(&lunar, paksha);
+            (lunar, layers)
+        } else {
+            (real, calendar_layers(day, paksha, &observer))
+        };
         let ns = json!({"year": 0, "label_ne": "—", "label_en": "—", "available": false});
         let headers = display_headers_civil(&date_ad, bs, vaara.number as usize, &ns);
         (bs, lunar, layers, ns, headers, civil_probe_day())

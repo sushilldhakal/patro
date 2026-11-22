@@ -79,8 +79,8 @@ pub(crate) async fn detail_route(
         Ok(v) => v,
         Err(r) => return r,
     };
-    let panchanga = match patro::at_time::at_time_payload(instant, &loc) {
-        Ok(p) => p,
+    let panchanga = match patro::at_time::at_time_fields(instant, &loc) {
+        Ok(p) => p.to_value(),
         Err(e) => return day_error(e),
     };
     let zone = patro::at_time::observer_zone(&loc);
@@ -114,10 +114,10 @@ pub(crate) async fn report_route(
     };
     let zone = patro::at_time::observer_zone(&loc);
     let mut context = jyotish::report::BirthContext::default();
-    if let Ok(panchanga) = patro::at_time::at_time_payload(instant, &loc) {
-        let rows = panchanga["detail"]["upagrahas"]
-            .as_array()
-            .cloned()
+    if let Ok(panchanga) = patro::at_time::at_time_fields(instant, &loc) {
+        let rows = panchanga
+            .path(&["detail", "upagrahas"])
+            .and_then(|v| v.as_array().cloned())
             .unwrap_or_default();
         let lon = |key: &str| {
             rows.iter()
@@ -286,13 +286,13 @@ pub(crate) async fn yoga_reference(
     };
     let combinations = match yoga_reference(&state.config.data_dir, query) {
         Ok(Some(rows)) => rows,
-        // Python raises its 404 inside a `try` whose `except Exception` turns it into
-        // this 500 (kept on purpose until both servers are fixed together).
+        // Python raised this 404 inside a `try` whose `except Exception` turned it into a
+        // 500 ("Yoga reference catalog failed to load: 404: …"); it is the 404 it meant.
         Ok(None) => {
             return detail(
-                StatusCode::INTERNAL_SERVER_ERROR,
+                StatusCode::NOT_FOUND,
                 &format!(
-                    "Yoga reference catalog failed to load: 404: No yoga combination with id {}",
+                    "No yoga combination with id {}",
                     patro::date_key::py_repr_str(id.map_or("", String::as_str))
                 ),
             );

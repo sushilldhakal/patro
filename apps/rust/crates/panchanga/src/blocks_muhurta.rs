@@ -204,6 +204,28 @@ pub struct Muhurta {
 }
 
 impl Muhurta {
+    /// The keys the at-time route copies out of the day's muhurta block (the durations
+    /// and the four windows, in the block's order), as a tree, without turning the
+    /// block's long timing lists into one.
+    #[must_use]
+    pub fn instant_keys(&self) -> serde_json::Map<String, serde_json::Value> {
+        use crate::payload::to_value;
+        let mut keys = serde_json::Map::new();
+        keys.insert(
+            "hora_duration_minutes".into(),
+            to_value(&self.hora_duration_minutes),
+        );
+        keys.insert(
+            "muhurta_duration_minutes".into(),
+            to_value(&self.each_minutes),
+        );
+        keys.insert("rahu_kalam".into(), to_value(&self.rahu_kalam));
+        keys.insert("yamaganda".into(), to_value(&self.yamaganda));
+        keys.insert("gulika".into(), to_value(&self.gulika));
+        keys.insert("abhijit".into(), to_value(&self.abhijit));
+        keys
+    }
+
     /// Local solar noon (`HH:MM`), when the day has an Abhijit muhurta.
     #[must_use]
     pub fn solar_noon(&self) -> Option<&str> {

@@ -15,6 +15,7 @@ calendar.workspace = true
 common.workspace = true
 flate2.workspace = true
 geography.workspace = true
+og.workspace = true
 jyotish.workspace = true
 panchanga.workspace = true
 patro.workspace = true
