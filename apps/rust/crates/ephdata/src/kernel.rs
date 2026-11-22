@@ -53,6 +53,16 @@ pub enum KernelError {
         /// NAIF centre.
         center: i32,
     },
+    /// A table of boundaries is not in the order the format relies on.
+    #[error("{kind} boundaries out of sequence at JD {jd} (event {at})")]
+    Sequence {
+        /// Which table.
+        kind: String,
+        /// The Julian Day of the first event that breaks the order.
+        jd: f64,
+        /// Its position in the table.
+        at: usize,
+    },
     /// The time is outside the data.
     #[error("second {0} is outside the ephemeris")]
     OutOfRange(f64),
@@ -113,6 +123,62 @@ pub struct Kernel {
     packed: Vec<u8>,
     first: f64,
     last: f64,
+}
+
+/// The pieces of one body's segment from every kernel, joined into one run of records.
+fn merge(raw: &[RawSegment], target: i32, center: i32) -> Result<RawSegment, KernelError> {
+    let mut parts: Vec<&RawSegment> = raw
+        .iter()
+        .filter(|s| s.target == target && s.center == center && s.nrec > 0)
+        .collect();
+    parts.sort_by(|a, b| a.init.total_cmp(&b.init));
+    let first = parts
+        .first()
+        .ok_or(KernelError::MissingSegment { target, center })?;
+    let ncoef = parts.iter().map(|p| p.ncoef).max().unwrap_or(first.ncoef);
+    let mut out = RawSegment {
+        init: first.init,
+        coefs: Vec::new(),
+        nrec: 0,
+        ncoef,
+        start: first.start,
+        end: first.end,
+        ..(*first).clone()
+    };
+    for part in parts {
+        let expected = out.init + out.nrec as f64 * out.intlen;
+        if (part.intlen - out.intlen).abs() > 1e-9 {
+            return Err(KernelError::Format("kernel pieces differ in record length"));
+        }
+        // DE441's two halves overlap by a few records; the second piece's records that
+        // repeat the first's end are dropped, but only when the grids line up.
+        let overlap = (expected - part.init) / out.intlen;
+        let skip = if out.nrec > 0 && overlap > 1e-9 {
+            if (overlap - overlap.round()).abs() > 1e-6 {
+                return Err(KernelError::Format(
+                    "kernel pieces overlap off the record grid",
+                ));
+            }
+            overlap.round() as usize
+        } else {
+            0
+        };
+        if skip >= part.nrec || (out.nrec > 0 && overlap < -1e-9) {
+            if skip >= part.nrec {
+                continue;
+            }
+            return Err(KernelError::Format("kernel pieces leave a gap"));
+        }
+        // a piece with fewer coefficients is the same series with zero tails
+        for rec in part.coefs.chunks_exact(part.ncoef).skip(skip * 3) {
+            out.coefs.extend_from_slice(rec);
+            out.coefs.resize(out.coefs.len() + ncoef - part.ncoef, 0.0);
+        }
+        out.nrec += part.nrec - skip;
+        out.start = out.start.min(part.start);
+        out.end = out.end.max(part.end);
+    }
+    Ok(out)
 }
 
 /// Bits to hold `n` magnitudes plus a sign.
@@ -178,7 +244,8 @@ impl Segment {
 }
 
 impl Kernel {
-    /// Extracts [`WANTED`] from a JPL SPK, keeping only records that overlap
+    /// Extracts [`WANTED`] from one or more JPL SPKs (DE441 comes in two halves that
+    /// join end to end), keeping only records that overlap
     /// `[from_second, to_second]` (TDB seconds since J2000). With `step_km` above 0
     /// every coefficient is rounded to that step and bit-packed; 0 keeps the JPL
     /// doubles as they are.
@@ -187,21 +254,22 @@ impl Kernel {
     ///
     /// [`KernelError`] for an unreadable SPK or a missing body.
     pub fn from_spk(
-        path: &Path,
+        paths: &[&Path],
         from_second: f64,
         to_second: f64,
         step_km: f64,
     ) -> Result<Self, KernelError> {
-        let raw = read_spk(path)?;
+        let mut raw = Vec::new();
+        for path in paths {
+            raw.extend(read_spk(path, from_second, to_second)?);
+        }
         let mut segments = Vec::new();
         let mut coefs = Vec::new();
         let mut packed = Vec::new();
         let (mut first, mut last) = (f64::NEG_INFINITY, f64::INFINITY);
         for (target, center) in WANTED {
-            let seg = raw
-                .iter()
-                .find(|s| s.target == target && s.center == center)
-                .ok_or(KernelError::MissingSegment { target, center })?;
+            let merged = merge(&raw, target, center)?;
+            let seg = &merged;
             if seg.ncoef > MAX_COEF {
                 return Err(KernelError::Format(
                     "more coefficients than the evaluator holds",
@@ -640,5 +708,47 @@ mod tests {
             back.eval(slot, 37.5).expect("ok")
         );
         assert!(Kernel::from_bytes(vec![0; 64]).is_err(), "wrong magic");
+    }
+
+    fn piece(init: f64, nrec: usize, value: f64) -> RawSegment {
+        RawSegment {
+            target: 10,
+            center: 0,
+            start: init,
+            end: init + nrec as f64 * 100.0,
+            init,
+            intlen: 100.0,
+            ncoef: 2,
+            nrec,
+            coefs: vec![value; nrec * 6],
+        }
+    }
+
+    #[test]
+    fn halves_that_overlap_on_the_grid_are_joined_once() {
+        // 4 records 0..400, then 5 records from 300 (one repeated): 8 records in all
+        let merged = merge(&[piece(300.0, 5, 2.0), piece(0.0, 4, 1.0)], 10, 0).expect("joins");
+        assert_eq!((merged.init, merged.nrec), (0.0, 8));
+        assert_eq!(merged.coefs.len(), 8 * 6);
+        assert!(
+            (merged.coefs[3 * 6] - 1.0).abs() < f64::EPSILON,
+            "the first half keeps the overlap"
+        );
+        assert!((merged.coefs[4 * 6] - 2.0).abs() < f64::EPSILON);
+        // a gap, an off-grid overlap and a different record length are all refused
+        assert!(
+            merge(&[piece(0.0, 4, 1.0), piece(500.0, 2, 2.0)], 10, 0).is_err(),
+            "gap"
+        );
+        assert!(
+            merge(&[piece(0.0, 4, 1.0), piece(350.0, 2, 2.0)], 10, 0).is_err(),
+            "off grid"
+        );
+        let mut other = piece(400.0, 2, 2.0);
+        other.intlen = 50.0;
+        assert!(
+            merge(&[piece(0.0, 4, 1.0), other], 10, 0).is_err(),
+            "record length"
+        );
     }
 }

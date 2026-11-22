@@ -2,7 +2,11 @@
 //!
 //! Only what the extraction needs: the segment summaries and their Chebyshev records.
 
-use std::path::Path;
+use std::{
+    fs::File,
+    io::{Read, Seek, SeekFrom},
+    path::Path,
+};
 
 /// Why a kernel could not be read.
 #[derive(Debug, thiserror::Error)]
@@ -39,65 +43,86 @@ pub struct RawSegment {
     pub coefs: Vec<f64>,
 }
 
+fn i32_at(data: &[u8], at: usize) -> i32 {
+    i32::from_le_bytes(data[at..at + 4].try_into().unwrap_or([0; 4]))
+}
+
 fn f64_at(data: &[u8], word: usize) -> f64 {
     let at = word * 8;
     f64::from_le_bytes(data[at..at + 8].try_into().unwrap_or([0; 8]))
 }
 
-fn i32_at(data: &[u8], at: usize) -> i32 {
-    i32::from_le_bytes(data[at..at + 4].try_into().unwrap_or([0; 4]))
+/// Reads `count` doubles starting at the 1-based double `word` of the file.
+fn read_words(file: &mut File, word: usize, count: usize) -> Result<Vec<f64>, DafError> {
+    file.seek(SeekFrom::Start(((word - 1) * 8) as u64))?;
+    let mut bytes = vec![0u8; count * 8];
+    file.read_exact(&mut bytes)?;
+    Ok(bytes
+        .chunks_exact(8)
+        .map(|c| f64::from_le_bytes(c.try_into().unwrap_or([0; 8])))
+        .collect())
 }
 
-/// Reads every type-2 segment of the SPK at `path`.
+/// Reads every type-2 segment of the SPK at `path`, keeping only the records that
+/// overlap `[from_second, to_second]` (TDB seconds since J2000). The file is read by
+/// seeking, so a multi-gigabyte kernel costs only the records asked for.
 ///
 /// # Errors
 ///
 /// [`DafError`] for an unreadable or unsupported file.
-pub fn read_spk(path: &Path) -> Result<Vec<RawSegment>, DafError> {
-    let data = std::fs::read(path)?;
-    if data.len() < 1024 || !data.starts_with(b"DAF/SPK") {
+pub fn read_spk(
+    path: &Path,
+    from_second: f64,
+    to_second: f64,
+) -> Result<Vec<RawSegment>, DafError> {
+    let mut file = File::open(path)?;
+    let mut head = vec![0u8; 1024];
+    file.read_exact(&mut head)?;
+    if !head.starts_with(b"DAF/SPK") {
         return Err(DafError::Unsupported("not a DAF/SPK file"));
     }
-    if &data[88..96] != b"LTL-IEEE" {
+    if &head[88..96] != b"LTL-IEEE" {
         return Err(DafError::Unsupported("only little-endian kernels"));
     }
-    let (nd, ni) = (i32_at(&data, 8), i32_at(&data, 12));
-    if (nd, ni) != (2, 6) {
+    if (i32_at(&head, 8), i32_at(&head, 12)) != (2, 6) {
         return Err(DafError::Unsupported("an SPK has two doubles and six ints"));
     }
-    let mut record = usize::try_from(i32_at(&data, 76)).unwrap_or(0);
+    let mut record = usize::try_from(i32_at(&head, 76)).unwrap_or(0);
     let mut out = Vec::new();
     while record != 0 {
-        let base = (record - 1) * 1024;
-        let word = base / 8;
+        let mut bytes = vec![0u8; 1024];
+        file.seek(SeekFrom::Start(((record - 1) * 1024) as u64))?;
+        file.read_exact(&mut bytes)?;
         // next record number (0 ends the list), previous, summary count
-        let next = f64_at(&data, word);
-        let count = f64_at(&data, word + 2);
-        let count = count as usize;
+        let next = f64_at(&bytes, 0);
+        let count = f64_at(&bytes, 2) as usize;
         for s in 0..count {
-            let sw = word + 3 + s * 5;
-            let (start, end) = (f64_at(&data, sw), f64_at(&data, sw + 1));
+            let sw = 3 + s * 5;
+            let (start, end) = (f64_at(&bytes, sw), f64_at(&bytes, sw + 1));
             let ints = (sw + 2) * 8;
-            let (target, center) = (i32_at(&data, ints), i32_at(&data, ints + 4));
-            let data_type = i32_at(&data, ints + 12);
-            let first = usize::try_from(i32_at(&data, ints + 16)).unwrap_or(0);
-            let last = usize::try_from(i32_at(&data, ints + 20)).unwrap_or(0);
+            let (target, center) = (i32_at(&bytes, ints), i32_at(&bytes, ints + 4));
+            let data_type = i32_at(&bytes, ints + 12);
+            let first = usize::try_from(i32_at(&bytes, ints + 16)).unwrap_or(0);
+            let last = usize::try_from(i32_at(&bytes, ints + 20)).unwrap_or(0);
             if data_type != 2 || first == 0 || last < first + 4 {
                 continue;
             }
-            let init = f64_at(&data, last - 4);
-            let intlen = f64_at(&data, last - 3);
-            let rsize = f64_at(&data, last - 2) as usize;
-            let nrec = f64_at(&data, last - 1) as usize;
+            let tail = read_words(&mut file, last - 3, 4)?;
+            let (init, intlen) = (tail[0], tail[1]);
+            let (rsize, nrec) = (tail[2] as usize, tail[3] as usize);
             if rsize < 5 || (rsize - 2) % 3 != 0 {
                 return Err(DafError::Unsupported("a malformed Chebyshev record size"));
             }
             let ncoef = (rsize - 2) / 3;
-            let mut coefs = Vec::with_capacity(nrec * 3 * ncoef);
-            for r in 0..nrec {
-                let rec = first - 1 + r * rsize;
-                for k in 0..3 * ncoef {
-                    coefs.push(f64_at(&data, rec + 2 + k));
+            let skip = ((from_second - init) / intlen).floor().max(0.0) as usize;
+            let upto = (((to_second - init) / intlen).ceil().max(0.0) as usize).min(nrec);
+            let mut coefs = Vec::new();
+            if upto > skip {
+                // whole records (midpoint, radius, coefficients), then drop the first two
+                let words = read_words(&mut file, first + skip * rsize, (upto - skip) * rsize)?;
+                coefs.reserve((upto - skip) * 3 * ncoef);
+                for rec in words.chunks_exact(rsize) {
+                    coefs.extend_from_slice(&rec[2..]);
                 }
             }
             out.push(RawSegment {
@@ -105,10 +130,10 @@ pub fn read_spk(path: &Path) -> Result<Vec<RawSegment>, DafError> {
                 center,
                 start,
                 end,
-                init,
+                init: init + skip as f64 * intlen,
                 intlen,
                 ncoef,
-                nrec,
+                nrec: upto.saturating_sub(skip),
                 coefs,
             });
         }

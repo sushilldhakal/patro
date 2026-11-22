@@ -1,7 +1,7 @@
 //! `ephdata`: build and check the ephemeris files.
 //!
 //! ```text
-//! ephdata extract <de440.bsp> <out.veph> <from_year> <to_year> [step_km]
+//! ephdata extract <out.veph> <from_year> <to_year> <step_km> <kernel.bsp>...
 //! ephdata index   <in.veph> <out.vidx> <from_year> <to_year> [threads]
 //! ephdata dump    <in.veph>            (reads TDB seconds on stdin, prints km)
 //! ephdata lon     <in.veph>            (reads UT Julian Days on stdin, prints places)
@@ -55,18 +55,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     match cmd.as_str() {
         "extract" => {
             let (from, to) = (
-                arg(&args, 4, "from_year")?.parse()?,
-                arg(&args, 5, "to_year")?.parse()?,
+                arg(&args, 3, "from_year")?.parse()?,
+                arg(&args, 4, "to_year")?.parse()?,
             );
-            let trim = args.get(6).map_or(Ok(0.0), |t| t.parse())?;
+            let step = arg(&args, 5, "step_km")?.parse()?;
+            let bsps: Vec<&Path> = args[6..].iter().map(Path::new).collect();
+            if bsps.is_empty() {
+                return Err("missing kernel.bsp".into());
+            }
             let secs = |y: f64| (jd_of_year(y) - J2000) * 86_400.0;
-            let kernel = Kernel::from_spk(
-                Path::new(&arg(&args, 2, "bsp")?),
-                secs(from),
-                secs(to),
-                trim,
-            )?;
-            kernel.write(Path::new(&arg(&args, 3, "out")?))?;
+            let kernel = Kernel::from_spk(&bsps, secs(from), secs(to), step)?;
+            kernel.write(Path::new(&arg(&args, 2, "out")?))?;
             let (a, b) = kernel.coverage();
             println!(
                 "{} segments, {:.1} MB of coefficients, {:.1} to {:.1} (TDB s)",
@@ -195,6 +194,20 @@ fn main() -> Result<(), Box<dyn Error>> {
                             ephdata::deltat::ut_to_tt(t)
                         );
                     }
+                }
+            }
+        }
+        "stations" => {
+            // Every retrograde station in the index, for comparing two builds.
+            let idx = index::Index::open(Path::new(&arg(&args, 2, "vidx")?))?;
+            let (a, b) = idx.coverage();
+            for (g, graha) in index::Graha::ALL.iter().enumerate().take(5) {
+                for (t, retro) in idx.series_between(index::Series::Station(*graha), a, b) {
+                    println!(
+                        "{} {retro} {t:.9} {:.9}",
+                        30 + g,
+                        ephdata::deltat::ut_to_tt(t)
+                    );
                 }
             }
         }

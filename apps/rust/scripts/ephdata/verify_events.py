@@ -1,6 +1,27 @@
 import sys,numpy as np,erfa
+import struct
 from jplephem.spk import SPK
-k=SPK.open(sys.argv[1]); lines=[l.split() for l in open(sys.argv[2])]
+class Kernels:
+    """One or more SPK files (DE441 is two halves); picks the one covering an instant."""
+    def __init__(self,paths): self.ks=[SPK.open(p) for p in paths]
+    def __getitem__(self,key):
+        c,t=key
+        return _Seg(self.ks,c,t)
+class _Seg:
+    def __init__(self,ks,c,t): self.ks=ks; self.key=(c,t)
+    def _k(self,tdb2):
+        et=tdb2*86400.0
+        for k in self.ks:
+            s=k[self.key]
+            if s.start_second<=et<=s.end_second: return s
+        return self.ks[0][self.key]
+    def compute(self,tdb,tdb2): return self._k(tdb2).compute(tdb,tdb2)
+    def compute_and_differentiate(self,tdb,tdb2): return self._k(tdb2).compute_and_differentiate(tdb,tdb2)
+def veph_range(path):
+    with open(path,'rb') as f: h=f.read(32)
+    return struct.unpack('<dd',h[16:32])
+lines=[l.split() for l in open(sys.argv[1])]
+k=Kernels(sys.argv[2:])
 C=299792.458
 SPANS=[12,6,360/27,360/108,360/27,30,360/27,30,1,90]
 COUNT=[30,60,27,108,27,12,27,12,360,4]
@@ -48,8 +69,17 @@ for kind,mult,jd_ut,jd_tt in lines:
     else:
         n=BODY[kind-30]
         sp=lambda t:w(sid(n,t+1e-3)-sid(n,t-1e-3))
-        d=(root(sp,tt,1e-3)-tt)*86400000; name='Station '+n
-    res.setdefault(name,[]).append(abs(d))
+        # a station is the extremum of the longitude: fit a degree-6 polynomial to 41
+        # longitudes over +-0.4 day round the index's answer (numpy, a different grid
+        # from the Rust solver's) and take the root of its derivative
+        xs=np.linspace(-0.4,0.4,41); base=sid(n,tt)
+        ys=np.array([w(sid(n,tt+x)-base) for x in xs])
+        c=np.polyfit(xs/0.4,ys,6); r=np.roots(np.polyder(c))
+        r=r[np.abs(r.imag)<1e-9].real; r=r[np.abs(r)<1.0]
+        d=float('nan') if len(r)==0 else r[np.argmin(np.abs(r))]*0.4*86400000.0
+        name='Station '+n
+    if d==d: res.setdefault(name,[]).append(abs(d))
+    else: res.setdefault(name+' (no sign change)',[]).append(0.0)
 print('Event time differences, index vs re-solved from the original JPL kernel (ms):')
 tot=0
 for n,v in res.items():

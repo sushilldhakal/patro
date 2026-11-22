@@ -9,11 +9,16 @@
 //! - one [`Series`] per graha: rashi ingress (with the rashi, since a graha can
 //!   turn back across a boundary) and retrograde stations.
 //!
+//! Five kinds are not stored at all, because each is an exact sub-sequence of another:
+//! tithi is every 2nd karana, nakshatra every 4th pada, the Moon's rashi every 9th
+//! pada, sankranti every 30th Sun degree and phase every 15th karana. They are read as
+//! strided views of the stored table.
+//!
 //! A block table gives O(1) access to the 32-day window of any instant, so a lookup
 //! is a few comparisons whatever the span of the file.
 //!
 //! ```text
-//! 0   "VIDX0001"
+//! 0   "VIDX0002"
 //! 8   u32 table count, u32 block days
 //! 16  f64 first JD, f64 last JD, f64 block origin JD, u32 block count, u32 reserved
 //! 48  per table, 40 bytes:
@@ -30,7 +35,7 @@ use crate::{
     sky::{Body, Sky},
 };
 
-const MAGIC: &[u8; 8] = b"VIDX0001";
+const MAGIC: &[u8; 8] = b"VIDX0002";
 const HEADER: usize = 48;
 const ENTRY: usize = 40;
 const BLOCK_DAYS: u32 = 32;
@@ -78,6 +83,19 @@ impl Kind {
 
     const fn table(self) -> usize {
         self as usize
+    }
+
+    /// The kind whose table holds this kind's boundaries, and how many of its
+    /// boundaries make one of this kind's (a stored kind is its own base, stride 1).
+    const fn base(self) -> (Self, u32) {
+        match self {
+            Self::Tithi => (Self::Karana, 2),
+            Self::Nakshatra => (Self::Pada, 4),
+            Self::MoonRashi => (Self::Pada, 9),
+            Self::Sankranti => (Self::SunDegree, 30),
+            Self::Phase => (Self::Karana, 15),
+            other => (other, 1),
+        }
     }
 
     /// Degrees in one span.
@@ -203,7 +221,6 @@ pub struct Crossing {
 
 #[derive(Debug, Clone, Copy, Default)]
 struct TableMeta {
-    count: u32,
     first_multiple: u32,
     events: u32,
     blocks_off: usize,
@@ -220,6 +237,38 @@ pub struct Index {
     origin: f64,
     blocks: u32,
     tables: [TableMeta; TABLES],
+    views: [View; TABLES],
+}
+
+/// A table as it is read: the stored one, or every `stride`-th boundary of it.
+#[derive(Debug, Clone, Copy, Default)]
+struct View {
+    table: TableMeta,
+    stride: usize,
+    /// The stored boundary the first event of this view is.
+    first: usize,
+    first_multiple: u32,
+    count: u32,
+    events: usize,
+}
+
+fn view_of(base: &TableMeta, stride: u32, base_count: u32) -> View {
+    let r = stride.max(1) as usize;
+    let first = (r - base.first_multiple as usize % r) % r;
+    let stored = base.events as usize;
+    View {
+        table: *base,
+        stride: r,
+        first,
+        first_multiple: (((base.first_multiple as usize + first) % base_count.max(1) as usize) / r)
+            as u32,
+        count: base_count / stride.max(1),
+        events: if stored > first {
+            (stored - first).div_ceil(r)
+        } else {
+            0
+        },
+    }
 }
 
 // ---------------------------------------------------------------- reading
@@ -271,7 +320,6 @@ impl Index {
                 return Err(bad("tables out of order"));
             }
             *t = TableMeta {
-                count: u32::from(u16::from_le_bytes([bytes[e + 2], bytes[e + 3]])),
                 first_multiple: u32_at(&bytes, e + 4),
                 events: u32_at(&bytes, e + 8),
                 blocks_off: u64_at(&bytes, e + 16),
@@ -279,12 +327,21 @@ impl Index {
                 payload_off: u64_at(&bytes, e + 32),
             };
         }
+        let mut views = [View::default(); TABLES];
+        for kind in Kind::ALL {
+            let (base, stride) = kind.base();
+            views[kind.table()] = view_of(&tables[base.table()], stride, base.count());
+        }
+        for (i, t) in tables.iter().enumerate().skip(10) {
+            views[i] = view_of(t, 1, 12);
+        }
         let index = Self {
             first_jd: f64_at(&bytes, 16),
             last_jd: f64_at(&bytes, 24),
             origin: f64_at(&bytes, 32),
             blocks: u32_at(&bytes, 40),
             tables,
+            views,
             bytes,
         };
         for t in &index.tables {
@@ -313,13 +370,13 @@ impl Index {
     /// How many events a kind has.
     #[must_use]
     pub const fn len(&self, kind: Kind) -> usize {
-        self.tables[kind.table()].events as usize
+        self.views[kind.table()].events
     }
 
     /// Whether the index holds no events at all.
     #[must_use]
     pub const fn is_empty(&self) -> bool {
-        self.len(Kind::Tithi) == 0
+        self.len(Kind::Karana) == 0
     }
 
     fn block_start(&self, t: &TableMeta, block: usize) -> usize {
@@ -330,6 +387,7 @@ impl Index {
         u32_at(&self.bytes, t.times_off + i * 4)
     }
 
+    /// The time of stored event `i`.
     fn time_of(&self, t: &TableMeta, i: usize) -> f64 {
         // The block of event i: the last block whose first index is <= i.
         let (mut lo, mut hi) = (0usize, self.blocks as usize + 1);
@@ -347,7 +405,7 @@ impl Index {
             + f64::from(self.offset(t, i)) / MS_PER_DAY
     }
 
-    /// The number of events at or before `jd` (the index of the first one after it).
+    /// The number of stored events at or before `jd` (the index of the first one after).
     fn after(&self, t: &TableMeta, jd: f64) -> usize {
         let rel = (jd - self.origin) / f64::from(BLOCK_DAYS);
         if rel < 0.0 {
@@ -370,85 +428,103 @@ impl Index {
         lo
     }
 
-    fn crossing(&self, t: &TableMeta, i: usize) -> Crossing {
+    /// The events of `v` at or before `jd`: the index of the first one after it.
+    fn after_view(&self, v: &View, jd: f64) -> usize {
+        let stored = self.after(&v.table, jd);
+        if stored <= v.first {
+            0
+        } else {
+            (stored - v.first).div_ceil(v.stride)
+        }
+    }
+
+    fn view_time(&self, v: &View, k: usize) -> f64 {
+        self.time_of(&v.table, v.first + k * v.stride)
+    }
+
+    fn view_crossing(&self, v: &View, k: usize) -> Crossing {
         Crossing {
-            jd: self.time_of(t, i),
-            multiple: ((t.first_multiple as usize + i) % t.count as usize) as u32,
+            jd: self.view_time(v, k),
+            multiple: ((v.first_multiple as usize + k) % v.count as usize) as u32,
         }
     }
 
     /// The first boundary of `kind` strictly after `jd`.
     #[must_use]
     pub fn next_event(&self, kind: Kind, jd: f64) -> Option<Crossing> {
-        let t = &self.tables[kind.table()];
-        let i = self.after(t, jd);
-        (i < t.events as usize).then(|| self.crossing(t, i))
+        let v = &self.views[kind.table()];
+        let k = self.after_view(v, jd);
+        (k < v.events).then(|| self.view_crossing(v, k))
     }
 
     /// The last boundary of `kind` at or before `jd`.
     #[must_use]
     pub fn prev_event(&self, kind: Kind, jd: f64) -> Option<Crossing> {
-        let t = &self.tables[kind.table()];
-        let i = self.after(t, jd);
-        (i > 0).then(|| self.crossing(t, i - 1))
+        let v = &self.views[kind.table()];
+        let k = self.after_view(v, jd);
+        (k > 0).then(|| self.view_crossing(v, k - 1))
     }
 
     /// Every boundary of `kind` with `from < jd <= to`, in order.
     #[must_use]
     pub fn events_between(&self, kind: Kind, from: f64, to: f64) -> Vec<Crossing> {
-        let t = &self.tables[kind.table()];
-        let (a, b) = (self.after(t, from), self.after(t, to));
-        (a..b).map(|i| self.crossing(t, i)).collect()
+        let v = &self.views[kind.table()];
+        let (a, b) = (self.after_view(v, from), self.after_view(v, to));
+        (a..b).map(|k| self.view_crossing(v, k)).collect()
     }
 
     /// The first boundary after `jd` at which `kind` enters span `multiple`: the
     /// multiples run in order, so this is index arithmetic, not a search.
     #[must_use]
     pub fn next_entry(&self, kind: Kind, multiple: u32, jd: f64) -> Option<Crossing> {
-        let t = &self.tables[kind.table()];
-        let i = self.after(t, jd);
-        let now = (t.first_multiple as usize + i) % t.count as usize;
-        let ahead = (multiple as usize + t.count as usize - now) % t.count as usize;
-        let at = i + ahead;
-        (at < t.events as usize).then(|| self.crossing(t, at))
+        let v = &self.views[kind.table()];
+        let k = self.after_view(v, jd);
+        let now = (v.first_multiple as usize + k) % v.count as usize;
+        let ahead = (multiple as usize + v.count as usize - now) % v.count as usize;
+        let at = k + ahead;
+        (at < v.events).then(|| self.view_crossing(v, at))
     }
 
     /// The last boundary at or before `jd` at which `kind` entered span `multiple`.
     #[must_use]
     pub fn prev_entry(&self, kind: Kind, multiple: u32, jd: f64) -> Option<Crossing> {
-        let t = &self.tables[kind.table()];
-        let i = self.after(t, jd);
-        if i == 0 {
+        let v = &self.views[kind.table()];
+        let k = self.after_view(v, jd);
+        if k == 0 {
             return None;
         }
-        let last = (t.first_multiple as usize + i - 1) % t.count as usize;
-        let back = (last + t.count as usize - multiple as usize) % t.count as usize;
-        i.checked_sub(1 + back).map(|at| self.crossing(t, at))
+        let last = (v.first_multiple as usize + k - 1) % v.count as usize;
+        let back = (last + v.count as usize - multiple as usize) % v.count as usize;
+        k.checked_sub(1 + back).map(|at| self.view_crossing(v, at))
+    }
+
+    fn payload(&self, v: &View, k: usize) -> u8 {
+        self.bytes[v.table.payload_off + k]
     }
 
     /// The first event of a series after `jd`: its time and payload.
     #[must_use]
     pub fn next_series(&self, series: Series, jd: f64) -> Option<(f64, u8)> {
-        let t = &self.tables[series.table()];
-        let i = self.after(t, jd);
-        (i < t.events as usize).then(|| (self.time_of(t, i), self.bytes[t.payload_off + i]))
+        let v = &self.views[series.table()];
+        let k = self.after_view(v, jd);
+        (k < v.events).then(|| (self.view_time(v, k), self.payload(v, k)))
     }
 
     /// The last event of a series at or before `jd`.
     #[must_use]
     pub fn prev_series(&self, series: Series, jd: f64) -> Option<(f64, u8)> {
-        let t = &self.tables[series.table()];
-        let i = self.after(t, jd);
-        (i > 0).then(|| (self.time_of(t, i - 1), self.bytes[t.payload_off + i - 1]))
+        let v = &self.views[series.table()];
+        let k = self.after_view(v, jd);
+        (k > 0).then(|| (self.view_time(v, k - 1), self.payload(v, k - 1)))
     }
 
     /// Every event of a series with `from < jd <= to`.
     #[must_use]
     pub fn series_between(&self, series: Series, from: f64, to: f64) -> Vec<(f64, u8)> {
-        let t = &self.tables[series.table()];
-        let (a, b) = (self.after(t, from), self.after(t, to));
+        let v = &self.views[series.table()];
+        let (a, b) = (self.after_view(v, from), self.after_view(v, to));
         (a..b)
-            .map(|i| (self.time_of(t, i), self.bytes[t.payload_off + i]))
+            .map(|k| (self.view_time(v, k), self.payload(v, k)))
             .collect()
     }
 }
@@ -568,6 +644,9 @@ fn scan_grahas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), Ker
             }
             let diff = wrap180(cur - prev);
             if graha != Graha::Rahu && i > 0 && diff * prev_diff < 0.0 {
+                // Coarse bracket first (the speed changes sign across it), then the
+                // fitted extremum: the station is flat, so a speed difference is as
+                // noisy as the longitudes it subtracts.
                 let speed = |t: f64| {
                     let d = wrap180(
                         graha.longitude(sky, t + STATION_DELTA).unwrap_or(f64::NAN)
@@ -577,7 +656,8 @@ fn scan_grahas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), Ker
                 };
                 let (a, b) = (t0 - GRAHA_STEP, t1);
                 if speed(a) * speed(b) < 0.0 {
-                    let jd = bisect(a, b, &speed);
+                    let coarse = bisect(a, b, &speed);
+                    let jd = fitted_station(&lon, coarse);
                     out.series[6 + graha as usize].push((jd, u8::from(prev_diff > 0.0)));
                 }
             }
@@ -586,6 +666,82 @@ fn scan_grahas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), Ker
         }
     }
     Ok(())
+}
+
+/// The extremum of a graha's longitude near `coarse`: a degree-6 least-squares fit to
+/// 21 longitudes spanning ±0.4 day, and the root of its derivative. Measured against
+/// other windows and degrees the root is stable to ~0.1 ms from degree 5 up (a
+/// quartic or a wider window is off by seconds for Mercury).
+fn fitted_station(lon: &impl Fn(f64) -> Result<f64, KernelError>, coarse: f64) -> f64 {
+    const N: usize = 21;
+    const D: usize = 7;
+    const HALF: f64 = 0.4;
+    let Ok(base) = lon(coarse) else { return coarse };
+    let mut us = [0.0; N];
+    let mut ys = [0.0; N];
+    for i in 0..N {
+        us[i] = (i as f64 - 10.0) / 10.0;
+        match lon(coarse + us[i] * HALF) {
+            Ok(v) => ys[i] = wrap180(v - base),
+            Err(_) => return coarse,
+        }
+    }
+    // normal equations for c0..c6 in u = x / HALF, so the powers stay near 1
+    let mut m = [[0.0; D + 1]; D];
+    for (u, y) in us.iter().zip(&ys) {
+        let mut pow = [1.0; D];
+        for k in 1..D {
+            pow[k] = pow[k - 1] * u;
+        }
+        for r in 0..D {
+            for c in 0..D {
+                m[r][c] += pow[r] * pow[c];
+            }
+            m[r][D] += pow[r] * y;
+        }
+    }
+    for col in 0..D {
+        let pivot = (col..D)
+            .max_by(|a, b| m[*a][col].abs().total_cmp(&m[*b][col].abs()))
+            .unwrap_or(col);
+        m.swap(col, pivot);
+        if m[col][col].abs() < 1e-300 {
+            return coarse;
+        }
+        for r in 0..D {
+            if r != col {
+                let f = m[r][col] / m[col][col];
+                for c in col..=D {
+                    m[r][c] -= f * m[col][c];
+                }
+            }
+        }
+    }
+    let c: Vec<f64> = (0..D).map(|r| m[r][D] / m[r][r]).collect();
+    // p'(u) and p''(u) by Horner, Newton from the coarse station (u = 0)
+    let deriv = |u: f64| (1..D).rev().fold(0.0, |acc, k| acc * u + k as f64 * c[k]);
+    let second = |u: f64| {
+        (2..D)
+            .rev()
+            .fold(0.0, |acc, k| acc * u + (k * (k - 1)) as f64 * c[k])
+    };
+    let mut u = 0.0_f64;
+    for _ in 0..40 {
+        let dd = second(u);
+        if dd.abs() < 1e-300 {
+            return coarse;
+        }
+        let step = deriv(u) / dd;
+        u -= step;
+        if step.abs() < 1e-13 {
+            break;
+        }
+    }
+    if u.abs() < 1.0 {
+        coarse + u * HALF
+    } else {
+        coarse
+    }
 }
 
 /// Builds the index for `[from, to]` (Julian Days, UT) on `threads` threads,
@@ -687,12 +843,21 @@ fn pack(found: &Found, from: f64, to: f64, origin: f64) -> Result<Vec<u8>, Kerne
     let blocks = (((to - origin) / f64::from(BLOCK_DAYS)).ceil() as usize) + 1;
     let mut tables: Vec<PackedTable> = Vec::new();
     for kind in Kind::ALL {
+        if kind.base().0 != kind {
+            // read as a strided view of its base table: nothing to store
+            tables.push((kind.count(), 0, Vec::new(), None));
+            continue;
+        }
         let ev = &found.kinds[kind.table()];
         let first = ev.first().map_or(0, |e| e.1);
         // Multiples must run in order: that is what lets them go unstored.
         for (i, e) in ev.iter().enumerate() {
             if e.1 != (first + i as u32) % kind.count() {
-                return Err(KernelError::Format("a boundary out of sequence"));
+                return Err(KernelError::Sequence {
+                    kind: format!("{kind:?}"),
+                    jd: e.0,
+                    at: i,
+                });
             }
         }
         tables.push((kind.count(), first, ev.iter().map(|e| e.0).collect(), None));
@@ -781,22 +946,26 @@ pub fn write(path: &Path, bytes: &[u8]) -> Result<(), KernelError> {
 mod tests {
     use super::*;
 
-    /// A tithi every 0.9 days from Julian Day `2_460_000.25`, starting at tithi 28, and
-    /// sankrantis every 30.4 days starting at rashi 10; one Mars ingress series.
-    fn synthetic() -> (Index, Vec<f64>) {
+    /// A karana every 0.45 days from Julian Day `2_460_000.25`, starting at karana 56;
+    /// a Sun degree every 30.4/30 days from Julian Day `2_460_005.5`, starting at degree 300 (the
+    /// start of rashi 10); a Mars ingress series with a turn-back.
+    fn synthetic() -> (Index, Vec<f64>, Vec<f64>) {
         let (from, to): (f64, f64) = (2_460_000.0, 2_460_400.0);
         let origin = (from / 32.0).floor() * 32.0;
         let mut found = Found::default();
-        let tithis: Vec<f64> = (0..400)
-            .map(|i| 2_460_000.25 + f64::from(i) * 0.9)
+        let karanas: Vec<f64> = (0..900)
+            .map(|i| 2_460_000.25 + f64::from(i) * 0.45)
             .take_while(|t| *t < to)
             .collect();
-        for (i, t) in tithis.iter().enumerate() {
-            found.kinds[Kind::Tithi.table()].push((*t, (28 + i as u32) % 30));
+        for (i, t) in karanas.iter().enumerate() {
+            found.kinds[Kind::Karana.table()].push((*t, (56 + i as u32) % 60));
         }
-        for i in 0..13 {
-            found.kinds[Kind::Sankranti.table()]
-                .push((2_460_005.5 + f64::from(i) * 30.4, (10 + i as u32) % 12));
+        let degrees: Vec<f64> = (0..390)
+            .map(|i| 2_460_005.5 + f64::from(i) * 30.4 / 30.0)
+            .take_while(|t| *t < to)
+            .collect();
+        for (i, t) in degrees.iter().enumerate() {
+            found.kinds[Kind::SunDegree.table()].push((*t, (300 + i as u32) % 360));
         }
         // Mars goes Simha(4) -> Kanya(5), turns back to Simha(4), then on to Kanya(5)
         found.series[Graha::Mars as usize] = vec![
@@ -807,19 +976,17 @@ mod tests {
         ];
         found.series[6 + Graha::Mars as usize] = vec![(2_460_160.0, 1), (2_460_230.0, 0)];
         let bytes = pack(&found, from, to, origin).expect("packs");
-        (Index::from_bytes(bytes).expect("parses"), tithis)
+        (Index::from_bytes(bytes).expect("parses"), karanas, degrees)
     }
 
     #[test]
     fn next_and_prev_bracket_every_instant() {
-        let (ix, tithis) = synthetic();
+        let (ix, karanas, _) = synthetic();
         for k in 0..2000 {
             let jd = 2_460_000.0 + f64::from(k) * 0.1993;
-            let next = ix.next_event(Kind::Tithi, jd);
-            let prev = ix.prev_event(Kind::Tithi, jd);
-            let want_next = tithis
-                .iter()
-                .find(|t| **t > jd + 1e-3 / 86_400.0 * 0.0 && **t - jd > 5e-9);
+            let next = ix.next_event(Kind::Karana, jd);
+            let prev = ix.prev_event(Kind::Karana, jd);
+            let want_next = karanas.iter().find(|t| **t > jd);
             if let (Some(n), Some(w)) = (next, want_next) {
                 assert!(
                     (n.jd - w).abs() < 1.0 / 86_400_000.0,
@@ -830,63 +997,91 @@ mod tests {
             if let (Some(p), Some(n)) = (prev, next) {
                 assert!(p.jd <= jd + 1e-9 && jd < n.jd, "prev at {jd}");
                 assert!(
-                    n.jd - p.jd < 0.9 + 2e-8,
-                    "consecutive boundaries 0.9 d apart"
+                    n.jd - p.jd < 0.45 + 2e-8,
+                    "consecutive boundaries 0.45 d apart"
                 );
             }
         }
         assert!(
-            ix.prev_event(Kind::Tithi, 2_460_000.0).is_none(),
+            ix.prev_event(Kind::Karana, 2_460_000.0).is_none(),
             "before the first"
         );
         assert!(
-            ix.next_event(Kind::Tithi, 2_460_399.9).is_none(),
+            ix.next_event(Kind::Karana, 2_460_399.9).is_none(),
             "after the last"
         );
     }
 
     #[test]
     fn multiples_run_in_order_and_wrap() {
-        let (ix, _) = synthetic();
-        let all = ix.events_between(Kind::Tithi, 2_459_999.0, 2_460_400.0);
-        assert_eq!(all.len(), ix.len(Kind::Tithi));
+        let (ix, _, _) = synthetic();
+        let all = ix.events_between(Kind::Karana, 2_459_999.0, 2_460_400.0);
+        assert_eq!(all.len(), ix.len(Kind::Karana));
         for (i, c) in all.iter().enumerate() {
-            assert_eq!(c.multiple, (28 + i as u32) % 30, "event {i}");
+            assert_eq!(c.multiple, (56 + i as u32) % 60, "event {i}");
         }
-        assert_eq!(all[2].multiple, 0, "28, 29, 0: wrapped");
+        assert_eq!(all[4].multiple, 0, "56, 57, 58, 59, 0: wrapped");
     }
 
     #[test]
-    fn entries_are_index_arithmetic() {
-        let (ix, _) = synthetic();
-        // Sankranti: rashi 10 first, at 2_460_005.5, then 11, 0, 1 ...
-        let from = 2_460_000.0;
+    fn a_kind_that_is_not_stored_is_a_strided_view() {
+        let (ix, karanas, degrees) = synthetic();
+        // Tithi = every 2nd karana, the ones with an even multiple, numbered /2
+        let tithis = ix.events_between(Kind::Tithi, 2_459_999.0, 2_460_400.0);
+        let want: Vec<(f64, u32)> = karanas
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| (56 + i) % 2 == 0)
+            .map(|(i, t)| (*t, ((56 + i as u32) % 60) / 2))
+            .collect();
+        assert_eq!(tithis.len(), want.len());
+        for (c, (t, m)) in tithis.iter().zip(&want) {
+            assert!(
+                (c.jd - t).abs() < 1.0 / 86_400_000.0 && c.multiple == *m,
+                "{c:?} vs {t} {m}"
+            );
+        }
+        assert_eq!(ix.len(Kind::Tithi), want.len());
+        // Phase = every 15th karana; Sankranti = every 30th Sun degree
+        let phases = ix.events_between(Kind::Phase, 2_459_999.0, 2_460_400.0);
+        assert!(phases.iter().all(|c| c.multiple < 4) && !phases.is_empty());
+        let sankranti = ix.events_between(Kind::Sankranti, 2_459_999.0, 2_460_400.0);
+        let first_of_rashi: Vec<f64> = degrees
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| (300 + i) % 30 == 0)
+            .map(|(_, t)| *t)
+            .collect();
+        assert_eq!(sankranti.len(), first_of_rashi.len());
         assert_eq!(
-            ix.next_entry(Kind::Sankranti, 10, from).map(|c| c.jd),
-            Some(2_460_005.5)
+            sankranti[0].multiple, 10,
+            "the stored sequence starts at degree 300"
         );
-        let mesha = ix.next_entry(Kind::Sankranti, 0, from).expect("mesha");
         assert!(
-            (mesha.jd - (2_460_005.5 + 2.0 * 30.4)).abs() < 1e-3,
-            "{}",
-            mesha.jd
+            sankranti
+                .iter()
+                .zip(&first_of_rashi)
+                .all(|(c, t)| (c.jd - t).abs() < 1.0 / 86_400_000.0),
+            "the same instants as the stored degrees"
         );
-        let back = ix
-            .prev_entry(Kind::Sankranti, 11, 2_460_200.0)
-            .expect("prev");
-        assert!(
-            (back.jd - (2_460_005.5 + 30.4)).abs() < 1e-3 || back.jd > 2_460_005.5,
-            "{back:?}"
-        );
+        // an entry is index arithmetic on the view
+        let mesha = ix
+            .next_entry(Kind::Sankranti, 0, 2_460_000.0)
+            .expect("mesha");
+        assert!((mesha.jd - first_of_rashi[2]).abs() < 1e-3, "{mesha:?}");
         assert!(
             ix.prev_entry(Kind::Sankranti, 10, 2_460_001.0).is_none(),
             "none before the first"
         );
+        let back = ix
+            .prev_entry(Kind::Sankranti, 11, 2_460_200.0)
+            .expect("prev");
+        assert!((back.jd - first_of_rashi[1]).abs() < 1e-3, "{back:?}");
     }
 
     #[test]
     fn a_series_keeps_its_payloads_and_order() {
-        let (ix, _) = synthetic();
+        let (ix, _, _) = synthetic();
         let ingress = Series::Ingress(Graha::Mars);
         let all = ix.series_between(ingress, 2_460_000.0, 2_460_400.0);
         assert_eq!(
@@ -912,7 +1107,7 @@ mod tests {
     #[test]
     fn a_boundary_out_of_sequence_is_refused() {
         let mut found = Found::default();
-        found.kinds[Kind::Tithi.table()] = vec![(2_460_001.0, 3), (2_460_002.0, 5)];
+        found.kinds[Kind::Karana.table()] = vec![(2_460_001.0, 3), (2_460_002.0, 5)];
         assert!(pack(&found, 2_460_000.0, 2_460_040.0, 2_459_968.0).is_err());
     }
 
@@ -924,8 +1119,17 @@ mod tests {
             "120 degrees ahead: the 11th tithi"
         );
         assert_eq!(Kind::Nakshatra.multiple(0.0, 14.0), 1);
-        assert_eq!(Kind::Pada.count() * 4 / 4, 108);
         assert_eq!(Kind::Yoga.multiple(350.0, 20.0), 0, "sum wraps past 360");
         assert_eq!(Kind::MoonRashi.multiple(0.0, 359.9), 11);
+        // every derived kind divides its base's count evenly: the views stay in step
+        for kind in Kind::ALL {
+            let (base, stride) = kind.base();
+            assert_eq!(base.count() % stride, 0, "{kind:?}");
+            assert_eq!(base.count() / stride, kind.count(), "{kind:?}");
+            assert!(
+                (base.span() * f64::from(stride) - kind.span()).abs() < 1e-9,
+                "{kind:?}"
+            );
+        }
     }
 }

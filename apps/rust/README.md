@@ -161,37 +161,51 @@ from it instead of searching again.
   month, midnight, at-time and era routes were already typed `Fields`
   (`crates/patro/tests/typed_paths.rs` pins them against the tree paths).
 - **Own drik ephemeris (`crates/ephdata`, no Swiss Ephemeris).** JPL's Chebyshev
-  coefficients are read from a DE440/DE441 SPK once (`ephdata extract`) into our own
-  `.veph` format: every coefficient kept (the fit is not resampled), per-record
-  midpoint/radius dropped, unused bodies dropped, and (default) each coefficient
-  rounded to a 1 m step and bit-packed at the width its index needs. 12 segments
-  (Sun, Earth–Moon barycentre, Earth and Moon relative to it, Mercury–Pluto): 113 MB
-  lossless, **23.4 MB packed** for 1550–2650. The evaluator, ΔT (Espenak–Meeus), IAU 2006
-  precession and obliquity, light-time, annual aberration and the Lahiri zero point
-  (fixed in the ICRS, carried by our precession) are Rust (`ephdata::{kernel, deltat,
-  frames, sky}`). `astronomy::position::OwnDrik` puts it behind the `Ephemeris` trait.
-  Not wired to any route yet (step 4h; the server still answers `siddhanta=drik` with 501).
+  coefficients are read from the DE441 SPKs once (`ephdata extract`, by seeking, so the
+  two 1.6 GB halves cost only the years asked for; they overlap by 32 days and are joined
+  on the record grid) into our own `.veph` format: every coefficient kept (the fit is not
+  resampled), per-record midpoint/radius dropped, unused bodies dropped, and (default)
+  each coefficient rounded to a 1 m step and bit-packed at the width its index needs.
+  12 segments (Sun, Earth–Moon barycentre, Earth and Moon relative to it, Mercury–Pluto).
+  AD 1–2947 (all of BS 60–3000): **62.7 MB** (113 MB per 1,100 years lossless, 23 MB
+  packed). The evaluator, ΔT (Espenak–Meeus), IAU 2006 precession and obliquity,
+  light-time, annual aberration and the Lahiri zero point (fixed in the ICRS, carried by
+  our precession) are Rust (`ephdata::{kernel, deltat, frames, sky}`).
+  `astronomy::position::OwnDrik` puts it behind the `Ephemeris` trait. Not wired to any
+  route yet (step 4h): the server still answers `siddhanta=drik` with 501.
 - **Event index (`ephdata::index`, `.vidx`).** Every tithi, karana, nakshatra, pada,
   yoga, Moon rashi, Sun nakshatra, sankranti, Sun degree and lunar phase boundary, plus
   rashi ingress and retrograde stations of Mercury–Saturn and Rahu (osculating node),
-  solved once and stored: 4 bytes per boundary (millisecond offset in a 32-day block;
-  the multiple is derived from the position, never stored), block table for O(1) access.
-  1551–2649: 18.6 MB, built in 80 s on two threads. `astronomy::events` reads it first
-  (`Ephemeris::index`) and falls back to the solver outside its span.
-  Verified against the original JPL data with independent code (`scripts/ephdata/verify.sh`):
-  10,000 random instants, Chebyshev evaluation vs `jplephem` (lossless: float noise;
-  packed: ≤ 3 m); 3,000 instants, frames/light-time/aberration/ayanamsha vs SOFA
-  (`pyerfa`) ≤ 2×10⁻³″ (all of it the 1 m packing of the Moon; 10⁻⁵″ for the rest);
-  19,994 random events re-solved from the original kernel: median 0.6 ms, worst 8 ms
-  (stations, a flat extremum, differ by seconds); and
-  `crates/astronomy/tests/own_drik.rs` (set `PATRO_RS_EPHDATA`) checks the index against
-  solving the same events from our ephemeris.
-- Event lookups (`PATRO_RS_EPHDATA=<dir> cargo run --profile benchdev -p astronomy --example
-  bench_index -- ss|own|index`; `benchdev` is the dev profile at `opt-level = 3`, so
-  all three sides are optimised alike; only `ephdata` is optimised in plain dev): a panchanga day's eight boundary queries, cold, **2,068 µs** with
-  the Surya Siddhanta chunk solver, 20,620 µs solving our own ephemeris on demand,
-  **0.7 µs** from the index; 40 years × 4 angas 291 ms / 2,889 ms / **2.6 ms**; memory
-  grows 36 / 34 / **0.1 MB** while it runs.
+  solved once and stored: 4 bytes per boundary (millisecond offset in a 32-day block, a
+  block table for O(1) access). The multiple is derived from the position, never stored,
+  and tithi, nakshatra, Moon rashi, sankranti and phase are not stored at all: each is
+  every n-th boundary of karana, pada or Sun degree, read as a strided view. AD 3–2945:
+  **38.5 MB**, 12.8 M boundaries, 221 s on two threads. `astronomy::events` reads it
+  first (`Ephemeris::index`) and falls back to the solver outside its span. Building the
+  full range caught a real bug: DE441's halves overlap, and joining them dropped a third
+  of a record instead of a whole one (the Sun jumped 128° at the 1969 seam); the build's
+  own sequence check refused the table, and the verifier now samples 500 instants round
+  every kernel seam.
+  Stations are the extremum of a longitude, so a speed difference is as noisy as the
+  longitudes it subtracts (±0.1 s); each is a degree-6 least-squares fit over ±0.4 day
+  (stable to 0.1 ms from degree 5 up; a quartic is seconds off for Mercury).
+  Verified against the original JPL data with independent code
+  (`scripts/ephdata/build.sh`, `verify.sh`): 10,500 random instants (500 round the 1969
+  seam), Chebyshev evaluation vs `jplephem`: float noise lossless, ≤ 3.5 m packed;
+  3,000 instants, frames, light-time, aberration and ayanamsha vs SOFA (`pyerfa`):
+  ≤ 2×10⁻³″ (all of it the Moon's 1 m packing; ~10⁻⁵″ for the rest);
+  19,997 random events re-solved from the original kernels: median 0.2–0.7 ms and worst
+  11 ms for the angas and ingresses, median 0.6–4.5 ms and worst 34 ms for stations.
+  `crates/astronomy/tests/own_drik.rs` (set `PATRO_RS_EPHDATA` to a folder holding
+  `kernel.veph` and `events.vidx`) checks the index against solving the same events from
+  our ephemeris, over the whole range.
+- Event lookups (`PATRO_RS_EPHDATA=<dir> cargo run --profile benchdev -p astronomy
+  --example bench_index -- ss|own|index`; `benchdev` is the dev profile at `opt-level = 3`
+  so all three sides are optimised alike; only `ephdata` is optimised in plain dev):
+  a panchanga day's eight boundary queries, cold, **2,093 µs** with the Surya Siddhanta
+  chunk solver, 19,484 µs solving our own ephemeris on demand, **1.4 µs** from the index
+  (0.7 µs warm); 40 years × 4 angas 453 ms / 3,945 ms / **3.1 ms**; memory grows 36 / 37 /
+  **0.1 MB** while it runs (the index variant holds 98 MB: 62.7 MB kernel, 38.5 MB index).
 - Contract: the API's shape is Python's, because the mobile and web apps read it:
   the same routes, keys in the same order, types, lists, names and integers. The
   *values* are the engine's own. Boundaries are the engine's solved times, printed
