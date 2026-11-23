@@ -1,13 +1,18 @@
 // Surya Siddhanta, offline: read a STAB position table and derive panchanga
-// on the device, with no server call and no Surya Siddhanta formula ported.
+// on the device, with no server call and almost no Surya Siddhanta formula
+// ported.
 //
 // The table (see apps/rust/crates/siddhanta-table/README.md) holds, every 12 h,
-// the eight grahas' sidereal longitudes and instantaneous speeds, the
-// ayanamsha and the mean Sun (sayana). This module interpolates a position at
-// any instant inside the table and derives everything a day view shows from
-// those numbers, the instant and the user's latitude/longitude:
-// graha rashi / nakshatra / pada, tithi, karana, yoga, lagna, sunrise and
-// sunset, and the next tithi / nakshatra boundary.
+// the eight grahas' sidereal longitudes — as u32 counts of 1e-6° — and the
+// Moon's instantaneous speed, plus, in the header, the mean Sun (nirayana)
+// as one anchor value and its exact rate. That is the whole file: 36 bytes
+// a sample. The ayanamsha is not stored at all; it is a ten-line closed
+// formula below (`ayanamshaAt`), exact to ~1e-8° because every step stays
+// below 2^53, and the sayana mean Sun is the nirayana anchor plus the
+// ayanamsha.
+// everything a day view shows from those numbers, the instant and the user's
+// latitude/longitude: graha rashi / nakshatra / pada, tithi, karana, yoga,
+// lagna, sunrise and sunset, and the next tithi / nakshatra boundary.
 //
 // What it does NOT do: kundali, dashas, muhurta and festivals stay on the
 // server — they need rise/set searches over whole days, divisional charts
@@ -47,17 +52,31 @@ export const SIDDHANTA_BODY_INDEX: Record<SiddhantaBody, number> = {
 /** Ketu is Rahu + 180° and is never stored. */
 export const KETU_OFFSET_DEGREES = 180;
 
-const HEADER_BYTES = 32;
-const SAMPLE_BYTES = 72;
-const MAGIC = "STAB0001";
+const HEADER_BYTES = 48;
+const SAMPLE_BYTES = 36;
+const MAGIC = "STAB0002";
+/** One longitude count is 1e-6°. */
+const LON_COUNTS_PER_DEGREE = 1_000_000;
 /** The text's obliquity: 24°. */
 const OBLIQUITY_DEGREES = 24;
 const NAKSHATRA_SPAN = 360 / 27;
+
+// Ayanamsha constants, from the text via the Rust server
+// (`crates/astronomy/src/surya_siddhanta/{yuga,frame}.rs`): the ayanamsha
+// is a libration of ±27° with 600 revolutions per mahayuga.
+const MAHAYUGA_DAYS = 1_577_917_828;
+const DAYS_CREATION_TO_KALI = 714_402_296_627;
+const KALI_EPOCH_JD = 588_465.5 - (75 + 46 / 60) / 360;
+const AYANA_REVS_MAHAYUGA = 600;
 
 export interface SiddhantaTable {
   firstJd: number;
   stepDays: number;
   sampleCount: number;
+  /** Mean Sun (nirayana), degrees, at `firstJd`. */
+  meanSun0: number;
+  /** Mean Sun's exact rate, degrees per day. */
+  meanSunRate: number;
   /** Raw sample bytes, in file order. */
   bytes: Uint8Array;
 }
@@ -102,10 +121,15 @@ export function parseSiddhantaTable(bytes: Uint8Array): SiddhantaTable {
   if (!Number.isFinite(stepDays) || stepDays <= 0) {
     throw new Error(`siddhanta table step ${stepDays} is not a positive number of days`);
   }
+  const meanSun0 = view.getFloat64(32, true);
+  const meanSunRate = view.getFloat64(40, true);
+  if (!Number.isFinite(meanSunRate)) {
+    throw new Error(`siddhanta table mean Sun rate ${meanSunRate} is not a finite number`);
+  }
   if (bytes.length !== HEADER_BYTES + sampleCount * SAMPLE_BYTES) {
     throw new Error("siddhanta table length does not match its sample count");
   }
-  return { firstJd, stepDays, sampleCount, bytes };
+  return { firstJd, stepDays, sampleCount, meanSun0, meanSunRate, bytes };
 }
 
 /** Julian Day (UT) of the last sample. */
@@ -113,23 +137,72 @@ export function siddhantaLastJd(table: SiddhantaTable): number {
   return table.firstJd + (table.sampleCount - 1) * table.stepDays;
 }
 
-function sampleAt(table: SiddhantaTable, index: number, body: number): [number, number] {
-  const at = HEADER_BYTES + index * SAMPLE_BYTES + body * 8;
+function longitudeAt(table: SiddhantaTable, index: number, body: number): number {
+  const at = HEADER_BYTES + index * SAMPLE_BYTES + body * 4;
   const view = new DataView(table.bytes.buffer, table.bytes.byteOffset, table.bytes.byteLength);
-  return [view.getFloat32(at, true), view.getFloat32(at + 4, true)];
+  return view.getUint32(at, true) / LON_COUNTS_PER_DEGREE;
 }
 
-function scalarsAt(table: SiddhantaTable, index: number): [number, number] {
-  const at = HEADER_BYTES + index * SAMPLE_BYTES + SIDDHANTA_BODIES.length * 8;
-  const view = new DataView(table.bytes.buffer, table.bytes.byteOffset, table.bytes.byteLength);
-  return [view.getFloat32(at, true), view.getFloat32(at + 4, true)];
+/**
+ * Speed of one body at one sample, °/day. The Moon's is stored; every other
+ * body's is the central difference of its own neighbouring samples — their
+ * higher derivatives are small enough that the differenced slope is within
+ * ~0.2" of the true derivative (Mercury, the worst case). One-sided at the
+ * ends.
+ */
+function speedAt(table: SiddhantaTable, index: number, body: number): number {
+  if (body === SIDDHANTA_BODY_INDEX.moon) {
+    const at = HEADER_BYTES + index * SAMPLE_BYTES + SIDDHANTA_BODIES.length * 4;
+    const view = new DataView(table.bytes.buffer, table.bytes.byteOffset, table.bytes.byteLength);
+    return view.getFloat32(at, true);
+  }
+  const n = table.sampleCount;
+  let lo = index - 1;
+  let hi = index + 1;
+  if (index === 0) {
+    lo = 0;
+    hi = Math.min(1, n - 1);
+  } else if (index + 1 >= n) {
+    lo = Math.max(0, n - 2);
+    hi = n - 1;
+  }
+  if (lo === hi) return 0;
+  const span = (hi - lo) * table.stepDays;
+  let diff = longitudeAt(table, hi, body) - longitudeAt(table, lo, body);
+  diff = wrap360(diff + 180) - 180;
+  return diff / span;
+}
+
+/**
+ * The ayanamsha, from the text's own formula (`frame::ayanamsha` on the
+ * server): a libration of ±27° over 600 revolutions per mahayuga. Every
+ * step here stays below 2^53, so the integer part of the revolution count
+ * is exact in a double and this reproduces the server to ~1e-8°.
+ */
+export function ayanamshaAt(jdUt: number): number {
+  const days = DAYS_CREATION_TO_KALI + (jdUt - KALI_EPOCH_JD);
+  const whole = Math.floor(days);
+  const part = days - whole;
+  const numerator = (AYANA_REVS_MAHAYUGA * whole) % MAHAYUGA_DAYS;
+  const fraction = ((numerator + AYANA_REVS_MAHAYUGA * part) / MAHAYUGA_DAYS) % 1;
+  const arc = 360 * fraction;
+  const quadrant = arc % 180;
+  const bhuja = quadrant <= 90 ? quadrant : 180 - quadrant;
+  const sign = arc < 180 ? -1 : 1;
+  return (sign * bhuja * 27) / 90;
+}
+
+/** Mean Sun (nirayana), degrees: the header anchor advanced at its exact rate. */
+export function meanSunAt(table: SiddhantaTable, jdUt: number): number {
+  return wrap360(table.meanSun0 + table.meanSunRate * (jdUt - table.firstJd));
 }
 
 /**
  * Positions at a Julian Day (UT), or null outside the table.
- * Cubic Hermite per body over the two bracketing samples (the stored speeds
- * make the curve follow the true motion); the ayanamsha and the mean Sun
- * interpolate linearly — the mean Sun is exactly linear.
+ * Cubic Hermite per body over the two bracketing samples (the stored Moon
+ * speed, and the other bodies' differenced speeds, make the curve follow
+ * the true motion); the ayanamsha comes from the text's formula and the
+ * mean Sun from the header anchor plus its exact rate.
  */
 export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPositions | null {
   if (!Number.isFinite(jdUt) || table.sampleCount === 0) return null;
@@ -141,12 +214,18 @@ export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPosit
   const speed: number[] = [];
   if (i + 1 >= table.sampleCount) {
     for (let b = 0; b < SIDDHANTA_BODIES.length; b += 1) {
-      const [lon, sp] = sampleAt(table, i, b);
-      longitude.push(lon);
-      speed.push(sp);
+      longitude.push(longitudeAt(table, i, b));
+      speed.push(speedAt(table, i, b));
     }
-    const [ayanamsha, meanSunSayana] = scalarsAt(table, i);
-    return { longitude, speed, ayanamsha, meanSunSayana };
+    const aya = ayanamshaAt(jdUt);
+    return {
+      longitude,
+      speed,
+      ayanamsha: aya,
+      // The header holds the nirayana mean Sun; the sayana value adds the
+      // ayanamsha, which is computed here anyway.
+      meanSunSayana: wrap360(meanSunAt(table, jdUt) + aya),
+    };
   }
   const t2 = t * t;
   const t3 = t2 * t;
@@ -160,21 +239,21 @@ export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPosit
   const d11 = 3 * t2 - 2 * t;
   const h = table.stepDays;
   for (let b = 0; b < SIDDHANTA_BODIES.length; b += 1) {
-    const [lon0, sp0] = sampleAt(table, i, b);
-    let [lon1, sp1] = sampleAt(table, i + 1, b);
+    const lon0 = longitudeAt(table, i, b);
+    let lon1 = longitudeAt(table, i + 1, b);
     // Unwrap the next sample against this one: the pair is adjacent, so the
     // true motion between them is far under 180°.
     lon1 += 360 * Math.round((lon0 - lon1) / 360);
+    const sp0 = speedAt(table, i, b);
+    const sp1 = speedAt(table, i + 1, b);
     longitude.push(wrap360(h00 * lon0 + h10 * h * sp0 + h01 * lon1 + h11 * h * sp1));
     speed.push((d00 * lon0 + d10 * h * sp0 + d01 * lon1 + d11 * h * sp1) / h);
   }
-  const [aya0, mean0] = scalarsAt(table, i);
-  const [aya1, mean1] = scalarsAt(table, i + 1);
   return {
     longitude,
     speed,
-    ayanamsha: aya0 + (aya1 - aya0) * t,
-    meanSunSayana: mean0 + (mean1 - mean0) * t,
+    ayanamsha: ayanamshaAt(jdUt),
+    meanSunSayana: wrap360(meanSunAt(table, jdUt) + ayanamshaAt(jdUt)),
   };
 }
 

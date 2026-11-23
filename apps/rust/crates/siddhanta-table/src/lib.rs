@@ -1,16 +1,32 @@
 //! Surya Siddhanta positions, precomputed into a table file.
 //!
-//! The format (`STAB0001`) and the reasoning behind it live in this crate's
-//! `README.md`. In short: one sample every few hours, eight bodies' sidereal
-//! longitudes and speeds plus the ayanamsha and the mean Sun (sayana), so a
-//! reader can interpolate a position at any instant and a client can derive
-//! graha, tithi, nakshatra, pada, yoga, karana and lagna without ever
-//! evaluating a Surya Siddhanta formula.
+//! The format (`STAB0002`) and the reasoning behind it live in this crate's
+//! `README.md`. In short: one sample every few hours, so a reader can
+//! interpolate a position at any instant and a client can derive graha,
+//! tithi, nakshatra, pada, yoga, karana and lagna without ever evaluating a
+//! Surya Siddhanta formula — except the ayanamsha, which is a ten-line
+//! closed formula the client computes itself (see `README.md`).
+//!
+//! The file stores the minimum that still reproduces the formulas:
+//!
+//! * per body, one longitude per sample, as a u32 count of 1e-6° — 0.0036
+//!   arcseconds of resolution, twenty times finer than an f32 at 360°
+//!   (0.077"), in the same 4 bytes;
+//! * one speed per sample, for the Moon only — the only body whose
+//!   interpolation needs a stored derivative. Every other body's speed is
+//!   the central difference of its own neighbouring samples, which is
+//!   accurate to ~0.2" for Mercury and better for the rest;
+//! * in the header, the mean Sun as one anchor value plus its exact rate
+//!   (°/day) — the *nirayana* mean Sun is exactly linear in JD, so storing
+//!   it per sample was 587 KB of a straight line. The reader adds the
+//!   ayanamsha (which it already computes) to get the sayana mean Sun;
+//! * nothing for the ayanamsha — it is a slow sine the reader computes from
+//!   three constants (see `README.md`).
 //!
 //! Longitudes are stored wrapped (0–360°): an unwrapped longitude over 200
 //! years reaches ~26 million degrees, where an f32 has ~2° of resolution.
-//! The reader unwraps the two bracketing samples against each other, which is
-//! unambiguous because no body moves 180° in one step.
+//! The reader unwraps the two bracketing samples against each other, which
+//! is unambiguous because no body moves 180° in one step.
 
 #![expect(
     clippy::cast_possible_truncation,
@@ -22,17 +38,26 @@
 
 use std::path::Path;
 
+use astronomy::surya_siddhanta::ayanamsha;
 use thiserror::Error;
 
-/// Magic, format version 1.
-pub const MAGIC: &[u8; 8] = b"STAB0001";
-/// Header size in bytes: magic, body count, sample count, first JD, step.
-pub const HEADER: usize = 32;
-/// Bodies, in [`astronomy::Body::ALL`] order.
+/// Magic, format version 2.
+pub const MAGIC: &[u8; 8] = b"STAB0002";
+/// Header size in bytes: magic, body count, sample count, first JD, step,
+/// mean Sun at the first JD, mean Sun rate.
+pub const HEADER: usize = 48;
+/// Bodies, in [`Body::ALL`] order.
 pub const BODIES: usize = 8;
-/// Bytes per sample: 8 bodies × (f32 longitude, f32 speed) + f32 ayanamsha
-/// + f32 mean Sun (sayana).
-pub const SAMPLE_BYTES: usize = BODIES * 8 + 8;
+/// Index of the Moon in [`Body::ALL`] order — the only body with a stored
+/// speed. Checked by `moon_is_second` below.
+pub const MOON: usize = 1;
+/// One longitude count is 1e-6°, so 360,000,000 counts make 360°. A u24
+/// would not do: 36,000,000 counts at 1e-5° already exceed 2^24.
+pub const LON_COUNTS_PER_DEGREE: f64 = 1_000_000.0;
+/// Counts in a full circle.
+pub const LON_COUNTS: u32 = 360_000_000;
+/// Bytes per sample: 8 bodies × u32 longitude + f32 Moon speed.
+pub const SAMPLE_BYTES: usize = BODIES * 4 + 4;
 
 /// A position table read from a `STAB` file, or a slice of one.
 #[derive(Debug, Clone)]
@@ -41,18 +66,24 @@ pub struct Table {
     pub first_jd: f64,
     /// Days between samples.
     pub step_days: f64,
+    /// Mean Sun (nirayana), degrees, at `first_jd`.
+    pub mean_sun0: f64,
+    /// Mean Sun's exact rate, degrees per day.
+    pub mean_sun_rate: f64,
     /// Samples, each `SAMPLE_BYTES` bytes, in file order.
     pub samples: Vec<u8>,
 }
 
 /// Positions at an instant: sidereal longitudes and speeds per body, in
-/// [`astronomy::Body::ALL`] order, plus the ayanamsha and the mean Sun
-/// (sayana), all degrees (speeds in degrees per day).
+/// [`Body::ALL`] order, plus the ayanamsha and the mean Sun (sayana), all
+/// degrees (speeds in degrees per day).
 ///
-/// The speed is the instantaneous derivative of the longitude — what Hermite
-/// interpolation needs — not the speed the API shows. The text defines speed
-/// as the ±0.5-day central difference; a client that wants the displayed
-/// speed takes the central difference of this table at ±0.5 days.
+/// The Moon's speed is the stored instantaneous derivative. The other
+/// bodies' speeds are the central difference of their own neighbouring
+/// samples — what Hermite interpolation needs, not the speed the API shows.
+/// The text defines speed as the ±0.5-day central difference; a client that
+/// wants the displayed speed takes the central difference of this table at
+/// ±0.5 days.
 #[derive(Debug, Clone, Copy)]
 pub struct Positions {
     /// Sidereal longitude, wrapped 0–360°.
@@ -68,10 +99,10 @@ pub struct Positions {
 /// What can go wrong reading a `STAB` file.
 #[derive(Debug, Error)]
 pub enum TableError {
-    /// The first eight bytes are not `STAB0001`.
+    /// The first eight bytes are not `STAB0002`.
     #[error("not a STAB file (bad magic)")]
     BadMagic,
-    /// Fewer than 32 bytes, so there is no header to read.
+    /// Fewer than 48 bytes, so there is no header to read.
     #[error("file is too short for a STAB header")]
     TooShort,
     /// The header's body count is not the eight this reader knows.
@@ -83,6 +114,9 @@ pub enum TableError {
     /// The step is zero, negative or not a number.
     #[error("step {0} is not a positive number of days")]
     BadStep(f64),
+    /// The mean Sun rate is not a finite number.
+    #[error("mean Sun rate {0} is not a finite number")]
+    BadRate(f64),
     /// The file could not be read.
     #[error("could not read {0}: {1}")]
     Io(std::path::PathBuf, std::io::Error),
@@ -115,9 +149,10 @@ fn read_f32(bytes: &[u8], at: usize) -> f32 {
 ///
 /// # Errors
 ///
-/// [`TableError::TooShort`] for fewer than 32 bytes, [`TableError::BadMagic`]
+/// [`TableError::TooShort`] for fewer than 48 bytes, [`TableError::BadMagic`]
 /// for a wrong magic, [`TableError::BodyCount`] for a header that names a
-/// different body count, [`TableError::BadStep`] for a non-positive step, and
+/// different body count, [`TableError::BadStep`] for a non-positive step,
+/// [`TableError::BadRate`] for a non-finite mean Sun rate, and
 /// [`TableError::SampleCount`] when the bytes do not hold the header's
 /// samples.
 pub fn parse(bytes: &[u8]) -> Result<Table, TableError> {
@@ -137,12 +172,19 @@ pub fn parse(bytes: &[u8]) -> Result<Table, TableError> {
     if !step_days.is_finite() || step_days <= 0.0 {
         return Err(TableError::BadStep(step_days));
     }
+    let mean_sun0 = read_f64(bytes, 32);
+    let mean_sun_rate = read_f64(bytes, 40);
+    if !mean_sun_rate.is_finite() {
+        return Err(TableError::BadRate(mean_sun_rate));
+    }
     if bytes.len() != HEADER + count as usize * SAMPLE_BYTES {
         return Err(TableError::SampleCount(count));
     }
     Ok(Table {
         first_jd,
         step_days,
+        mean_sun0,
+        mean_sun_rate,
         samples: bytes[HEADER..].to_vec(),
     })
 }
@@ -167,12 +209,19 @@ pub fn serialise(table: &Table) -> Vec<u8> {
     out.extend_from_slice(&((table.samples.len() / SAMPLE_BYTES) as u32).to_le_bytes());
     out.extend_from_slice(&table.first_jd.to_le_bytes());
     out.extend_from_slice(&table.step_days.to_le_bytes());
+    out.extend_from_slice(&table.mean_sun0.to_le_bytes());
+    out.extend_from_slice(&table.mean_sun_rate.to_le_bytes());
     out.extend_from_slice(&table.samples);
     out
 }
 
 fn wrap360(x: f64) -> f64 {
     x.rem_euclid(360.0)
+}
+
+/// Wraps a difference to (−180, 180].
+fn wrap180(x: f64) -> f64 {
+    wrap360(x + 180.0) - 180.0
 }
 
 impl Table {
@@ -188,8 +237,21 @@ impl Table {
         self.first_jd + (self.sample_count().saturating_sub(1) as f64) * self.step_days
     }
 
+    /// Mean Sun (nirayana), degrees, at `jd_ut`: the header anchor advanced
+    /// at the exact rate. No per-sample value is stored — the nirayana mean
+    /// Sun is exactly linear in JD. The sayana value is this plus the
+    /// ayanamsha (the ayanamsha itself is a sine, so the sayana mean Sun is
+    /// not linear — storing a sayana anchor and rate would drift by the
+    /// ayanamsha's own rate, ~50"/year).
+    #[must_use]
+    pub fn mean_sun_at(&self, jd_ut: f64) -> f64 {
+        wrap360(self.mean_sun0 + self.mean_sun_rate * (jd_ut - self.first_jd))
+    }
+
     /// A self-contained table holding samples `from..to` (inclusive, clamped
-    /// to the table). This is what the server sends for a date window.
+    /// to the table). This is what the server sends for a date window. The
+    /// mean Sun anchor is re-based to the slice's first sample, so the slice
+    /// reads back exactly like a table built for its own window.
     #[must_use]
     pub fn slice(&self, from_jd: f64, to_jd: f64) -> Table {
         let n = self.sample_count();
@@ -197,6 +259,8 @@ impl Table {
             return Table {
                 first_jd: from_jd,
                 step_days: self.step_days,
+                mean_sun0: self.mean_sun_at(from_jd),
+                mean_sun_rate: self.mean_sun_rate,
                 samples: Vec::new(),
             };
         }
@@ -206,9 +270,12 @@ impl Table {
         let last = last.clamp(0, n as isize - 1) as usize;
         let start = first * SAMPLE_BYTES;
         let end = (last + 1) * SAMPLE_BYTES;
+        let first_jd = self.first_jd + first as f64 * self.step_days;
         Table {
-            first_jd: self.first_jd + first as f64 * self.step_days,
+            first_jd,
             step_days: self.step_days,
+            mean_sun0: self.mean_sun_at(first_jd),
+            mean_sun_rate: self.mean_sun_rate,
             samples: self.samples[start..end].to_vec(),
         }
     }
@@ -216,9 +283,9 @@ impl Table {
     /// Positions at `jd_ut`, or `None` outside the sampled range.
     ///
     /// Cubic Hermite per body over the two bracketing samples (the stored
-    /// speeds make the curve follow the true motion); the ayanamsha and the
-    /// mean Sun interpolate linearly — the mean Sun is exactly linear, and
-    /// the ayanamsha is a sine with a ~7200-year period.
+    /// Moon speed, and the other bodies' differenced speeds, make the curve
+    /// follow the true motion); the ayanamsha comes from the text's formula
+    /// and the mean Sun from the header anchor plus its exact rate.
     #[must_use]
     pub fn positions_at(&self, jd_ut: f64) -> Option<Positions> {
         let n = self.sample_count();
@@ -236,23 +303,23 @@ impl Table {
         let mut longitude = [0.0; BODIES];
         let mut speed = [0.0; BODIES];
         for b in 0..BODIES {
-            let (lon0, sp0) = self.body_at(i, b);
-            let (mut lon1, sp1) = self.body_at(i + 1, b);
+            let lon0 = self.longitude_at(i, b);
+            let mut lon1 = self.longitude_at(i + 1, b);
             // Unwrap the next sample against this one: the pair is adjacent,
             // so the true motion between them is far under 180°.
             lon1 += 360.0 * ((lon0 - lon1) / 360.0).round();
+            let sp0 = self.speed_at(i, b);
+            let sp1 = self.speed_at(i + 1, b);
             longitude[b] = wrap360(h00 * lon0 + h10 * h * sp0 + h01 * lon1 + h11 * h * sp1);
             // Derivative of the Hermite curve, per day.
             let (d00, d10, d01, d11) = hermite_derivative(t);
             speed[b] = (d00 * lon0 + d10 * h * sp0 + d01 * lon1 + d11 * h * sp1) / h;
         }
-        let (aya0, mean0) = self.scalars_at(i);
-        let (aya1, mean1) = self.scalars_at(i + 1);
         Some(Positions {
             longitude,
             speed,
-            ayanamsha: aya0 + (aya1 - aya0) * t,
-            mean_sun_sayana: mean0 + (mean1 - mean0) * t,
+            ayanamsha: ayanamsha(jd_ut),
+            mean_sun_sayana: wrap360(self.mean_sun_at(jd_ut) + ayanamsha(jd_ut)),
         })
     }
 
@@ -261,33 +328,49 @@ impl Table {
         let mut longitude = [0.0; BODIES];
         let mut speed = [0.0; BODIES];
         for b in 0..BODIES {
-            (longitude[b], speed[b]) = self.body_at(i, b);
+            longitude[b] = self.longitude_at(i, b);
+            speed[b] = self.speed_at(i, b);
         }
-        let (ayanamsha, mean_sun_sayana) = self.scalars_at(i);
+        let jd = self.first_jd + i as f64 * self.step_days;
+        let aya = ayanamsha(jd);
         Positions {
             longitude,
             speed,
-            ayanamsha,
-            mean_sun_sayana,
+            ayanamsha: aya,
+            mean_sun_sayana: wrap360(self.mean_sun_at(jd) + aya),
         }
     }
 
-    /// (longitude, speed) of one body at one sample, as stored.
-    fn body_at(&self, sample: usize, body: usize) -> (f64, f64) {
-        let at = sample * SAMPLE_BYTES + body * 8;
-        (
-            f64::from(read_f32(&self.samples, at)),
-            f64::from(read_f32(&self.samples, at + 4)),
-        )
+    /// Sidereal longitude of one body at one sample, degrees, 0–360°.
+    fn longitude_at(&self, sample: usize, body: usize) -> f64 {
+        let at = sample * SAMPLE_BYTES + body * 4;
+        f64::from(read_u32(&self.samples, at)) / LON_COUNTS_PER_DEGREE
     }
 
-    /// (ayanamsha, mean Sun) at one sample.
-    fn scalars_at(&self, sample: usize) -> (f64, f64) {
-        let at = sample * SAMPLE_BYTES + BODIES * 8;
-        (
-            f64::from(read_f32(&self.samples, at)),
-            f64::from(read_f32(&self.samples, at + 4)),
-        )
+    /// Speed of one body at one sample, °/day. The Moon's is stored; every
+    /// other body's is the central difference of its own neighbouring
+    /// samples — their higher derivatives are small enough that the
+    /// differenced slope is within ~0.2" of the true derivative (Mercury,
+    /// the worst case), and far better for the rest. One-sided at the ends.
+    fn speed_at(&self, sample: usize, body: usize) -> f64 {
+        if body == MOON {
+            let at = sample * SAMPLE_BYTES + BODIES * 4;
+            return f64::from(read_f32(&self.samples, at));
+        }
+        let n = self.sample_count();
+        let (lo, hi) = if sample == 0 {
+            (0, 1.min(n - 1))
+        } else if sample + 1 >= n {
+            (n - 1, n.saturating_sub(2))
+        } else {
+            (sample - 1, sample + 1)
+        };
+        let (lo, hi) = if lo <= hi { (lo, hi) } else { (hi, lo) };
+        if lo == hi {
+            return 0.0;
+        }
+        let span = (hi - lo) as f64 * self.step_days;
+        wrap180(self.longitude_at(hi, body) - self.longitude_at(lo, body)) / span
     }
 }
 
@@ -316,22 +399,35 @@ fn hermite_derivative(t: f64) -> (f64, f64, f64, f64) {
 
 #[cfg(test)]
 mod tests {
+    use astronomy::surya_siddhanta::Body;
+
     use super::*;
+
+    /// Writes a u32 longitude count (1e-6°) into a sample.
+    fn put_lon(samples: &mut [u8], body: usize, degrees: f64) {
+        let counts = ((degrees * LON_COUNTS_PER_DEGREE).round() as u32) % LON_COUNTS;
+        let at = body * 4;
+        samples[at..at + 4].copy_from_slice(&counts.to_le_bytes());
+    }
 
     fn one_sample_table() -> Table {
         // One sample: Sun at 100° moving 1°/day, Moon at 200° moving 13°/day.
         let mut samples = vec![0u8; SAMPLE_BYTES];
-        samples[0..4].copy_from_slice(&100f32.to_le_bytes());
-        samples[4..8].copy_from_slice(&1f32.to_le_bytes());
-        samples[8..12].copy_from_slice(&200f32.to_le_bytes());
-        samples[12..16].copy_from_slice(&13f32.to_le_bytes());
-        samples[64..68].copy_from_slice(&23f32.to_le_bytes());
-        samples[68..72].copy_from_slice(&150f32.to_le_bytes());
+        put_lon(&mut samples, 0, 100.0);
+        put_lon(&mut samples, 1, 200.0);
+        samples[BODIES * 4..BODIES * 4 + 4].copy_from_slice(&13f32.to_le_bytes());
         Table {
             first_jd: 2_460_000.0,
             step_days: 0.5,
+            mean_sun0: 150.0,
+            mean_sun_rate: 0.9856,
             samples,
         }
+    }
+
+    #[test]
+    fn moon_is_second() {
+        assert!(matches!(Body::ALL[MOON], Body::Moon));
     }
 
     #[test]
@@ -340,6 +436,8 @@ mod tests {
         let back = parse(&serialise(&table)).unwrap();
         assert_eq!(back.first_jd, table.first_jd);
         assert_eq!(back.step_days, table.step_days);
+        assert_eq!(back.mean_sun0, table.mean_sun0);
+        assert_eq!(back.mean_sun_rate, table.mean_sun_rate);
         assert_eq!(back.samples, table.samples);
     }
 
@@ -359,8 +457,11 @@ mod tests {
         let pos = table.positions_at(2_460_000.0).unwrap();
         assert!((pos.longitude[0] - 100.0).abs() < 1e-5);
         assert!((pos.longitude[1] - 200.0).abs() < 1e-5);
-        assert!((pos.ayanamsha - 23.0).abs() < 1e-5);
-        assert!((pos.mean_sun_sayana - 150.0).abs() < 1e-5);
+        // The ayanamsha now comes from the text's formula, not the file.
+        assert!((pos.ayanamsha - ayanamsha(2_460_000.0)).abs() < 1e-9);
+        // The mean Sun is nirayana in the header; the sayana value adds the
+        // ayanamsha, which the reader already computed.
+        assert!((pos.mean_sun_sayana - wrap360(150.0 + ayanamsha(2_460_000.0))).abs() < 1e-5);
         assert!(table.positions_at(2_459_999.0).is_none());
         assert!(table.positions_at(2_460_001.0).is_none());
     }
@@ -369,17 +470,21 @@ mod tests {
     fn slice_keeps_a_self_contained_table() {
         let mut samples = vec![0u8; SAMPLE_BYTES * 5];
         for (i, chunk) in samples.chunks_exact_mut(SAMPLE_BYTES).enumerate() {
-            chunk[0..4].copy_from_slice(&(100f32 + i as f32).to_le_bytes());
+            put_lon(chunk, 0, 100.0 + i as f64);
         }
         let table = Table {
             first_jd: 2_460_000.0,
             step_days: 0.5,
+            mean_sun0: 150.0,
+            mean_sun_rate: 0.9856,
             samples,
         };
         let cut = table.slice(2_460_000.4, 2_460_001.2);
         assert_eq!(cut.sample_count(), 4);
         assert!((cut.first_jd - 2_460_000.0).abs() < 1e-9);
         assert_eq!(cut.positions_at(2_460_000.0).unwrap().longitude[0], 100.0);
+        // The slice re-bases the mean Sun anchor to its own first sample.
+        assert!((cut.mean_sun_at(2_460_001.0) - 150.9856).abs() < 1e-9);
         assert!(parse(&serialise(&cut)).is_ok());
     }
 }

@@ -2,7 +2,7 @@
 // device, and let the screen derive panchanga from it locally (see
 // `@vedic-patro/domain/astronomy/siddhanta-offline`).
 //
-// A year's slice is ~35 KB at the table's 12 h step. Slices are cached per
+// A year's slice is ~26 KB at the table's 12 h step. Slices are cached per
 // year under the app's cache directory, so a date the user has already
 // opened costs no network at all, and the server never computes a position
 // for a day view — it only serves the bytes.

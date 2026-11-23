@@ -4,8 +4,8 @@
 //! `kernel.veph`. The client asks for the Julian Day window it needs, gets a
 //! self-contained STAB table (header + samples) back, and interpolates and
 //! derives everything locally (see `packages/domain/src/astronomy/
-//! siddhanta-offline.ts`). A year at the table's 12 h step is ~35 KB; a day
-//! is 288 bytes.
+//! siddhanta-offline.ts`). A year at the table's 12 h step is ~26 KB; a day
+//! is 144 bytes plus the 48-byte header.
 //!
 //! `from_jd` and `to_jd` are Julian Days (UT). The window is capped at 400
 //! days so one request cannot ask for the whole file. 501 when no table is

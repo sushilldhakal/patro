@@ -189,5 +189,6 @@ test("a bad magic and a truncated file are rejected", () => {
   const wrongMagic = bytes.slice();
   wrongMagic[0] = 88; // 'X'
   assert.throws(() => parseSiddhantaTable(wrongMagic), /bad magic/);
-  assert.throws(() => parseSiddhantaTable(bytes.slice(0, 40)), /sample count/);
+  assert.throws(() => parseSiddhantaTable(bytes.slice(0, 40)), /too short/);
+  assert.throws(() => parseSiddhantaTable(bytes.slice(0, 48 + 10)), /sample count/);
 });

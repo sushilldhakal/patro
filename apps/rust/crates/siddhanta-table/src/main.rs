@@ -18,14 +18,16 @@
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
     clippy::cast_precision_loss,
-    reason = "the table format is f32 by design (longitudes wrap at 360, speeds are small), and the sample counts are bounded by the year range and step; every cast's range is checked by the tests"
+    reason = "the table format is u24/f32 by design (longitudes wrap at 360, speeds are small), and the sample counts are bounded by the year range and step; every cast's range is checked by the tests"
 )]
 
 use std::{fmt::Write as _, path::PathBuf, process::ExitCode};
 
 use astronomy::{
     System,
-    surya_siddhanta::{Body, MeanBody, ayanamsha, mean_longitude, true_longitude_and_speed},
+    surya_siddhanta::{
+        Body, MAHAYUGA_DAYS, MeanBody, ayanamsha, mean_longitude, true_longitude_and_speed,
+    },
 };
 use siddhanta_table::{Table, TableError, serialise};
 use timescale::{Calendar, julday};
@@ -64,16 +66,30 @@ fn true_derivative(body: Body, jd: f64) -> f64 {
 }
 
 fn sample_at(jd: f64) -> Vec<u8> {
+    // One longitude per body (u32 counts of 1e-6°), one speed (the Moon's).
+    // Every other body's speed is the central difference of its own
+    // neighbouring samples, read back by the reader — so only the Moon pays
+    // the extra derivative here, and the build runs a third faster.
     let mut bytes = Vec::with_capacity(siddhanta_table::SAMPLE_BYTES);
     for body in Body::ALL {
         let (lon, _) = true_longitude_and_speed(body, jd);
-        bytes.extend_from_slice(&(wrap360(lon) as f32).to_le_bytes());
-        bytes.extend_from_slice(&(true_derivative(body, jd) as f32).to_le_bytes());
+        let counts = ((wrap360(lon) * siddhanta_table::LON_COUNTS_PER_DEGREE).round() as u32)
+            % siddhanta_table::LON_COUNTS;
+        bytes.extend_from_slice(&counts.to_le_bytes());
     }
-    let mean_sun_sayana = wrap360(mean_longitude(MeanBody::Sun, jd) + ayanamsha(jd));
-    bytes.extend_from_slice(&(ayanamsha(jd) as f32).to_le_bytes());
-    bytes.extend_from_slice(&(mean_sun_sayana as f32).to_le_bytes());
+    // The Moon's speed goes after all eight longitudes, not after the Moon's.
+    bytes.extend_from_slice(&(true_derivative(Body::Moon, jd) as f32).to_le_bytes());
     bytes
+}
+
+/// The mean Sun's exact rate, °/day: 360° × the Sun's revolutions per
+/// mahayuga, over the days in a mahayuga. The *nirayana* mean Sun is exactly
+/// linear in JD, so the header stores one anchor value plus this rate
+/// instead of a value per sample. (The sayana mean Sun is not linear — it
+/// carries the ayanamsha's own ~50"/year drift — so the reader adds the
+/// ayanamsha to the nirayana value.)
+fn mean_sun_rate() -> f64 {
+    360.0 * MeanBody::Sun.revolutions_per_mahayuga() as f64 / MAHAYUGA_DAYS as f64
 }
 
 fn cmd_build(out: &str, first_year: i32, last_year: i32, step_hours: f64) -> Result<(), String> {
@@ -94,6 +110,10 @@ fn cmd_build(out: &str, first_year: i32, last_year: i32, step_hours: f64) -> Res
     let table = Table {
         first_jd,
         step_days,
+        // Nirayana: the anchor is the exactly-linear quantity. The reader
+        // adds the ayanamsha for the sayana value.
+        mean_sun0: wrap360(mean_longitude(MeanBody::Sun, first_jd)),
+        mean_sun_rate: mean_sun_rate(),
         samples,
     };
     let bytes = serialise(&table);
@@ -135,7 +155,7 @@ fn cmd_check(path: &str, count: usize) -> Result<(), String> {
     // table can only match the function to within its own step, never better.
     // A finer table step cannot help: the steps are in the function, not the
     // table. The budget is that step, with margin, plus 0.5" for the
-    // interpolation itself.
+    // interpolation itself and the u32 longitude step (0.0036").
     let mut worst = [0.0f64; 8];
     let mut worst_jd = [0.0f64; 8];
     let mut fastest = [0.0f64; 8];
