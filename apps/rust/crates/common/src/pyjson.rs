@@ -5,8 +5,6 @@
 //! Python's float `repr` (`1e-05`, `1e+16`, `5.0`). Matching it lets a Rust response be
 //! compared, and cached, byte for byte.
 
-use std::fmt::Write as _;
-
 use serde_json::Value;
 
 /// Separators between items and between a key and its value.
@@ -26,14 +24,52 @@ pub fn dumps(value: &Value, style: Style) -> String {
     out
 }
 
-fn write_value(out: &mut String, value: &Value, style: Style) {
+/// The length [`dumps`] would write, without building the string: the era
+/// layer only needs the compact size (see `respond::rendered_body`), and a
+/// large payload's text is worth not allocating twice.
+#[must_use]
+pub fn dumps_len(value: &Value, style: Style) -> usize {
+    let mut out = CountingSink(0);
+    write_value(&mut out, value, style);
+    out.0
+}
+
+/// What [`write_value`] writes into: a string, or a counter that only keeps
+/// the length. `String` keeps its `reserve` hint; the counter ignores it.
+pub(crate) trait Sink: std::fmt::Write {
+    fn reserve_hint(&mut self, _additional: usize) {}
+}
+
+impl Sink for String {
+    fn reserve_hint(&mut self, additional: usize) {
+        self.reserve(additional);
+    }
+}
+
+/// A [`Sink`] that counts bytes instead of keeping them.
+struct CountingSink(usize);
+
+impl std::fmt::Write for CountingSink {
+    fn write_str(&mut self, s: &str) -> std::fmt::Result {
+        self.0 += s.len();
+        Ok(())
+    }
+}
+
+impl Sink for CountingSink {}
+
+fn write_value(out: &mut impl Sink, value: &Value, style: Style) {
     let (item, key) = match style {
         Style::Compact => (",", ":"),
         Style::Default => (", ", ": "),
     };
     match value {
-        Value::Null => out.push_str("null"),
-        Value::Bool(b) => out.push_str(if *b { "true" } else { "false" }),
+        Value::Null => {
+            let _ = out.write_str("null");
+        }
+        Value::Bool(b) => {
+            let _ = out.write_str(if *b { "true" } else { "false" });
+        }
         Value::Number(n) => {
             if let Some(i) = n.as_i64() {
                 let _ = write!(out, "{i}");
@@ -45,26 +81,26 @@ fn write_value(out: &mut String, value: &Value, style: Style) {
         }
         Value::String(s) => write_str(out, s),
         Value::Array(items) => {
-            out.push('[');
+            let _ = out.write_char('[');
             for (i, v) in items.iter().enumerate() {
                 if i > 0 {
-                    out.push_str(item);
+                    let _ = out.write_str(item);
                 }
                 write_value(out, v, style);
             }
-            out.push(']');
+            let _ = out.write_char(']');
         }
         Value::Object(map) => {
-            out.push('{');
+            let _ = out.write_char('{');
             for (i, (k, v)) in map.iter().enumerate() {
                 if i > 0 {
-                    out.push_str(item);
+                    let _ = out.write_str(item);
                 }
                 write_str(out, k);
-                out.push_str(key);
+                let _ = out.write_str(key);
                 write_value(out, v, style);
             }
-            out.push('}');
+            let _ = out.write_char('}');
         }
     }
 }
@@ -73,9 +109,9 @@ fn write_value(out: &mut String, value: &Value, style: Style) {
 ///
 /// Every character that needs escaping is ASCII, so the text is copied in runs of
 /// bytes between them rather than a character at a time.
-pub(crate) fn write_str(out: &mut String, s: &str) {
-    out.reserve(s.len() + 2);
-    out.push('"');
+pub(crate) fn write_str(out: &mut impl Sink, s: &str) {
+    out.reserve_hint(s.len() + 2);
+    let _ = out.write_char('"');
     let bytes = s.as_bytes();
     let mut run = 0;
     // A plain index loop over a lookup table: most strings need no escape at all,
@@ -85,15 +121,29 @@ pub(crate) fn write_str(out: &mut String, s: &str) {
         let b = bytes[i];
         if NEEDS_ESCAPE[b as usize] {
             // `i` is at an ASCII byte, so both slices end on character boundaries.
-            out.push_str(&s[run..i]);
+            let _ = out.write_str(&s[run..i]);
             match b {
-                b'"' => out.push_str("\\\""),
-                b'\\' => out.push_str("\\\\"),
-                b'\n' => out.push_str("\\n"),
-                b'\r' => out.push_str("\\r"),
-                b'\t' => out.push_str("\\t"),
-                0x08 => out.push_str("\\b"),
-                0x0c => out.push_str("\\f"),
+                b'"' => {
+                    let _ = out.write_str("\\\"");
+                }
+                b'\\' => {
+                    let _ = out.write_str("\\\\");
+                }
+                b'\n' => {
+                    let _ = out.write_str("\\n");
+                }
+                b'\r' => {
+                    let _ = out.write_str("\\r");
+                }
+                b'\t' => {
+                    let _ = out.write_str("\\t");
+                }
+                0x08 => {
+                    let _ = out.write_str("\\b");
+                }
+                0x0c => {
+                    let _ = out.write_str("\\f");
+                }
                 _ => {
                     let _ = write!(out, "\\u{b:04x}");
                 }
@@ -102,8 +152,8 @@ pub(crate) fn write_str(out: &mut String, s: &str) {
         }
         i += 1;
     }
-    out.push_str(&s[run..]);
-    out.push('"');
+    let _ = out.write_str(&s[run..]);
+    let _ = out.write_char('"');
 }
 
 /// The bytes `json.dumps(ensure_ascii=False)` escapes: control characters, `"` and `\`.
@@ -122,17 +172,18 @@ static NEEDS_ESCAPE: [bool; 256] = {
 /// Appends [`float_repr`] of `x`. Inside Python's fixed-notation range Rust's `{}`
 /// prints the same shortest round-trip digits (only an integral value lacks the
 /// `.0`), so the common case is written in place without the allocations of the
-/// general path.
-pub(crate) fn write_float(out: &mut String, x: f64) {
+/// general path. Whether the printed form needs `.0` is just whether the value
+/// is integral — checked here instead of by slicing the text just written, so
+/// this works for a counting sink too.
+pub(crate) fn write_float(out: &mut impl Sink, x: f64) {
     let magnitude = x.abs();
     if (1e-4..1e15).contains(&magnitude) {
-        let start = out.len();
         let _ = write!(out, "{x}");
-        if !out[start..].contains('.') {
-            out.push_str(".0");
+        if x.fract() == 0.0 {
+            let _ = out.write_str(".0");
         }
     } else {
-        out.push_str(&float_repr(x));
+        let _ = out.write_str(&float_repr(x));
     }
 }
 
@@ -296,5 +347,27 @@ mod tests {
             dumps(&v, Style::Default),
             r#"{"a": [1, 2.0, "नेपाल"], "b": null, "c": "q\"\\\n"}"#
         );
+    }
+
+    #[test]
+    fn dumps_len_matches_dumps() {
+        let values = [
+            json!(null),
+            json!(true),
+            json!(-9_223_372_036_854_775_807i64),
+            json!(18_446_744_073_709_551_615u64),
+            json!({"a": [1, 2.0, "नेपाल"], "b": null, "c": "q\"\\\n"}),
+            json!({"a\u{1}\u{8}\u{c}\t\r\"z": [5.0, 1e-5, 1e16, -0.0, 0.1, 2_461_345.5]}),
+            json!([[[{"deep": {"deeper": [1.5e16, "x"]}}]]]),
+        ];
+        for v in values {
+            for style in [Style::Compact, Style::Default] {
+                assert_eq!(
+                    dumps_len(&v, style),
+                    dumps(&v, style).len(),
+                    "{v:?} {style:?}"
+                );
+            }
+        }
     }
 }
