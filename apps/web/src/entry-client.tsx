@@ -7,12 +7,14 @@ import { syncDocumentLang } from "./lib/fonts";
 import { initAnalytics } from "./lib/analytics";
 import { initSentry, sentryRootErrorHandlers } from "./lib/sentry";
 import { recoverFromStaleChunks } from "./lib/lazy-route";
+import { guardAgainstDomTranslation } from "./lib/dom-translate-guard";
 import App from "./App";
 
 syncDocumentLang(i18n.language);
 
 initAnalytics();
 initSentry();
+guardAgainstDomTranslation();
 recoverFromStaleChunks();
 
 const root = document.getElementById("root");

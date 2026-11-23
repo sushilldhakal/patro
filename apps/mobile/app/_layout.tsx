@@ -94,6 +94,17 @@ Sentry.init({
   sendDefaultPii: false,
   tracesSampleRate: 0.2,
   integrations: [sentryNavigation],
+  // Every JS breadcrumb is handed to the native SDK on the main thread, which serialises the
+  // whole breadcrumb list for watchdog-termination tracking each time. A start-up burst of
+  // fetch/console breadcrumbs (two per request: the native "http" one and the JS "fetch" one)
+  // froze an iPhone for 5-6 s (PATRO-12) and feeds the low-RAM Android ANRs. The native SDK
+  // already records every request as "http", so the JS duplicates and console noise are dropped.
+  maxBreadcrumbs: 30,
+  beforeBreadcrumb(breadcrumb) {
+    const category = breadcrumb.category ?? "";
+    if (category === "console" || category === "fetch" || category === "xhr") return null;
+    return breadcrumb;
+  },
   // A phone with no signal cannot resolve the host. That is not a defect in the app (PATRO-J).
   beforeSend(event) {
     const text = (event.exception?.values ?? []).map((value) => `${value.type ?? ""} ${value.value ?? ""}`).join("\n");

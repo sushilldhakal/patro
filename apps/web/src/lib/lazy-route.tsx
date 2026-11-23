@@ -87,7 +87,16 @@ export function lazyRoute<
   }
 
   const Lazy = lazy(() =>
-    importWithRetry(loader).then((mod) => ({ default: mod[exportName] as ComponentType<unknown> })),
+    importWithRetry(loader).then((mod) => {
+      // A chunk that "loads" but is not the page (the module is undefined, or lacks the export):
+      // a stale or half-fetched chunk after a deploy (PATRO-WEB-D). Treat it like a failed fetch.
+      const page = (mod as Record<string, ComponentType<unknown>> | undefined)?.[key];
+      if (!page) {
+        if (reloadOnce()) return new Promise<never>(() => {});
+        throw new Error(`route chunk has no export ${key}`);
+      }
+      return { default: page };
+    }),
   ) as LazyExoticComponent<ComponentType<unknown>>;
 
   return function LazyRoute() {

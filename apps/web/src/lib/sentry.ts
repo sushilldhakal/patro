@@ -17,7 +17,23 @@ export function initSentry() {
     environment: import.meta.env.MODE,
     integrations: [Sentry.browserTracingIntegration()],
     tracesSampleRate: 0.1,
+    beforeSend(event) {
+      return isForeignStackOverflow(event) ? null : event;
+    },
   });
+}
+
+/**
+ * "Maximum call stack size exceeded" with no frame from our own bundles. The Google app and
+ * Chrome on iOS inject scripts into the page; their frames are reported under the page URL and
+ * recurse on their own (PATRO-WEB-6, -A, -B, -C: all iOS, none with a frame in /assets/).
+ */
+function isForeignStackOverflow(event: Sentry.ErrorEvent): boolean {
+  const values = event.exception?.values ?? [];
+  const overflow = values.some((v) => v.type === "RangeError" && /Maximum call stack/i.test(v.value ?? ""));
+  if (!overflow) return false;
+  const frames = values.flatMap((v) => v.stacktrace?.frames ?? []);
+  return !frames.some((f) => /\/assets\/[^/]+\.js/.test(f.abs_path ?? f.filename ?? ""));
 }
 
 /** React 19 root error hooks, reporting what React catches or cannot recover from. */
