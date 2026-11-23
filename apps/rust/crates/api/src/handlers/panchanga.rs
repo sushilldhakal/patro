@@ -179,17 +179,12 @@ pub(crate) async fn year(
     // request names, instead of being held (and re-rendered) as one tree.
     let era_name = era_of(&q);
     let language = era_name.as_deref().map(|e| era_language_of(&q, e));
-    let built = tokio::task::spawn_blocking(move || {
-        let how = YearText {
-            era: era_name.as_deref().zip(language.as_deref()),
-        };
-        year_calendar_text(signed, &loc, shape, how)
-    })
-    .await;
-    match built {
-        Ok(Ok(text)) => json_payload_text(text, &headers, year_directive(signed), None, started),
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    let how = YearText {
+        era: era_name.as_deref().zip(language.as_deref()),
+    };
+    match year_calendar_text(signed, &loc, shape, how) {
+        Ok(text) => json_payload_text(text, &headers, year_directive(signed), None, started),
+        Err(e) => month_error(e),
     }
 }
 
@@ -216,9 +211,9 @@ pub(crate) async fn year_sun(
         Ok(y) => y,
         Err(r) => return r,
     };
-    let built = tokio::task::spawn_blocking(move || year_sun_times(signed, &loc)).await;
+    let built = year_sun_times(signed, &loc);
     match built {
-        Ok(Ok(payload)) => json_payload(
+        Ok(payload) => json_payload(
             &payload,
             &q,
             &headers,
@@ -226,8 +221,7 @@ pub(crate) async fn year_sun(
             None,
             started,
         ),
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Err(e) => month_error(e),
     }
 }
 
@@ -276,35 +270,32 @@ pub(crate) async fn month(
         (true, true) => Embed::FullSlim,
     };
     let month_u = u32::try_from(bs_month).unwrap_or(1);
-    let built = tokio::task::spawn_blocking(move || {
-        let international = if exclude_international {
-            International::Exclude
-        } else {
-            International::Include
-        };
-        match clock {
-            Some(clock) => patro::month::month_calendar_at_clock(
-                signed,
-                month_u,
-                &loc,
-                &clock,
-                international,
-                embed,
-            ),
-            None => month_fields(signed, month_u, &loc, international, embed),
-        }
-    })
-    .await;
+    let international = if exclude_international {
+        International::Exclude
+    } else {
+        International::Include
+    };
+    let built = match clock {
+        Some(clock) => patro::month::month_calendar_at_clock(
+            signed,
+            month_u,
+            &loc,
+            &clock,
+            international,
+            embed,
+        ),
+        None => month_fields(signed, month_u, &loc, international, embed),
+    };
     let payload = match built {
-        Ok(Ok(p)) => p,
-        Ok(Err(MonthError::BadRequest(msg))) => return detail(StatusCode::BAD_REQUEST, &msg),
-        Ok(Err(MonthError::NotPorted(what))) => {
+        Ok(p) => p,
+        Err(MonthError::BadRequest(msg)) => return detail(StatusCode::BAD_REQUEST, &msg),
+        Err(MonthError::NotPorted(what)) => {
             return detail(
                 StatusCode::NOT_IMPLEMENTED,
                 &format!("{what} are not ported to the Rust server yet"),
             );
         }
-        Ok(Err(_)) | Err(_) => return detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Err(_) => return detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
     };
     let directive = if signed < current_bs_year() {
         IMMUTABLE
@@ -375,12 +366,8 @@ pub(crate) async fn ad_month(
     let (Ok(year), Ok(month)) = (i32::try_from(ad_year), u32::try_from(ad_month)) else {
         return detail(StatusCode::BAD_REQUEST, "ad_month must be 1..12");
     };
-    let built = tokio::task::spawn_blocking(move || {
-        patro::month::ad_month_calendar(year, month, &loc, international, embed)
-    })
-    .await;
-    match built {
-        Ok(Ok(payload)) => json_payload_fields(
+    match patro::month::ad_month_calendar(year, month, &loc, international, embed) {
+        Ok(payload) => json_payload_fields(
             &payload,
             &q,
             &headers,
@@ -388,8 +375,7 @@ pub(crate) async fn ad_month(
             None,
             started,
         ),
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Err(e) => month_error(e),
     }
 }
 
@@ -431,24 +417,19 @@ pub(crate) async fn bc_month(
     let (Ok(year), Ok(month)) = (i32::try_from(bc_year), u32::try_from(bc_month)) else {
         return detail(StatusCode::BAD_REQUEST, "bc_month must be 1..12");
     };
-    let built = tokio::task::spawn_blocking(move || {
-        patro::month::gregorian_month_calendar(
-            patro::month::GregorianEra::Bc,
-            year,
-            month,
-            &loc,
-            international,
-            embed,
-        )
-    })
-    .await;
-    match built {
+    match patro::month::gregorian_month_calendar(
+        patro::month::GregorianEra::Bc,
+        year,
+        month,
+        &loc,
+        international,
+        embed,
+    ) {
         // `bs_year_cache_control(-bc_year)`: always a past year.
-        Ok(Ok(payload)) => {
+        Ok(payload) => {
             json_payload_fields(&payload, &q, &headers, year_directive(-year), None, started)
         }
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Err(e) => month_error(e),
     }
 }
 
@@ -481,14 +462,9 @@ pub(crate) async fn nepal_patro_ad(
     let (Ok(year), Ok(month)) = (i32::try_from(year), u32::try_from(month)) else {
         return detail(StatusCode::BAD_REQUEST, "ad_year out of range");
     };
-    match tokio::task::spawn_blocking(move || {
-        patro::presentation::ad_month_patro(year, month, &loc)
-    })
-    .await
-    {
-        Ok(Ok(p)) => crate::respond::json_plain_payload(&p, &q, &headers, started),
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match patro::presentation::ad_month_patro(year, month, &loc) {
+        Ok(p) => crate::respond::json_plain_payload(&p, &q, &headers, started),
+        Err(e) => month_error(e),
     }
 }
 
@@ -563,13 +539,12 @@ pub(crate) async fn nepal_patro(
     let text_out =
         style == Some(MonthStyle::Dayblock) && q.get("output").is_some_and(|o| o == "text");
     let month_u = u32::try_from(month).unwrap_or(1);
-    match tokio::task::spawn_blocking(move || match style {
+    let built = match style {
         None => patro::presentation::patro_month(signed, month_u, &loc),
         Some(style) => patro::presentation::styled_month(signed, month_u, &loc, style, locale),
-    })
-    .await
-    {
-        Ok(Ok(p)) if text_out => crate::respond::raw_payload(
+    };
+    match built {
+        Ok(p) if text_out => crate::respond::raw_payload(
             p["text"].as_str().unwrap_or("").to_owned(),
             "text/plain; charset=utf-8",
             &[],
@@ -577,8 +552,7 @@ pub(crate) async fn nepal_patro(
             1024,
             started,
         ),
-        Ok(Ok(p)) => json_payload(&p, &q, &headers, year_directive(signed), None, started),
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Ok(p) => json_payload(&p, &q, &headers, year_directive(signed), None, started),
+        Err(e) => month_error(e),
     }
 }

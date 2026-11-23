@@ -73,6 +73,10 @@ impl System {
     }
 
     /// (sidereal longitude, latitude) in degrees, unwrapped as the text returns it.
+    ///
+    /// Memoized per `(system, body, jd)` at the backend level (see
+    /// `cache::positions`): positions are pure functions of those three, so
+    /// a repeat at the same JD returns the cached value.
     #[must_use]
     pub fn true_position(self, body: Body, jd_ut: f64) -> (f64, f64) {
         match self {
@@ -121,6 +125,9 @@ impl System {
     }
 
     /// The ayanamsha (sayana − nirayana), degrees.
+    ///
+    /// Memoized per `(system, jd)` at the backend level, as for
+    /// [`Self::true_position`]; see `cache::positions`.
     #[must_use]
     pub fn ayanamsha(self, jd_ut: f64) -> f64 {
         match self {

@@ -18,8 +18,14 @@ const AYANA_AMPLITUDE: f64 = 27.0;
 ///
 /// Zero at the Kali epoch and again 3600 years later (~499 CE); negative between
 /// them, positive since, about +22.9° in 2026.
+///
+/// Memoized per `jd` in `cache::positions`, as for [`true_position`].
 #[must_use]
 pub fn ayanamsha(jd_ut: f64) -> f64 {
+    crate::cache::memo_ayanamsha(0, jd_ut, || ayanamsha_uncached(jd_ut))
+}
+
+fn ayanamsha_uncached(jd_ut: f64) -> f64 {
     let arc = 360.0 * revolution_fraction(AYANA_REVS_MAHAYUGA, MAHAYUGA_DAYS, jd_ut);
     let quadrant_arc = py_mod(arc, 180.0);
     let bhuja = if quadrant_arc <= 90.0 {

@@ -4,6 +4,7 @@ use std::{fmt, str::FromStr};
 
 /// A body with a true position: the seven grahas and Rahu (the Moon's mean ascending node).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[repr(u8)]
 pub enum Body {
     /// सूर्य
     Sun,

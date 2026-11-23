@@ -70,10 +70,9 @@ pub(crate) async fn gochar_day(
         );
     };
     let jd = civil.to_jd_ut();
-    match tokio::task::spawn_blocking(move || gochar(jd, &loc, upcoming)).await {
-        Ok(Ok(payload)) => json_payload(&payload, &q, &headers, DEFAULT, None, started),
-        Ok(Err(e)) => gochar_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match gochar(jd, &loc, upcoming) {
+        Ok(payload) => json_payload(&payload, &q, &headers, DEFAULT, None, started),
+        Err(e) => gochar_error(e),
     }
 }
 
@@ -109,10 +108,9 @@ pub(crate) async fn gochar_jd(
     };
     let civil = CivilDay::from_jd_ut(jd_ut);
     let jd = civil.to_jd_ut();
-    match tokio::task::spawn_blocking(move || gochar(jd, &loc, upcoming)).await {
-        Ok(Ok(payload)) => json_payload(&payload, &q, &headers, DEFAULT, None, started),
-        Ok(Err(e)) => gochar_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match gochar(jd, &loc, upcoming) {
+        Ok(payload) => json_payload(&payload, &q, &headers, DEFAULT, None, started),
+        Err(e) => gochar_error(e),
     }
 }
 
@@ -139,8 +137,8 @@ pub(crate) async fn gochar_year_summary(
         Ok(y) => y,
         Err(r) => return r,
     };
-    match tokio::task::spawn_blocking(move || gochar_year(signed, &loc)).await {
-        Ok(Ok(payload)) => json_payload(
+    match gochar_year(signed, &loc) {
+        Ok(payload) => json_payload(
             &payload,
             &q,
             &headers,
@@ -148,8 +146,7 @@ pub(crate) async fn gochar_year_summary(
             None,
             started,
         ),
-        Ok(Err(e)) => gochar_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Err(e) => gochar_error(e),
     }
 }
 
@@ -237,19 +234,14 @@ pub(crate) async fn gochar_ingress_range(
             (Err(e), _) | (_, Err(e)) => return detail(StatusCode::BAD_REQUEST, &e),
         },
     };
-    let built = tokio::task::spawn_blocking(move || {
-        gochar_ingress(
-            from.to_jd_ut(),
-            to.to_jd_ut(),
-            &loc,
-            level,
-            grahas.as_deref(),
-        )
-    })
-    .await;
-    match built {
-        Ok(Ok(payload)) => json_payload(&payload, &q, &headers, DEFAULT, None, started),
-        Ok(Err(e)) => gochar_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match gochar_ingress(
+        from.to_jd_ut(),
+        to.to_jd_ut(),
+        &loc,
+        level,
+        grahas.as_deref(),
+    ) {
+        Ok(payload) => json_payload(&payload, &q, &headers, DEFAULT, None, started),
+        Err(e) => gochar_error(e),
     }
 }

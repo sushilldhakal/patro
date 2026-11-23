@@ -124,6 +124,7 @@ pub(crate) async fn report_route(
     };
     let zone = patro::at_time::observer_zone(&loc);
     let mut context = jyotish::report::BirthContext::default();
+    let mut panchanga_value: Option<Value> = None;
     if let Ok(panchanga) = patro::at_time::at_time_fields(instant, &loc) {
         let rows = panchanga
             .path(&["detail", "upagrahas"])
@@ -139,9 +140,17 @@ pub(crate) async fn report_route(
         if let Ok(day) = panchanga::at_time::vedic_day(instant, &loc, &zone) {
             context.is_day = Some(day.sunrise <= instant && instant < day.sunset);
         }
+        panchanga_value = Some(panchanga.to_value());
     }
     let lang = q.get("lang").map_or("ne", String::as_str);
-    let records = match jyotish::report::kundali_report(instant, &loc, context, state.now(), lang) {
+    let records = match jyotish::report::kundali_report(
+        instant,
+        &loc,
+        context,
+        panchanga_value.as_ref(),
+        state.now(),
+        lang,
+    ) {
         Ok(r) => r,
         Err(e) => return detail(StatusCode::BAD_REQUEST, &e.to_string()),
     };

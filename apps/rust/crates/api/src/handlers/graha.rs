@@ -131,12 +131,7 @@ pub(crate) async fn panchak_year(
         Err(resp) => return resp,
     };
     let (span, loc) = (r.span, r.loc.clone());
-    let Ok(payload) =
-        tokio::task::spawn_blocking(move || jyotish::panchak::panchak_span(span.0, span.1, &loc))
-            .await
-    else {
-        return detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error");
-    };
+    let payload = jyotish::panchak::panchak_span(span.0, span.1, &loc);
     match stamp_year_era(payload, &r.era, r.year, r.span) {
         Ok(p) => json_payload(
             &p,
@@ -165,14 +160,9 @@ pub(crate) async fn graha_asta_year(
         Err(resp) => return resp,
     };
     let (span, loc) = (r.span, r.loc.clone());
-    let built = tokio::task::spawn_blocking(move || {
-        jyotish::graha_detail::graha_asta_span(span.0, span.1, &loc)
-    })
-    .await;
-    let payload = match built {
-        Ok(Ok(p)) => p,
-        Ok(Err(e)) => return gochar_error(e),
-        Err(_) => return detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    let payload = match jyotish::graha_detail::graha_asta_span(span.0, span.1, &loc) {
+        Ok(p) => p,
+        Err(e) => return gochar_error(e),
     };
     match stamp_year_era(payload, &r.era, r.year, r.span) {
         Ok(p) => json_payload(
@@ -200,14 +190,9 @@ pub(crate) async fn graha_vakri_year(
         Err(resp) => return resp,
     };
     let (span, loc) = (r.span, r.loc);
-    let built = tokio::task::spawn_blocking(move || {
-        jyotish::graha_detail::graha_vakri_span(span.0, span.1, &loc)
-    })
-    .await;
-    match built {
-        Ok(Ok(p)) => json_payload(&p, &q, &headers, crate::respond::DEFAULT, None, started),
-        Ok(Err(e)) => gochar_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match jyotish::graha_detail::graha_vakri_span(span.0, span.1, &loc) {
+        Ok(p) => json_payload(&p, &q, &headers, crate::respond::DEFAULT, None, started),
+        Err(e) => gochar_error(e),
     }
 }
 
@@ -241,10 +226,9 @@ pub(crate) async fn graha_sthiti(
         );
     };
     let jd = civil.to_jd_ut();
-    match tokio::task::spawn_blocking(move || jyotish::graha_detail::graha_sthiti(jd, &loc)).await {
-        Ok(Ok(p)) => json_payload(&p, &q, &headers, crate::respond::DEFAULT, None, started),
-        Ok(Err(e)) => gochar_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match jyotish::graha_detail::graha_sthiti(jd, &loc) {
+        Ok(p) => json_payload(&p, &q, &headers, crate::respond::DEFAULT, None, started),
+        Err(e) => gochar_error(e),
     }
 }
 
@@ -288,13 +272,7 @@ pub(crate) async fn eclipse_year(
         astronomy::surya_siddhanta::EclipseKind::Lunar
     };
     let (span, loc) = (r.span, r.loc.clone());
-    let Ok(payload) = tokio::task::spawn_blocking(move || {
-        jyotish::graha_detail::eclipse_span(span.0, span.1, which, &loc)
-    })
-    .await
-    else {
-        return detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error");
-    };
+    let payload = jyotish::graha_detail::eclipse_span(span.0, span.1, which, &loc);
     match stamp_year_era(payload, &r.era, r.year, r.span) {
         Ok(p) => json_payload(
             &p,

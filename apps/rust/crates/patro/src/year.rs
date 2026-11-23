@@ -87,24 +87,23 @@ fn slim_day_for_wheel(day: &Value) -> Value {
 /// side, while a busy server still keeps cores for other requests.
 const YEAR_THREADS: usize = 4;
 
-/// The twelve months of a BS year, built on up to [`YEAR_THREADS`] threads and each
-/// passed through `finish` on the thread that built it (so a month can be written out
-/// and its tree freed there), in month order.
+/// The twelve months of a BS year, built on up to [`YEAR_THREADS`] threads
+/// with `build` (one month each, in month order). Months are independent,
+/// so they build side by side, while a busy server still keeps cores for
+/// other requests.
 fn months_in_parallel<T: Send>(
-    bs_year: i32,
-    location: &Location,
-    embed: Embed,
-    finish: impl Fn(Fields) -> T + Sync,
+    build: impl Fn(u32) -> Result<T, MonthError> + Send + Sync,
 ) -> Vec<Result<T, MonthError>> {
     let threads = std::thread::available_parallelism()
         .map_or(1, std::num::NonZero::get)
         .clamp(1, YEAR_THREADS);
-    let build =
-        |m: u32| month_fields(bs_year, m, location, International::Include, embed).map(&finish);
     if threads == 1 {
-        return (1..=12).map(build).collect();
+        return (1..=12).map(&build).collect();
     }
     let mut slots: Vec<Option<Result<T, MonthError>>> = (0..12).map(|_| None).collect();
+    // Share one reference to the builder: the workers only call it, never
+    // move it, so a `&build` (Send because the builder is Sync) is enough.
+    let build = &build;
     std::thread::scope(|scope| {
         let workers: Vec<_> = (0..threads)
             .map(|w| {
@@ -143,7 +142,10 @@ pub fn year_calendar(
     } else {
         Embed::Full
     };
-    let built = months_in_parallel(bs_year, location, embed, |month| month.to_value());
+    let built = months_in_parallel(|m| {
+        month_fields(bs_year, m, location, International::Include, embed)
+            .map(|month| month.to_value())
+    });
     let mut months = Vec::with_capacity(12);
     let mut days = Vec::new();
     let mut year_length = 0u64;
@@ -319,8 +321,9 @@ pub fn year_calendar_text(
     } else {
         Embed::Full
     };
-    let built = months_in_parallel(bs_year, location, embed, |month| {
-        month_text(&month, shape, how)
+    let built = months_in_parallel(|m| {
+        month_fields(bs_year, m, location, International::Include, embed)
+            .map(|month| month_text(&month, shape, how))
     });
     let mut months = Vec::with_capacity(12);
     for month in built {
@@ -387,64 +390,76 @@ pub fn year_calendar_text(
 
 /// `build_year_sun_times`: sunrise, sunset and ayana for every day of a BS year.
 ///
+/// The twelve months build in parallel (see [`months_in_parallel`]); each
+/// day's rise/set solves are independent.
+///
 /// # Errors
 ///
 /// [`MonthError`] for a year off the BS table or days before 1582-10-15.
 pub fn year_sun_times(bs_year: i32, location: &Location) -> Result<Value, MonthError> {
+    let built = months_in_parallel(|m| year_sun_times_month(bs_year, m, location));
     let mut months = Vec::with_capacity(12);
-    for bs_month in 1..=12u32 {
-        let start = calendar::month_start(bs_year, bs_month)?;
-        let length = calendar::month_length(bs_year, bs_month)?;
-        let mut days = Vec::with_capacity(length as usize);
-        for offset in 0..length {
-            let day = start.add_days(i32::try_from(offset).unwrap_or(0));
-            // `local_hhmm(…, nearest_minute=True)`; a day `datetime` cannot hold has
-            // Julian Day rise and set (`UtInstant`) read in the zone's modern offset.
-            let (sunrise_jd, sunrise, sunset) = if day.is_datetime_range() {
-                let times = sun_times(day, location)?;
-                let hhmm = |t: timescale::UtcInstant| location.zone.local(t.add_seconds(30)).hm();
-                (
-                    times.sunrise.to_jd(),
-                    hhmm(times.sunrise),
-                    hhmm(times.sunset),
-                )
-            } else {
-                location.ensure_supported(day)?;
-                let observer = location.observer();
-                let event = |crossing| {
-                    astronomy::engine::rise_set_on_day(
-                        astronomy::surya_siddhanta::Body::Sun,
-                        day,
-                        &observer,
-                        crossing,
-                    )
-                    .map(|m| timescale::JdInstant(m.to_jd()))
-                    .ok_or(panchanga::daily::DailyError::NoSunrise(day))
-                };
-                let rise = event(astronomy::surya_siddhanta::Crossing::Rise)?;
-                let set = event(astronomy::surya_siddhanta::Crossing::Set)?;
-                let hhmm = |t: timescale::JdInstant| t.add_seconds(30).wall(&location.zone).hm;
-                (rise.0, hhmm(rise), hhmm(set))
-            };
-            let aayan = panchanga::aayan(location.system, sunrise_jd);
-            days.push(json!({
-                "day": offset + 1,
-                "date_ad": day.to_string(),
-                "sunrise": sunrise,
-                "sunset": sunset,
-                "aayan": aayan.get("name").cloned().unwrap_or(Value::Null),
-                "aayan_ne": aayan.get("name_ne").cloned().unwrap_or(Value::Null),
-                "ayana_mark": crate::month::ayana_mark(&aayan),
-            }));
-        }
-        months.push(json!({
-            "month_bs": bs_month,
-            "month_name": BS_MONTH_NAMES[bs_month as usize - 1],
-            "month_name_ne": BS_MONTH_NAMES_NE[bs_month as usize - 1],
-            "month_start_ad": start.to_string(),
-            "month_length": length,
-            "calendar": days,
-        }));
+    for month in built {
+        months.push(month?);
     }
     Ok(json!({"year_bs": bs_year, "location": location.as_json(), "months": months}))
+}
+
+fn year_sun_times_month(
+    bs_year: i32,
+    bs_month: u32,
+    location: &Location,
+) -> Result<Value, MonthError> {
+    let start = calendar::month_start(bs_year, bs_month)?;
+    let length = calendar::month_length(bs_year, bs_month)?;
+    let mut days = Vec::with_capacity(length as usize);
+    for offset in 0..length {
+        let day = start.add_days(i32::try_from(offset).unwrap_or(0));
+        // `local_hhmm(…, nearest_minute=True)`; a day `datetime` cannot hold has
+        // Julian Day rise and set (`UtInstant`) read in the zone's modern offset.
+        let (sunrise_jd, sunrise, sunset) = if day.is_datetime_range() {
+            let times = sun_times(day, location)?;
+            let hhmm = |t: timescale::UtcInstant| location.zone.local(t.add_seconds(30)).hm();
+            (
+                times.sunrise.to_jd(),
+                hhmm(times.sunrise),
+                hhmm(times.sunset),
+            )
+        } else {
+            location.ensure_supported(day)?;
+            let observer = location.observer();
+            let event = |crossing| {
+                astronomy::engine::rise_set_on_day(
+                    astronomy::surya_siddhanta::Body::Sun,
+                    day,
+                    &observer,
+                    crossing,
+                )
+                .map(|m| timescale::JdInstant(m.to_jd()))
+                .ok_or(panchanga::daily::DailyError::NoSunrise(day))
+            };
+            let rise = event(astronomy::surya_siddhanta::Crossing::Rise)?;
+            let set = event(astronomy::surya_siddhanta::Crossing::Set)?;
+            let hhmm = |t: timescale::JdInstant| t.add_seconds(30).wall(&location.zone).hm;
+            (rise.0, hhmm(rise), hhmm(set))
+        };
+        let aayan = panchanga::aayan(location.system, sunrise_jd);
+        days.push(json!({
+            "day": offset + 1,
+            "date_ad": day.to_string(),
+            "sunrise": sunrise,
+            "sunset": sunset,
+            "aayan": aayan.get("name").cloned().unwrap_or(Value::Null),
+            "aayan_ne": aayan.get("name_ne").cloned().unwrap_or(Value::Null),
+            "ayana_mark": crate::month::ayana_mark(&aayan),
+        }));
+    }
+    Ok(json!({
+        "month_bs": bs_month,
+        "month_name": BS_MONTH_NAMES[bs_month as usize - 1],
+        "month_name_ne": BS_MONTH_NAMES_NE[bs_month as usize - 1],
+        "month_start_ad": start.to_string(),
+        "month_length": length,
+        "calendar": days,
+    }))
 }

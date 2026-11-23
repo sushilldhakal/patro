@@ -112,8 +112,15 @@ fn star_planet(planet: StarPlanet, jd_ut: f64) -> (f64, f64) {
 }
 
 /// (निरयण true longitude, latitude) in degrees. Rahu is the mean ascending node.
+///
+/// Memoized per `(body, jd)` in `cache::positions`: the text is pure
+/// arithmetic, so a repeat at the same JD returns the cached value.
 #[must_use]
 pub fn true_position(body: Body, jd_ut: f64) -> (f64, f64) {
+    crate::cache::memo_position(0, body as u8, jd_ut, || true_position_uncached(body, jd_ut))
+}
+
+fn true_position_uncached(body: Body, jd_ut: f64) -> (f64, f64) {
     match body {
         Body::Sun => {
             let mean = mean_longitude(MeanBody::Sun, jd_ut);
