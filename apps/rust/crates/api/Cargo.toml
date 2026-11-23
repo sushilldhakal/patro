@@ -11,6 +11,7 @@ accounts.workspace = true
 jiff.workspace = true
 astronomy.workspace = true
 ephdata.workspace = true
+siddhanta-table.workspace = true
 axum.workspace = true
 calendar.workspace = true
 common.workspace = true
