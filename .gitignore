@@ -22,3 +22,7 @@ __pycache__/
 
 # Expo CLI local state (logs can carry client IDs)
 .expo/
+
+# Surya Siddhanta position tables (built by siddhanta-table; large, not in git)
+*.vtab
+*.cheb

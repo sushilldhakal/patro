@@ -42,6 +42,12 @@ struct Graha {
     key: &'static str,
     longitude: f64,
     speed: f64,
+    /// The longitude exactly as `true_position` returned it (unwrapped,
+    /// unrounded): the extras use this raw value for RA/Dec, never the
+    /// rounded `longitude`.
+    raw_longitude: f64,
+    /// Ecliptic latitude (शर) exactly as `true_position` returned it.
+    latitude: f64,
 }
 
 impl Graha {
@@ -116,7 +122,10 @@ pub(crate) struct PlanetTable {
 
 impl PlanetTable {
     pub(crate) fn new(system: System, jd: f64) -> Self {
-        let grahas = spashta_grahas(system, jd);
+        Self::from_grahas(&spashta_grahas(system, jd))
+    }
+
+    fn from_grahas(grahas: &[Graha]) -> Self {
         let sun = grahas[0].longitude;
         let row = |i: usize| grahas[i].payload(sun);
         Self {
@@ -148,10 +157,21 @@ fn spashta_grahas(system: System, jd: f64) -> Vec<Graha> {
         .iter()
         .map(|&(key, body)| {
             let (lon, speed) = system.true_longitude_and_speed(body, jd);
+            // A memo hit: true_longitude_and_speed already evaluated this
+            // position at jd, so the latitude costs one hash lookup, not a
+            // second ephemeris evaluation.
+            let (raw_longitude, latitude) = system.true_position(body, jd);
+            debug_assert_eq!(
+                raw_longitude.to_bits(),
+                lon.to_bits(),
+                "true_position(jd) and true_longitude_and_speed's lon are the same evaluation"
+            );
             Graha {
                 key,
                 longitude: stable_round(py_mod(lon, 360.0)),
                 speed: stable_round(speed),
+                raw_longitude,
+                latitude,
             }
         })
         .collect();
@@ -160,6 +180,8 @@ fn spashta_grahas(system: System, jd: f64) -> Vec<Graha> {
         key: "ketu",
         longitude: stable_round(py_mod(rahu.longitude + 180.0, 360.0)),
         speed: stable_round(-rahu.speed),
+        raw_longitude: py_mod(rahu.raw_longitude + 180.0, 360.0),
+        latitude: -rahu.latitude,
     };
     grahas.push(ketu);
     grahas
@@ -182,6 +204,18 @@ pub struct GrahaPosition {
     pub is_combust: bool,
 }
 
+/// The Moon's longitude exactly as the `moon` row of [`graha_positions`]
+/// reports it (`stable_round`ed to six places), computed from the Moon alone.
+///
+/// Vimshottari and milan only read the Moon, so they must not pay for the
+/// other eight grahas: `graha_positions` evaluates all nine bodies, each at
+/// three instants for its speed.
+#[must_use]
+pub fn moon_longitude(system: System, jd: f64) -> f64 {
+    let (lon, _speed) = system.true_longitude_and_speed(Body::Moon, jd);
+    stable_round(py_mod(lon, 360.0))
+}
+
 /// `spashta_table(jd)` as typed rows, in the table's order (Sun … Rahu, Ketu).
 #[must_use]
 pub fn graha_positions(system: System, jd: f64) -> Vec<GrahaPosition> {
@@ -198,11 +232,6 @@ pub fn graha_positions(system: System, jd: f64) -> Vec<GrahaPosition> {
             is_combust: g.is_combust(sun),
         })
         .collect()
-}
-
-/// The graha table as a JSON tree, for callers that still build trees.
-pub(crate) fn planets(system: System, jd: f64) -> Value {
-    to_value(&PlanetTable::new(system, jd))
 }
 
 /// `planet_astro_extras(jd, graha)`: ecliptic latitude (शर), right ascension and
@@ -236,29 +265,25 @@ pub fn ascendant_extras(system: System, jd: f64, lat: f64, lon: f64) -> (f64, f6
 
 /// `spashta_table` + `enrich_snapshot_astro`: the graha table with ecliptic latitude
 /// (शर), right ascension and declination (क्रान्ति), as the at-time route reads it.
+///
+/// The latitude and RA/Dec come from the same `spashta_grahas` rows as the
+/// table itself — the raw longitude/latitude each row already carries — so
+/// this costs no second position evaluation per graha.
 pub(crate) fn planets_with_extras(system: System, jd: f64) -> Value {
-    let mut table = planets(system, jd);
+    let grahas = spashta_grahas(system, jd);
+    let mut table = to_value(&PlanetTable::from_grahas(&grahas));
+    // One ayanamsha for the whole table: drik recomputes its rotation for
+    // every call, so evaluating it per graha paid that cost nine times.
+    let ayanamsha = system.ayanamsha(jd);
     if let Value::Object(rows) = &mut table {
-        for (key, row) in rows.iter_mut() {
-            let body = if key == "ketu" {
-                Body::Rahu
-            } else {
-                match key.parse::<Body>() {
-                    Ok(b) => b,
-                    Err(_) => continue,
-                }
+        for graha in &grahas {
+            let Some(Value::Object(fields)) = rows.get_mut(graha.key) else {
+                continue;
             };
-            let (mut lon, mut lat) = system.true_position(body, jd);
-            if key == "ketu" {
-                lon = py_mod(lon + 180.0, 360.0);
-                lat = -lat;
-            }
-            let (ra, dec) = system.equatorial(lon + system.ayanamsha(jd), lat, jd);
-            if let Value::Object(fields) = row {
-                fields.insert("latitude".into(), json!(py_round(lat, 4)));
-                fields.insert("right_ascension".into(), json!(py_round(ra, 4)));
-                fields.insert("declination".into(), json!(py_round(dec, 4)));
-            }
+            let (ra, dec) = system.equatorial(graha.raw_longitude + ayanamsha, graha.latitude, jd);
+            fields.insert("latitude".into(), json!(py_round(graha.latitude, 4)));
+            fields.insert("right_ascension".into(), json!(py_round(ra, 4)));
+            fields.insert("declination".into(), json!(py_round(dec, 4)));
         }
     }
     table

@@ -103,15 +103,27 @@ impl DrikSky {
     }
 
     /// Sidereal (Lahiri) longitude and latitude of `body`, degrees; NaN outside the kernel.
+    ///
+    /// Memoized per `(body, jd)` in `cache::positions`, and evaluated with
+    /// one rotation via [`Sky::sidereal_place`](ephdata::Sky::sidereal_place)
+    /// instead of a second `ayanamsha` call.
     #[must_use]
     pub fn true_position(&self, body: Body, jd_ut: f64) -> (f64, f64) {
-        let Some(sky_body) = sky_body(body) else {
-            return (self.sky().true_node(jd_ut).unwrap_or(f64::NAN), 0.0);
-        };
-        match self.sky().ecliptic(sky_body, jd_ut, Place::Apparent) {
-            Ok(e) => (wrap360(e.lon - self.sky().ayanamsha(jd_ut)), e.lat),
-            Err(_) => (f64::NAN, f64::NAN),
-        }
+        crate::cache::memo_position(self.memo_key(), body_id(body), jd_ut, || {
+            let Some(sky_body) = sky_body(body) else {
+                return (self.sky().true_node(jd_ut).unwrap_or(f64::NAN), 0.0);
+            };
+            match self.sky().sidereal_place(sky_body, jd_ut, Place::Apparent) {
+                Ok(e) => (wrap360(e.lon), e.lat),
+                Err(_) => (f64::NAN, f64::NAN),
+            }
+        })
+    }
+
+    /// The memo key for this sky: its address. Skies are leaked once at
+    /// startup and never dropped, so it is never reused for another kernel.
+    fn memo_key(&self) -> usize {
+        std::ptr::from_ref(self.sky()).cast::<()>() as usize
     }
 
     /// Longitude and speed (degrees per day) by a central difference.
@@ -127,9 +139,11 @@ impl DrikSky {
     }
 
     /// The Lahiri ayanamsha, degrees.
+    ///
+    /// Memoized per `jd` in `cache::positions`, as for [`Self::true_position`].
     #[must_use]
     pub fn ayanamsha(&self, jd_ut: f64) -> f64 {
-        self.sky().ayanamsha(jd_ut)
+        crate::cache::memo_ayanamsha(self.memo_key(), jd_ut, || self.sky().ayanamsha(jd_ut))
     }
 
     /// Mean sidereal time at Greenwich, degrees (IAU 2006; UT stands for UT1).
@@ -216,10 +230,7 @@ impl DrikSky {
     fn horizon(&self, body: Body, jd_ut: f64) -> f64 {
         match body {
             Body::Sun => SUN_HORIZON,
-            Body::Moon => {
-                let (_, _, distance) = self.equatorial(Body::Moon, jd_ut);
-                0.7275 * (EARTH_RADIUS_KM / distance).asin().to_degrees() - REFRACTION
-            }
+            Body::Moon => Self::horizon_with(body, self.equatorial(Body::Moon, jd_ut).2),
             _ => -REFRACTION,
         }
     }
@@ -250,7 +261,26 @@ impl DrikSky {
     }
 
     fn above(&self, body: Body, t: f64, latitude: f64, longitude: f64) -> f64 {
-        self.altitude(body, t, latitude, longitude) - self.horizon(body, t)
+        // One ecliptic evaluation serves both halves: altitude needs RA/Dec
+        // and the Moon's horizon needs its distance, so calling altitude()
+        // then horizon() here would evaluate the Moon twice per step.
+        let (ra, dec, distance) = self.equatorial(body, t);
+        let alt = altitude_of(
+            ra,
+            dec,
+            Self::local_sidereal_degrees(t, longitude),
+            latitude,
+        );
+        alt - Self::horizon_with(body, distance)
+    }
+
+    /// The horizon altitude from an already-computed distance; see [`Self::horizon`].
+    fn horizon_with(body: Body, distance_km: f64) -> f64 {
+        match body {
+            Body::Sun => SUN_HORIZON,
+            Body::Moon => 0.7275 * (EARTH_RADIUS_KM / distance_km).asin().to_degrees() - REFRACTION,
+            _ => -REFRACTION,
+        }
     }
 
     #[expect(

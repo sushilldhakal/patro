@@ -150,6 +150,39 @@ pub fn instant_blocks<I: PyInstant>(
     }
 }
 
+/// The birth-instant snapshot already inside a panchanga `Value` built by
+/// `at_time_fields` (`detail.planets` from `instant_blocks`, plus
+/// `detail.instant_lagna`), or a freshly computed one when the caller did
+/// not supply it. The rows come from the same `planets_with_extras`
+/// computation, so the values are identical — this only skips evaluating
+/// the nine grahas a second time.
+#[must_use]
+pub fn shared_snapshot(
+    panchanga: Option<&Value>,
+    system: System,
+    instant: UtcInstant,
+    lat: f64,
+    lon: f64,
+) -> Value {
+    let planets = panchanga
+        .and_then(|v| v.get("detail"))
+        .and_then(|d| d.get("planets"))
+        .filter(|p| p.is_object());
+    if let Some(planets) = planets {
+        let lagna_lon = panchanga
+            .and_then(|v| v.get("detail"))
+            .and_then(|d| d.get("instant_lagna"))
+            .and_then(|l| l.get("longitude"))
+            .and_then(Value::as_f64)
+            .unwrap_or(0.0);
+        return json!({
+            "planets": planets,
+            "lagna": {"longitude": lagna_lon},
+        });
+    }
+    planetary_snapshot(system, instant, lat, lon)
+}
+
 /// `build_planetary_snapshot(instant, lat=, lon=)`: the nine grahas with their
 /// equatorial extras, the instant lagna, and the Moon's phase.
 #[must_use]
@@ -256,4 +289,43 @@ fn kala_vela_upagrahas<I: PyInstant>(
             entry(key, asc, Some(at.to_string()))
         })
         .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shared_snapshot_matches_fresh_snapshot() {
+        let system = System::SuryaSiddhanta;
+        let instant = UtcInstant::from_jd(2_460_000.5).expect("valid JD");
+        let (lat, lon) = (27.7, 85.3);
+        let fresh = planetary_snapshot(system, instant, lat, lon);
+        // The Value at_time_fields hands to kundali detail/report.
+        let panchanga = json!({
+            "detail": {
+                "planets": fresh["planets"],
+                "instant_lagna": fresh["lagna"],
+            },
+        });
+        let shared = shared_snapshot(Some(&panchanga), system, instant, lat, lon);
+        assert_eq!(
+            shared["planets"], fresh["planets"],
+            "shared planets are the fresh table, row for row"
+        );
+        assert_eq!(
+            shared["lagna"]["longitude"], fresh["lagna"]["longitude"],
+            "shared lagna is the fresh lagna"
+        );
+        // And the fallback computes the same snapshot when nothing is supplied.
+        let fallback = shared_snapshot(None, system, instant, lat, lon);
+        assert_eq!(
+            fallback["planets"], fresh["planets"],
+            "fallback planets match"
+        );
+        assert_eq!(
+            fallback["lagna"]["longitude"], fresh["lagna"]["longitude"],
+            "fallback lagna matches"
+        );
+    }
 }

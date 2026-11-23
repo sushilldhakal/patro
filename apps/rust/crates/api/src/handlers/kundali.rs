@@ -124,6 +124,7 @@ pub(crate) async fn report_route(
     };
     let zone = patro::at_time::observer_zone(&loc);
     let mut context = jyotish::report::BirthContext::default();
+    let mut panchanga_value: Option<Value> = None;
     if let Ok(panchanga) = patro::at_time::at_time_fields(instant, &loc) {
         let rows = panchanga
             .path(&["detail", "upagrahas"])
@@ -139,9 +140,17 @@ pub(crate) async fn report_route(
         if let Ok(day) = panchanga::at_time::vedic_day(instant, &loc, &zone) {
             context.is_day = Some(day.sunrise <= instant && instant < day.sunset);
         }
+        panchanga_value = Some(panchanga.to_value());
     }
     let lang = q.get("lang").map_or("ne", String::as_str);
-    let records = match jyotish::report::kundali_report(instant, &loc, context, state.now(), lang) {
+    let records = match jyotish::report::kundali_report(
+        instant,
+        &loc,
+        context,
+        panchanga_value.as_ref(),
+        state.now(),
+        lang,
+    ) {
         Ok(r) => r,
         Err(e) => return detail(StatusCode::BAD_REQUEST, &e.to_string()),
     };
@@ -235,10 +244,8 @@ pub(crate) async fn vimshottari(
         Ok(v) => v,
         Err(r) => return r,
     };
-    let moon = panchanga::graha_positions(loc.system, instant.to_jd())
-        .iter()
-        .find(|p| p.key == "moon")
-        .map_or(0.0, |p| p.longitude);
+    // Vimshottari only reads the Moon: compute it alone, not all nine grahas.
+    let moon = panchanga::moon_longitude(loc.system, instant.to_jd());
     let mut payload = json!({
         "ayanamsha": "surya_siddhanta",
         "moon_longitude": moon,
@@ -526,10 +533,8 @@ fn milan_partner(
     location
         .ensure_supported(timescale::CivilDay::from_jd_ut(instant.to_jd()))
         .map_err(|e| detail(StatusCode::BAD_REQUEST, &e.to_string()))?;
-    let moon = panchanga::graha_positions(system, instant.to_jd())
-        .iter()
-        .find(|p| p.key == "moon")
-        .map_or(0.0, |p| p.longitude);
+    // Milan only reads the Moon: compute it alone, not all nine grahas.
+    let moon = panchanga::moon_longitude(system, instant.to_jd());
     Ok(jyotish::milan::Partner {
         moon_longitude: moon,
         birth_instant: observer_iso(instant, &location),

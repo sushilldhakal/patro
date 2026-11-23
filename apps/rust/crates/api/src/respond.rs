@@ -10,7 +10,7 @@ use axum::{
     http::{HeaderMap, HeaderName, HeaderValue, StatusCode, header},
     response::{IntoResponse, Response},
 };
-use common::pyjson::{Style, dumps};
+use common::pyjson::{Style, dumps, dumps_len};
 use flate2::{Compression, write::GzEncoder};
 use serde_json::{Value, json};
 
@@ -79,13 +79,16 @@ fn with_stale_if_error(directive: &str) -> String {
 
 /// The body as sent, and the size `GZipMiddleware` judged it by. Python's era
 /// middleware sits outside `GZip`, so `GZip` saw the compact route body before the era
-/// layer re-rendered it: the 1024-byte threshold applies to that size.
+/// layer re-rendered it: the 1024-byte threshold applies to that size. With an era
+/// the compact text is discarded except for its length, so its size is counted
+/// (`dumps_len`) instead of built.
 fn rendered_body(payload: &Value, q: &Query) -> (String, PreEraLen) {
-    let compact = dumps(payload, Style::Compact);
-    let pre = PreEraLen(compact.len());
     let Some(era) = era_of(q) else {
+        let compact = dumps(payload, Style::Compact);
+        let pre = PreEraLen(compact.len());
         return (compact, pre);
     };
+    let pre = PreEraLen(dumps_len(payload, Style::Compact));
     let language = era_language_of(q, &era);
     (
         dumps(

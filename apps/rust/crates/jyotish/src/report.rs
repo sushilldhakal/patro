@@ -1465,11 +1465,16 @@ pub fn kundali_report(
     instant: UtcInstant,
     location: &panchanga::daily::Location,
     context: BirthContext,
+    panchanga: Option<&Value>,
     now: UtcInstant,
     lang: &str,
 ) -> Result<Vec<Value>, crate::kundali_detail::DetailError> {
     use crate::chart::{ChartInputs, RawPlanet, build_chart, shadbala_facts};
-    let snapshot = panchanga::at_time::planetary_snapshot(
+    // Same shared birth-instant table as kundali detail: read it from the
+    // panchanga Value the handler already built, computing a fresh snapshot
+    // only when it was not supplied.
+    let snapshot = panchanga::at_time::shared_snapshot(
+        panchanga,
         location.system,
         instant,
         location.lat,
@@ -1488,7 +1493,13 @@ pub fn kundali_report(
     });
     let moon_lon = raw[Graha::Moon.index()].longitude;
     let timeline = dasha::vimshottari_timeline(moon_lon, instant, 1);
-    let shadbala = crate::shadbala::shadbala(instant, location)
+    let lons: [f64; 9] = std::array::from_fn(|i| raw[i].longitude);
+    let speeds: [f64; 9] = std::array::from_fn(|i| {
+        snapshot["planets"][Graha::ALL[i].key()]["speed"]
+            .as_f64()
+            .unwrap_or(0.0)
+    });
+    let shadbala = crate::shadbala::shadbala_from_positions(instant, location, lons, speeds)
         .map_err(|e| crate::kundali_detail::DetailError(e.to_string()))?;
     let facts = shadbala_facts(&shadbala);
     let chart = build_chart(

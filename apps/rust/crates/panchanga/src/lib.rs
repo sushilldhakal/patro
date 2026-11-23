@@ -46,7 +46,9 @@ pub use names::{
     KARANA_NAMES, NAKSHATRA_NAMES, TITHI_NAMES, VAARA_ENGLISH, VAARA_NAMES, YOGA_NAMES,
 };
 
-pub use blocks_lagna::{GrahaPosition, ascendant_extras, graha_extras, graha_positions};
+pub use blocks_lagna::{
+    GrahaPosition, ascendant_extras, graha_extras, graha_positions, moon_longitude,
+};
 pub use blocks_muhurta::Muhurta;
 pub use blocks_time::{HoraSlot, aayan, hora as hora_slots};
 pub use daily::{

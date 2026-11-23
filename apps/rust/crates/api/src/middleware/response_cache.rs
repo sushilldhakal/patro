@@ -551,7 +551,16 @@ pub(crate) async fn response_cache(request: Request, next: Next) -> Response {
         }
     };
 
-    let response = compute(request, next, store.as_ref(), &key, &path, &query, encoding).await;
+    let response = compute(
+        request,
+        next,
+        Arc::clone(&store),
+        &key,
+        &path,
+        &query,
+        encoding,
+    )
+    .await;
     drop(flight);
     response
 }
@@ -559,7 +568,7 @@ pub(crate) async fn response_cache(request: Request, next: Next) -> Response {
 async fn compute(
     mut request: Request,
     next: Next,
-    store: &dyn Store,
+    store: Arc<dyn Store>,
     key: &str,
     path: &str,
     query: &str,
@@ -616,11 +625,30 @@ async fn compute(
                     .map(|v| ((*name).to_owned(), v.to_owned()))
             })
             .collect();
-        store.set(key, pack(&stored, &bytes), ttl).await;
+        // The SET runs detached: a miss used to pay a full Redis round-trip
+        // before the first byte reached the client, and a SET failure is
+        // already ignored (`Store::set` returns `()`). One trade-off: a
+        // second identical request arriving inside the SET's round-trip can
+        // miss and recompute, where it would have hit before; the in-flight
+        // waiters only wait for the build, not the store.
+        let store = Arc::clone(&store);
+        let key = key.to_owned();
+        let packed = pack(&stored, &bytes);
+        tokio::spawn(async move {
+            store.set(&key, packed, ttl).await;
+        });
     }
     let x_cache = if store_it { "MISS" } else { "BYPASS" };
     if gzipped && encoding == Encoding::Identity {
-        if let Some(plain) = gunzip(&bytes) {
+        // Decompression is CPU work: run it on a blocking thread instead of
+        // stalling this async worker (compute() runs outside cpu_pool).
+        // The clone only happens for gzipped identity responses.
+        let to_decode = bytes.clone();
+        let plain = tokio::task::spawn_blocking(move || gunzip(&to_decode))
+            .await
+            .ok()
+            .flatten();
+        if let Some(plain) = plain {
             parts.headers.remove(header::CONTENT_ENCODING);
             parts.headers.remove(header::CONTENT_LENGTH);
             insert(

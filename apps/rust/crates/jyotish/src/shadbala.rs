@@ -560,10 +560,8 @@ fn yuddha(rows: &[Row], lons: &[f64; 9]) -> (Vec<Value>, Vec<(Graha, f64)>) {
 /// # Errors
 ///
 /// [`DailyError`] when the day's sunrise or sunset cannot be found.
-#[expect(clippy::too_many_lines, reason = "the Python table, row for row")]
 pub fn shadbala(instant: UtcInstant, location: &Location) -> Result<Value, DailyError> {
     let jd = instant.to_jd();
-    let ayan = location.system.ayanamsha(jd);
     let mut lons = [0.0; 9];
     let mut speeds = [0.0; 9];
     for row in graha_positions(location.system, jd) {
@@ -572,6 +570,26 @@ pub fn shadbala(instant: UtcInstant, location: &Location) -> Result<Value, Daily
             speeds[g.index()] = row.speed;
         }
     }
+    shadbala_from_positions(instant, location, lons, speeds)
+}
+
+/// Shadbala from longitudes and speeds already computed at the birth
+/// instant — for example the planet table inside the panchanga `Value` —
+/// instead of evaluating the graha table a second time. The arrays are
+/// indexed by [`Graha::index`], as `shadbala` builds them.
+///
+/// # Errors
+///
+/// [`DailyError`] when the day's sunrise or sunset cannot be found.
+#[expect(clippy::too_many_lines, reason = "the Python table, row for row")]
+pub fn shadbala_from_positions(
+    instant: UtcInstant,
+    location: &Location,
+    lons: [f64; 9],
+    speeds: [f64; 9],
+) -> Result<Value, DailyError> {
+    let jd = instant.to_jd();
+    let ayan = location.system.ayanamsha(jd);
     let mut d1 = [0usize; 9];
     for p in PLANETS {
         d1[p.index()] = sign_of(lons[p.index()]);

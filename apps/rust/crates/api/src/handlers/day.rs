@@ -366,14 +366,11 @@ pub(crate) async fn nepal_panchanga_day(
         .cloned()
         .unwrap_or_else(|| "default".into());
     let locale = locale_of(&q);
-    let built = tokio::task::spawn_blocking(move || {
-        day_state_with_holidays(civil, &loc).map(|s| render_day(&s, &loc, style, &variant, locale))
-    })
-    .await;
-    match built {
-        Ok(Ok(payload)) => formatted(&payload, &q, style, &headers, started),
-        Ok(Err(e)) => day_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match day_state_with_holidays(civil, &loc)
+        .map(|s| render_day(&s, &loc, style, &variant, locale))
+    {
+        Ok(payload) => formatted(&payload, &q, style, &headers, started),
+        Err(e) => day_error(e),
     }
 }
 
@@ -450,21 +447,16 @@ pub(crate) async fn nepal_panchanga_month(
         .unwrap_or_else(|| "default".into());
     let locale = locale_of(&q);
     let month_u = u32::try_from(month).unwrap_or(1);
-    let built = tokio::task::spawn_blocking(move || {
-        render_month(
-            signed,
-            month_u,
-            &loc,
-            style,
-            &variant,
-            if full { Embed::Full } else { Embed::Lite },
-            locale,
-        )
-    })
-    .await;
-    match built {
-        Ok(Ok(payload)) => formatted(&payload, &q, style, &headers, started),
-        Ok(Err(e)) => month_error(e),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+    match render_month(
+        signed,
+        month_u,
+        &loc,
+        style,
+        &variant,
+        if full { Embed::Full } else { Embed::Lite },
+        locale,
+    ) {
+        Ok(payload) => formatted(&payload, &q, style, &headers, started),
+        Err(e) => month_error(e),
     }
 }

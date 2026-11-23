@@ -5,5 +5,7 @@
 //! faster than reading it back from disk, so this crate stays free of I/O.
 
 mod memory;
+mod positions;
 
 pub use memory::Cache;
+pub(crate) use positions::{memo_ayanamsha, memo_position};

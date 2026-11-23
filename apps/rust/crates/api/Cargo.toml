@@ -11,6 +11,7 @@ accounts.workspace = true
 jiff.workspace = true
 astronomy.workspace = true
 ephdata.workspace = true
+siddhanta-table.workspace = true
 axum.workspace = true
 calendar.workspace = true
 common.workspace = true
@@ -30,6 +31,13 @@ serde.workspace = true
 tower-http.workspace = true
 tracing.workspace = true
 vastu.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "kundali_detail"
+harness = false
 
 [lints]
 workspace = true

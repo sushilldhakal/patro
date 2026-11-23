@@ -47,6 +47,7 @@ rusqlite = { version = "0.41", features = ["bundled"] }
 accounts = { path = "crates/accounts" }
 ephemeris = { path = "crates/ephemeris" }
 ephdata = { path = "crates/ephdata" }
+siddhanta-table = { path = "crates/siddhanta-table" }
 swiss-eph = "=0.2.1"
 tokio-postgres = "0.7"
 deadpool-postgres = "0.14"

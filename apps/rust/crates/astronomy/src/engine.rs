@@ -9,6 +9,7 @@ use timescale::{CivilDay, Moment, UtcInstant, Zone};
 
 use crate::{
     System,
+    position::Ephemeris,
     surya_siddhanta::{Body, Crossing},
 };
 
@@ -43,9 +44,15 @@ pub fn moon_longitude(system: System, jd_ut: f64) -> f64 {
 }
 
 /// (Sun, Moon) sidereal longitudes at one instant.
+///
+/// Routed through [`Ephemeris::pos`], so drik shares one Earth state, one
+/// rotation and one ayanamsha for the pair instead of evaluating the Sun and
+/// the Moon separately. The Surya Siddhanta pair is the same two longitudes
+/// it computes individually, so the values are unchanged for both systems.
 #[must_use]
 pub fn sun_moon_longitudes(system: System, jd_ut: f64) -> (f64, f64) {
-    (sun_longitude(system, jd_ut), moon_longitude(system, jd_ut))
+    let pos = system.pos(jd_ut);
+    (pos.sun, pos.moon)
 }
 
 /// The Moon's phase angle and lit fraction, from the text's own Sun and Moon
@@ -53,8 +60,15 @@ pub fn sun_moon_longitudes(system: System, jd_ut: f64) -> (f64, f64) {
 /// (1 − cos e) / 2.
 #[must_use]
 pub fn moon_phase_angle_and_fraction(system: System, jd_ut: f64) -> (f64, f64) {
-    let sun = system.true_position(Body::Sun, jd_ut).0;
-    let moon = system.true_position(Body::Moon, jd_ut).0;
+    let pos = system.pos(jd_ut);
+    moon_phase_angle_and_fraction_from(pos.sun, pos.moon)
+}
+
+/// The Moon's phase angle and lit fraction from an already-computed
+/// (Sun, Moon) longitude pair, so callers holding the pair do not evaluate
+/// the Sun and the Moon a second time.
+#[must_use]
+pub fn moon_phase_angle_and_fraction_from(sun: f64, moon: f64) -> (f64, f64) {
     let d = wrap360(moon - sun);
     let elongation = (if d > 180.0 { d - 360.0 } else { d }).abs();
     (

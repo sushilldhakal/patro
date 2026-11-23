@@ -12,6 +12,7 @@ pub fn router(state: AppState) -> Router {
     let timeout = state.config.request_timeout();
     let mut routes = Router::new()
         .merge(panchanga())
+        .merge(siddhanta())
         .merge(festivals())
         .merge(catalog())
         .merge(sait())
@@ -78,6 +79,12 @@ fn accounts() -> Router<AppState> {
         .route("/v1/admin/analytics/installs/daily", get(an::daily))
         .route("/v1/admin/analytics/installs/platforms", get(an::platforms))
         .route("/v1/admin/analytics/installs/live", get(an::live))
+}
+
+/// The offline Surya Siddhanta table: a lookup, no maths (see
+/// `handlers::siddhanta`).
+fn siddhanta() -> Router<AppState> {
+    Router::new().route("/v1/siddhanta/table", get(handlers::siddhanta::table))
 }
 
 /// Health, the day and month panchanga, calendar header and date conversion.

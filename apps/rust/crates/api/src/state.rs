@@ -24,6 +24,10 @@ pub struct AppState {
     /// Our own ephemeris, loaded once at startup from `PATRO_RS_EPHDATA`; `None` keeps
     /// `siddhanta=drik` answering 501.
     pub drik: Option<DrikFiles>,
+    /// The Surya Siddhanta position table, loaded once at startup from the
+    /// file named by `PATRO_RS_SIDDHANTA_TABLE`; `None` keeps
+    /// `/v1/siddhanta/table` answering 501.
+    pub siddhanta: Option<std::sync::Arc<siddhanta_table::Table>>,
 }
 
 /// The own-ephemeris files a server loaded, and the system built on them.
@@ -81,6 +85,30 @@ fn load_drik_files() -> Option<DrikFiles> {
     Some(files)
 }
 
+/// Loads the Surya Siddhanta position table (`siddhanta.vtab`, built by the
+/// `siddhanta-table` binary) from the file named by `PATRO_RS_SIDDHANTA_TABLE`,
+/// once. A missing or unreadable file only logs: the table endpoint answers
+/// 501 and the rest of the server is unaffected.
+fn load_siddhanta() -> Option<std::sync::Arc<siddhanta_table::Table>> {
+    let path = std::env::var_os("PATRO_RS_SIDDHANTA_TABLE")?;
+    let path = std::path::PathBuf::from(path);
+    match siddhanta_table::open(&path) {
+        Ok(table) => {
+            tracing::info!(
+                first_jd = table.first_jd,
+                last_jd = table.last_jd(),
+                samples = table.sample_count(),
+                "siddhanta table loaded: /v1/siddhanta/table is on"
+            );
+            Some(std::sync::Arc::new(table))
+        }
+        Err(e) => {
+            tracing::error!(error = %e, path = %path.display(), "siddhanta table not loaded: /v1/siddhanta/table stays off");
+            None
+        }
+    }
+}
+
 impl AppState {
     /// State for one running server.
     #[must_use]
@@ -95,6 +123,7 @@ impl AppState {
             accounts: None,
             vastu: Arc::new(OnceLock::new()),
             drik: load_drik(),
+            siddhanta: load_siddhanta(),
         }
     }
 

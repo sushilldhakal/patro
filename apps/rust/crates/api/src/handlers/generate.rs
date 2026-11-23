@@ -94,12 +94,10 @@ fn force_of(q: &Query) -> Result<Precompute, Response> {
     })
 }
 
-async fn blocking(
-    work: impl FnOnce() -> Result<Value, Response> + Send + 'static,
-) -> Result<Value, Response> {
-    tokio::task::spawn_blocking(work)
-        .await
-        .unwrap_or_else(|_| Err(detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error")))
+fn blocking(work: impl FnOnce() -> Result<Value, Response>) -> Result<Value, Response> {
+    // The handlers already run on the cpu_pool blocking thread, so a nested
+    // spawn_blocking here only cost a second thread per request.
+    work()
 }
 
 /// `POST /v1/generate/panchanga/{bs_year}`.
@@ -129,7 +127,6 @@ pub(crate) async fn panchanga_year(
                 "cache": panchanga::store::stats(),
             }))
         })
-        .await
     }
     .await;
     match result {
@@ -177,7 +174,6 @@ pub(crate) async fn panchanga_popular(
                 "cache": panchanga::store::stats(),
             }))
         })
-        .await
     }
     .await;
     match result {
@@ -210,7 +206,6 @@ pub(crate) async fn holiday_year(
                 "generated_at": field("generated_at"),
             }))
         })
-        .await
     }
     .await;
     match result {

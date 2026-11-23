@@ -275,6 +275,32 @@ impl Sky {
         })
     }
 
+    /// The sidereal ecliptic place of `body` on the mean ecliptic of date:
+    /// [`Self::ecliptic`]'s longitude minus the ayanamsha from the *same*
+    /// rotation, so one rotation serves both instead of two.
+    ///
+    /// # Errors
+    ///
+    /// [`KernelError::OutOfRange`] outside the data.
+    pub fn sidereal_place(
+        &self,
+        body: Body,
+        jd_ut: f64,
+        place: Place,
+    ) -> Result<Ecliptic, KernelError> {
+        let jd_tt = ut_to_tt(jd_ut);
+        let et = tt_to_et(jd_tt);
+        let earth = self.earth_state(et)?;
+        let m = Self::rotation(jd_tt);
+        let v = self.geocentric_with(body, et, &earth, place)?;
+        let (lon, lat, distance_km) = frames::spherical(&frames::apply(&m, &v));
+        Ok(Ecliptic {
+            lon: lon - self.ayanamsha_with(&m),
+            lat,
+            distance_km,
+        })
+    }
+
     /// The apparent sidereal longitude of `body`, degrees in [0, 360).
     ///
     /// # Errors

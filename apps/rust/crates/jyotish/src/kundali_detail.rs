@@ -9,7 +9,7 @@
 //! Saturn's transit): the caller passes it, so tests can fix it.
 
 use panchanga::{
-    at_time::{planetary_snapshot, vedic_day},
+    at_time::vedic_day,
     daily::Location,
     pyfloat::{py_floordiv, py_int, py_mod, py_round, py_round_int},
 };
@@ -1603,7 +1603,16 @@ pub fn assemble(inputs: &DetailInputs<'_>, panchanga: &Value) -> Result<Value, D
         now,
     } = *inputs;
     let siddhanta = location.system;
-    let snapshot = planetary_snapshot(siddhanta, instant, location.lat, location.lon);
+    // The birth-instant table is already in the panchanga Value handed in
+    // (at_time_fields' instant_blocks); shared_snapshot reads it and only
+    // computes a fresh one when the caller did not supply it.
+    let snapshot = panchanga::at_time::shared_snapshot(
+        Some(panchanga),
+        siddhanta,
+        instant,
+        location.lat,
+        location.lon,
+    );
     let lagna_lon = snapshot["lagna"]["longitude"].as_f64().unwrap_or(0.0);
     let lagna_rashi = sign_of(lagna_lon) + 1;
     let raw: [RawPlanet; 9] = std::array::from_fn(|i| {
@@ -1618,8 +1627,15 @@ pub fn assemble(inputs: &DetailInputs<'_>, panchanga: &Value) -> Result<Value, D
         }
     });
     let lons: [f64; 9] = std::array::from_fn(|i| raw[i].longitude);
-    let shadbala_payload =
-        shadbala::shadbala(instant, location).map_err(|e| DetailError(e.to_string()))?;
+    // The speeds are the same spashta_grahas values shadbala reads from its
+    // own table, so pass them in instead of evaluating the table again.
+    let speeds: [f64; 9] = std::array::from_fn(|i| {
+        snapshot["planets"][Graha::ALL[i].key()]["speed"]
+            .as_f64()
+            .unwrap_or(0.0)
+    });
+    let shadbala_payload = shadbala::shadbala_from_positions(instant, location, lons, speeds)
+        .map_err(|e| DetailError(e.to_string()))?;
     let moon_lon = lons[Graha::Moon.index()];
     let sun_lon = lons[Graha::Sun.index()];
     let (vimshottari, tribhagi, yogini, timeline) = dasha_trees(moon_lon, instant, now);

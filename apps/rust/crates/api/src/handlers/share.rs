@@ -517,7 +517,10 @@ pub async fn og_image(
         .filter(|p| !p.is_empty())
         .cloned()
         .unwrap_or_else(|| location.name.clone());
-    let drawn = tokio::task::spawn_blocking(move || {
+    // Drawn on the cpu_pool blocking thread already, so no nested
+    // spawn_blocking: the closure below only groups the fallible steps so
+    // `?` still returns an error string for the match beneath it.
+    let drawn = (|| -> Result<Vec<u8>, String> {
         let options = DayBuildOptions {
             detail: DetailMode::Include,
             slim: SlimMode::Keep,
@@ -556,10 +559,9 @@ pub async fn og_image(
             location: place,
         })
         .map_err(|e| e.to_string())
-    })
-    .await;
+    })();
     match drawn {
-        Ok(Ok(png)) => crate::respond::raw_bytes_payload(
+        Ok(png) => crate::respond::raw_bytes_payload(
             png,
             "image/png",
             &[
@@ -570,8 +572,7 @@ pub async fn og_image(
             1024,
             started,
         ),
-        Ok(Err(message)) => detail(StatusCode::INTERNAL_SERVER_ERROR, &message),
-        Err(_) => detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"),
+        Err(message) => detail(StatusCode::INTERNAL_SERVER_ERROR, &message),
     }
 }
 
