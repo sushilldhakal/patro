@@ -21,6 +21,11 @@ timescale.workspace = true
 
 [dev-dependencies]
 serde_json = { workspace = true, features = ["float_roundtrip"] }
+criterion.workspace = true
+
+[[bench]]
+name = "at_time"
+harness = false
 
 [lints]
 workspace = true

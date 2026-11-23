@@ -26,5 +26,9 @@ serde_json = { workspace = true, features = ["float_roundtrip"] }
 name = "daily"
 harness = false
 
+[[bench]]
+name = "at_time"
+harness = false
+
 [lints]
 workspace = true

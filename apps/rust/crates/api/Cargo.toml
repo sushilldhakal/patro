@@ -31,5 +31,12 @@ tower-http.workspace = true
 tracing.workspace = true
 vastu.workspace = true
 
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "kundali_detail"
+harness = false
+
 [lints]
 workspace = true
