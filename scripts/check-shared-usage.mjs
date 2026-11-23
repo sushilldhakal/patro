@@ -38,11 +38,12 @@ const fail = (msg) => failures.push(msg);
 
 // ── API communication ────────────────────────────────────────────────────────
 
-/** Direct fetches that are not API calls (audio files, existence checks on R2). */
+/** Direct fetches that are not JSON API calls (audio files, existence checks on R2, the binary Surya position table). */
 const FETCH_ALLOWED = new Set([
   "apps/web/src/lib/shloka-audio-engine.ts",
   "apps/web/src/hooks/use-chapter-track.ts",
   "apps/mobile/lib/learn/use-chapter-track.ts",
+  "apps/mobile/lib/siddhanta-offline.ts",
 ]);
 /** Each app's transport (lib/api.ts) is where the configured base URL is applied. */
 const TRANSPORTS = new Set(["apps/web/src/lib/api.ts", "apps/mobile/lib/api.ts"]);

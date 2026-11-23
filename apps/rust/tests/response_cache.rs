@@ -36,6 +36,13 @@ async fn get(path: &str, encoding: &str) -> (u16, axum::http::HeaderMap, Vec<u8>
     (status, headers, body)
 }
 
+/// The cache write runs detached from the response, so let it land before the next request.
+async fn settle() {
+    for _ in 0..16 {
+        tokio::task::yield_now().await;
+    }
+}
+
 #[tokio::test]
 async fn miss_then_hit_serves_the_same_bytes() {
     response_cache::install_store(Arc::new(response_cache::MemoryStore::default()));
@@ -46,6 +53,7 @@ async fn miss_then_hit_serves_the_same_bytes() {
         h1.get("x-cache").and_then(|v| v.to_str().ok()),
         Some("MISS")
     );
+    settle().await;
     let (s2, h2, b2) = get(path, IDENTITY).await;
     assert_eq!(s2, 200);
     assert_eq!(h2.get("x-cache").and_then(|v| v.to_str().ok()), Some("HIT"));
@@ -58,6 +66,7 @@ async fn miss_then_hit_serves_the_same_bytes() {
         m1.get("x-cache").and_then(|v| v.to_str().ok()),
         Some("MISS")
     );
+    settle().await;
     let (_, m2, gz) = get(month, GZIP).await;
     assert_eq!(m2.get("x-cache").and_then(|v| v.to_str().ok()), Some("HIT"));
     assert_eq!(
