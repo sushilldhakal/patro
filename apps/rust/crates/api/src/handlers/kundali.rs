@@ -235,10 +235,8 @@ pub(crate) async fn vimshottari(
         Ok(v) => v,
         Err(r) => return r,
     };
-    let moon = panchanga::graha_positions(loc.system, instant.to_jd())
-        .iter()
-        .find(|p| p.key == "moon")
-        .map_or(0.0, |p| p.longitude);
+    // Vimshottari only reads the Moon: compute it alone, not all nine grahas.
+    let moon = panchanga::moon_longitude(loc.system, instant.to_jd());
     let mut payload = json!({
         "ayanamsha": "surya_siddhanta",
         "moon_longitude": moon,
@@ -526,10 +524,8 @@ fn milan_partner(
     location
         .ensure_supported(timescale::CivilDay::from_jd_ut(instant.to_jd()))
         .map_err(|e| detail(StatusCode::BAD_REQUEST, &e.to_string()))?;
-    let moon = panchanga::graha_positions(system, instant.to_jd())
-        .iter()
-        .find(|p| p.key == "moon")
-        .map_or(0.0, |p| p.longitude);
+    // Milan only reads the Moon: compute it alone, not all nine grahas.
+    let moon = panchanga::moon_longitude(system, instant.to_jd());
     Ok(jyotish::milan::Partner {
         moon_longitude: moon,
         birth_instant: observer_iso(instant, &location),

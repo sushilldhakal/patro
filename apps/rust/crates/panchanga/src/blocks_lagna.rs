@@ -182,6 +182,18 @@ pub struct GrahaPosition {
     pub is_combust: bool,
 }
 
+/// The Moon's longitude exactly as the `moon` row of [`graha_positions`]
+/// reports it (`stable_round`ed to six places), computed from the Moon alone.
+///
+/// Vimshottari and milan only read the Moon, so they must not pay for the
+/// other eight grahas: `graha_positions` evaluates all nine bodies, each at
+/// three instants for its speed.
+#[must_use]
+pub fn moon_longitude(system: System, jd: f64) -> f64 {
+    let (lon, _speed) = system.true_longitude_and_speed(Body::Moon, jd);
+    stable_round(py_mod(lon, 360.0))
+}
+
 /// `spashta_table(jd)` as typed rows, in the table's order (Sun … Rahu, Ketu).
 #[must_use]
 pub fn graha_positions(system: System, jd: f64) -> Vec<GrahaPosition> {
@@ -238,6 +250,9 @@ pub fn ascendant_extras(system: System, jd: f64, lat: f64, lon: f64) -> (f64, f6
 /// (शर), right ascension and declination (क्रान्ति), as the at-time route reads it.
 pub(crate) fn planets_with_extras(system: System, jd: f64) -> Value {
     let mut table = planets(system, jd);
+    // One ayanamsha for the whole table: drik recomputes its rotation for
+    // every call, so evaluating it per graha paid that cost nine times.
+    let ayanamsha = system.ayanamsha(jd);
     if let Value::Object(rows) = &mut table {
         for (key, row) in rows.iter_mut() {
             let body = if key == "ketu" {
@@ -253,7 +268,7 @@ pub(crate) fn planets_with_extras(system: System, jd: f64) -> Value {
                 lon = py_mod(lon + 180.0, 360.0);
                 lat = -lat;
             }
-            let (ra, dec) = system.equatorial(lon + system.ayanamsha(jd), lat, jd);
+            let (ra, dec) = system.equatorial(lon + ayanamsha, lat, jd);
             if let Value::Object(fields) = row {
                 fields.insert("latitude".into(), json!(py_round(lat, 4)));
                 fields.insert("right_ascension".into(), json!(py_round(ra, 4)));

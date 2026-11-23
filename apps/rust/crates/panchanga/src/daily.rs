@@ -10,8 +10,8 @@
 use astronomy::{
     System,
     engine::{
-        Observer, moon_longitude, moon_phase_angle_and_fraction, rise_set_after, rise_set_on_day,
-        sun_longitude, sun_moon_longitudes,
+        Observer, moon_longitude, moon_phase_angle_and_fraction_from, rise_set_after,
+        rise_set_on_day, sun_moon_longitudes,
     },
     surya_siddhanta::{Body, Crossing},
 };
@@ -669,7 +669,9 @@ pub(crate) fn moon_phase(system: System, jd: f64) -> Value {
     let (sun, moon) = sun_moon_longitudes(system, jd);
     let elongation = py_mod(moon - sun, 360.0);
     let index = idx(py_int(py_floordiv(py_mod(elongation + 22.5, 360.0), 45.0)));
-    let (phase_angle, lit) = moon_phase_angle_and_fraction(system, jd);
+    // One Sun/Moon pair for the whole block: the phase angle and fraction
+    // are derived from the same pair, not a second evaluation.
+    let (phase_angle, lit) = moon_phase_angle_and_fraction_from(sun, moon);
     json!({
         "elongation": py_round(elongation, 6), "phase_index": index, "name": PHASE_NAMES[index],
         "name_ne": PHASE_NAMES_NE[index], "illuminated_fraction": py_round(lit, 6),
@@ -764,8 +766,10 @@ fn ayanamsha_name(system: System) -> &'static str {
     }
 }
 
-fn surya_nakshatra(system: System, jd: f64) -> Value {
-    let mut number = py_int(sun_longitude(system, jd) / NAKSHATRA_SPAN) + 1;
+/// The Sun's nakshatra from an already-computed Sun longitude, so the
+/// caller does not evaluate the Sun a second time.
+fn surya_nakshatra(sun_longitude: f64) -> Value {
+    let mut number = py_int(sun_longitude / NAKSHATRA_SPAN) + 1;
     if number > 27 {
         number = 1;
     }
@@ -1541,7 +1545,10 @@ fn assemble<I: DayInstant>(
     b.insert("yoga", yoga_block(system, sunrise, sunrise, zone));
     b.insert("karana", karana_block(system, sunrise, sunrise, zone));
     b.insert("paksha", paksha_block(&lunar, paksha));
-    let chandra_rashi = rashi_payload(moon_longitude(system, sunrise_jd));
+    // One shared Sun/Moon pair at sunrise for the rashi and nakshatra
+    // fields below, instead of three separate evaluations.
+    let (sun_lon, moon_lon) = sun_moon_longitudes(system, sunrise_jd);
+    let chandra_rashi = rashi_payload(moon_lon);
     if full {
         let bala_table = ChandrabalaTable::new(&chandra_rashi);
         b.insert(
@@ -1561,11 +1568,8 @@ fn assemble<I: DayInstant>(
             nakshatra_pada_spans(system, sunrise, next_sunrise, zone),
         );
     }
-    b.insert(
-        "surya_rashi",
-        rashi_payload(sun_longitude(system, sunrise_jd)),
-    );
-    b.insert("surya_nakshatra", surya_nakshatra(system, sunrise_jd));
+    b.insert("surya_rashi", rashi_payload(sun_lon));
+    b.insert("surya_nakshatra", surya_nakshatra(sun_lon));
     b.insert("ritu", ritu(system, sunrise_jd, location.lat));
     b.insert("ritu_vedic", ritu_vedic(system, sunrise_jd, location.lat));
     if full {
