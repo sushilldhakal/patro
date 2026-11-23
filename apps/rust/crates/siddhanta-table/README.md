@@ -150,3 +150,134 @@ user's latitude/longitude. The only SS formula ported is the ayanamsha
   server-side until a use needs them on the client.
 - No kundali/dasha/muhurta on the client: those need rise/set searches over
   whole days, divisional charts and the full rule set, not just positions.
+
+## The fallback file: Chebyshev coefficients (CHEB0001)
+
+The STAB table is the server's lookup. The fallback is for when the client
+cannot reach the server at all: a file small enough to ship *inside* the
+app, evaluated on the phone with no server involved. Same motion, different
+representation — a mathematical one, the way JPL stores the ephemeris: each
+body, over each 32-day segment, is one Chebyshev polynomial, and the client
+evaluates it with Clenshaw's recurrence.
+
+### Why not one reading + mean speed
+
+The first instinct was that the slow bodies (Saturn, Jupiter, Mars, Rahu)
+move at mostly their mean speed, so one reading plus a rate should carry
+them, and only the Moon needs frequent readings. Measured against the direct
+formulas, that is wrong by degrees within a month:
+
+| body | error after 30 days | error after 90 days |
+| --- | --- | --- |
+| Sun | 0.42° | 0.37° |
+| Moon | 0.04° | 3.62° |
+| Mars | 5.69° | 10.97° |
+| Mercury | 22.96° | 14.16° |
+| Jupiter | 4.46° | 14.04° |
+| Venus | 10.88° | 26.00° |
+| Saturn | 2.60° | 5.10° |
+| Rahu | 0.00° | 0.00° |
+
+A planet's apparent speed is not its mean speed: Mars and Jupiter go
+retrograde for months at a time, Mercury and Venus swing wildly near
+inferior conjunction, and the equation of centre alone is ~2° for the Sun
+and ~10° for Mars. Only Rahu is exactly linear (its longitude is a uniform
+node motion) — one reading plus a rate is exact for Rahu and for nothing
+else. The correct form of the instinct is Chebyshev: a slow body is *smooth*,
+so it needs *few coefficients*; the Moon is fast, so it needs many. The
+degree per body is the measurement of that.
+
+### Format
+
+```text
+0   "CHEB0001"
+8   u32 body count (= 8), u32 segment count
+16  f64 first JD (UT), f64 segment length in days (32)
+32  f64 mean Sun (nirayana) at the first JD, f64 its exact rate °/day
+48  8 × u8 Chebyshev degree per body, in Body::ALL order
+56  per segment, per body: (degree + 1) f32 coefficients
+```
+
+The coefficients fit the *unwrapped* longitude over the segment; the reader
+evaluates and wraps to 0–360°. The ayanamsha is not stored (same ten-line
+formula as the STAB reader), the mean Sun is the same header anchor + rate,
+and the speed is the derivative of the fitted polynomial (±0.05-day central
+difference of the evaluation — the polynomial is smooth, so that difference
+is accurate). Ketu is still Rahu + 180°, never stored.
+
+### Measured degrees and the lesson in measuring them
+
+Degrees (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu):
+
+```text
+[4, 22, 15, 28, 13, 19, 8, 4]
+```
+
+Mercury needs 28 in its worst segments: near an inferior conjunction its
+geocentric longitude swings and reverses inside one 32-day window. The Moon
+needed 22, not 17: its longitude carries the text's own ~14 s steps (up to
+9" jumps), and a degree-17 polynomial leaves ~4" of fit error on top of
+them.
+
+The degrees were *not* measured once. Three segments from the year 2000
+said `[4, 14, 4, 9, 4, 4, 4, 4]` — and the full-range check then failed
+Venus at 121". Twenty-one segments spread across 1900–2100 said
+`[4, 16, 6, 11, 10, 14, 8, 4]` — and the check then failed Mercury at 8"
+and Mars at 4.6". One hundred spread segments said
+`[4, 17, 15, 28, 13, 19, 8, 4]`, the check failed only the Moon at 13.6",
+and degree 22 for the Moon closed it. A degree that only holds on a sample
+of segments is not a degree: `cheb-measure` samples segments across the
+whole range, and `cheb-check` re-verifies the file over random instants
+across the whole range. Raise the degrees if it ever fails.
+
+### Sizes and accuracy
+
+| file | size | worst error, 5000 random instants |
+| --- | --- | --- |
+| STAB 1900–2100 (5,285,892 B) | 5.3 MB | Moon 4.37" |
+| CHEB 1900–2100 (1,110,836 B) | 1.11 MB | Moon 8.95", Mercury 1.42", rest under 1" |
+| CHEB 2026–2035 (55,716 B) | 55 KB | Moon 10.26" over 1000 instants |
+
+Budgets are the same as `check`: fastest speed × 2e-4 days + 0.5". The
+10-year file is the one shipped with the apps (see below).
+
+### On the client
+
+- `packages/domain/src/astronomy/chebyshev.ts` — `parseChebTable`,
+  `chebPositionsAt` (same `SiddhantaPositions` shape as the STAB reader, so
+  the same derivations run on either source), and `clenshaw`.
+- `packages/domain/src/astronomy/siddhanta-source.ts` — `PositionSource`
+  (anything that can answer "where are the grahas at this instant"),
+  `stabSource`, `chebSource`, and `loadSiddhantaSource`: the server's slice
+  for the year, unless the server is slow (past the timeout, default 8 s),
+  errors, or is unreachable — then the bundled CHEB file, if the app ships
+  one. The derivations in `siddhanta-offline.ts` (`lagnaAt`,
+  `sunriseSunset`, `nextTithiBoundary`, `displaySpeedAt`) now take a
+  `PositionSource` instead of a table, so they run unchanged on either.
+- `apps/mobile/assets/siddhanta.cheb.json` — the 2026–2035 file, base64
+  (the snapshot push cannot carry binary files), loaded by
+  `apps/mobile/lib/siddhanta-offline.ts` (`bundledSiddhantaCheb`,
+  `loadSiddhantaSourceFor`). `apps/web/public/siddhanta.cheb.json` is the
+  same file for the web app, fetched from its static assets. Regenerate both
+  when the app ships a new version: `siddhanta-table cheb-build
+  data/siddhanta-2026-2035.cheb 2026 2035`, then base64 into the JSON.
+- Nothing is wired into any screen yet: the fallback is ready and tested
+  (6 new tests in `packages/domain/test/chebyshev.test.ts`, including the
+  loader's server/slow/unreachable cases), and a screen adopts it by calling
+  `loadSiddhantaSourceFor` instead of `fetchPanchanga`.
+
+### Drik, and Arun/Barun
+
+A Drik coefficient file has the same shape with different data — and
+different scalars (the Drik ayanamsha is Lahiri, not the text's libration
+formula). The evaluator takes the scalars as a parameter for exactly that.
+But no Drik file is built here: this workspace has no Drik kernel data (the
+HTTP goldens cannot run for the same reason), so the Drik file is built
+where the kernel lives, by fitting longitudes the same way
+(`cheb-measure`/`cheb-build` fit any position function; the Drik builder
+would feed them kernel longitudes instead of SS ones).
+
+Uranus (Arun) and Neptune (Barun) are not in this file at all: the Surya
+Siddhanta's grahas are the eight stored here, and the text has no Uranus or
+Neptune. They would come from a Drik file, if one is built, not from this
+one.

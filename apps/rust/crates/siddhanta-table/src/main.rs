@@ -4,6 +4,9 @@
 //! siddhanta-table build <out> <first_year> <last_year> <step_hours>
 //! siddhanta-table check <table> [random_samples]
 //! siddhanta-table fixtures <table> <out.json> [count]
+//! siddhanta-table cheb-measure <first_year> [segments]
+//! siddhanta-table cheb-build <out> <first_year> <last_year> [segment_days] [degrees]
+//! siddhanta-table cheb-check <table> [random_samples]
 //! ```
 //!
 //! `build` samples the Surya Siddhanta from 1 January of `first_year` to 1
@@ -13,6 +16,16 @@
 //! `fixtures` writes JSON expectations for the TypeScript client test: direct
 //! positions and the panchanga derivations the client must reproduce from the
 //! table alone.
+//!
+//! The `cheb-*` commands are the fallback file: the same motion as
+//! Chebyshev coefficients (see `cheb.rs`), for the client to carry with it.
+//! `cheb-measure [segments] [segment_days]` — segments spread across
+//! 1900–2100, so a degree that only holds in one year does not pass.
+//! degrees (comma-separated, Sun first — the measured defaults are in
+//! `CHEB_DEGREES`); `cheb-check` verifies it like `check` does. A Drik
+//! coefficient file has the same shape but different data, and is built
+//! where the Drik kernel lives — this workspace has no kernel data, so no
+//! Drik file is built here.
 
 #![expect(
     clippy::cast_possible_truncation,
@@ -29,8 +42,25 @@ use astronomy::{
         Body, MAHAYUGA_DAYS, MeanBody, ayanamsha, mean_longitude, true_longitude_and_speed,
     },
 };
-use siddhanta_table::{Table, TableError, serialise};
+use siddhanta_table::{
+    Table, TableError,
+    cheb::{self, ChebTable},
+    serialise,
+};
 use timescale::{Calendar, julday};
+
+/// Measured Chebyshev degrees per body (Sun, Moon, Mars, Mercury, Jupiter,
+/// Venus, Saturn, Rahu) at 32-day segments — `cheb-measure` over 100 segments
+/// spread across 1900–2100 said [4, 17, 15, 28, 13, 19, 8, 4], and the
+/// full-range check of that file then failed only the Moon (13.6" against a
+/// 10.8" budget): the Moon's longitude carries the text's own ~14 s steps
+/// (up to 9" jumps), and a degree-17 polynomial leaves ~4" of fit error on
+/// top of them. Degree 22 brings the Moon to 8.95" over 5000 random instants
+/// across the whole range. Mercury needs 28 in its worst segments: near an
+/// inferior conjunction its geocentric longitude swings and reverses inside
+/// one 32-day window. `cheb-check` re-verifies these over the whole file;
+/// raise them if it ever fails.
+const CHEB_DEGREES: [usize; 8] = [4, 22, 15, 28, 13, 19, 8, 4];
 
 const SYSTEM: System = System::SuryaSiddhanta;
 /// Kathmandu, the location the fixtures' lagna is computed for.
@@ -297,6 +327,206 @@ fn cmd_sun(path: &str, out: &str, days: usize) -> Result<(), String> {
     Ok(())
 }
 
+fn wrap180(x: f64) -> f64 {
+    (x + 180.0).rem_euclid(360.0) - 180.0
+}
+
+/// Unwrapped longitudes of `body` at the Chebyshev nodes of `[a, b]`, in
+/// node order (time descending). Adjacent nodes are at most a few days
+/// apart, so unwrapping against the previous node is unambiguous.
+fn segment_values(body: Body, a: f64, b: f64, degree: usize) -> Vec<f64> {
+    let xs = cheb::nodes(degree + 1);
+    let mut values = Vec::with_capacity(degree + 1);
+    let mut prev: Option<f64> = None;
+    for x in &xs {
+        let jd = f64::midpoint(a, b) + (b - a) / 2.0 * x;
+        let (lon, _) = true_longitude_and_speed(body, jd);
+        let lon = match prev {
+            None => lon,
+            Some(p) => p + wrap180(lon - p),
+        };
+        prev = Some(lon);
+        values.push(lon);
+    }
+    values
+}
+
+/// Worst error, in degrees, of a degree-`degree` Chebyshev fit of `body`
+/// over `[a, b]`, against the direct formulas at every quarter day — plus
+/// the fastest speed seen, for the budget.
+fn cheb_fit_error(body: Body, a: f64, b: f64, degree: usize) -> (f64, f64) {
+    let values = segment_values(body, a, b, degree);
+    let coeffs: Vec<f32> = cheb::fit_coefficients(&values, degree)
+        .iter()
+        .map(|c| *c as f32)
+        .collect();
+    let mut worst: f64 = 0.0;
+    let mut fastest: f64 = 0.0;
+    let steps = ((b - a) / 0.25).round() as usize;
+    for i in 0..=steps {
+        let jd = a + i as f64 * 0.25;
+        let x = 2.0 * (jd - a) / (b - a) - 1.0;
+        let got = cheb::clenshaw(&coeffs, x);
+        let (lon, speed) = true_longitude_and_speed(body, jd);
+        fastest = fastest.max(speed.abs());
+        worst = worst.max(wrap180(got - lon).abs());
+    }
+    (worst, fastest)
+}
+
+fn cmd_cheb_measure(count: usize, segment_days: f64) -> Result<(), String> {
+    // Segments spread across the whole 1900–2100 range, not consecutive ones
+    // from a single year: three segments from the year 2000 said Venus
+    // needed degree 4, and the full-range check then measured 121" for it
+    // near an inferior conjunction. A degree that only holds in one year
+    // is not a degree.
+    let range_start = julday(1900, 1, 1, 0.0, Calendar::Gregorian);
+    let range_end = julday(2100, 1, 1, 0.0, Calendar::Gregorian);
+    let mut degrees = [0usize; 8];
+    for (i, body) in Body::ALL.iter().enumerate() {
+        let mut need = 0;
+        for s in 0..count {
+            let a = range_start + (range_end - range_start) * s as f64 / count as f64;
+            let b = a + segment_days;
+            for degree in 4..=64 {
+                let (worst, fastest) = cheb_fit_error(*body, a, b, degree);
+                let budget = fastest * 2.0e-4 + 0.5 / 3600.0;
+                if worst <= budget {
+                    need = need.max(degree);
+                    if degree > 4 {
+                        println!(
+                            "{:8} segment {} (JD {:.0}) degree {:2}: worst {:7.4} arcsec (budget {:6.2})",
+                            body.name(),
+                            s,
+                            a,
+                            degree,
+                            worst * 3600.0,
+                            budget * 3600.0
+                        );
+                    }
+                    break;
+                }
+                if degree == 64 {
+                    return Err(format!(
+                        "{} needs more than degree 64 on segment {} (worst {:.2} arcsec)",
+                        body.name(),
+                        s,
+                        worst * 3600.0
+                    ));
+                }
+            }
+        }
+        degrees[i] = need;
+    }
+    let per_segment = degrees.iter().map(|d| d + 1).sum::<usize>() * 4;
+    let segments = ((range_end - range_start) / segment_days).ceil() as usize;
+    println!("measured degrees (Sun first): {degrees:?}");
+    println!(
+        "{segment_days:.0}-day segments: {per_segment} bytes/segment, ~{} bytes for 1900–2100",
+        segments * per_segment
+    );
+    Ok(())
+}
+
+fn cmd_cheb_build(
+    out: &str,
+    first_year: i32,
+    last_year: i32,
+    segment_days: f64,
+    degrees: [usize; 8],
+) -> Result<(), String> {
+    if segment_days <= 0.0 || segment_days > 64.0 {
+        return Err("segment_days must be between 0 and 64".to_string());
+    }
+    if last_year < first_year {
+        return Err("last_year is before first_year".to_string());
+    }
+    let first_jd = julday(first_year, 1, 1, 0.0, Calendar::Gregorian);
+    let last_jd = julday(last_year + 1, 1, 1, 0.0, Calendar::Gregorian);
+    let count = ((last_jd - first_jd) / segment_days).ceil() as usize;
+    let mut coefficients = Vec::with_capacity(count * cheb::segment_bytes(&degrees) / 4);
+    for s in 0..count {
+        let a = first_jd + s as f64 * segment_days;
+        let b = a + segment_days;
+        for (i, body) in Body::ALL.iter().enumerate() {
+            let values = segment_values(*body, a, b, degrees[i]);
+            coefficients.extend(
+                cheb::fit_coefficients(&values, degrees[i])
+                    .iter()
+                    .map(|c| *c as f32),
+            );
+        }
+    }
+    let table = ChebTable {
+        first_jd,
+        segment_days,
+        degrees,
+        mean_sun0: wrap360(mean_longitude(MeanBody::Sun, first_jd)),
+        mean_sun_rate: mean_sun_rate(),
+        coefficients,
+    };
+    let bytes = cheb::serialise(&table);
+    std::fs::write(out, &bytes).map_err(|e| format!("writing {out}: {e}"))?;
+    println!(
+        "wrote {out}: {} segments, {} bytes, {:.0}-day segments, JD {:.1}–{:.1}",
+        count,
+        bytes.len(),
+        segment_days,
+        first_jd,
+        table.last_jd()
+    );
+    Ok(())
+}
+
+fn cmd_cheb_check(path: &str, count: usize) -> Result<(), String> {
+    let table = cheb::open(&PathBuf::from(path))
+        .map_err(|e: cheb::ChebError| format!("reading {path}: {e}"))?;
+    let mut worst = [0.0f64; 8];
+    let mut worst_jd = [0.0f64; 8];
+    let mut fastest = [0.0f64; 8];
+    for jd in random_jds(table.first_jd, table.last_jd(), count) {
+        let Some(got) = table.positions_at(jd) else {
+            continue;
+        };
+        for (i, body) in Body::ALL.iter().enumerate() {
+            let (lon, speed) = true_longitude_and_speed(*body, jd);
+            fastest[i] = fastest[i].max(speed.abs());
+            let mut err = (wrap360(got.longitude[i] - lon)).abs();
+            if err > 180.0 {
+                err = 360.0 - err;
+            }
+            if err > worst[i] {
+                worst[i] = err;
+                worst_jd[i] = jd;
+            }
+        }
+    }
+    let mut failures = Vec::new();
+    for (i, body) in Body::ALL.iter().enumerate() {
+        let budget_arcsec = fastest[i] * 2.0e-4 * 3600.0 + 0.5;
+        let arcsec = worst[i] * 3600.0;
+        println!(
+            "{:8} worst {:9.4} arcsec at JD {:.4} (budget {:6.2})",
+            body.name(),
+            arcsec,
+            worst_jd[i],
+            budget_arcsec
+        );
+        if arcsec > budget_arcsec {
+            failures.push(format!(
+                "{} error {arcsec:.4} arcsec exceeds its {budget_arcsec:.2} budget",
+                body.name()
+            ));
+        }
+    }
+    if failures.is_empty() {
+        println!("within budget over {count} random instants");
+        Ok(())
+    } else {
+        Err(failures.join("; "))
+    }
+}
+
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();
     let result = match args.get(1).map(String::as_str) {
@@ -318,7 +548,51 @@ fn main() -> ExitCode {
             let days = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(10);
             cmd_sun(&args[2], &args[3], days)
         }
-        _ => Err("usage: siddhanta-table build <out> <first_year> <last_year> <step_hours>\n       siddhanta-table check <table> [random_samples]\n       siddhanta-table fixtures <table> <out.json> [count]\n       siddhanta-table sun <table> <out.json> [days]".to_string()),
+        Some("cheb-measure") => {
+            let count = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(21);
+            let segment_days = args
+                .get(3)
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(cheb::SEGMENT_DAYS);
+            cmd_cheb_measure(count, segment_days)
+        }
+        Some("cheb-build") if args.len() >= 5 => {
+            let first = args[3].parse().unwrap_or(0);
+            let last = args[4].parse().unwrap_or(0);
+            let segment_days = args
+                .get(5)
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(cheb::SEGMENT_DAYS);
+            let degrees = (|| -> Result<[usize; 8], String> {
+                match args.get(6) {
+                    Some(s) => {
+                        let mut d = [0usize; 8];
+                        for (i, part) in s.split(',').enumerate().take(8) {
+                            d[i] = part
+                                .parse()
+                                .map_err(|_| "degrees must be numbers".to_string())?;
+                        }
+                        if d.contains(&0) {
+                            return Err(
+                                "cheb-build needs 8 comma-separated degrees, Sun first"
+                                    .to_string(),
+                            );
+                        }
+                        Ok(d)
+                    }
+                    None => Ok(CHEB_DEGREES),
+                }
+            })();
+            match degrees {
+                Ok(d) => cmd_cheb_build(&args[2], first, last, segment_days, d),
+                Err(e) => Err(e),
+            }
+        }
+        Some("cheb-check") => {
+            let count = args.get(3).and_then(|s| s.parse().ok()).unwrap_or(2000);
+            cmd_cheb_check(&args[2], count)
+        }
+        _ => Err("usage: siddhanta-table build <out> <first_year> <last_year> <step_hours>\n       siddhanta-table check <table> [random_samples]\n       siddhanta-table fixtures <table> <out.json> [count]\n       siddhanta-table cheb-measure <first_year> [segments]\n       siddhanta-table cheb-build <out> <first_year> <last_year> [segment_days] [degrees]\n       siddhanta-table cheb-check <table> [random_samples]".to_string()),
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,

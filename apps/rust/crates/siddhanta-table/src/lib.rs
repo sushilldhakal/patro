@@ -41,6 +41,10 @@ use std::path::Path;
 use astronomy::surya_siddhanta::ayanamsha;
 use thiserror::Error;
 
+/// The Chebyshev fallback file: the same motion as coefficients instead of
+/// samples, for the client to carry with it. See [`cheb`].
+pub mod cheb;
+
 /// Magic, format version 2.
 pub const MAGIC: &[u8; 8] = b"STAB0002";
 /// Header size in bytes: magic, body count, sample count, first JD, step,

@@ -7,6 +7,15 @@
 // opened costs no network at all, and the server never computes a position
 // for a day view — it only serves the bytes.
 //
+// The fallback: `assets/siddhanta.cheb.json` ships the 2026–2035 Chebyshev
+// coefficients (55 KB of CHEB, base64 — the snapshot push cannot carry
+// binary files) with the app. `loadSiddhantaSourceFor` tries the server's
+// slice first and uses the bundled coefficients when the server is slow or
+// unreachable, so the day panchanga still shows. The file is regenerated
+// when the app ships a new version (`siddhanta-table cheb-build` in
+// apps/rust); kundali, dashas, muhurta, gochar and festivals stay
+// server-side either way.
+//
 // This helper takes the API base it fetches from and is NOT wired into any
 // screen yet: the Rust server that serves `/v1/siddhanta/table` is
 // build-only development work until the owner says otherwise, and the app
@@ -18,10 +27,16 @@
 import * as FileSystem from "expo-file-system/legacy";
 
 import { API_BASE } from "@/lib/api";
+import bundledChebJson from "@/assets/siddhanta.cheb.json";
 import {
   parseSiddhantaTable,
   type SiddhantaTable,
 } from "@vedic-patro/domain/astronomy/siddhanta-offline";
+import {
+  loadSiddhantaSource,
+  type PositionSource,
+  type SiddhantaSourceVia,
+} from "@vedic-patro/domain/astronomy/siddhanta-source";
 
 const CACHE_DIR = `${FileSystem.cacheDirectory}siddhanta/`;
 
@@ -101,4 +116,30 @@ export async function loadSiddhantaTable(
   const cached = await readCachedSlice(year);
   const bytes = cached ?? (await fetchSlice(year, options?.baseUrl ?? API_BASE));
   return parseSiddhantaTable(bytes);
+}
+
+/** The bundled CHEB bytes shipped with the app (2026–2035), decoded. */
+export function bundledSiddhantaCheb(): Uint8Array {
+  const binary = atob((bundledChebJson as { cheb: string }).cheb);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+/**
+ * Positions for `jdUt`, from the server's slice when it answers in time and
+ * from the bundled coefficients otherwise — see `loadSiddhantaSource` in
+ * the domain module. `via` tells the caller which one served, so a screen
+ * can say so (or stay silent; the numbers agree to a few arcseconds).
+ * Not wired into any screen yet, like the rest of this helper.
+ */
+export async function loadSiddhantaSourceFor(
+  jdUt: number,
+  options?: { baseUrl?: string; timeoutMs?: number },
+): Promise<{ source: PositionSource; via: SiddhantaSourceVia }> {
+  return loadSiddhantaSource(jdUt, {
+    baseUrl: options?.baseUrl ?? API_BASE,
+    timeoutMs: options?.timeoutMs,
+    bundledCheb: async () => bundledSiddhantaCheb(),
+  });
 }

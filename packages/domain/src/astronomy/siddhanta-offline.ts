@@ -257,6 +257,19 @@ export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPosit
   };
 }
 
+/** Anything that can answer "where are the grahas at this instant" — a
+ * STAB table, a CHEB coefficient table, or anything else that can produce
+ * positions. The derivations below take a source, not a table, so the same
+ * code runs on the server slice and on the bundled fallback file. */
+export interface PositionSource {
+  positionsAt(jdUt: number): SiddhantaPositions | null;
+}
+
+/** A STAB table (whole file or a server slice) as a source. */
+export function stabSource(table: SiddhantaTable): PositionSource {
+  return { positionsAt: (jdUt) => positionsAt(table, jdUt) };
+}
+
 /**
  * The speed the API shows for a body: the text defines speed as the ±0.5-day
  * central difference of the longitude, so it is differenced from the table
@@ -264,12 +277,12 @@ export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPosit
  * interpolation. Null outside the table (a day either side must be covered).
  */
 export function displaySpeedAt(
-  table: SiddhantaTable,
+  source: PositionSource,
   jdUt: number,
   body: SiddhantaBody,
 ): number | null {
-  const before = positionsAt(table, jdUt - 0.5);
-  const after = positionsAt(table, jdUt + 0.5);
+  const before = source.positionsAt( jdUt - 0.5);
+  const after = source.positionsAt( jdUt + 0.5);
   if (before === null || after === null) return null;
   const b = SIDDHANTA_BODY_INDEX[body];
   let diff = after.longitude[b] - before.longitude[b];
@@ -371,15 +384,15 @@ function localSiderealDegrees(positions: SiddhantaPositions, jdUt: number, longi
 /**
  * Lagna (nirayana), 0–360°: the ascendant from the stored mean Sun and
  * ayanamsha, with the text's 24° obliquity. This is `frame::ascendant` with
- * its inputs read from the table instead of computed.
+ * its inputs read from the source instead of computed.
  */
 export function lagnaAt(
-  table: SiddhantaTable,
+  source: PositionSource,
   jdUt: number,
   latitude: number,
   longitude: number,
 ): number | null {
-  const positions = positionsAt(table, jdUt);
+  const positions = source.positionsAt( jdUt);
   if (positions === null) return null;
   const ramc = (localSiderealDegrees(positions, jdUt, longitude) * Math.PI) / 180;
   const eps = (OBLIQUITY_DEGREES * Math.PI) / 180;
@@ -405,12 +418,12 @@ function equatorial(longitude: number): [number, number] {
 
 /** Altitude of the Sun's centre, degrees, at an instant and place. */
 function sunAltitude(
-  table: SiddhantaTable,
+  source: PositionSource,
   jdUt: number,
   latitude: number,
   longitude: number,
 ): number | null {
-  const positions = positionsAt(table, jdUt);
+  const positions = source.positionsAt( jdUt);
   if (positions === null) return null;
   // RA/Dec are tropical: the stored longitude is sidereal, so add the
   // ayanamsha first — as `equation_of_time_days` does on the server.
@@ -429,7 +442,7 @@ function sunAltitude(
 }
 
 function bisectCrossing(
-  table: SiddhantaTable,
+  source: PositionSource,
   lo: number,
   hi: number,
   latitude: number,
@@ -439,7 +452,7 @@ function bisectCrossing(
   // 40 halvings of a 10-minute bracket is ~1 second.
   for (let k = 0; k < 40; k += 1) {
     const mid = (lo + hi) / 2;
-    const alt = sunAltitude(table, mid, latitude, longitude);
+    const alt = sunAltitude(source, mid, latitude, longitude);
     if (alt === null) return mid;
     if (alt < 0) lo = mid;
     else hi = mid;
@@ -459,24 +472,24 @@ export interface SunriseSunset {
  * crossings, so the Sun's motion during the day is accounted for.
  */
 export function sunriseSunset(
-  table: SiddhantaTable,
+  source: PositionSource,
   dayStartJd: number,
   latitude: number,
   longitude: number,
 ): SunriseSunset {
   const step = 10 / 1440; // 10 minutes, in days
   let previousJd = dayStartJd;
-  let previousAlt = sunAltitude(table, previousJd, latitude, longitude);
+  let previousAlt = sunAltitude(source, previousJd, latitude, longitude);
   let sunriseJd: number | null = null;
   let sunsetJd: number | null = null;
   for (let k = 1; k <= 144; k += 1) {
     const jd = dayStartJd + k * step;
-    const alt = sunAltitude(table, jd, latitude, longitude);
+    const alt = sunAltitude(source, jd, latitude, longitude);
     if (alt === null || previousAlt === null) break;
     if (previousAlt < 0 && alt >= 0 && sunriseJd === null) {
-      sunriseJd = bisectCrossing(table, previousJd, jd, latitude, longitude);
+      sunriseJd = bisectCrossing(source, previousJd, jd, latitude, longitude);
     } else if (previousAlt >= 0 && alt < 0 && sunsetJd === null) {
-      sunsetJd = bisectCrossing(table, jd, previousJd, latitude, longitude);
+      sunsetJd = bisectCrossing(source, jd, previousJd, latitude, longitude);
     }
     previousJd = jd;
     previousAlt = alt;
@@ -486,7 +499,7 @@ export function sunriseSunset(
 }
 
 function bisectBoundary(
-  table: SiddhantaTable,
+  source: PositionSource,
   lo: number,
   hi: number,
   indexAt: (jd: number) => number | null,
@@ -505,12 +518,12 @@ function bisectBoundary(
 
 /**
  * The next instant after `jdUt` when the tithi changes, within two days, or
- * null when the table runs out first. Scans in 5-minute steps and bisects.
+ * null when the source runs out first. Scans in 5-minute steps and bisects.
  */
-export function nextTithiBoundary(table: SiddhantaTable, jdUt: number): number | null {
+export function nextTithiBoundary(source: PositionSource, jdUt: number): number | null {
   const step = 5 / 1440;
   const indexAt = (jd: number): number | null => {
-    const positions = positionsAt(table, jd);
+    const positions = source.positionsAt( jd);
     if (positions === null) return null;
     return tithiAt(
       positions.longitude[SIDDHANTA_BODY_INDEX.sun],
@@ -523,17 +536,17 @@ export function nextTithiBoundary(table: SiddhantaTable, jdUt: number): number |
     const jd = jdUt + k * step;
     const index = indexAt(jd);
     if (index === null) return null;
-    if (index !== previous) return bisectBoundary(table, jd - step, jd, indexAt);
+    if (index !== previous) return bisectBoundary(source, jd - step, jd, indexAt);
     previous = index;
   }
   return null;
 }
 
 /** The next instant after `jdUt` when the Moon's nakshatra changes, within two days. */
-export function nextNakshatraBoundary(table: SiddhantaTable, jdUt: number): number | null {
+export function nextNakshatraBoundary(source: PositionSource, jdUt: number): number | null {
   const step = 5 / 1440;
   const indexAt = (jd: number): number | null => {
-    const positions = positionsAt(table, jd);
+    const positions = source.positionsAt( jd);
     if (positions === null) return null;
     return grahaAt(positions.longitude[SIDDHANTA_BODY_INDEX.moon]).nakshatra;
   };
@@ -543,7 +556,7 @@ export function nextNakshatraBoundary(table: SiddhantaTable, jdUt: number): numb
     const jd = jdUt + k * step;
     const index = indexAt(jd);
     if (index === null) return null;
-    if (index !== previous) return bisectBoundary(table, jd - step, jd, indexAt);
+    if (index !== previous) return bisectBoundary(source, jd - step, jd, indexAt);
     previous = index;
   }
   return null;

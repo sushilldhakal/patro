@@ -16,6 +16,7 @@ import {
   nextTithiBoundary,
   parseSiddhantaTable,
   positionsAt,
+  stabSource,
   sunriseSunset,
   tithiAt,
   yogaAt,
@@ -94,7 +95,7 @@ test("display speeds, from the table's own ±0.5-day difference, match the serve
   const bodies = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu"] as const;
   for (const row of rows) {
     for (let b = 0; b < 8; b += 1) {
-      const speed = displaySpeedAt(table, row.jd, bodies[b]);
+      const speed = displaySpeedAt(stabSource(table), row.jd, bodies[b]);
       assert.ok(speed !== null, `JD ${row.jd} ${bodies[b]} is inside the table`);
       assert.ok(
         Math.abs(speed - row.speed[b]) < 0.005,
@@ -135,7 +136,7 @@ test("tithi, nakshatra, pada, yoga and karana match the server", () => {
 test("lagna matches the server for Kathmandu", () => {
   const { table, rows } = loadFixtures();
   for (const row of rows) {
-    const lagna = lagnaAt(table, row.jd, KATHMANDU_LAT, KATHMANDU_LON);
+    const lagna = lagnaAt(stabSource(table), row.jd, KATHMANDU_LAT, KATHMANDU_LON);
     assert.ok(lagna !== null);
     angleClose(lagna, row.lagna, 0.02);
   }
@@ -144,7 +145,7 @@ test("lagna matches the server for Kathmandu", () => {
 test("sunrise and sunset match the server's solver for Kathmandu", () => {
   const { table, sun } = loadFixtures();
   for (const day of sun) {
-    const found = sunriseSunset(table, day.start_jd, KATHMANDU_LAT, KATHMANDU_LON);
+    const found = sunriseSunset(stabSource(table), day.start_jd, KATHMANDU_LAT, KATHMANDU_LON);
     assert.ok(found.sunriseJd !== null, `sunrise ${day.start_jd}`);
     assert.ok(found.sunsetJd !== null, `sunset ${day.start_jd}`);
     assert.ok(
@@ -163,7 +164,7 @@ test("next tithi and nakshatra boundaries land on a real change", () => {
   const row = rows[0];
   const positions = positionsAt(table, row.jd);
   assert.ok(positions !== null);
-  const tithiBoundary = nextTithiBoundary(table, row.jd);
+  const tithiBoundary = nextTithiBoundary(stabSource(table), row.jd);
   assert.ok(tithiBoundary !== null && tithiBoundary > row.jd);
   const before = positionsAt(table, tithiBoundary - 1 / 1440);
   const after = positionsAt(table, tithiBoundary + 1 / 1440);
@@ -172,7 +173,7 @@ test("next tithi and nakshatra boundaries land on a real change", () => {
     tithiAt(before.longitude[0], before.longitude[1]).number,
     tithiAt(after.longitude[0], after.longitude[1]).number,
   );
-  const nakshatraBoundary = nextNakshatraBoundary(table, row.jd);
+  const nakshatraBoundary = nextNakshatraBoundary(stabSource(table), row.jd);
   assert.ok(nakshatraBoundary !== null && nakshatraBoundary > row.jd);
   const nBefore = positionsAt(table, nakshatraBoundary - 1 / 1440);
   const nAfter = positionsAt(table, nakshatraBoundary + 1 / 1440);
