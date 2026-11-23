@@ -34,6 +34,7 @@ import {
 } from "@vedic-patro/domain/astronomy/siddhanta-offline";
 import {
   loadSiddhantaSource,
+  SLICE_MARGIN_DAYS,
   type PositionSource,
   type SiddhantaSourceVia,
 } from "@vedic-patro/domain/astronomy/siddhanta-source";
@@ -68,9 +69,9 @@ async function ensureCacheDir(): Promise<void> {
 
 async function readCachedSlice(year: number): Promise<Uint8Array | null> {
   try {
-    const info = await FileSystem.getInfoAsync(`${CACHE_DIR}${year}.vtab`);
+    const info = await FileSystem.getInfoAsync(`${CACHE_DIR}${year}.v2.vtab`);
     if (!info.exists) return null;
-    const base64 = await FileSystem.readAsStringAsync(`${CACHE_DIR}${year}.vtab`, {
+    const base64 = await FileSystem.readAsStringAsync(`${CACHE_DIR}${year}.v2.vtab`, {
       encoding: FileSystem.EncodingType.Base64,
     });
     const binary = atob(base64);
@@ -83,8 +84,9 @@ async function readCachedSlice(year: number): Promise<Uint8Array | null> {
 }
 
 async function fetchSlice(year: number, baseUrl: string): Promise<Uint8Array> {
-  const fromJd = jan1Jd(year);
-  const toJd = jan1Jd(year + 1);
+  // Margin either side: day views near Dec 31 / Jan 1 read past the year.
+  const fromJd = jan1Jd(year) - SLICE_MARGIN_DAYS;
+  const toJd = jan1Jd(year + 1) + SLICE_MARGIN_DAYS;
   const url = `${baseUrl}/v1/siddhanta/table?from_jd=${fromJd}&to_jd=${toJd}`;
   const response = await fetch(url);
   if (!response.ok) {
@@ -96,7 +98,7 @@ async function fetchSlice(year: number, baseUrl: string): Promise<Uint8Array> {
   // Store as base64: the legacy FileSystem API has no binary write.
   let binary = "";
   for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
-  await FileSystem.writeAsStringAsync(`${CACHE_DIR}${year}.vtab`, btoa(binary), {
+  await FileSystem.writeAsStringAsync(`${CACHE_DIR}${year}.v2.vtab`, btoa(binary), {
     encoding: FileSystem.EncodingType.Base64,
   });
   return bytes;

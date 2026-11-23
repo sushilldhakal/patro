@@ -253,7 +253,8 @@ impl Table {
     }
 
     /// A self-contained table holding samples `from..to` (inclusive, clamped
-    /// to the table). This is what the server sends for a date window. The
+    /// to the table), plus one sample of margin each side so edge speeds are
+    /// central differences. This is what the server sends for a date window. The
     /// mean Sun anchor is re-based to the slice's first sample, so the slice
     /// reads back exactly like a table built for its own window.
     #[must_use]
@@ -270,8 +271,13 @@ impl Table {
         }
         let first = ((from_jd - self.first_jd) / self.step_days).floor() as isize;
         let last = ((to_jd - self.first_jd) / self.step_days).ceil() as isize;
-        let first = first.clamp(0, n as isize - 1) as usize;
-        let last = last.clamp(0, n as isize - 1) as usize;
+        // One extra sample each side: the non-Moon speeds are central
+        // differences of the neighbouring samples, so a sample at the edge
+        // of the slice would otherwise get a one-sided (first-order) slope.
+        // With the pad, every sample inside the requested window has both
+        // neighbours. Only the table's own ends stay one-sided.
+        let first = (first - 1).clamp(0, n as isize - 1) as usize;
+        let last = (last + 1).clamp(0, n as isize - 1) as usize;
         let start = first * SAMPLE_BYTES;
         let end = (last + 1) * SAMPLE_BYTES;
         let first_jd = self.first_jd + first as f64 * self.step_days;
@@ -484,7 +490,9 @@ mod tests {
             samples,
         };
         let cut = table.slice(2_460_000.4, 2_460_001.2);
-        assert_eq!(cut.sample_count(), 4);
+        // Samples 0..=3 cover the window; one more is padded on the far
+        // side (the near side is already the table's first sample).
+        assert_eq!(cut.sample_count(), 5);
         assert!((cut.first_jd - 2_460_000.0).abs() < 1e-9);
         assert_eq!(cut.positions_at(2_460_000.0).unwrap().longitude[0], 100.0);
         // The slice re-bases the mean Sun anchor to its own first sample.

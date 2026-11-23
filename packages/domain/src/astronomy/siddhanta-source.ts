@@ -40,6 +40,9 @@ export interface SiddhantaSourceOptions {
   fetchImpl?: typeof fetch;
 }
 
+/** Days of table fetched beyond each end of the year. */
+export const SLICE_MARGIN_DAYS = 2;
+
 export type SiddhantaSourceVia = "server" | "bundled";
 
 /**
@@ -52,24 +55,27 @@ export async function loadSiddhantaSource(
   options: SiddhantaSourceOptions,
 ): Promise<{ source: PositionSource; via: SiddhantaSourceVia }> {
   const year = new Date((jdUt - 2440587.5) * 86_400_000).getUTCFullYear();
-  const fromJd = jdFromUnixMs(Date.UTC(year, 0, 1));
-  const toJd = jdFromUnixMs(Date.UTC(year + 1, 0, 1));
+  // Margin either side of the year: a Nepal day that starts on Dec 31 UT,
+  // the ±0.5-day display speed and the boundary scan all read past Jan 1.
+  const fromJd = jdFromUnixMs(Date.UTC(year, 0, 1)) - SLICE_MARGIN_DAYS;
+  const toJd = jdFromUnixMs(Date.UTC(year + 1, 0, 1)) + SLICE_MARGIN_DAYS;
   const timeoutMs = options.timeoutMs ?? 8000;
   const fetchImpl = options.fetchImpl ?? fetch;
   const url = `${options.baseUrl.replace(/\/$/, "")}/v1/siddhanta/table?from_jd=${fromJd}&to_jd=${toJd}`;
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
-    let response: Response;
+    let table: SiddhantaTable;
     try {
-      response = await fetchImpl(url, { signal: controller.signal });
+      const response = await fetchImpl(url, { signal: controller.signal });
+      if (!response.ok) {
+        throw new Error(`siddhanta slice answered ${response.status}`);
+      }
+      // The timer stays armed through the body read, so a stalled body falls back too.
+      table = parseSiddhantaTable(new Uint8Array(await response.arrayBuffer()));
     } finally {
       clearTimeout(timer);
     }
-    if (!response.ok) {
-      throw new Error(`siddhanta slice answered ${response.status}`);
-    }
-    const table = parseSiddhantaTable(new Uint8Array(await response.arrayBuffer()));
     return { source: stabSource(table), via: "server" };
   } catch (error) {
     if (!options.bundledCheb) {
