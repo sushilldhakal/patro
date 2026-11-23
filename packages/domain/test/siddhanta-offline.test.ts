@@ -193,3 +193,13 @@ test("a bad magic and a truncated file are rejected", () => {
   assert.throws(() => parseSiddhantaTable(bytes.slice(0, 40)), /too short/);
   assert.throws(() => parseSiddhantaTable(bytes.slice(0, 48 + 10)), /sample count/);
 });
+
+test("a place far east of Greenwich still gets its sunrise, on the previous UT day", () => {
+  const { table, sun } = loadFixtures();
+  const day = sun[Math.floor(sun.length / 2)];
+  // Sydney: sunrise ~06:00 local = ~20:00 UT the day before, sunset ~19:00 local = ~09:00 UT.
+  const found = sunriseSunset(stabSource(table), day.start_jd, -33.87, 151.21);
+  assert.ok(found.sunriseJd !== null && found.sunsetJd !== null);
+  assert.ok(found.sunriseJd < day.start_jd, "sunrise falls before 00:00 UT of that date");
+  assert.ok(found.sunsetJd > found.sunriseJd && found.sunsetJd - found.sunriseJd > 0.3, "a day of daylight between them");
+});

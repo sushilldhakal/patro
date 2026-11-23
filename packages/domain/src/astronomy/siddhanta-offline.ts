@@ -156,9 +156,20 @@ export function siddhantaLastJd(table: SiddhantaTable): number {
   return table.firstJd + (table.sampleCount - 1) * table.stepDays;
 }
 
+/** One DataView per table: a day's boundary scan reads thousands of samples. */
+const views = new WeakMap<Uint8Array, DataView>();
+function viewOf(table: SiddhantaTable): DataView {
+  let view = views.get(table.bytes);
+  if (!view) {
+    view = new DataView(table.bytes.buffer, table.bytes.byteOffset, table.bytes.byteLength);
+    views.set(table.bytes, view);
+  }
+  return view;
+}
+
 function longitudeAt(table: SiddhantaTable, index: number, body: number): number {
   const at = HEADER_BYTES + index * SAMPLE_BYTES + body * 4;
-  const view = new DataView(table.bytes.buffer, table.bytes.byteOffset, table.bytes.byteLength);
+  const view = viewOf(table);
   return view.getUint32(at, true) / LON_COUNTS_PER_DEGREE;
 }
 
@@ -172,8 +183,7 @@ function longitudeAt(table: SiddhantaTable, index: number, body: number): number
 function speedAt(table: SiddhantaTable, index: number, body: number): number {
   if (body === SIDDHANTA_BODY_INDEX.moon) {
     const at = HEADER_BYTES + index * SAMPLE_BYTES + SIDDHANTA_BODIES.length * 4;
-    const view = new DataView(table.bytes.buffer, table.bytes.byteOffset, table.bytes.byteLength);
-    return view.getFloat32(at, true);
+    return viewOf(table).getFloat32(at, true);
   }
   const n = table.sampleCount;
   let lo = index - 1;
@@ -514,7 +524,11 @@ export interface SunriseSunset {
 }
 
 /**
- * Sunrise and sunset for the day starting at `dayStartJd` (00:00 UT), at
+ * Sunrise and sunset for the local day whose civil date is the UT date of
+ * `dayStartJd` (00:00 UT). The scan starts at that date's local midnight
+ * (`longitude / 360` days earlier), so places far east or west of Greenwich
+ * (Australia, the Americas), whose sunrise falls on the previous UT day, still
+ * get a sunrise. At
  * the source's horizon — the Sun's centre on the geometric horizon for a
  * Surya source, the upper limb (−0.833°) for a Drik one. Scans the day in
  * 10-minute steps and bisects the crossings, so the Sun's motion during
@@ -527,6 +541,7 @@ export function sunriseSunset(
   longitude: number,
 ): SunriseSunset {
   const step = 10 / 1440; // 10 minutes, in days
+  dayStartJd -= longitude / 360;
   let previousJd = dayStartJd;
   let previousAlt = sunAltitude(source, previousJd, latitude, longitude);
   let sunriseJd: number | null = null;
@@ -534,7 +549,13 @@ export function sunriseSunset(
   for (let k = 1; k <= 144; k += 1) {
     const jd = dayStartJd + k * step;
     const alt = sunAltitude(source, jd, latitude, longitude);
-    if (alt === null || previousAlt === null) break;
+    // The scan now starts at local midnight, which can fall before the table's
+    // first sample: skip the uncovered steps instead of giving up on the day.
+    if (alt === null || previousAlt === null) {
+      previousJd = jd;
+      previousAlt = alt;
+      continue;
+    }
     if (previousAlt < 0 && alt >= 0 && sunriseJd === null) {
       sunriseJd = bisectCrossing(source, previousJd, jd, latitude, longitude);
     } else if (previousAlt >= 0 && alt < 0 && sunsetJd === null) {
