@@ -2281,6 +2281,7 @@ name = "siddhanta-table"
 version = "0.1.0"
 dependencies = [
  "astronomy",
+ "ephdata",
  "panchanga",
  "thiserror",
  "timescale",

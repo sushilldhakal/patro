@@ -4,15 +4,19 @@
 // the point. The file is small enough to ship inside the app, so the phone
 // can still show a panchanga when the server is slow or unreachable.
 //
-// The format is body-agnostic: a Drik coefficient file has the same shape
-// with different data (and different scalars — the ayanamsha and mean Sun
-// the file was built against). Pass those as `scalars`; the Surya ones are
-// the default. What the client derives from the positions — tithi,
-// nakshatra, lagna, sunrise — is the same code as for the STAB table.
+// The format is body-agnostic: a Drik coefficient file (CHEB0002) has the
+// same shape with different data and a fitted ayanamsha in its header, so
+// the reader takes both scalars from the file instead of the text's
+// formula. Pass those as `scalars` to override; the default reads them
+// from the table itself. What the client derives from the positions —
+// tithi, nakshatra, lagna, sunrise — is the same code as for the STAB
+// table.
 import { ayanamshaAt, wrap360, type SiddhantaPositions } from "./siddhanta-offline";
 
 const HEADER_BYTES = 56;
+const HEADER_BYTES_V2 = 72;
 const MAGIC = "CHEB0001";
+const MAGIC_V2 = "CHEB0002";
 const BODIES = 8;
 
 /** A parsed CHEB file. Coefficients are f32, segment by segment, body by body. */
@@ -25,6 +29,12 @@ export interface ChebTable {
   meanSun0: number;
   /** Mean Sun's exact rate, degrees per day. */
   meanSunRate: number;
+  /**
+   * Ayanamsha fitted from the kernel (anchor at `firstJd`, rate °/day):
+   * present in a CHEB0002 (Drik) file, absent in a CHEB0001 (Surya
+   * Siddhanta) file, where the text's formula is used instead.
+   */
+  ayanamsha?: { anchor: number; rate: number };
   coefficients: Float32Array;
 }
 
@@ -43,14 +53,19 @@ export function chebSegmentBytes(degrees: readonly number[]): number {
   return degrees.reduce((sum, d) => sum + (d + 1) * 4, 0);
 }
 
-/** Parses CHEB bytes (a whole file). */
+/** Parses CHEB bytes (a whole file): version 1 or version 2. */
 export function parseChebTable(bytes: Uint8Array): ChebTable {
   if (bytes.length < HEADER_BYTES) {
     throw new Error("chebyshev table is too short for a header");
   }
   const magic = String.fromCharCode(...bytes.subarray(0, 8));
-  if (magic !== MAGIC) {
+  const isV2 = magic === MAGIC_V2;
+  if (!isV2 && magic !== MAGIC) {
     throw new Error("not a chebyshev table (bad magic)");
+  }
+  const headerBytes = isV2 ? HEADER_BYTES_V2 : HEADER_BYTES;
+  if (bytes.length < headerBytes) {
+    throw new Error("chebyshev table is too short for a version-2 header");
   }
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const bodies = view.getUint32(8, true);
@@ -68,16 +83,25 @@ export function parseChebTable(bytes: Uint8Array): ChebTable {
   if (!Number.isFinite(meanSunRate)) {
     throw new Error(`chebyshev table mean Sun rate ${meanSunRate} is not a finite number`);
   }
+  const ayanamsha = isV2
+    ? {
+        anchor: view.getFloat64(56, true),
+        rate: view.getFloat64(64, true),
+      }
+    : undefined;
+  if (ayanamsha && !Number.isFinite(ayanamsha.rate)) {
+    throw new Error(`chebyshev table ayanamsha rate ${ayanamsha.rate} is not a finite number`);
+  }
   const degrees = Array.from({ length: BODIES }, (_, b) => view.getUint8(48 + b));
-  if (bytes.length !== HEADER_BYTES + segmentCount * chebSegmentBytes(degrees)) {
+  if (bytes.length !== headerBytes + segmentCount * chebSegmentBytes(degrees)) {
     throw new Error("chebyshev table length does not match its segment count");
   }
-  const count = (bytes.length - HEADER_BYTES) / 4;
+  const count = (bytes.length - headerBytes) / 4;
   const coefficients = new Float32Array(count);
   for (let i = 0; i < count; i++) {
-    coefficients[i] = view.getFloat32(HEADER_BYTES + i * 4, true);
+    coefficients[i] = view.getFloat32(headerBytes + i * 4, true);
   }
-  return { firstJd, segmentDays, degrees, meanSun0, meanSunRate, coefficients };
+  return { firstJd, segmentDays, degrees, meanSun0, meanSunRate, ayanamsha, coefficients };
 }
 
 /** Julian Day (UT) of the last instant covered. */
@@ -90,6 +114,25 @@ export function chebLastJd(table: ChebTable): number {
 export function suryaScalars(table: ChebTable): ChebScalars {
   return {
     ayanamshaAt,
+    meanSunNirayanaAt: (jdUt) =>
+      wrap360(table.meanSun0 + table.meanSunRate * (jdUt - table.firstJd)),
+  };
+}
+
+/**
+ * The scalars for a file, read from the file itself: a version-2 (Drik)
+ * file carries its fitted ayanamsha in the header, so both scalars are
+ * the header's straight lines; a version-1 (Surya) file has no ayanamsha
+ * in its header, so the text's formula is used for that one. This is the
+ * default for `chebPositionsAt`.
+ */
+export function chebScalars(table: ChebTable): ChebScalars {
+  if (!table.ayanamsha) {
+    return suryaScalars(table);
+  }
+  const { anchor, rate } = table.ayanamsha;
+  return {
+    ayanamshaAt: (jdUt) => wrap360(anchor + rate * (jdUt - table.firstJd)),
     meanSunNirayanaAt: (jdUt) =>
       wrap360(table.meanSun0 + table.meanSunRate * (jdUt - table.firstJd)),
   };
@@ -151,7 +194,7 @@ export function chebPositionsAt(
   if (!Number.isFinite(jdUt) || jdUt < table.firstJd || jdUt > chebLastJd(table)) {
     return null;
   }
-  const resolved = scalars ?? suryaScalars(table);
+  const resolved = scalars ?? chebScalars(table);
   const longitude: number[] = [];
   const speed: number[] = [];
   const delta = 0.05;

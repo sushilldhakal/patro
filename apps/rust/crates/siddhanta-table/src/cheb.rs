@@ -26,10 +26,24 @@
 //!
 //! The coefficients fit the *unwrapped* longitude over the segment, so the
 //! reader evaluates the polynomial and wraps the result to 0–360°. The
-//! ayanamsha is not stored — it is the same ten-line formula the STAB
-//! reader uses — and the mean Sun is the same header anchor + rate (the
-//! nirayana mean Sun is exactly linear; the reader adds the ayanamsha for
-//! the sayana value).
+//! ayanamsha is not stored in a `CHEB0001` file — it is the same ten-line
+//! formula the STAB reader uses — and the mean Sun is the same header
+//! anchor + rate (the nirayana mean Sun is exactly linear; the reader adds
+//! the ayanamsha for the sayana value).
+//!
+//! A Drik file is `CHEB0002`: the same 56 header bytes, plus 16 more — the
+//! ayanamsha at the first JD and its rate, fitted as a straight line from
+//! the kernel (Lahiri precession is linear to well under an arcsecond over
+//! the file's range; the builder measures the fit and refuses a bad one).
+//! There is no closed-form Lahiri formula in the reader, so the file
+//! carries the two numbers instead of the reader guessing them. The mean
+//! Sun is the same header anchor + rate, fitted from the kernel's Sun.
+//!
+//! ```text
+//! CHEB0002 header: CHEB0001's 56 bytes, then
+//! 56  f64 ayanamsha at the first JD, f64 its rate °/day
+//! 72  per segment, per body: (degree + 1) f32 coefficients
+//! ```
 //!
 //! The speed beside a longitude is the derivative of the polynomial, taken
 //! as a ±0.05-day central difference of the evaluation itself — the
@@ -43,11 +57,16 @@ use std::path::Path;
 use astronomy::surya_siddhanta::ayanamsha;
 use thiserror::Error;
 
-/// Magic, format version 1.
+/// Magic, format version 1 (Surya Siddhanta: ayanamsha from the formula).
 pub const MAGIC: &[u8; 8] = b"CHEB0001";
+/// Magic, format version 2 (Drik: ayanamsha fitted from the kernel).
+pub const MAGIC2: &[u8; 8] = b"CHEB0002";
 /// Header size in bytes: magic, body count, segment count, first JD,
 /// segment length, mean Sun anchor, mean Sun rate, degrees.
 pub const HEADER: usize = 56;
+/// Header size of a version-2 file: the version-1 header plus the
+/// ayanamsha anchor and rate.
+pub const HEADER2: usize = 72;
 /// Bodies, in [`astronomy::surya_siddhanta::Body::ALL`] order.
 pub const BODIES: usize = 8;
 /// Default segment length, in days: the length the design was measured at.
@@ -66,6 +85,10 @@ pub struct ChebTable {
     pub mean_sun0: f64,
     /// Mean Sun's exact rate, degrees per day.
     pub mean_sun_rate: f64,
+    /// Ayanamsha (anchor at `first_jd`, rate °/day), fitted from the
+    /// kernel: `Some` in a `CHEB0002` (Drik) file, `None` in a `CHEB0001`
+    /// (Surya Siddhanta) file, where the reader uses the text's formula.
+    pub ayanamsha: Option<(f64, f64)>,
     /// Coefficients, segment by segment, body by body, (degree + 1) f32s
     /// each, in file order.
     pub coefficients: Vec<f32>,
@@ -106,6 +129,9 @@ pub enum ChebError {
     /// The mean Sun rate is not a finite number.
     #[error("mean Sun rate {0} is not a finite number")]
     BadRate(f64),
+    /// The ayanamsha rate in a version-2 header is not a finite number.
+    #[error("ayanamsha rate {0} is not a finite number")]
+    BadAyanamshaRate(f64),
     /// The file could not be read.
     #[error("could not read {0}: {1}")]
     Io(std::path::PathBuf, std::io::Error),
@@ -177,7 +203,9 @@ pub fn clenshaw(coeffs: &[f32], x: f64) -> f64 {
     x * b1 - b2 + f64::from(coeffs[0])
 }
 
-/// Parses a whole `CHEB` file's bytes.
+/// Parses a whole `CHEB` file's bytes: version 1 (`CHEB0001`, 56-byte
+/// header, ayanamsha from the Surya Siddhanta formula) or version 2
+/// (`CHEB0002`, 72-byte header, ayanamsha fitted from the kernel).
 ///
 /// # Errors
 ///
@@ -185,14 +213,23 @@ pub fn clenshaw(coeffs: &[f32], x: f64) -> f64 {
 /// for a wrong magic, [`ChebError::BodyCount`] for a header that names a
 /// different body count, [`ChebError::BadSegment`] for a non-positive
 /// segment length, [`ChebError::BadRate`] for a non-finite mean Sun rate,
-/// and [`ChebError::SegmentCount`] when the bytes do not hold the header's
+/// [`ChebError::BadAyanamshaRate`] for a non-finite ayanamsha rate, and
+/// [`ChebError::SegmentCount`] when the bytes do not hold the header's
 /// segments.
 pub fn parse(bytes: &[u8]) -> Result<ChebTable, ChebError> {
     if bytes.len() < HEADER {
         return Err(ChebError::TooShort);
     }
-    if &bytes[..8] != MAGIC {
+    let v2 = if &bytes[..8] == MAGIC2 {
+        true
+    } else if &bytes[..8] == MAGIC {
+        false
+    } else {
         return Err(ChebError::BadMagic);
+    };
+    let header = if v2 { HEADER2 } else { HEADER };
+    if bytes.len() < header {
+        return Err(ChebError::TooShort);
     }
     let bodies = read_u32(bytes, 8);
     if bodies as usize != BODIES {
@@ -209,16 +246,26 @@ pub fn parse(bytes: &[u8]) -> Result<ChebTable, ChebError> {
     if !mean_sun_rate.is_finite() {
         return Err(ChebError::BadRate(mean_sun_rate));
     }
+    let ayanamsha = if v2 {
+        let anchor = read_f64(bytes, 56);
+        let rate = read_f64(bytes, 64);
+        if !rate.is_finite() {
+            return Err(ChebError::BadAyanamshaRate(rate));
+        }
+        Some((anchor, rate))
+    } else {
+        None
+    };
     let mut degrees = [0usize; BODIES];
     for b in 0..BODIES {
         degrees[b] = bytes[48 + b] as usize;
     }
-    let want = HEADER + segments as usize * segment_bytes(&degrees);
+    let want = header + segments as usize * segment_bytes(&degrees);
     if bytes.len() != want {
         return Err(ChebError::SegmentCount(segments));
     }
-    let mut coefficients = Vec::with_capacity(bytes.len() - HEADER);
-    for chunk in bytes[HEADER..].chunks_exact(4) {
+    let mut coefficients = Vec::with_capacity(bytes.len() - header);
+    for chunk in bytes[header..].chunks_exact(4) {
         coefficients.push(f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
     }
     Ok(ChebTable {
@@ -227,6 +274,7 @@ pub fn parse(bytes: &[u8]) -> Result<ChebTable, ChebError> {
         degrees,
         mean_sun0,
         mean_sun_rate,
+        ayanamsha,
         coefficients,
     })
 }
@@ -242,11 +290,22 @@ pub fn open(path: &Path) -> Result<ChebTable, ChebError> {
     parse(&bytes)
 }
 
-/// Writes a table's bytes: header, then coefficients.
+/// Writes a table's bytes: header, then coefficients. A table with a
+/// fitted ayanamsha writes `CHEB0002` (72-byte header); without one it
+/// writes `CHEB0001` (56-byte header).
 #[must_use]
 pub fn serialise(table: &ChebTable) -> Vec<u8> {
-    let mut out = Vec::with_capacity(HEADER + table.coefficients.len() * 4);
-    out.extend_from_slice(MAGIC);
+    let header = if table.ayanamsha.is_some() {
+        HEADER2
+    } else {
+        HEADER
+    };
+    let mut out = Vec::with_capacity(header + table.coefficients.len() * 4);
+    out.extend_from_slice(if table.ayanamsha.is_some() {
+        MAGIC2
+    } else {
+        MAGIC
+    });
     out.extend_from_slice(&(BODIES as u32).to_le_bytes());
     let seg_bytes = segment_bytes(&table.degrees);
     out.extend_from_slice(&((table.coefficients.len() * 4 / seg_bytes) as u32).to_le_bytes());
@@ -256,6 +315,10 @@ pub fn serialise(table: &ChebTable) -> Vec<u8> {
     out.extend_from_slice(&table.mean_sun_rate.to_le_bytes());
     for &d in &table.degrees {
         out.push(d as u8);
+    }
+    if let Some((anchor, rate)) = table.ayanamsha {
+        out.extend_from_slice(&anchor.to_le_bytes());
+        out.extend_from_slice(&rate.to_le_bytes());
     }
     for &c in &table.coefficients {
         out.extend_from_slice(&c.to_le_bytes());
@@ -290,6 +353,16 @@ impl ChebTable {
     #[must_use]
     pub fn mean_sun_at(&self, jd_ut: f64) -> f64 {
         wrap360(self.mean_sun0 + self.mean_sun_rate * (jd_ut - self.first_jd))
+    }
+
+    /// Ayanamsha, degrees, at `jd_ut`: the header's fitted line for a
+    /// version-2 (Drik) table, the text's formula for a version-1 table.
+    #[must_use]
+    pub fn ayanamsha_at(&self, jd_ut: f64) -> f64 {
+        match self.ayanamsha {
+            Some((anchor, rate)) => wrap360(anchor + rate * (jd_ut - self.first_jd)),
+            None => ayanamsha(jd_ut),
+        }
     }
 
     /// Offset, in f32 coefficients, of a body's coefficients in a segment.
@@ -333,7 +406,7 @@ impl ChebTable {
                 speed[b] = diff / (hi - lo);
             }
         }
-        let aya = ayanamsha(jd_ut);
+        let aya = self.ayanamsha_at(jd_ut);
         Some(Positions {
             longitude,
             speed,
@@ -365,6 +438,7 @@ mod tests {
             degrees: [degree, 0, 0, 0, 0, 0, 0, 0],
             mean_sun0: 150.0,
             mean_sun_rate: 0.9856,
+            ayanamsha: None,
             coefficients: coeffs,
         }
     }
@@ -386,6 +460,25 @@ mod tests {
         assert_eq!(back.first_jd, table.first_jd);
         assert_eq!(back.degrees, table.degrees);
         assert_eq!(back.coefficients, table.coefficients);
+        assert_eq!(back.ayanamsha, None);
+    }
+
+    #[test]
+    fn version_two_round_trips_and_uses_its_ayanamsha() {
+        let mut table = cos_table();
+        table.ayanamsha = Some((24.0, 0.000_038_5));
+        let bytes = serialise(&table);
+        assert_eq!(&bytes[..8], b"CHEB0002");
+        assert_eq!(bytes.len(), HEADER2 + table.coefficients.len() * 4);
+        let back = parse(&bytes).unwrap();
+        assert_eq!(back.ayanamsha, Some((24.0, 0.000_038_5)));
+        assert_eq!(back.coefficients, table.coefficients);
+        let at = back.positions_at(back.first_jd + 10.0).unwrap();
+        assert!((at.ayanamsha - (24.0 + 0.000_038_5 * 10.0)).abs() < 1e-9);
+        assert!(
+            (at.mean_sun_sayana - (back.mean_sun_at(back.first_jd + 10.0) + at.ayanamsha)).abs()
+                < 1e-9
+        );
     }
 
     #[test]

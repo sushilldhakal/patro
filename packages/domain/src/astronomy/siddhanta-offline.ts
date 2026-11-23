@@ -90,6 +90,25 @@ export interface SiddhantaPositions {
   meanSunSayana: number;
 }
 
+/**
+ * The frame a source's positions live in: the obliquity, the sidereal
+ * time, and the horizon the sunrise solver aims at. The derivations that
+ * only need longitudes (tithi, nakshatra, yoga, karana, boundaries) never
+ * touch it; lagna and sunrise do. A source without a frame is the Surya
+ * Siddhanta one: the text's 24° obliquity, sidereal time from the mean
+ * Sun, and the Sun's centre on the geometric horizon. A Drik source
+ * carries the true mean obliquity of date, the rigorous Greenwich
+ * sidereal time, and the −0.833° upper-limb horizon.
+ */
+export interface PositionFrame {
+  /** Mean obliquity of date, degrees. */
+  obliquityAt(jdUt: number): number;
+  /** Local mean sidereal time, degrees. */
+  localSiderealDegrees(jdUt: number, longitude: number): number;
+  /** Horizon altitude for sunrise/sunset, degrees. */
+  horizonDegrees: number;
+}
+
 export function wrap360(degrees: number): number {
   const r = degrees % 360;
   return r < 0 ? r + 360 : r;
@@ -263,6 +282,8 @@ export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPosit
  * code runs on the server slice and on the bundled fallback file. */
 export interface PositionSource {
   positionsAt(jdUt: number): SiddhantaPositions | null;
+  /** The frame, when it is not the Surya Siddhanta default. */
+  frame?: PositionFrame;
 }
 
 /** A STAB table (whole file or a server slice) as a source. */
@@ -381,10 +402,31 @@ function localSiderealDegrees(positions: SiddhantaPositions, jdUt: number, longi
   return wrap360(positions.meanSunSayana + 360 * pyMod(localMeanDays, 1) - 180);
 }
 
+/** The frame's obliquity, or the text's 24° when the source has no frame. */
+function obliquityAt(source: PositionSource, jdUt: number): number {
+  return source.frame?.obliquityAt(jdUt) ?? OBLIQUITY_DEGREES;
+}
+
+/** The frame's sidereal time, or the Surya one (from the mean Sun) when the source has no frame. */
+function siderealDegrees(
+  source: PositionSource,
+  positions: SiddhantaPositions,
+  jdUt: number,
+  longitude: number,
+): number {
+  return (
+    source.frame?.localSiderealDegrees(jdUt, longitude) ??
+    localSiderealDegrees(positions, jdUt, longitude)
+  );
+}
+
 /**
  * Lagna (nirayana), 0–360°: the ascendant from the stored mean Sun and
- * ayanamsha, with the text's 24° obliquity. This is `frame::ascendant` with
- * its inputs read from the source instead of computed.
+ * ayanamsha, in the source's frame — the text's 24° obliquity and
+ * mean-Sun sidereal time for a Surya source, the true obliquity and
+ * rigorous sidereal time for a Drik one. This is `frame::ascendant` (or
+ * `DrikSky::ascendant`) with its inputs read from the source instead of
+ * computed.
  */
 export function lagnaAt(
   source: PositionSource,
@@ -394,8 +436,8 @@ export function lagnaAt(
 ): number | null {
   const positions = source.positionsAt( jdUt);
   if (positions === null) return null;
-  const ramc = (localSiderealDegrees(positions, jdUt, longitude) * Math.PI) / 180;
-  const eps = (OBLIQUITY_DEGREES * Math.PI) / 180;
+  const ramc = (siderealDegrees(source, positions, jdUt, longitude) * Math.PI) / 180;
+  const eps = (obliquityAt(source, jdUt) * Math.PI) / 180;
   const phi = (latitude * Math.PI) / 180;
   const asc =
     (Math.atan2(
@@ -407,16 +449,20 @@ export function lagnaAt(
   return wrap360(asc - positions.ayanamsha);
 }
 
-/** Right ascension and declination of a longitude, for the 24° obliquity. */
-function equatorial(longitude: number): [number, number] {
+/** Right ascension and declination of a longitude, for the given obliquity in degrees. */
+function equatorial(longitude: number, obliquityDegrees: number): [number, number] {
   const lon = (longitude * Math.PI) / 180;
-  const eps = (OBLIQUITY_DEGREES * Math.PI) / 180;
+  const eps = (obliquityDegrees * Math.PI) / 180;
   const ra = (Math.atan2(Math.sin(lon) * Math.cos(eps), Math.cos(lon)) * 180) / Math.PI;
   const dec = (Math.asin(Math.sin(lon) * Math.sin(eps)) * 180) / Math.PI;
   return [wrap360(ra), dec];
 }
 
-/** Altitude of the Sun's centre, degrees, at an instant and place. */
+/**
+ * Altitude of the Sun's centre above the source's horizon, degrees, at an
+ * instant and place — the altitude minus the horizon, so the sunrise
+ * solver's zero crossings are the horizon crossings in either frame.
+ */
 function sunAltitude(
   source: PositionSource,
   jdUt: number,
@@ -428,16 +474,18 @@ function sunAltitude(
   // RA/Dec are tropical: the stored longitude is sidereal, so add the
   // ayanamsha first — as `equation_of_time_days` does on the server.
   const sayana = positions.longitude[SIDDHANTA_BODY_INDEX.sun] + positions.ayanamsha;
-  const [ra, dec] = equatorial(sayana);
-  const ramc = localSiderealDegrees(positions, jdUt, longitude);
+  const [ra, dec] = equatorial(sayana, obliquityAt(source, jdUt));
+  const ramc = siderealDegrees(source, positions, jdUt, longitude);
   let hourAngle = wrap360(ramc - ra);
   if (hourAngle > 180) hourAngle -= 360;
   const phi = (latitude * Math.PI) / 180;
   const d = (dec * Math.PI) / 180;
   const h = (hourAngle * Math.PI) / 180;
+  const horizon = source.frame?.horizonDegrees ?? 0;
   return (
     (Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(h)) * 180) /
-    Math.PI
+      Math.PI -
+    horizon
   );
 }
 
@@ -466,10 +514,11 @@ export interface SunriseSunset {
 }
 
 /**
- * Sunrise and sunset (the Sun's centre on the geometric horizon, 0° — the
- * text's own horizon, not the −0.833° upper limb) for the day starting at
- * `dayStartJd` (00:00 UT). Scans the day in 10-minute steps and bisects the
- * crossings, so the Sun's motion during the day is accounted for.
+ * Sunrise and sunset for the day starting at `dayStartJd` (00:00 UT), at
+ * the source's horizon — the Sun's centre on the geometric horizon for a
+ * Surya source, the upper limb (−0.833°) for a Drik one. Scans the day in
+ * 10-minute steps and bisects the crossings, so the Sun's motion during
+ * the day is accounted for.
  */
 export function sunriseSunset(
   source: PositionSource,

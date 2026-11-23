@@ -12,6 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 astronomy.workspace = true
+ephdata.workspace = true
 panchanga.workspace = true
 timescale.workspace = true
 thiserror.workspace = true

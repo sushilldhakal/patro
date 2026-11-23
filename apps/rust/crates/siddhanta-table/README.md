@@ -266,18 +266,105 @@ Budgets are the same as `check`: fastest speed × 2e-4 days + 0.5". The
   loader's server/slow/unreachable cases), and a screen adopts it by calling
   `loadSiddhantaSourceFor` instead of `fetchPanchanga`.
 
-### Drik, and Arun/Barun
+### Our own Swiss Ephemeris for Drik
 
-A Drik coefficient file has the same shape with different data — and
-different scalars (the Drik ayanamsha is Lahiri, not the text's libration
-formula). The evaluator takes the scalars as a parameter for exactly that.
-But no Drik file is built here: this workspace has no Drik kernel data (the
-HTTP goldens cannot run for the same reason), so the Drik file is built
-where the kernel lives, by fitting longitudes the same way
-(`cheb-measure`/`cheb-build` fit any position function; the Drik builder
-would feed them kernel longitudes instead of SS ones).
+Swiss Ephemeris is a calculation library plus compressed JPL data: it took
+DE431 (~2.8 GB), kept the Chebyshev coefficients, dropped what it did not
+need, and packed the rest into ~99 MB of `.se1` files (planets `sepl_*`,
+Moon `semo_*`, asteroids `seas_*`), with a stated agreement of about 1
+milliarcsecond against the source. It also falls back to an analytical
+ephemeris (Moshier) when a `.se1` file is missing — so a Swiss result does
+not always come from the compressed files, and the source has to be stated
+when validating.
 
-Uranus (Arun) and Neptune (Barun) are not in this file at all: the Surya
-Siddhanta's grahas are the eight stored here, and the text has no Uranus or
-Neptune. They would come from a Drik file, if one is built, not from this
-one.
+We already do the same for Drik, on the server. `kernel.veph`
+(`VEPH0002`, `crates/ephdata/src/kernel.rs`) is our own compressed
+ephemeris: JPL DE441 Chebyshev data (newer than Swiss's DE431), extracted
+by `ephdata extract` from the SPK, keeping only the 12 segments the sky
+needs (Sun, Earth–Moon barycentre, Earth, Moon, Mercury, Venus, Mars,
+Jupiter, Saturn, Uranus, Neptune, Pluto), cut to the date range the app
+needs, and bit-packed — every coefficient rounded to a fixed step in km
+(1 m by default) and given only the bits its largest value needs, the same
+class of compression Swiss uses. The JPL fit itself is not resampled: every
+coefficient is kept. `crates/ephdata` is the calculation library beside it
+(the apparent place with light-time, aberration, precession and nutation,
+Lahiri ayanamsha, ΔT), and `events.vidx` is the precomputed index (every
+anga boundary, sankranti, ingress and station), built by `ephdata index`.
+The `ephdata` binary is the build and check tool (`extract`, `index`,
+`lon`, `dump`, `check`, `sample`, `stations`).
+
+What Swiss has that we do not:
+
+- **30,000 years of coverage** (its files are split into ~600-year
+  periods). Ours covers only the years the app needs — that is the "only
+  the things we need" part, already applied at extraction time.
+- **Asteroid files.** Nothing in Patro uses asteroids, so none are kept.
+- **A fallback when the data is missing.** Swiss falls back to Moshier;
+  we return 503 when the kernel is absent. That is the real gap, and the
+  CHEB file below is what closes it on the client side.
+
+The client-side Drik file is `CHEB0002`, built by the `drik-*` commands
+in this binary — the same shape as the Surya file, different data, and a
+different header. The coefficients are fitted to the exact functions the
+server's Drik path uses (`Sky::sidereal_longitude` for the seven bodies,
+`Sky::true_node` for Rahu), so the file agrees with the server to the fit
+error, not to a second implementation. The header carries the ayanamsha
+and the mean Sun as straight lines fitted from the kernel over the file's
+range (Lahiri precession is linear to far under an arcsecond over 200
+years; the build measures the fit and refuses a bad one), because there is
+no closed-form Lahiri formula in the reader to fall back on — the file
+carries the two numbers instead of the reader guessing them. The client
+reads both scalars from the header (`chebScalars`), and the Drik frame
+(true mean obliquity of date, rigorous Greenwich sidereal time, −0.833°
+horizon) rides on the source (`drik-source.ts`), so the shared derivations
+— tithi, nakshatra, lagna, sunrise — run correctly for Drik too. Uranus,
+Neptune and Pluto stay in the kernel only: no panchanga derivation reads
+them, and the fallback is a panchanga file.
+
+```text
+siddhanta-table drik-measure <kernel.veph> [segments] [segment_days]
+siddhanta-table drik-build <kernel.veph> <out.cheb> <first_year> <last_year> [segment_days] [degrees]
+siddhanta-table drik-check <kernel.veph> <table.cheb> [random_samples]
+siddhanta-table drik-fixtures <kernel.veph> <table.cheb> <out.json> [count]
+siddhanta-table drik-sun <kernel.veph> <out.json> [days]
+```
+
+`drik-measure` spreads segments across the kernel's own coverage (21 by
+default — three under-measure, the same lesson as the Surya file, where
+three segments from one year missed Venus at 121"). The budget is a flat
+0.5" — the kernel's motion is smooth, with none of the text's ~14 s steps,
+so only the fit itself is budgeted, and the measure samples every 0.05
+days so it sees the peaks the check will. The kernel must extend at least
+a day beyond the table's range on both sides (light-time looks back from
+the first instant, and the table's year boundaries are midnight while the
+kernel's are noon); the commands say so plainly when it does not, instead
+of failing with the kernel's out-of-range error.
+
+No Drik file is built here: this workspace has no kernel data (the HTTP
+goldens cannot run for the same reason). The builder and its test run on a
+synthetic kernel — circular orbits in the ecliptic plane, the Moon inclined
+5.14° so its node is defined, written by `drik-synthetic` — and the
+TypeScript fixtures (`packages/domain/test/fixtures/drik-2000.*`) come from
+it. On the synthetic kernel the year 2000 file is 3,624 bytes at measured
+degrees `[5, 23, 6, 12, 5, 7, 4, 4]`, and `drik-check` passes over 500
+random instants (worst: Mars 0.40", Sun 0.33", Moon 0.32"). The real file's
+degrees and size come from `drik-measure` on the real kernel, where the
+kernel lives; the Moon there carries the real perturbations (evection,
+variation, annual equation), so expect it to need more than the synthetic
+23, and the Sun to need more than 5 — its geocentric longitude carries the
+Earth's monthly wobble around the EMB (±6.5"), which the Surya Sun does
+not have. The 5 new tests in `packages/domain/test/drik.test.ts` prove the
+reader, the frame and the loader against the synthetic file; the real file
+is verified the same way, by `drik-check` and the fixtures, where it is
+built. Ship it as `apps/mobile/assets/drik.cheb.json` and
+`apps/web/public/drik.cheb.json` (base64, like the Surya file) when it
+exists; no screen is wired to it yet.
+
+### Arun/Barun
+
+Uranus (Arun) and Neptune (Barun) are not in the Surya file at all: the
+Surya Siddhanta's grahas are the eight stored here, and the text has no
+Uranus or Neptune. They are in the Drik kernel (segments 7 and 8), and the
+server can answer them — but the Drik CHEB file stores the same eight
+grahas as the Surya one, because no panchanga derivation reads Uranus or
+Neptune. They would come from the kernel, not from a fallback file.
