@@ -184,12 +184,16 @@ const SPEED_DELTA = 0.05;
  * file (a position is a few dozen operations plus BigInt products), so it is the last resort.
  */
 export const suryaFormulaSource: PositionSource = {
-  positionsAt(jdUt: number): SiddhantaPositions | null {
+  positionsAt(jdUt: number, bodies = SIDDHANTA_BODIES.length, speeds = true): SiddhantaPositions | null {
     if (!Number.isFinite(jdUt)) return null;
     const longitude: number[] = [];
     const speed: number[] = [];
-    for (const body of SIDDHANTA_BODIES) {
+    for (const body of SIDDHANTA_BODIES.slice(0, bodies)) {
       longitude.push(suryaLongitude(body, jdUt));
+      if (!speeds) {
+        speed.push(0);
+        continue;
+      }
       let diff = suryaLongitude(body, jdUt + SPEED_DELTA) - suryaLongitude(body, jdUt - SPEED_DELTA);
       diff -= 360 * Math.round(diff / 360);
       speed.push(diff / (2 * SPEED_DELTA));

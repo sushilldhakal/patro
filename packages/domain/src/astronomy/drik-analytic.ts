@@ -72,14 +72,46 @@ function argumentsAt(t: number): number[] {
   return [d, m, mp, f, om].map((x) => x * RAD);
 }
 
-function seriesAt(series: AnalyticSeries, t: number): number {
+/** sin and cos of k * argument for k = 0..4 (the terms use multiples up to 4), per argument. */
+function multiplesOf(args: number[]): { sin: number[][]; cos: number[][] } {
+  const sin: number[][] = [];
+  const cos: number[][] = [];
+  for (const x of args) {
+    const s1 = Math.sin(x);
+    const c1 = Math.cos(x);
+    const sk = [0, s1];
+    const ck = [1, c1];
+    for (let k = 2; k <= 4; k += 1) {
+      sk.push(sk[k - 1] * c1 + ck[k - 1] * s1);
+      ck.push(ck[k - 1] * c1 - sk[k - 1] * s1);
+    }
+    sin.push(sk);
+    cos.push(ck);
+  }
+  return { sin, cos };
+}
+
+/**
+ * The series at `t`. A term's phase is a whole-number mix of five arguments, so its sine and cosine
+ * are built from the tables of multiples by the angle-addition rules: no sin or cos call per term.
+ */
+function seriesAt(series: AnalyticSeries, t: number, multiples: ReturnType<typeof multiplesOf>): number {
   const u = t / 10;
   let value = poly(u, series.poly);
-  const a = argumentsAt(t);
+  const { sin, cos } = multiples;
   for (const term of series.terms) {
-    let phase = 0;
-    for (let i = 0; i < 5; i += 1) phase += term[i] * a[i];
-    value += term[5] * Math.sin(phase) + term[6] * Math.cos(phase);
+    let s = 0;
+    let c = 1;
+    for (let i = 0; i < 5; i += 1) {
+      const k = term[i];
+      if (k === 0) continue;
+      const ks = k < 0 ? -sin[i][-k] : sin[i][k];
+      const kc = k < 0 ? cos[i][-k] : cos[i][k];
+      const ns = s * kc + c * ks;
+      c = c * kc - s * ks;
+      s = ns;
+    }
+    value += term[5] * s + term[6] * c;
   }
   return value;
 }
@@ -141,33 +173,36 @@ export function drikAyanamshaAt(jdUt: number): number {
 }
 
 /** Sidereal longitudes in the order sun, moon, mars, mercury, jupiter, venus, saturn, rahu. */
-function longitudesAt(jdUt: number): number[] {
+function longitudesAt(jdUt: number, bodies = 8): number[] {
   const t = (utToTt(jdUt) - J2000) / 36525;
   // The orbit elements are fitted to 1800-2050; a polynomial fitted to the kernel over 3000 BCE to
   // 3000 CE takes out the drift of the slow mean motions (valid only over that span).
   const planet = (row: number, corr: number) =>
     wrap360(planetLongitudeJ2000(row, t) - AYANAMSHA_J2000 + poly(t / 10, PLANET_CORRECTION[corr]));
-  return [
-    wrap360(seriesAt(SUN_SERIES, t)),
-    wrap360(seriesAt(MOON_SERIES, t)),
-    planet(PLANET_ROW.mars, PLANET_CORR.mars),
-    planet(PLANET_ROW.mercury, PLANET_CORR.mercury),
-    planet(PLANET_ROW.jupiter, PLANET_CORR.jupiter),
-    planet(PLANET_ROW.venus, PLANET_CORR.venus),
-    planet(PLANET_ROW.saturn, PLANET_CORR.saturn),
-    wrap360(seriesAt(RAHU_SERIES, t)),
+  let shared: ReturnType<typeof multiplesOf> | undefined;
+  const mult = () => (shared ??= multiplesOf(argumentsAt(t)));
+  const each: (() => number)[] = [
+    () => wrap360(seriesAt(SUN_SERIES, t, mult())),
+    () => wrap360(seriesAt(MOON_SERIES, t, mult())),
+    () => planet(PLANET_ROW.mars, PLANET_CORR.mars),
+    () => planet(PLANET_ROW.mercury, PLANET_CORR.mercury),
+    () => planet(PLANET_ROW.jupiter, PLANET_CORR.jupiter),
+    () => planet(PLANET_ROW.venus, PLANET_CORR.venus),
+    () => planet(PLANET_ROW.saturn, PLANET_CORR.saturn),
+    () => wrap360(seriesAt(RAHU_SERIES, t, mult())),
   ];
+  return each.slice(0, bodies).map((f) => f());
 }
 
 const SPEED_DELTA = 0.05;
 
 /** Our own Drik, with no data: any date, approximate. The last resort. */
 export const drikAnalyticSource: PositionSource = {
-  positionsAt(jdUt: number): SiddhantaPositions | null {
+  positionsAt(jdUt: number, bodies = 8, speeds = true): SiddhantaPositions | null {
     if (!Number.isFinite(jdUt)) return null;
-    const longitude = longitudesAt(jdUt);
-    const before = longitudesAt(jdUt - SPEED_DELTA);
-    const after = longitudesAt(jdUt + SPEED_DELTA);
+    const longitude = longitudesAt(jdUt, bodies);
+    const before = speeds ? longitudesAt(jdUt - SPEED_DELTA, bodies) : longitude;
+    const after = speeds ? longitudesAt(jdUt + SPEED_DELTA, bodies) : longitude;
     const speed = longitude.map((_, b) => {
       let diff = after[b] - before[b];
       diff -= 360 * Math.round(diff / 360);

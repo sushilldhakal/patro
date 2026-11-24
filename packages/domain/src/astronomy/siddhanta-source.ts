@@ -24,7 +24,7 @@ import {
 
 /** A CHEB coefficient table as a source. */
 export function chebSource(table: ChebTable, scalars?: ChebScalars): PositionSource {
-  return { positionsAt: (jdUt) => chebPositionsAt(table, jdUt, scalars) };
+  return { positionsAt: (jdUt, bodies, speeds) => chebPositionsAt(table, jdUt, scalars, bodies, speeds) };
 }
 
 export type { PositionSource, SiddhantaPositions };

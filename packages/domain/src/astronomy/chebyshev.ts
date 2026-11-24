@@ -190,6 +190,8 @@ export function chebPositionsAt(
   table: ChebTable,
   jdUt: number,
   scalars?: ChebScalars,
+  bodies = BODIES,
+  speeds = true,
 ): SiddhantaPositions | null {
   if (!Number.isFinite(jdUt) || jdUt < table.firstJd || jdUt > chebLastJd(table)) {
     return null;
@@ -199,12 +201,16 @@ export function chebPositionsAt(
   const speed: number[] = [];
   const delta = 0.05;
   const lastJd = chebLastJd(table);
-  for (let b = 0; b < BODIES; b++) {
+  for (let b = 0; b < bodies; b++) {
     const lon = chebLongitudeAt(table, jdUt, b);
     if (lon === null) {
       return null;
     }
     longitude.push(wrap360(lon));
+    if (!speeds) {
+      speed.push(0);
+      continue;
+    }
     const lo = Math.max(jdUt - delta, table.firstJd);
     const hi = Math.min(jdUt + delta, lastJd);
     if (hi > lo) {

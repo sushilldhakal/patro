@@ -167,13 +167,13 @@ export class Sky {
 
   /** The instant after (dir 1) or before (dir -1) `jd` at which the angle of `spec` reaches `target` degrees. */
   private reach(spec: Spec, target: number, jd: number, dir: 1 | -1): number | null {
-    let p = this.positionsAt(jd);
+    let p = this.positionsAt(jd, 2);
     if (!p) return null;
     let gap = dir === 1 ? wrap(target - angleOf(spec, p)) : -wrap(angleOf(spec, p) - target);
     if (dir === 1 && gap === 0) gap = 360;
     let t = jd + gap / speedOf(spec, p);
     for (let i = 0; i < 12; i += 1) {
-      p = this.positionsAt(t);
+      p = this.positionsAt(t, 2);
       if (!p) return null;
       const diff = signed(target - angleOf(spec, p));
       // A step is never more than a day: a bad speed must not throw the solve across the year.
@@ -184,7 +184,7 @@ export class Sky {
   }
 
   private solvedNext(spec: Spec, jd: number): VidxCrossing | null {
-    const p = this.positionsAt(jd);
+    const p = this.positionsAt(jd, 2);
     if (!p) return null;
     const size = 360 / spec.count;
     const next = (Math.floor(angleOf(spec, p) / size) + 1) % spec.count;
@@ -279,9 +279,9 @@ export class Sky {
   }
 
   /** Positions at a Julian Day (UT): stored data when there is some, else the fallback. */
-  positionsAt(jd: number): SiddhantaPositions | null {
+  positionsAt(jd: number, bodies = 8, speeds = true): SiddhantaPositions | null {
     const w = this.windowFor(jd, 0);
-    const raw = (w ? chebPositionsAt(w.cheb, jd, w.scalars) : null) ?? this.fallback.positionsAt(jd);
+    const raw = (w ? chebPositionsAt(w.cheb, jd, w.scalars, bodies, speeds) : null) ?? this.fallback.positionsAt(jd, bodies, speeds);
     if (!raw || this.system !== "drik") return raw;
     // Drik: the tropical place is longitude + the file's placeholder; take off the reader's ayanamsha.
     const ayanamsha = ayanamshaFor(this.ayanamsha, jd);
@@ -296,7 +296,7 @@ export class Sky {
   /** The system as a position source, for the derivations in `siddhanta-offline`. */
   get source(): PositionSource {
     return {
-      positionsAt: (jd) => this.positionsAt(jd),
+      positionsAt: (jd, bodies, speeds) => this.positionsAt(jd, bodies, speeds),
       frame: this.system === "drik" ? drikFrame : undefined,
     };
   }
@@ -316,7 +316,7 @@ export class Sky {
   prevBoundary(kind: VidxKind, jd: number): VidxCrossing | null {
     const spec = this.solved(kind, jd);
     if (!spec) return this.indexAt(jd)?.prevEvent(kind, jd) ?? null;
-    const p = this.positionsAt(jd);
+    const p = this.positionsAt(jd, 2);
     if (!p) return null;
     const span = Math.floor(angleOf(spec, p) / (360 / spec.count)) % spec.count;
     const at = this.reach(spec, span * (360 / spec.count), jd, -1);
@@ -335,7 +335,7 @@ export class Sky {
   spanAt(kind: VidxKind, jd: number): number | null {
     const spec = this.solved(kind, jd);
     if (!spec) return this.indexAt(jd)?.spanAt(kind, jd) ?? null;
-    const p = this.positionsAt(jd);
+    const p = this.positionsAt(jd, 2);
     return p ? Math.floor(angleOf(spec, p) / (360 / spec.count)) % spec.count : null;
   }
 

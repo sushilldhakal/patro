@@ -542,8 +542,22 @@ function bsCivilFifteenth(observer: PatroObserver, bsYear: number, bsMonthNumber
 
 /** The rashis (0 = Mesha) the Sun enters inside (start, end), in order. */
 export function sankrantisInPeriod(sky: Sky, start: number, end: number): number[] {
-  return sky.eventsBetween("sankranti", start, end).map((e) => e.multiple);
+  // The festival rules ask for the same lunar months again and again: solved once per sky.
+  let byPeriod = sankrantiCache.get(sky);
+  if (!byPeriod) {
+    byPeriod = new Map();
+    sankrantiCache.set(sky, byPeriod);
+  }
+  const key = `${start}|${end}`;
+  let found = byPeriod.get(key);
+  if (!found) {
+    found = sky.eventsBetween("sankranti", start, end).map((e) => e.multiple);
+    if (byPeriod.size > 2000) byPeriod.clear();
+    byPeriod.set(key, found);
+  }
+  return found;
 }
+const sankrantiCache = new WeakMap<Sky, Map<string, number[]>>();
 
 function kshayaPossible(sky: Sky, year: number): boolean {
   let adhik = 0;

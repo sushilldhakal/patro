@@ -73,7 +73,7 @@ export function drikSource(bytes: Uint8Array): PositionSource {
     throw new Error("drik source needs a CHEB0002 file (fitted ayanamsha in the header)");
   }
   return {
-    positionsAt: (jdUt) => chebPositionsAt(table, jdUt, chebScalars(table)),
+    positionsAt: (jdUt, bodies, speeds) => chebPositionsAt(table, jdUt, chebScalars(table), bodies, speeds),
     frame: drikFrame,
   };
 }

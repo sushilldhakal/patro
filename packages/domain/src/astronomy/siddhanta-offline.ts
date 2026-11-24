@@ -291,7 +291,12 @@ export function positionsAt(table: SiddhantaTable, jdUt: number): SiddhantaPosit
  * positions. The derivations below take a source, not a table, so the same
  * code runs on the server slice and on the bundled fallback file. */
 export interface PositionSource {
-  positionsAt(jdUt: number): SiddhantaPositions | null;
+  /**
+   * `bodies`: how many of the grahas to work out, in table order (2 = Sun and Moon, all a solver of
+   * tithis needs). `speeds: false` leaves the speeds at zero (a Sun altitude needs none). A source may
+   * ignore both and answer in full.
+   */
+  positionsAt(jdUt: number, bodies?: number, speeds?: boolean): SiddhantaPositions | null;
   /** The frame, when it is not the Surya Siddhanta default. */
   frame?: PositionFrame;
 }
@@ -479,7 +484,7 @@ function sunAltitude(
   latitude: number,
   longitude: number,
 ): number | null {
-  const positions = source.positionsAt( jdUt);
+  const positions = source.positionsAt(jdUt, 1, false);
   if (positions === null) return null;
   // RA/Dec are tropical: the stored longitude is sidereal, so add the
   // ayanamsha first — as `equation_of_time_days` does on the server.
@@ -499,23 +504,45 @@ function sunAltitude(
   );
 }
 
-function bisectCrossing(
+/**
+ * The instant the Sun's altitude crosses zero between `neg` (altitude below zero) and `pos` (zero or
+ * above), found by the Illinois form of regula falsi: the altitude is nearly linear over a bracket of
+ * minutes, so it is a handful of evaluations instead of forty halvings.
+ */
+function refineCrossing(
   source: PositionSource,
-  lo: number,
-  hi: number,
+  neg: number,
+  negAlt: number,
+  pos: number,
+  posAlt: number,
   latitude: number,
   longitude: number,
 ): number {
-  // Altitude is 0 at both ends by construction (a sign change was found);
-  // 40 halvings of a 10-minute bracket is ~1 second.
+  let a = neg;
+  let fa = negAlt;
+  let b = pos;
+  let fb = posAlt;
+  let side = 0;
+  let c = (a + b) / 2;
   for (let k = 0; k < 40; k += 1) {
-    const mid = (lo + hi) / 2;
-    const alt = sunAltitude(source, mid, latitude, longitude);
-    if (alt === null) return mid;
-    if (alt < 0) lo = mid;
-    else hi = mid;
+    c = fb === fa ? (a + b) / 2 : (a * fb - b * fa) / (fb - fa);
+    const fc = sunAltitude(source, c, latitude, longitude);
+    if (fc === null) return c;
+    // 1e-6 degrees is a few ms of time (the Sun moves about a quarter of a degree a minute at the horizon).
+    if (Math.abs(fc) < 1e-6 || Math.abs(b - a) < 1e-8) return c;
+    if (fc < 0) {
+      a = c;
+      fa = fc;
+      if (side === -1) fb /= 2;
+      side = -1;
+    } else {
+      b = c;
+      fb = fc;
+      if (side === 1) fa /= 2;
+      side = 1;
+    }
   }
-  return (lo + hi) / 2;
+  return c;
 }
 
 export interface SunriseSunset {
@@ -531,7 +558,7 @@ export interface SunriseSunset {
  * get a sunrise. At
  * the source's horizon — the Sun's centre on the geometric horizon for a
  * Surya source, the upper limb (−0.833°) for a Drik one. Scans the day in
- * 10-minute steps and bisects the crossings, so the Sun's motion during
+ * two-hour steps (finer near the poles) and refines the crossings, so the Sun's motion during
  * the day is accounted for.
  */
 export function sunriseSunset(
@@ -540,13 +567,17 @@ export function sunriseSunset(
   latitude: number,
   longitude: number,
 ): SunriseSunset {
-  const step = 10 / 1440; // 10 minutes, in days
+  // Up to latitude 55 the Sun is below the horizon (or above it) for at least seven hours, so a two-hour
+  // scan cannot step over a rise or set; nearer the poles a dip can be short and the scan is finer.
+  const absLat = Math.abs(latitude);
+  const step = (absLat <= 55 ? 120 : absLat <= 62 ? 30 : 10) / 1440;
+  const steps = Math.round(1 / step);
   dayStartJd -= longitude / 360;
   let previousJd = dayStartJd;
   let previousAlt = sunAltitude(source, previousJd, latitude, longitude);
   let sunriseJd: number | null = null;
   let sunsetJd: number | null = null;
-  for (let k = 1; k <= 144; k += 1) {
+  for (let k = 1; k <= steps; k += 1) {
     const jd = dayStartJd + k * step;
     const alt = sunAltitude(source, jd, latitude, longitude);
     // The scan now starts at local midnight, which can fall before the table's
@@ -557,9 +588,9 @@ export function sunriseSunset(
       continue;
     }
     if (previousAlt < 0 && alt >= 0 && sunriseJd === null) {
-      sunriseJd = bisectCrossing(source, previousJd, jd, latitude, longitude);
+      sunriseJd = refineCrossing(source, previousJd, previousAlt, jd, alt, latitude, longitude);
     } else if (previousAlt >= 0 && alt < 0 && sunsetJd === null) {
-      sunsetJd = bisectCrossing(source, jd, previousJd, latitude, longitude);
+      sunsetJd = refineCrossing(source, jd, alt, previousJd, previousAlt, latitude, longitude);
     }
     previousJd = jd;
     previousAlt = alt;
