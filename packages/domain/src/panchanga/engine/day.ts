@@ -29,6 +29,7 @@ import {
   type Json,
   type Place,
 } from "./blocks";
+import { nivasShool } from "./nivas-blocks";
 import { muhurtaBlock } from "./muhurta-blocks";
 import { lagnaBlock, lagnaRows, lagnaSpans, panchakaRahita, planetTable, udayaLagna } from "./lagna-blocks";
 import { solarCorrections } from "./solar-blocks";
@@ -55,7 +56,7 @@ export const DAY_BLOCKS = [
   "date", "date_ad", "jd_ut", "anchor", "display", "bs_date", "samvatsara", "ns_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
   "dinamaan", "ratrimana", "madhyahna", "lahiri_ayanamsa", "vaara", "aayan", "aayan_vedic", "tithi", "nakshatra", "yoga",
   "choghadiya", "hora", "solar_corrections", "karana", "paksha", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
-  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "muhurta", "planets", "planets_anchor", "lagna", "lagna_spans", "udaya_lagna", "panchaka_rahita", "chandrabalam", "tarabalam", "tarabala_table", "chandrabala_table", "rashifal", "markers", "ayanamsa",
+  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "muhurta", "nivas_shool", "planets", "planets_anchor", "lagna", "lagna_spans", "udaya_lagna", "panchaka_rahita", "chandrabalam", "tarabalam", "tarabala_table", "chandrabala_table", "rashifal", "markers", "ayanamsa",
 ] as const;
 
 /** Whether every key of the server's payload (slim or full) is made here. */
@@ -101,6 +102,7 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.sunset = timeBlock(sunset, zone, "nearest");
   b.day_ghati = dayGhati;
   b.muhurta = muhurtaBlock(sky, sunrise, sunset, nextSunrise, vaara, zone, true);
+  b.nivas_shool = nivasShool(sky, sunrise, nextSunrise, (vaara + 6) % 7, zone);
   b.moonrise = moonrise === null ? null : timeBlock(moonrise, zone, "truncated");
   b.moonset = moonset === null ? null : timeBlock(moonset, zone, "truncated");
   b.choghadiya = choghadiya(dayGhati, vaara);
