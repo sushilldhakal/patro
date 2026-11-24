@@ -15,14 +15,14 @@ ssh "$PROD" 'mkdir -p ~/patro-rust/bin ~/patro-rust/data'
 rsync -a --partial "$BIN" "$PROD:patro-rust/bin/vedic-patro.new"
 ssh "$PROD" 'chmod +x ~/patro-rust/bin/vedic-patro.new && mv ~/patro-rust/bin/vedic-patro.new ~/patro-rust/bin/vedic-patro'
 if [ -n "$DATA" ]; then
-  rsync -a --partial --info=progress2 "$DATA"/ "$PROD:patro-rust/data/"
+  rsync -a --partial "$DATA"/ "$PROD:patro-rust/data/"
 fi
 # rust.env: built on the server from the Python .env so no secret is printed or copied here.
 ssh "$PROD" bash -s <<'REMOTE'
 set -euo pipefail
 cd ~/patro-rust
-db=$(grep -E '^DATABASE_URL=' ~/patro/.env | head -1 | cut -d= -f2-)
-redis=$(grep -E '^REDIS_URL=' ~/patro/.env | head -1 | cut -d= -f2-)
+db=$(grep -E '^DATABASE_URL=' ~/patro/.env | head -1 | cut -d= -f2- | tr -d '"' | sed -E 's#^postgres(ql)?(\+[a-z0-9]+)?://#postgres://#')
+redis=$(grep -E '^REDIS_URL=' ~/patro/.env | head -1 | cut -d= -f2- | tr -d '"')
 # Redis database 1 for Rust, so it never reads or overwrites the Python server's cached entries.
 redis_rust=$(echo "$redis" | sed -E 's#/[0-9]+$##')/1
 umask 077
