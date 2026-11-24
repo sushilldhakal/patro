@@ -29,6 +29,8 @@ process.on("exit", () => rmSync(work, { recursive: true, force: true }));
 const stubs = {
   "react-native": `export const Platform = { OS: "ios", select: (o) => o.ios ?? o.default }; export default {};`,
   "expo-constants": `export default { expoConfig: { extra: { apiBaseUrl: "https://www.vedicpatro.com/api", apiVersion: "v1" } } };`,
+  // The app's sky reads bundled native assets; the URL test has none (and runs with it off).
+  "@/lib/sky": `export const getSky = () => Promise.reject(new Error("no sky in the URL test"));`,
   // Requests still go through fetch, so the URL is recorded the same way.
   "@/lib/offline/offline-http": `export const isCapturing = () => false; export async function offlineAwareGet(path, doFetch, errorFor) { const res = await doFetch(); if (!res.ok) throw await errorFor(res); return res.json(); }`,
 };
@@ -87,8 +89,13 @@ console.log(JSON.stringify(out, null, 1));
     plugins: [plugin],
     logLevel: "error",
     define: { "import.meta.env": "{}" },
+    // The URLs are the server fallback's contract, so both apps run with their local sky off
+    // (festival lists and holidays would otherwise be answered without a request).
+    banner: {
+      js: `globalThis.localStorage = { getItem: (k) => (k === "sky_local" ? "off" : null), setItem() {}, removeItem() {} }; process.env.EXPO_PUBLIC_SKY_LOCAL = "off";`,
+    },
     jsx: "automatic",
-    loader: { ".svg": "empty", ".png": "empty", ".jpg": "empty" },
+    loader: { ".svg": "empty", ".png": "empty", ".jpg": "empty", ".bin": "empty" },
     external: ["react", "react-dom", "three", "expo-*"],
   });
   const bundle = join(work, `bundle-${app}.mjs`);

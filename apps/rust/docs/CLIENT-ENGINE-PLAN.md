@@ -5,16 +5,22 @@ documents. Everything that depends on place and time is derived on the client: s
 graha positions, lagna, the panchanga strip, and the festival rule engine. After this work the
 calendar routes stay only for app versions that still call them (1.2.2), then are retired.
 
-## Where things stand (2026-11-24)
+## Where things stand (2026-11-24, evening)
 
 | Piece | Server | Client |
 |---|---|---|
 | Boundaries (tithi, nakshatra, yoga, karana, sankranti, phases) | lookup in the stored index | reads the same index (done, `vidx.ts`, `sky.ts`) |
 | Graha positions | calculated per request | from Chebyshev data (done, `sky.ts`) |
 | Sunrise, sunset, lagna, panchanga strip | calculated per request | `sky-day.ts` done and tested against the server for a month, **not wired to any screen** |
-| Lunar months (amanta/purnimanta windows, adhik, kshaya) | calculated (`lunar_month.rs`) | **not ported** |
-| Festival rule engine, kshaya and adhik rules | calculated (`festivals/`, `month_type_rules_v1.json`) | **not ported** |
-| Screens | call the server for all of the above | **not switched** |
+| Lunar months (amanta/purnimanta windows, adhik, kshaya) | calculated (`lunar_month.rs`) | ported: `lunar-month.ts` (checked through the festival lists below) |
+| Festival rule engine, kshaya and adhik rules | calculated (`festivals/`, `month_type_rules_v1.json`) | ported: `festival-engine.ts`; every row of the golden file matches (BS 2039, 2040, 2081-2085, 2150 Kathmandu, 2083 New York, AD 1990/2026, a year of days) and the owner's BS 2039/2085 dates |
+| Festival routes (`/nepal/festivals`, `/nepal/holidays`, `/nepal/festivals/upcoming`) | calculated | made on the client (`festival-payloads.ts`, byte-equal to the server's JSON), wired in both apps through `api-client` `local`, with the off switch |
+| Other screens (day, month, year, at-time, sankranti, sait…) | call the server | **not switched**: needs the day/month/year payload builders (`patro` + `panchanga` crates, about 20k lines) ported |
+
+**Note (festival lists and the system):** the server's festival routes ignore `siddhanta` and always
+compute on the Surya Siddhanta sky (`SIDDHANTA = "surya_siddhanta"` in `patro/src/festivals.rs`).
+The client does the same so nothing changes for users. Computing Drik festivals on Drik tithis would
+move dozens of dates a day each year (Fulpati 2026 to 18 Oct, for one); that is the owner's call.
 
 ## Steps, in order
 

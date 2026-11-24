@@ -133,6 +133,8 @@ import type {
   CalendarDay,
 } from "@vedic-patro/api-client";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { makeLocalCalendar } from "@vedic-patro/domain/festivals/local-calendar";
+import { skyLocalEnabled } from "./sky-day";
 export type {
   LocationParams,
   JanmaRashi,
@@ -427,6 +429,11 @@ configureApiClient({
   get: fetchJson,
   appendLocation: webLocationQuery,
   locationKey: webLocationKey,
+  // Festival lists and holidays from the sky the site carries; the server answers what it cannot.
+  local: makeLocalCalendar({
+    loadSky: async () => (await import("./sky")).getSky("surya"),
+    enabled: skyLocalEnabled,
+  }),
 });
 
 // ─── Panchanga ────────────────────────────────────────────────────────────────

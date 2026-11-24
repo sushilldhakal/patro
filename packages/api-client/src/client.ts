@@ -77,6 +77,7 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
 import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
+import { rememberCity, type LocalCalendar } from "@vedic-patro/domain/festivals/local-calendar";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────
@@ -124,6 +125,11 @@ export interface ApiTransport {
   appendLocation(path: string, location?: LocationParams): string;
   /** Stable fragment identifying a location in query keys and local caches. */
   locationKey(location?: LocationParams): string;
+  /**
+   * What this app derives by itself from the sky it carries (festival lists, holidays). A method
+   * that returns null, throws or is missing means the request goes to the server as before.
+   */
+  local?: LocalCalendar;
 }
 
 let transport: ApiTransport | null = null;
@@ -149,6 +155,17 @@ export function apiDataBaseUrl(): string {
 
 export function get<T>(path: string): Promise<T> {
   return current().get<T>(path);
+}
+
+/** The app's own answer, or null (no local calendar, switched off, outside its years, or any failure). */
+async function fromLocal<T>(ask: (local: LocalCalendar) => Promise<Record<string, unknown> | null>): Promise<T | null> {
+  const local = transport?.local;
+  if (!local) return null;
+  try {
+    return ((await ask(local)) as T | null) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export function appendLocation(path: string, location?: LocationParams): string {
@@ -181,7 +198,10 @@ export const excludeParam = (excludeRules?: string[]) =>
 export const fetchNearestCity = (lat: number, lon: number, country?: string) => {
   const params = new URLSearchParams({ lat: String(lat), lon: String(lon) });
   if (country) params.set("country", country);
-  return get<NearestCityResponse>(`/nepal/cities/nearest?${params.toString()}`);
+  return get<NearestCityResponse>(`/nepal/cities/nearest?${params.toString()}`).then((r) => {
+    rememberCity(r.city);
+    return r;
+  });
 };
 
 /**
@@ -491,7 +511,10 @@ export const cityKeys = {
 export const searchCities = (q: string, limit = 15, country?: string) => {
   const params = new URLSearchParams({ q, limit: String(limit) });
   if (country) params.set("country", country);
-  return get<CitiesSearchResponse>(`/nepal/cities/search?${params.toString()}`);
+  return get<CitiesSearchResponse>(`/nepal/cities/search?${params.toString()}`).then((r) => {
+    r.cities?.forEach(rememberCity);
+    return r;
+  });
 };
 
 // ─── Sait ─────────────────────────────────────────────────────────────────────
@@ -635,7 +658,13 @@ export const saitKeys = {
 const withFestivalLocation = (path: string, location?: LocationParams) =>
   location ? appendLocation(path, location) : path;
 
-export const fetchHolidays = (year: number, era: Era = "bs", location?: LocationParams, language: Lang = normalizeLang()) =>
+export const fetchHolidays = async (
+  year: number,
+  era: Era = "bs",
+  location?: LocationParams,
+  language: Lang = normalizeLang(),
+): Promise<HolidaysResponse> =>
+  (await fromLocal<HolidaysResponse>((l) => l.holidays({ year, era, language }, location))) ??
   get<HolidaysResponse>(
     withPanchangaCacheVersion(
       withFestivalLocation(`/nepal/holidays?year=${year}&era=${era}&language=${language}`, location),
@@ -650,7 +679,10 @@ export const fetchFestivals = (
   const language = options.language ?? normalizeLang();
   let path = `/nepal/festivals?year=${year}&era=${era}&language=${language}`;
   if (options.month != null) path += `&month=${options.month}`;
-  return get<FestivalsResponse>(withPanchangaCacheVersion(withFestivalLocation(path, options.location)));
+  const month = options.month ?? undefined;
+  return fromLocal<FestivalsResponse>((l) => l.festivals({ year, era, month, language }, options.location)).then(
+    (local) => local ?? get<FestivalsResponse>(withPanchangaCacheVersion(withFestivalLocation(path, options.location))),
+  );
 };
 
 // ─── Panchanga elements ───────────────────────────────────────────────────────
@@ -876,7 +908,10 @@ export const fetchYearWheelCalendar = (year: number, location?: LocationParams, 
 // Kept here anyway so every endpoint is written once; the other app can use them.
 
 export const fetchPopularCities = () =>
-  get<{ count: number; cities: City[] }>("/nepal/cities/popular");
+  get<{ count: number; cities: City[] }>("/nepal/cities/popular").then((r) => {
+    r.cities?.forEach(rememberCity);
+    return r;
+  });
 
 export const fetchNepalPanchanga = (dateAd: string, location?: LocationParams) =>
   get<PanchangaDay>(
@@ -948,7 +983,9 @@ export const fetchUpcomingFestivals = (
     limit: String(limit),
   });
   if (holidaysOnly) params.set("holidays_only", "true");
-  return get<UpcomingFestivalsResponse>(withFestivalLocation(`/nepal/festivals/upcoming?${params}`, location));
+  return fromLocal<UpcomingFestivalsResponse>((l) => l.upcoming({ days, limit, holidaysOnly }, location)).then(
+    (local) => local ?? get<UpcomingFestivalsResponse>(withFestivalLocation(`/nepal/festivals/upcoming?${params}`, location)),
+  );
 };
 
 export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");

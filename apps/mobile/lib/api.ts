@@ -130,6 +130,7 @@ import type {
   CalendarDay,
   MonthBrowseEra,
 } from "@vedic-patro/api-client";
+import { makeLocalCalendar } from "@vedic-patro/domain/festivals/local-calendar";
 export type {
   LocationParams,
   JanmaRashi,
@@ -473,6 +474,12 @@ configureApiClient({
   get: offlineAwareJson,
   appendLocation: appLocationQuery,
   locationKey,
+  // Festival lists and holidays from the sky the app carries; the server answers what it cannot.
+  // An update can turn it off with EXPO_PUBLIC_SKY_LOCAL=off.
+  local: makeLocalCalendar({
+    loadSky: async () => (await import("@/lib/sky")).getSky("surya"),
+    enabled: () => process.env.EXPO_PUBLIC_SKY_LOCAL !== "off",
+  }),
 });
 
 /**

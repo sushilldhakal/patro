@@ -6,7 +6,7 @@ import { safeSkyDay } from "@vedic-patro/domain/astronomy/sky-safe";
 import type { SkyDay, SkyDayInput } from "@vedic-patro/domain/astronomy/sky-day";
 
 /** Set `localStorage.sky_local = "off"` to turn the local sky off in one browser. */
-function enabled(): boolean {
+export function skyLocalEnabled(): boolean {
   try {
     return localStorage.getItem("sky_local") !== "off";
   } catch {
@@ -15,5 +15,5 @@ function enabled(): boolean {
 }
 
 export function offlineDay(system: SkySystem, input: SkyDayInput): Promise<SkyDay | null> {
-  return safeSkyDay(async () => (await import("./sky")).getSky(system), input, { enabled: enabled() });
+  return safeSkyDay(async () => (await import("./sky")).getSky(system), input, { enabled: skyLocalEnabled() });
 }
