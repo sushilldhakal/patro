@@ -12,9 +12,7 @@ import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
 
 /** Metro asset ids of the shipped files, by the names the module asks for. */
 const BUNDLED: Record<string, number> = {
-  "surya.index": require("@/assets/sky/surya.index.bin"),
   "surya.cheb": require("@/assets/sky/surya.cheb.bin"),
-  "drik.index": require("@/assets/sky/drik.index.bin"),
   "drik.cheb": require("@/assets/sky/drik.cheb.bin"),
 };
 

@@ -1,11 +1,11 @@
-// Every boundary kind can be found from positions alone: a lean sky (no files) agrees with the stored
-// index. Surya formulas are exact; the Drik built-in series is approximate (minutes).
+// Every boundary kind is found from positions: a lean sky (no files, the built-in fallback) agrees with
+// the sky read from the stored positions. Surya formulas are exact; the Drik built-in series is
+// approximate (minutes).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-import { Sky, type SkyIo } from "../src/astronomy/sky";
-import type { VidxKind } from "../src/astronomy/vidx";
+import { Sky, type SkyIo, type SkyKind } from "../src/astronomy/sky";
 
 const io: SkyIo = {
   bundled: async (name) => new Uint8Array(readFileSync(new URL(`../../../apps/web/public/sky/${name}.bin`, import.meta.url))),
@@ -15,11 +15,11 @@ const io: SkyIo = {
     throw new Error("no server");
   },
 };
-const KINDS: VidxKind[] = ["tithi", "karana", "yoga", "nakshatra", "pada", "moonRashi", "sunNakshatra", "sankranti", "sunDegree", "phase"];
+const KINDS: SkyKind[] = ["tithi", "karana", "yoga", "nakshatra", "pada", "moonRashi", "sunNakshatra", "sankranti", "sunDegree", "phase"];
 const START = 2461000.3; // late 2025, inside the bundled years
 
 for (const [system, minutes] of [["surya", 1], ["drik", 12]] as const) {
-  test(`${system}: lean sky solves every kind like the index`, async () => {
+  test(`${system}: lean sky solves every kind like the stored positions`, async () => {
     const full = new Sky(system, io);
     await full.open();
     const lean = new Sky(system, io, { lean: true });

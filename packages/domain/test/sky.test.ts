@@ -1,5 +1,5 @@
 // The files the apps carry (BS 1950-2150, apps/web/public/sky) against each other and against the
-// two built-in fallbacks. Nothing here is mocked: the index, the Chebyshev file, the Surya
+// two built-in fallbacks. Nothing here is mocked: the Chebyshev file, the Surya
 // formulas and our own Drik series are all read or run for real, and they must agree.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -10,7 +10,6 @@ import { chebPositionsAt, chebScalars, parseChebTable } from "../src/astronomy/c
 import { Sky, type SkyIo } from "../src/astronomy/sky";
 import { tithiAt } from "../src/astronomy/siddhanta-offline";
 import { suryaFormulaSource } from "../src/astronomy/surya-formulas";
-import { parseVidx, VIDX_KINDS } from "../src/astronomy/vidx";
 
 const file = (name: string) =>
   new Uint8Array(readFileSync(new URL(`../../../apps/web/public/sky/${name}.bin`, import.meta.url)));
@@ -35,29 +34,30 @@ function instants(count: number, from: number, to: number): number[] {
 }
 
 for (const system of ["surya", "drik"] as const) {
-  const index = parseVidx(file(`${system}.index`));
   const cheb = parseChebTable(file(`${system}.cheb`));
   const scalars = chebScalars(cheb);
+  const sky = new Sky(system, { bundled: async (name) => file(name), readCache: async () => null, writeCache: async () => {}, fetchBytes: async () => { throw new Error("offline"); } });
 
-  test(`${system}: the index covers BS 1950 to 2150`, () => {
+  test(`${system}: the file covers BS 1950 to 2150`, async () => {
+    await sky.open();
+    const span = sky.bundledSpan;
+    assert.ok(span);
     // BS 1950 starts 13 April 1893 (JD 2412566.5) and BS 2150 ends 13 April 2094 (JD 2485982.5)
-    assert.ok(index.firstJd <= 2_412_566.5 - 60, "starts with room before BS 1950");
-    assert.ok(index.lastJd >= 2_485_982.5 + 60, "ends with room after BS 2150");
-    for (const kind of VIDX_KINDS) assert.ok(index.count(kind) > 0, `${kind} has events`);
+    assert.ok(span[0] <= 2_412_566.5 - 60, "starts with room before BS 1950");
+    assert.ok(span[1] >= 2_485_982.5 + 60, "ends with room after BS 2150");
   });
 
-  test(`${system}: every tithi boundary in the index is a tithi change in the positions`, () => {
+  test(`${system}: every tithi boundary solved is a tithi change in the positions`, async () => {
+    await sky.open();
     let checked = 0;
     for (const jd of instants(60, JD_2026 - 20_000, JD_2026 + 20_000)) {
-      const next = index.nextEvent("tithi", jd);
+      const next = sky.nextBoundary("tithi", jd);
       assert.ok(next);
       const at = (t: number) => {
         const p = chebPositionsAt(cheb, t, scalars);
         assert.ok(p, "positions at the boundary");
         return tithiAt(p.longitude[SUN], p.longitude[MOON]).number - 1;
       };
-      // the boundary is exact to a millisecond; the Chebyshev positions are good to about a
-      // minute of tithi time, so look a few minutes either side
       assert.equal(at(next.jd - 5 * 60 / 86_400), (next.multiple + 29) % 30);
       assert.equal(at(next.jd + 5 * 60 / 86_400), next.multiple);
       checked += 1;
@@ -65,8 +65,9 @@ for (const system of ["surya", "drik"] as const) {
     assert.equal(checked, 60);
   });
 
-  test(`${system}: tithi boundaries run in order and cycle through all thirty`, () => {
-    const events = index.eventsBetween("tithi", JD_2026, JD_2026 + 400);
+  test(`${system}: tithi boundaries run in order and cycle through all thirty`, async () => {
+    await sky.open();
+    const events = sky.eventsBetween("tithi", JD_2026, JD_2026 + 400);
     assert.ok(events.length > 400 && events.length < 440, `${events.length} tithis in 400 days`);
     for (let i = 1; i < events.length; i += 1) {
       assert.ok(events[i].jd > events[i - 1].jd);
@@ -74,12 +75,13 @@ for (const system of ["surya", "drik"] as const) {
     }
   });
 
-  test(`${system}: nakshatra and yoga come from the same index`, () => {
-    const nak = index.eventsBetween("nakshatra", JD_2026, JD_2026 + 60);
+  test(`${system}: nakshatra, yoga and sankranti are solved from the same positions`, async () => {
+    await sky.open();
+    const nak = sky.eventsBetween("nakshatra", JD_2026, JD_2026 + 60);
     assert.ok(nak.length >= 55 && nak.length <= 62, `${nak.length} nakshatras in 60 days`);
-    const yoga = index.eventsBetween("yoga", JD_2026, JD_2026 + 60);
+    const yoga = sky.eventsBetween("yoga", JD_2026, JD_2026 + 60);
     assert.ok(yoga.length >= 55 && yoga.length <= 70);
-    const sankranti = index.eventsBetween("sankranti", JD_2026, JD_2026 + 400);
+    const sankranti = sky.eventsBetween("sankranti", JD_2026, JD_2026 + 400);
     assert.equal(sankranti.length, 13);
   });
 }
@@ -138,7 +140,7 @@ test("sky: bundled years need no network; years outside fall back to the formula
 
   const farJd = 2_500_000; // AD 2132, outside the window
   await sky.ensure(farJd, farJd + 10);
-  assert.ok(requests.length >= 2, "asked the server for a batch");
+  assert.ok(requests.length >= 1, "asked the server for a batch");
   assert.equal(sky.originAt(farJd), "formulas");
   const far = sky.positionsAt(farJd);
   assert.ok(far, "the formulas still answer");
