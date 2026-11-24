@@ -30,6 +30,7 @@ import {
   type Json,
   type Place,
 } from "./blocks";
+import { chandrabalaTable, chandrabalam, rashifal, tarabalaTable, tarabalam } from "./bala-blocks";
 import { displayHeaders, lunarCalendarBlock, lunarMonthBlock, nsDateBlock, pakshaBlock, samvatsaraBlock } from "./calendar-blocks";
 import { pyMod, pyRound } from "./py";
 import { addSeconds, secondsSince, wallAt } from "./instant";
@@ -52,7 +53,7 @@ export const DAY_BLOCKS = [
   "date", "date_ad", "jd_ut", "anchor", "display", "bs_date", "samvatsara", "ns_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
   "dinamaan", "ratrimana", "madhyahna", "lahiri_ayanamsa", "vaara", "aayan", "aayan_vedic", "tithi", "nakshatra", "yoga",
   "choghadiya", "hora", "karana", "paksha", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
-  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "planets_anchor", "lagna", "markers", "ayanamsa",
+  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "planets_anchor", "lagna", "chandrabalam", "tarabalam", "tarabala_table", "chandrabala_table", "rashifal", "markers", "ayanamsa",
 ] as const;
 
 /** Whether every key of the server's payload (slim or full) is made here. */
@@ -111,12 +112,18 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.aayan_vedic = aayanVedic(sky, sunrise);
   b.tithi = tithiBlock(sky, sunrise, sunrise, zone, tithi);
   b.nakshatra = nakshatraBlock(sky, sunrise, sunrise, zone);
+  b.tarabalam = tarabalam(b.nakshatra as Json);
+  b.tarabala_table = tarabalaTable(b.nakshatra as Json);
   b.yoga = yogaBlock(sky, sunrise, sunrise, zone);
   b.karana = karanaBlock(sky, sunrise, sunrise, zone);
   b.paksha = pakshaBlock(lunar, tithi.paksha);
   b.chandra_rashi = rashiPayload(moonLon);
   b.moon_phase = moonPhase(sky, sunrise);
   b.chandra_rashi_spans = chandraRashiSpans(sky, sunrise, nextSunrise, zone);
+  b.chandrabalam = chandrabalam(b.chandra_rashi_spans as Json[]);
+  const bala = chandrabalaTable(b.chandra_rashi as Json);
+  b.chandrabala_table = bala;
+  b.rashifal = rashifal(bala, vaara);
   b.nakshatra_pada_spans = nakshatraPadaSpans(sky, sunrise, nextSunrise, zone);
   b.surya_rashi = rashiPayload(sunLon);
   b.surya_nakshatra = suryaNakshatra(sunLon);
