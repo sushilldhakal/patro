@@ -1029,7 +1029,7 @@ fn gochar_on<I: SunriseInstant>(
     out.insert("location".into(), location.as_json());
     out.insert(
         "ayanamsa".into(),
-        json!({"name": if location.system.is_drik() { "Lahiri" } else { "Surya Siddhanta" }, "degrees": py_round(location.system.ayanamsha(sunrise.to_jd()), 6)}),
+        json!({"name": if location.system.is_drik() { "Lahiri" } else { "Surya Siddhanta" }, "degrees": if location.system.is_drik() { json!(py_round(location.system.ayanamsha(sunrise.to_jd()), 6)) } else { Value::Null }}),
     );
     out.insert("gochar".into(), Value::Object(table));
     out.insert("vedic_stars".into(), json!([]));

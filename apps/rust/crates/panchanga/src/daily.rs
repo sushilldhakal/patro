@@ -1405,7 +1405,14 @@ fn assemble<I: DayInstant>(
     let vaara = vara(sunrise_jd, zone);
     let day_s = sunset.seconds_since(sunrise);
     let night_s = next_sunrise.seconds_since(sunset);
-    let ayanamsa = json!({"name": ayanamsha_name(location.system), "degrees": py_round(location.system.ayanamsha(sunrise_jd), 6)});
+    // The server prints no ayanamsha for the Surya Siddhanta (its longitudes are already sidereal); the
+    // key stays, empty, so the shape holds. Drik prints its Lahiri value.
+    let degrees = if location.system.is_drik() {
+        json!(py_round(location.system.ayanamsha(sunrise_jd), 6))
+    } else {
+        Value::Null
+    };
+    let ayanamsa = json!({"name": ayanamsha_name(location.system), "degrees": degrees});
     let display = tithi_info.display_number;
     let paksha = tithi_info.paksha;
     let vaara_english = VAARA_ENGLISH[vaara.number as usize];
