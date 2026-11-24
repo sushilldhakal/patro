@@ -25,6 +25,21 @@ pub enum System {
     Drik(&'static DrikSky),
 }
 
+/// The Surya Siddhanta's stored boundaries (`surya.vidx`), installed once at startup. Without
+/// them the text's boundaries are solved on demand, as before.
+static SURYA_INDEX: std::sync::OnceLock<Index> = std::sync::OnceLock::new();
+
+/// Installs the Surya Siddhanta event index. Returns `false` when one is already installed.
+pub fn install_surya_index(index: Index) -> bool {
+    SURYA_INDEX.set(index).is_ok()
+}
+
+/// The installed Surya Siddhanta event index, if any.
+#[must_use]
+pub fn surya_index() -> Option<&'static Index> {
+    SURYA_INDEX.get()
+}
+
 impl PartialEq for System {
     fn eq(&self, other: &Self) -> bool {
         self.key() == other.key()
@@ -224,7 +239,7 @@ impl System {
 
     /// Every retrograde or direct station of a planet with `from < jd <= to`, as
     /// `(jd, turned_retrograde)`, read from the stored events: `None` when this system
-    /// stores none for the span (the text, or a span outside the index) or the body has
+    /// stores none for the span (no index loaded, or a span outside it) or the body has
     /// no stations (the luminaries and the node).
     #[must_use]
     pub fn station_events(self, body: Body, from: f64, to: f64) -> Option<Vec<(f64, bool)>> {
@@ -237,7 +252,7 @@ impl System {
             Body::Saturn => Graha::Saturn,
             Body::Sun | Body::Moon | Body::Rahu => return None,
         };
-        let index = self.drik()?.index()?;
+        let index = Ephemeris::index(&self)?;
         let (a, b) = index.coverage();
         (from.is_finite() && to.is_finite() && from >= a && to <= b).then(|| {
             index
@@ -304,7 +319,7 @@ impl Ephemeris for System {
 
     fn index(&self) -> Option<&Index> {
         match self {
-            Self::SuryaSiddhanta => None,
+            Self::SuryaSiddhanta => surya_index(),
             Self::Drik(sky) => sky.index(),
         }
     }

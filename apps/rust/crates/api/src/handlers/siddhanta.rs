@@ -26,7 +26,7 @@ use crate::{
 /// Longest window one request may ask for, in days.
 const MAX_WINDOW_DAYS: f64 = 400.0;
 
-fn jd_param(q: &Query, name: &str) -> Result<f64, String> {
+pub(super) fn jd_param(q: &Query, name: &str) -> Result<f64, String> {
     let raw = q
         .get(name)
         .ok_or_else(|| format!("{name}: field required"))?;

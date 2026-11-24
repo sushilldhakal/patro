@@ -549,6 +549,17 @@ export const fetchGocharIngress = (
 
 // ─── Meta ─────────────────────────────────────────────────────────────────────
 
+/**
+ * GET stored binary data from the unversioned base: the event-index and Chebyshev batches the apps
+ * ask for when a date is outside the years they carry (`/v1/siddhanta/index`, `/v1/drik/cheb`, ...).
+ * Same errors and timeout as every other request.
+ */
+export async function getBytes(path: string, signal?: AbortSignal): Promise<Uint8Array> {
+  const res = await fetchWithTimeout(`${current().baseUrl}${path}`, path, { signal, timeoutMs: 15_000 });
+  if (!res.ok) throw await apiErrorFrom(res, path);
+  return new Uint8Array(await res.arrayBuffer());
+}
+
 /** Host-owned year bounds and cache version — not mirrored in the client. */
 export const fetchPatroCapabilities = async (): Promise<PatroApiLimits> => {
   return requestJson<PatroApiLimits>(current().baseUrl, "/meta/capabilities");

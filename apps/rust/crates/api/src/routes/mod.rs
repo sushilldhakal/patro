@@ -84,7 +84,15 @@ fn accounts() -> Router<AppState> {
 /// The offline Surya Siddhanta table: a lookup, no maths (see
 /// `handlers::siddhanta`).
 fn siddhanta() -> Router<AppState> {
-    Router::new().route("/v1/siddhanta/table", get(handlers::siddhanta::table))
+    Router::new()
+        .route("/v1/siddhanta/table", get(handlers::siddhanta::table))
+        .route(
+            "/v1/siddhanta/index",
+            get(handlers::client_data::surya_index),
+        )
+        .route("/v1/siddhanta/cheb", get(handlers::client_data::surya_cheb))
+        .route("/v1/drik/index", get(handlers::client_data::drik_index))
+        .route("/v1/drik/cheb", get(handlers::client_data::drik_cheb))
 }
 
 /// Health, the day and month panchanga, calendar header and date conversion.

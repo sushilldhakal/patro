@@ -4,3 +4,7 @@
 *.veph
 *.vidx
 *.bsp
+
+# Per-system client data (built by `siddhanta-table index`, `cheb-build`, `drik-build`, `ephdata slice`; the apps carry their own copies)
+/data/surya/
+/data/drik/

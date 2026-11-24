@@ -4,6 +4,7 @@ pub mod account;
 pub mod analytics;
 pub mod at_time;
 pub mod catalog;
+pub mod client_data;
 pub mod day;
 pub mod events;
 pub mod festivals;

@@ -12,12 +12,12 @@ same at every place on Earth, so they are stored once. Place-dependent things (s
 lagna, rashi at sunrise, choghadiya, hora) are never stored: the client computes them from the
 Sun's position, latitude, longitude and time.
 
-Per system, per 200-year window (default AD 1950-2150, which covers BS 2007-2207):
+Per system, for BS 1950 to 2150 (AD 1893 to 2096, with a margin so the first and last days have their neighbours):
 
 | File | Holds | Size (200 y) | Used for |
 |---|---|---|---|
-| `<system>.vidx` | every boundary, 4 bytes each, 32-day block table | about 2.6 MB (Drik's own file is 38.5 MB for 2947 y) | tithi/nakshatra/yoga/karana/sankranti lookups, identical to the server |
-| `<system>.cheb` | Chebyshev coefficients for the 8 grahas | about 1.1 MB (Surya, measured; Drik to be measured) | graha longitudes, Sun for rise/set and lagna |
+| `<system>.index` (a VIDX file) | every boundary, 4 bytes each, 32-day block table | 2.66 MB measured (Drik's full file is 38.5 MB for 2947 y) | tithi/nakshatra/yoga/karana/sankranti lookups, identical to the server |
+| `<system>.cheb` | Chebyshev coefficients for the 8 grahas | 1.12 MB measured, both systems | graha longitudes, Sun for rise/set and lagna |
 
 Boundaries come from the index, not from the Chebyshev fit, so a client prints the same minute as
 the server. The fit only has to be good to an arcsecond or so (graha longitudes, sunrise).
@@ -32,8 +32,11 @@ Surya and Drik files are never mixed: `surya.vidx`, `surya.cheb`, `drik.vidx`, `
 3. Moshier-style built-in, used when 1 and 2 have nothing (outside the window and offline):
    - Surya: the Surya Siddhanta formulas themselves, ported to TypeScript. Pure arithmetic, no
      data, exact for any date, so it is the same numbers as the server for all time.
-   - Drik: a truncated analytic series (Meeus-style Sun, Moon and planets) in code. No data, any
-     year, Moon good to about 10 arcseconds (about 20 s on a tithi end). Shown as approximate.
+   - Drik: a series fitted to our own kernel (`ephdata analytic-fit`), plus orbit elements for the
+     planets. No data file, any year. Measured per two centuries over AD 1-2947: Sun within 55",
+     Moon within 56" (a tithi end off by 1-2 minutes), Rahu within 145" (0.04 degrees), the
+     ayanamsha exact, the planets about half a degree near the present and up to 12 degrees in the
+     far past. It is shown as approximate.
    The same two exist on the server as its tier 3, so the server never needs `swiss-eph`.
 
 ## Server batches (outside the window)
@@ -63,6 +66,30 @@ Login, signup, profile, saved places and kundali profiles. Also the heavy produc
 astronomy lookups: kundali reports, dashas, muhurta search, festival generation. Festivals depend
 on local sunrise and on the festival rules, so moving them offline means porting that engine to
 TypeScript. That is a separate decision, not part of this design.
+
+## Status (2026-11-24)
+
+Built, type-checked and linted, not yet run through tests (the owner asked to test later):
+
+- Surya event index (`siddhanta-table index`), and the Surya server path reads it when loaded
+  (`PATRO_RS_SURYA_INDEX`), so boundaries are lookups.
+- `Index::slice` and `ChebTable::slice`, and the batch endpoints `/v1/{siddhanta,drik}/{index,cheb}`
+  (`PATRO_RS_SURYA_CHEB`, `PATRO_RS_DRIK_CHEB`).
+- The four data files for BS 1950-2150, copied into `apps/mobile/assets/sky` and `apps/web/public/sky`.
+- TypeScript: VIDX reader (`vidx.ts`), Surya formulas (`surya-formulas.ts`), Drik fallback
+  (`drik-analytic.ts`), and the resolver (`sky.ts`) with phone and browser adapters (`lib/sky.ts`).
+- `swiss-eph` is not in the server's dependency tree (it is an optional feature of `astronomy` that
+  nothing enables); the `ephemeris` crate stays only as a test oracle.
+
+Not built yet:
+
+- No screen reads `getSky()` yet. Day, month and year views still call the server; moving them
+  means deriving sunrise, sunset, lagna and the panchanga strip from `Sky` in each screen.
+- Festivals, kundali, dashas and muhurta stay server products (see above).
+- The Rust server's own Drik fallback when `kernel.veph` is missing (it answers 501); the series is
+  in `ephdata::analytic` but `DrikSky` is not yet built on it.
+- Surya graha positions on the server are still the formulas (cheap arithmetic); only boundaries are
+  stored.
 
 ## Build order
 

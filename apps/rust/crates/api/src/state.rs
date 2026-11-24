@@ -28,6 +28,10 @@ pub struct AppState {
     /// file named by `PATRO_RS_SIDDHANTA_TABLE`; `None` keeps
     /// `/v1/siddhanta/table` answering 501.
     pub siddhanta: Option<std::sync::Arc<siddhanta_table::Table>>,
+    /// The Surya Siddhanta Chebyshev file (`PATRO_RS_SURYA_CHEB`): batches for clients. `None` answers 501.
+    pub surya_cheb: Option<std::sync::Arc<siddhanta_table::cheb::ChebTable>>,
+    /// The Drik Chebyshev file (`PATRO_RS_DRIK_CHEB`): batches for clients. `None` answers 501.
+    pub drik_cheb: Option<std::sync::Arc<siddhanta_table::cheb::ChebTable>>,
 }
 
 /// The own-ephemeris files a server loaded, and the system built on them.
@@ -85,6 +89,39 @@ fn load_drik_files() -> Option<DrikFiles> {
     Some(files)
 }
 
+/// Installs the Surya Siddhanta event index from the file named by `PATRO_RS_SURYA_INDEX`, once.
+/// Without it the text's boundaries are solved on demand and the index endpoint answers 501.
+fn load_surya_index() {
+    static LOADED: OnceLock<()> = OnceLock::new();
+    LOADED.get_or_init(|| {
+        let Some(path) = std::env::var_os("PATRO_RS_SURYA_INDEX") else {
+            return;
+        };
+        match ephdata::Index::open(std::path::Path::new(&path)) {
+            Ok(index) => {
+                let (from, to) = index.coverage();
+                astronomy::install_surya_index(index);
+                tracing::info!(from, to, "surya event index loaded: boundaries are lookups");
+            }
+            Err(e) => {
+                tracing::error!(error = %e, "surya event index not loaded: boundaries are solved on demand");
+            }
+        }
+    });
+}
+
+/// A Chebyshev file named by the environment variable `var`, or `None` (logged) when unset or unreadable.
+fn load_cheb(var: &str) -> Option<std::sync::Arc<siddhanta_table::cheb::ChebTable>> {
+    let path = std::path::PathBuf::from(std::env::var_os(var)?);
+    match siddhanta_table::cheb::open(&path) {
+        Ok(table) => Some(std::sync::Arc::new(table)),
+        Err(e) => {
+            tracing::error!(error = %e, var, "chebyshev file not loaded: its batch endpoint stays off");
+            None
+        }
+    }
+}
+
 /// Loads the Surya Siddhanta position table (`siddhanta.vtab`, built by the
 /// `siddhanta-table` binary) from the file named by `PATRO_RS_SIDDHANTA_TABLE`,
 /// once. A missing or unreadable file only logs: the table endpoint answers
@@ -113,6 +150,7 @@ impl AppState {
     /// State for one running server.
     #[must_use]
     pub fn new(config: AppConfig) -> Self {
+        load_surya_index();
         let cities = Cities::new(config.cities_db());
         let documents = documents_service(&config.data_dir);
         Self {
@@ -124,6 +162,8 @@ impl AppState {
             vastu: Arc::new(OnceLock::new()),
             drik: load_drik(),
             siddhanta: load_siddhanta(),
+            surya_cheb: load_cheb("PATRO_RS_SURYA_CHEB"),
+            drik_cheb: load_cheb("PATRO_RS_DRIK_CHEB"),
         }
     }
 

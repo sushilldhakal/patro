@@ -569,7 +569,6 @@ export function sunriseSunset(
 }
 
 function bisectBoundary(
-  source: PositionSource,
   lo: number,
   hi: number,
   indexAt: (jd: number) => number | null,
@@ -606,7 +605,7 @@ export function nextTithiBoundary(source: PositionSource, jdUt: number): number 
     const jd = jdUt + k * step;
     const index = indexAt(jd);
     if (index === null) return null;
-    if (index !== previous) return bisectBoundary(source, jd - step, jd, indexAt);
+    if (index !== previous) return bisectBoundary(jd - step, jd, indexAt);
     previous = index;
   }
   return null;
@@ -626,7 +625,7 @@ export function nextNakshatraBoundary(source: PositionSource, jdUt: number): num
     const jd = jdUt + k * step;
     const index = indexAt(jd);
     if (index === null) return null;
-    if (index !== previous) return bisectBoundary(source, jd - step, jd, indexAt);
+    if (index !== previous) return bisectBoundary(jd - step, jd, indexAt);
     previous = index;
   }
   return null;

@@ -1076,6 +1076,44 @@ fn cmd_drik_sun(kernel: &str, out: &str, days: usize) -> Result<(), String> {
     Ok(())
 }
 
+/// The Surya Siddhanta event index (`surya.vidx`): every boundary the text's own
+/// arithmetic produces, solved once and stored, so a server and a phone read
+/// them instead of solving. Same file format as Drik's `events.vidx`.
+fn cmd_index(out: &str, first_year: i32, last_year: i32, threads: usize) -> Result<(), String> {
+    if last_year <= first_year {
+        return Err("last_year must come after first_year".to_string());
+    }
+    let from = julday(first_year, 1, 1, 0.0, Calendar::Gregorian);
+    let to = julday(last_year + 1, 1, 1, 0.0, Calendar::Gregorian);
+    let started = std::time::Instant::now();
+    let bytes = ephdata::index::build(
+        &astronomy::position::SuryaSiddhanta,
+        from,
+        to,
+        threads,
+        &|done, total| {
+            eprint!(
+                "\r{done}/{total} stretches, {:.0}s",
+                started.elapsed().as_secs_f64()
+            );
+        },
+    )
+    .map_err(|e| format!("building the index: {e}"))?;
+    eprintln!();
+    std::fs::write(out, &bytes).map_err(|e| format!("writing {out}: {e}"))?;
+    let index = ephdata::Index::from_bytes(bytes).map_err(|e| format!("re-reading {out}: {e}"))?;
+    println!(
+        "wrote {out}: {:.2} MB for AD {first_year}-{last_year} in {:.0}s",
+        index.size() as f64 / 1e6,
+        started.elapsed().as_secs_f64()
+    );
+    for kind in ephdata::Kind::ALL {
+        println!("{kind:?}: {} events", index.len(kind));
+    }
+    Ok(())
+}
+
+#[expect(clippy::too_many_lines, reason = "one match arm per command")]
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();
     let result = match args.get(1).map(String::as_str) {
@@ -1096,6 +1134,12 @@ fn main() -> ExitCode {
         Some("sun") => {
             let days = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(10);
             cmd_sun(&args[2], &args[3], days)
+        }
+        Some("index") if args.len() >= 5 => {
+            let first = args[3].parse().unwrap_or(0);
+            let last = args[4].parse().unwrap_or(0);
+            let threads = args.get(5).and_then(|s| s.parse().ok()).unwrap_or(2);
+            cmd_index(&args[2], first, last, threads)
         }
         Some("cheb-measure") => {
             let count = args.get(2).and_then(|s| s.parse().ok()).unwrap_or(21);
@@ -1167,7 +1211,7 @@ fn main() -> ExitCode {
             let days = args.get(4).and_then(|s| s.parse().ok()).unwrap_or(10);
             cmd_drik_sun(&args[2], &args[3], days)
         }
-        _ => Err("usage: siddhanta-table build <out> <first_year> <last_year> <step_hours>\n       siddhanta-table check <table> [random_samples]\n       siddhanta-table fixtures <table> <out.json> [count]\n       siddhanta-table cheb-measure <first_year> [segments]\n       siddhanta-table cheb-build <out> <first_year> <last_year> [segment_days] [degrees]\n       siddhanta-table cheb-check <table> [random_samples]\n       siddhanta-table drik-measure <kernel.veph> [segments] [segment_days]\n       siddhanta-table drik-synthetic <out.veph>\n       siddhanta-table drik-build <kernel.veph> <out> <first_year> <last_year> [segment_days] [degrees]\n       siddhanta-table drik-check <kernel.veph> <table> [random_samples]\n       siddhanta-table drik-fixtures <kernel.veph> <table> <out.json> [count]\n       siddhanta-table drik-sun <kernel.veph> <out.json> [days]".to_string()),
+        _ => Err("usage: siddhanta-table index <out.vidx> <first_year> <last_year> [threads]\n       siddhanta-table build <out> <first_year> <last_year> <step_hours>\n       siddhanta-table check <table> [random_samples]\n       siddhanta-table fixtures <table> <out.json> [count]\n       siddhanta-table cheb-measure <first_year> [segments]\n       siddhanta-table cheb-build <out> <first_year> <last_year> [segment_days] [degrees]\n       siddhanta-table cheb-check <table> [random_samples]\n       siddhanta-table drik-measure <kernel.veph> [segments] [segment_days]\n       siddhanta-table drik-synthetic <out.veph>\n       siddhanta-table drik-build <kernel.veph> <out> <first_year> <last_year> [segment_days] [degrees]\n       siddhanta-table drik-check <kernel.veph> <table> [random_samples]\n       siddhanta-table drik-fixtures <kernel.veph> <table> <out.json> [count]\n       siddhanta-table drik-sun <kernel.veph> <out.json> [days]".to_string()),
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,

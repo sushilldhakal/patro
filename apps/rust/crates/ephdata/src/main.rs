@@ -13,6 +13,8 @@
     reason = "a command-line tool: sizes print as megabytes and each command is one match arm"
 )]
 
+mod fit;
+
 use std::{
     error::Error,
     io::{BufRead, Write},
@@ -154,6 +156,30 @@ fn main() -> Result<(), Box<dyn Error>> {
             );
             for k in index::Kind::ALL {
                 println!("{k:?}: {} events", idx.len(k));
+            }
+        }
+        "analytic-fit" => {
+            // The built-in series, fitted to the kernel: writes the Rust and TypeScript constants.
+            let sky = Sky::open(Path::new(&arg(&args, 2, "veph")?))?;
+            fit::run(
+                &sky,
+                Path::new(&arg(&args, 3, "out.rs")?),
+                Path::new(&arg(&args, 4, "out.ts")?),
+            )?;
+        }
+        "slice" => {
+            // A smaller index for a window of years: what an app carries.
+            let idx = index::Index::open(Path::new(&arg(&args, 2, "vidx")?))?;
+            let (from, to): (f64, f64) = (
+                arg(&args, 4, "from_year")?.parse()?,
+                arg(&args, 5, "to_year")?.parse()?,
+            );
+            let bytes = idx.slice(jd_of_year(from), jd_of_year(to))?;
+            index::write(Path::new(&arg(&args, 3, "out")?), &bytes)?;
+            let cut = index::Index::from_bytes(bytes)?;
+            println!("{:.2} MB", cut.size() as f64 / 1e6);
+            for k in index::Kind::ALL {
+                println!("{k:?}: {} events", cut.len(k));
             }
         }
         "sample" => {

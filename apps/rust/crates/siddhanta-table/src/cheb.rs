@@ -365,6 +365,43 @@ impl ChebTable {
         }
     }
 
+    /// The whole segments covering `[from_jd, to_jd]`, as a table of its own: what the
+    /// server sends a client for years the client does not carry. Segments are copied
+    /// bit for bit, and the anchors move to the new start, so it reads back the same.
+    /// `None` when the window does not overlap the table.
+    #[must_use]
+    pub fn slice(&self, from_jd: f64, to_jd: f64) -> Option<Self> {
+        let n = self.segment_count();
+        if n == 0
+            || from_jd.is_nan()
+            || to_jd.is_nan()
+            || from_jd >= to_jd
+            || to_jd < self.first_jd
+            || from_jd > self.last_jd()
+        {
+            return None;
+        }
+        let first = (((from_jd - self.first_jd) / self.segment_days)
+            .floor()
+            .max(0.0) as usize)
+            .min(n - 1);
+        let last =
+            (((to_jd - self.first_jd) / self.segment_days).ceil() as usize).clamp(first + 1, n);
+        let seg = segment_bytes(&self.degrees) / 4;
+        let first_jd = self.first_jd + first as f64 * self.segment_days;
+        Some(Self {
+            first_jd,
+            segment_days: self.segment_days,
+            degrees: self.degrees,
+            mean_sun0: self.mean_sun_at(first_jd),
+            mean_sun_rate: self.mean_sun_rate,
+            ayanamsha: self
+                .ayanamsha
+                .map(|(_, rate)| (self.ayanamsha_at(first_jd), rate)),
+            coefficients: self.coefficients[first * seg..last * seg].to_vec(),
+        })
+    }
+
     /// Offset, in f32 coefficients, of a body's coefficients in a segment.
     fn body_offset(&self, body: usize) -> usize {
         self.degrees[..body].iter().map(|d| d + 1).sum()

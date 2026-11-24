@@ -21,6 +21,8 @@
     reason = "numeric code: Julian Days, bit widths and table offsets move between f64 and integers on purpose, every one range-checked by the format or the tests"
 )]
 
+pub mod analytic;
+pub mod analytic_data;
 pub mod daf;
 pub mod deltat;
 pub mod frames;
@@ -28,6 +30,6 @@ pub mod index;
 pub mod kernel;
 pub mod sky;
 
-pub use index::{Crossing, Index, Kind};
+pub use index::{Crossing, Index, Kind, Source};
 pub use kernel::Kernel;
 pub use sky::{Body, Place, Sky};

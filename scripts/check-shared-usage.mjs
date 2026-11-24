@@ -44,6 +44,8 @@ const FETCH_ALLOWED = new Set([
   "apps/web/src/hooks/use-chapter-track.ts",
   "apps/mobile/lib/learn/use-chapter-track.ts",
   "apps/mobile/lib/siddhanta-offline.ts",
+  // The sky files the site ships itself (static, same origin), not an API call.
+  "apps/web/src/lib/sky.ts",
 ]);
 /** Each app's transport (lib/api.ts) is where the configured base URL is applied. */
 const TRANSPORTS = new Set(["apps/web/src/lib/api.ts", "apps/mobile/lib/api.ts"]);

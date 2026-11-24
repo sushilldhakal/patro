@@ -189,6 +189,41 @@ impl Graha {
     }
 }
 
+/// Where the builder reads positions from: our own kernel for Drik, the text's own
+/// arithmetic for Surya Siddhanta. Longitudes are sidereal degrees.
+pub trait Source: Sync {
+    /// The span of Julian Days (UT) the source answers for.
+    fn coverage_jd_ut(&self) -> (f64, f64);
+
+    /// The Sun's and the Moon's longitudes.
+    ///
+    /// # Errors
+    ///
+    /// [`KernelError::OutOfRange`] outside the source's span.
+    fn sun_moon(&self, jd: f64) -> Result<(f64, f64), KernelError>;
+
+    /// A graha's longitude (Rahu's is the node the source uses).
+    ///
+    /// # Errors
+    ///
+    /// [`KernelError::OutOfRange`] outside the source's span.
+    fn graha_longitude(&self, graha: Graha, jd: f64) -> Result<f64, KernelError>;
+}
+
+impl Source for Sky {
+    fn coverage_jd_ut(&self) -> (f64, f64) {
+        Self::coverage_jd_ut(self)
+    }
+
+    fn sun_moon(&self, jd: f64) -> Result<(f64, f64), KernelError> {
+        Self::sun_moon(self, jd)
+    }
+
+    fn graha_longitude(&self, graha: Graha, jd: f64) -> Result<f64, KernelError> {
+        graha.longitude(self, jd)
+    }
+}
+
 /// A series of events that carry a payload.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Series {
@@ -597,7 +632,7 @@ const STEP: f64 = 0.125;
 const GRAHA_STEP: f64 = 0.5;
 const STATION_DELTA: f64 = 1e-3;
 
-fn scan_angas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), KernelError> {
+fn scan_angas(sky: &impl Source, from: f64, to: f64, out: &mut Found) -> Result<(), KernelError> {
     let steps = ((to - from) / STEP).ceil() as usize;
     let at = |i: usize| from + i as f64 * STEP;
     let (mut s0, mut m0) = sky.sun_moon(at(0))?;
@@ -622,11 +657,11 @@ fn scan_angas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), Kern
     Ok(())
 }
 
-fn scan_grahas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), KernelError> {
+fn scan_grahas(sky: &impl Source, from: f64, to: f64, out: &mut Found) -> Result<(), KernelError> {
     let steps = ((to - from) / GRAHA_STEP).ceil() as usize;
     let at = |i: usize| from + i as f64 * GRAHA_STEP;
     for graha in Graha::ALL {
-        let lon = |t: f64| graha.longitude(sky, t);
+        let lon = |t: f64| sky.graha_longitude(graha, t);
         let mut prev = lon(at(0))?;
         let mut prev_diff = 0.0;
         for i in 0..steps {
@@ -637,8 +672,9 @@ fn scan_grahas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), Ker
                 let forward = (c0 + 1) % 12 == c1;
                 let boundary = f64::from(if forward { c1 } else { c0 }) * 30.0;
                 let sign = if forward { 1.0 } else { -1.0 };
-                let g =
-                    |t: f64| sign * wrap180(graha.longitude(sky, t).unwrap_or(f64::NAN) - boundary);
+                let g = |t: f64| {
+                    sign * wrap180(sky.graha_longitude(graha, t).unwrap_or(f64::NAN) - boundary)
+                };
                 let jd = bisect(t0, t1, &g);
                 out.series[graha as usize].push((jd, c1 as u8));
             }
@@ -649,8 +685,11 @@ fn scan_grahas(sky: &Sky, from: f64, to: f64, out: &mut Found) -> Result<(), Ker
                 // noisy as the longitudes it subtracts.
                 let speed = |t: f64| {
                     let d = wrap180(
-                        graha.longitude(sky, t + STATION_DELTA).unwrap_or(f64::NAN)
-                            - graha.longitude(sky, t - STATION_DELTA).unwrap_or(f64::NAN),
+                        sky.graha_longitude(graha, t + STATION_DELTA)
+                            .unwrap_or(f64::NAN)
+                            - sky
+                                .graha_longitude(graha, t - STATION_DELTA)
+                                .unwrap_or(f64::NAN),
                     );
                     d / (2.0 * STATION_DELTA)
                 };
@@ -751,7 +790,7 @@ fn fitted_station(lon: &impl Fn(f64) -> Result<f64, KernelError>, coarse: f64) -
 ///
 /// [`KernelError::OutOfRange`] when the range leaves the kernel's data.
 pub fn build(
-    sky: &Sky,
+    sky: &impl Source,
     from: f64,
     to: f64,
     threads: usize,
@@ -828,6 +867,39 @@ pub fn build(
         }
     }
     pack(&all, from, to, origin)
+}
+
+impl Index {
+    /// The events of `[from, to]` as a smaller index file of the same format: what the
+    /// server sends a client for years the client does not carry. The slice starts on a
+    /// 32-day block of the stored file, so every time is copied bit for bit.
+    ///
+    /// # Errors
+    ///
+    /// [`KernelError::OutOfRange`] when the span leaves what this index covers.
+    pub fn slice(&self, from: f64, to: f64) -> Result<Vec<u8>, KernelError> {
+        let (lo, hi) = self.coverage();
+        if from < lo || to > hi || from >= to {
+            return Err(KernelError::OutOfRange(from));
+        }
+        let block = f64::from(BLOCK_DAYS);
+        let origin = ((from - self.origin) / block).floor() * block + self.origin;
+        let mut found = Found::default();
+        for kind in Kind::ALL {
+            if kind.base().0 == kind {
+                found.kinds[kind.table()] = self
+                    .events_between(kind, origin, to)
+                    .into_iter()
+                    .map(|c| (c.jd, c.multiple))
+                    .collect();
+            }
+        }
+        for g in Graha::ALL {
+            found.series[g as usize] = self.series_between(Series::Ingress(g), origin, to);
+            found.series[6 + g as usize] = self.series_between(Series::Station(g), origin, to);
+        }
+        pack(&found, from, to, origin)
+    }
 }
 
 fn pad8(out: &mut Vec<u8>) {
