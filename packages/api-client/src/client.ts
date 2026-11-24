@@ -513,11 +513,15 @@ export const fetchEclipseYear = (
   era: Era = "bs",
   language?: Lang,
 ) =>
-  get<EclipseYearResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${eraQuery(era, year, language)}`),
-      location,
-    ),
+  fromLocal<EclipseYearResponse>((l) => l.eclipse({ kind, year, era, language: language ?? normalizeLang() }, location)).then(
+    (local) =>
+      local ??
+      get<EclipseYearResponse>(
+        appendLocation(
+          withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${eraQuery(era, year, language)}`),
+          location,
+        ),
+      ),
   );
 
 export const fetchPanchakYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>

@@ -40,6 +40,8 @@ export interface LocalCalendar {
     q: { days: number; limit: number; holidaysOnly: boolean },
     location?: LocalPlaceQuery,
   ): Promise<Record<string, unknown> | null>;
+  /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
+  eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
 
 /** The shared store a month may be read from and offered to (the server's `/v1/shared/month/{key}`). */
@@ -203,6 +205,19 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     festivals: (q, location) => run(location, (m, skies, place) => m.festivalListingPayload(skies, place, q)),
     holidays: (q, location) => run(location, (m, skies, place) => m.holidayListingPayload(skies, place, q)),
     upcoming: (q, location) => run(location, (m, skies, place) => m.upcomingFestivalsPayload(skies, place, q)),
+    eclipse: async (q, location) => {
+      // The text's eclipses are the only ones there are: Drik answers 501 on the server, so it goes there.
+      if (!options.enabled() || options.system()?.system !== "surya") return null;
+      try {
+        const m = await import("./festival-payloads");
+        const place = placeOf(location, m.KATHMANDU_PLACE);
+        if (!place) return null;
+        return (await import("./eclipse-payload")).eclipseYearPayload(q, place);
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
   };
 }
 

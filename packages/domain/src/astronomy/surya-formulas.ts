@@ -207,3 +207,19 @@ export const suryaFormulaSource: PositionSource = {
     };
   },
 };
+
+/** The Moon's latitude in minutes of arc, north positive (I.68: 4.5 degrees at most, by the node). */
+export function suryaMoonLatitudeMinutes(jdUt: number): number {
+  const node = meanLongitude(REVS.moonNode, jdUt);
+  return 60 * 4.5 * Math.sin(((suryaLongitude("moon", jdUt) - node) * Math.PI) / 180);
+}
+
+/** Mean daily motion, degrees per day, of the Sun or the Moon. */
+export function suryaMeanDailyMotion(body: "sun" | "moon"): number {
+  return (360 * Number(REVS[body])) / Number(MAHAYUGA_DAYS);
+}
+
+/** The mean Sun's sidereal longitude (the text's frame for sidereal time). */
+export function suryaMeanSun(jdUt: number): number {
+  return meanLongitude(REVS.sun, jdUt);
+}

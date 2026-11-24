@@ -69,7 +69,7 @@ function hm(jd: number, offsetMinutes: number): string {
 }
 
 /** The ISO instant with offset, seconds truncated (`2026-11-17T12:38:59+05:45`). */
-function isoLocal(jd: number, offsetMinutes: number): string {
+export function isoLocal(jd: number, offsetMinutes: number): string {
   const totalSeconds = Math.floor((jd + 0.5) * 86400 + offsetMinutes * 60 + 1e-6);
   const dayNumber = Math.floor(totalSeconds / 86400);
   const rem = totalSeconds - dayNumber * 86400;
