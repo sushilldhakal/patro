@@ -161,10 +161,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         "analytic-fit" => {
             // The built-in series, fitted to the kernel: writes the Rust and TypeScript constants.
             let sky = Sky::open(Path::new(&arg(&args, 2, "veph")?))?;
+            // Optional `from_year to_year`: fit and report only that span (default: the kernel's).
+            let years = match (args.get(5), args.get(6)) {
+                (Some(a), Some(b)) => Some((a.parse()?, b.parse()?)),
+                _ => None,
+            };
             fit::run(
                 &sky,
                 Path::new(&arg(&args, 3, "out.rs")?),
                 Path::new(&arg(&args, 4, "out.ts")?),
+                years,
             )?;
         }
         "slice" => {

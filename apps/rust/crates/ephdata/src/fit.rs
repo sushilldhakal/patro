@@ -237,10 +237,20 @@ fn ts_series(name: &str, f: &Fitted) -> String {
 
 /// Fits the three series and the ayanamsha polynomial, reports the error per two centuries,
 /// and writes the Rust and TypeScript constants.
-pub(crate) fn run(sky: &Sky, out_rs: &Path, out_ts: &Path) -> Result<(), Box<dyn Error>> {
+pub(crate) fn run(
+    sky: &Sky,
+    out_rs: &Path,
+    out_ts: &Path,
+    years: Option<(f64, f64)>,
+) -> Result<(), Box<dyn Error>> {
     let (lo, hi) = sky.coverage_jd_ut();
-    let (lo, hi) = (lo + 5.0, hi - 5.0);
-    let fit_at = samples(2600, lo, hi, 7);
+    let (mut lo, mut hi) = (lo + 5.0, hi - 5.0);
+    if let Some((from, to)) = years {
+        // Fit and test only the span the app promises, so the error table describes that span.
+        lo = lo.max(jd_of_year(from));
+        hi = hi.min(jd_of_year(to));
+    }
+    let fit_at = samples(4500, lo, hi, 7);
     let ts: Vec<f64> = fit_at.iter().map(|j| centuries(ut_to_tt(*j))).collect();
     let unwrap = |lon: f64, pred: f64| lon + 360.0 * ((pred - lon) / 360.0).round();
     let aya: Vec<f64> = fit_at.iter().map(|j| sky.ayanamsha(*j)).collect();
@@ -260,15 +270,35 @@ pub(crate) fn run(sky: &Sky, out_rs: &Path, out_ts: &Path) -> Result<(), Box<dyn
     eprintln!("fitting the Moon...");
     let moon = fit_series(&ts, &moon_y, &candidates([4, 2, 4, 4, 1], 7), 90, 0.000_02);
     eprintln!("fitting the Sun...");
-    let sun = fit_series(&ts, &sun_y, &candidates([2, 3, 1, 2, 1], 4), 18, 0.000_02);
+    let sun = fit_series(&ts, &sun_y, &candidates([3, 3, 2, 2, 1], 6), 45, 0.000_01);
     eprintln!("fitting Rahu...");
     let rahu = fit_series(&ts, &node_y, &candidates([4, 2, 4, 4, 1], 6), 45, 0.000_05);
     let aya_fit = fit_series(&ts, &aya, &[], 0, 1.0);
     let ayan0 = sky.ayanamsha(J2000);
+    // Each planet's orbit elements are Standish's, fitted to 1800-2050, so over thousands of years
+    // the slow mean motions drift (Saturn by 31 degrees at 3000 BCE). A smooth polynomial in time,
+    // fitted to the kernel, takes that out; it is only valid over the span being fitted.
+    let planet_bodies = [
+        Body::Mercury,
+        Body::Venus,
+        Body::Mars,
+        Body::Jupiter,
+        Body::Saturn,
+    ];
+    let mut planet_corr: Vec<Fitted> = Vec::new();
+    for (k, body) in planet_bodies.iter().enumerate() {
+        let mut residual = Vec::new();
+        for (i, jd) in fit_at.iter().enumerate() {
+            let model = planet_longitude_j2000(k, ts[i]) - ayan0;
+            let truth = sky.sidereal_longitude(*body, *jd)?;
+            residual.push(((truth - model + 180.0).rem_euclid(360.0)) - 180.0);
+        }
+        planet_corr.push(fit_series(&ts, &residual, &[], 0, 1.0));
+    }
 
     // The error, per 200 years, on fresh instants.
-    let test = samples(6000, lo, hi, 99);
-    let mut buckets: std::collections::BTreeMap<i64, [Vec<f64>; 6]> =
+    let test = samples(9000, lo, hi, 99);
+    let mut buckets: std::collections::BTreeMap<i64, [Vec<f64>; 11]> =
         std::collections::BTreeMap::new();
     for jd in &test {
         let t = centuries(ut_to_tt(*jd));
@@ -290,15 +320,21 @@ pub(crate) fn run(sky: &Sky, out_rs: &Path, out_ts: &Path) -> Result<(), Box<dyn
             Body::Jupiter,
             Body::Saturn,
         ];
-        let worst = planets
+        let per_planet: Vec<f64> = planets
             .iter()
             .enumerate()
             .map(|(k, b)| {
                 let truth = sky.sidereal_longitude(*b, *jd).unwrap_or(0.0);
-                arcsec(planet_longitude_j2000(k, t) - ayan0 - truth) / 3600.0
+                arcsec(
+                    planet_longitude_j2000(k, t) - ayan0 + series_at(&planet_corr[k].poly, &[], t)
+                        - truth,
+                ) / 3600.0
             })
-            .fold(0.0_f64, f64::max);
-        e[4].push(worst);
+            .collect();
+        for (k, v) in per_planet.iter().enumerate() {
+            e[6 + k].push(*v);
+        }
+        e[4].push(per_planet.iter().copied().fold(0.0_f64, f64::max));
         e[5].push(arcsec(series_at(&moon.poly, &moon.terms, t) - m) / 3600.0 / 12.19 * 86_400.0);
     }
     println!(
@@ -326,6 +362,14 @@ pub(crate) fn run(sky: &Sky, out_rs: &Path, out_ts: &Path) -> Result<(), Box<dyn
             max(&v[4]),
             max(&v[5])
         );
+        println!(
+            "          planets, worst degrees: Mercury {:.2} Venus {:.2} Mars {:.2} Jupiter {:.2} Saturn {:.2}",
+            max(&v[6]),
+            max(&v[7]),
+            max(&v[8]),
+            max(&v[9]),
+            max(&v[10])
+        );
     }
 
     let mut rs = String::from(
@@ -336,6 +380,11 @@ pub(crate) fn run(sky: &Sky, out_rs: &Path, out_ts: &Path) -> Result<(), Box<dyn
         "/// The Lahiri ayanamsha at J2000, degrees.\npub const AYANAMSHA_J2000: f64 = {ayan0:?};\n/// The ayanamsha as a polynomial in `u = T / 10`, degrees.\npub const AYANAMSHA_POLY: [f64; 6] = {:?};",
         aya_fit.poly
     );
+    rs.push_str("/// Per-planet correction polynomials (Mercury, Venus, Mars, Jupiter, Saturn) in `u = T / 10`, degrees,\n/// added to the orbit-element longitude minus [`AYANAMSHA_J2000`].\npub const PLANET_CORRECTION: [[f64; 6]; 5] = [\n");
+    for c in &planet_corr {
+        let _ = writeln!(rs, "    {:?},", c.poly);
+    }
+    rs.push_str("];\n");
     rs.push_str(&rust_series("Sun", &sun));
     rs.push_str(&rust_series("Moon", &moon));
     rs.push_str(&rust_series("Rahu", &rahu));
@@ -349,6 +398,11 @@ pub(crate) fn run(sky: &Sky, out_rs: &Path, out_ts: &Path) -> Result<(), Box<dyn
         "export const AYANAMSHA_J2000 = {ayan0:?};\nexport const AYANAMSHA_POLY = {:?};",
         aya_fit.poly
     );
+    ts_out.push_str("export const PLANET_CORRECTION: number[][] = [\n");
+    for c in &planet_corr {
+        let _ = writeln!(ts_out, "  {:?},", c.poly);
+    }
+    ts_out.push_str("];\n");
     ts_out.push_str(&ts_series("SUN", &sun));
     ts_out.push_str(&ts_series("MOON", &moon));
     ts_out.push_str(&ts_series("RAHU", &rahu));

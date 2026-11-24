@@ -32,13 +32,13 @@ Surya and Drik files are never mixed: `surya.vidx`, `surya.cheb`, `drik.vidx`, `
 3. Moshier-style built-in, used when 1 and 2 have nothing (outside the window and offline):
    - Surya: the Surya Siddhanta formulas themselves, ported to TypeScript. Pure arithmetic, no
      data, exact for any date, so it is the same numbers as the server for all time.
-   - Drik: a series fitted to our own kernel (`ephdata analytic-fit`), plus orbit elements for the
-     planets. No data file. It answers for any date, but it is only MEASURED over the kernel's span,
-     AD 1-2947 (checked at 3000 BCE to 3000 CE: it stays bounded, Sun about 1.01 degrees a day and
-     Moon 12-14.5, but its error outside AD 1-2947 is unknown). Measured per two centuries over AD 1-2947: Sun within 55",
-     Moon within 56" (a tithi end off by 1-2 minutes), Rahu within 145" (0.04 degrees), the
-     ayanamsha exact, the planets about half a degree near the present and up to 12 degrees in the
-     far past. It is shown as approximate.
+   - Drik: a series fitted to our own kernel (`ephdata analytic-fit ... -3000 3000`), plus orbit
+     elements and a fitted correction for the planets. No data file. Measured against the kernel over
+     3000 BCE to 3000 CE, per two centuries: Sun within 38" (rms 9-17"), Moon within about 35" in
+     most centuries and 90" at the 3000 BCE edge (a tithi end off by 1-3 minutes), Rahu within 130",
+     the ayanamsha exact, Mercury, Venus and Mars within 1 degree, Jupiter 0.4 to 4 degrees and
+     Saturn 1 to 13 degrees (worst at the 3000 BCE end, about 1 degree from 1000 to 2200 CE). Outside
+     3000 BCE to 3000 CE it is not measured. It is shown as approximate.
    The same two exist on the server as its tier 3, so the server never needs `swiss-eph`.
 
 ## Server batches (outside the window)
@@ -146,6 +146,22 @@ systems, no request to `/v1/panchanga*`, no error in Sentry or the console.
 |---|---|---|
 | Bundled window in the apps | BS 1950-2150 (AD 1893-2096), both systems | nothing, this is the offline window |
 | Surya formulas in the app (tier 3) | any date, exact | nothing |
-| Drik analytic series in the app (tier 3) | answers for any date; measured only AD 1-2947 | extract the kernel from the DE441 parts for 3000 BCE-3000 CE (both `.bsp` files are on this machine), refit the series, measure |
-| Server batches, Surya | only the bundled window is built | build `surya.vidx` and `surya.cheb` for 3000 BCE-3000 CE |
-| Server batches, Drik | kernel, index and Chebyshev cover AD 1-2947 | kernel and index for 3000 BCE-3000 CE |
+| Drik analytic series in the app (tier 3) | fitted and measured over 3000 BCE-3000 CE (done) | nothing |
+| Server batches, Surya | `surya.vidx` and `surya.cheb` built for 13100 BCE-17100 CE (395 MB and 167 MB); beyond that the server computes from the formulas, which are exact | nothing |
+| Server batches, Drik | kernel 644 MB, index 395 MB, Chebyshev 194 MB for 13100 BCE-17100 CE (done) | nothing |
+
+### Wide server data (built 2026-11-24, data/wide, not in git)
+
+- Drik kernel from the two DE441 parts, 1 m steps, 13100 BCE-17100 CE: 643.9 MB. Event index 395.5 MB
+  (1063 s on two threads). Chebyshev batch file 194 MB, built with `DRIK_WIDE=1` because a single
+  ayanamsha line cannot hold over 30,000 years (residual 2.35 degrees); the server sets each slice's
+  ayanamsha anchor and rate from the kernel before sending it.
+- Surya index 395.5 MB and Chebyshev file 167 MB over the same span.
+- Index consistency check (`ephdata check`, 3000 random instants per kind): 0 inconsistent at +/-20 ms
+  and +/-50 ms; at the strict +/-5 ms, 441 of 30,000 fail, almost all after 4000 CE. Cause measured:
+  the kernel evaluation carries a few milliseconds of timing noise far from the present (delta-T there
+  is days), so a boundary is good to about 20 ms, not 1 ms. Irrelevant to a panchanga that shows minutes.
+- Found and fixed while testing the far past: the weekday overflowed for Julian Days before 0
+  (4713 BCE): a panic in debug, a wrong day in release.
+- The server answers month panchangas for both systems from 13000 BCE to 16900 CE (118 of 120 sampled
+  requests 200; the other two are the last month of 16900 CE, past the supported span).

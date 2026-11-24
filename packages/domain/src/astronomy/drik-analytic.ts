@@ -5,7 +5,8 @@
 // mean orbital elements. It answers for any date, so it is what the app uses when a date is
 // outside the bundled years, the server cannot be reached and no batch is cached. It is
 // approximate: the fit prints its error per two centuries, and the planets are good to about a
-// degree, so a screen showing these says so.
+// degree in the span it was fitted over (3000 BCE to 3000 CE; Jupiter and Saturn drift to a few
+// and about thirteen degrees at its far end), so a screen showing these says so.
 //
 // The model runs in TT; the app has UT, so the same delta-T polynomials as the server's
 // (apps/rust/crates/ephdata/src/deltat.rs) convert.
@@ -13,6 +14,7 @@ import {
   AYANAMSHA_J2000,
   AYANAMSHA_POLY,
   MOON_SERIES,
+  PLANET_CORRECTION,
   RAHU_SERIES,
   SUN_SERIES,
   type AnalyticSeries,
@@ -129,8 +131,9 @@ function planetLongitudeJ2000(row: number, t: number): number {
   return wrap360(Math.atan2(py - ey, px - ex) / RAD);
 }
 
-/** Rows of PLANETS for the body order mars, mercury, jupiter, venus, saturn. */
+/** Rows of PLANETS and indexes of PLANET_CORRECTION for the planets, by name. */
 const PLANET_ROW = { mars: 3, mercury: 0, jupiter: 4, venus: 1, saturn: 5 } as const;
+const PLANET_CORR = { mercury: 0, venus: 1, mars: 2, jupiter: 3, saturn: 4 } as const;
 
 /** The Lahiri ayanamsha at `jdUt`, degrees. */
 export function drikAyanamshaAt(jdUt: number): number {
@@ -140,15 +143,18 @@ export function drikAyanamshaAt(jdUt: number): number {
 /** Sidereal longitudes in the order sun, moon, mars, mercury, jupiter, venus, saturn, rahu. */
 function longitudesAt(jdUt: number): number[] {
   const t = (utToTt(jdUt) - J2000) / 36525;
-  const planet = (row: number) => wrap360(planetLongitudeJ2000(row, t) - AYANAMSHA_J2000);
+  // The orbit elements are fitted to 1800-2050; a polynomial fitted to the kernel over 3000 BCE to
+  // 3000 CE takes out the drift of the slow mean motions (valid only over that span).
+  const planet = (row: number, corr: number) =>
+    wrap360(planetLongitudeJ2000(row, t) - AYANAMSHA_J2000 + poly(t / 10, PLANET_CORRECTION[corr]));
   return [
     wrap360(seriesAt(SUN_SERIES, t)),
     wrap360(seriesAt(MOON_SERIES, t)),
-    planet(PLANET_ROW.mars),
-    planet(PLANET_ROW.mercury),
-    planet(PLANET_ROW.jupiter),
-    planet(PLANET_ROW.venus),
-    planet(PLANET_ROW.saturn),
+    planet(PLANET_ROW.mars, PLANET_CORR.mars),
+    planet(PLANET_ROW.mercury, PLANET_CORR.mercury),
+    planet(PLANET_ROW.jupiter, PLANET_CORR.jupiter),
+    planet(PLANET_ROW.venus, PLANET_CORR.venus),
+    planet(PLANET_ROW.saturn, PLANET_CORR.saturn),
     wrap360(seriesAt(RAHU_SERIES, t)),
   ];
 }

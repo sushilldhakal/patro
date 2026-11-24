@@ -176,3 +176,17 @@ pub fn planet_longitude_j2000(index: usize, t: f64) -> f64 {
     let (ex, ey) = heliocentric(&PLANETS[2], t);
     (py - ey).atan2(px - ex).to_degrees().rem_euclid(360.0)
 }
+
+/// A planet's sidereal longitude, degrees in [0, 360): the orbit-element longitude minus the
+/// ayanamsha at J2000, plus the fitted correction polynomial. `index` is 0 Mercury, 1 Venus,
+/// 2 Mars, 3 Jupiter, 4 Saturn; `t` is centuries of TT. Valid over the span the fit covered.
+#[must_use]
+pub fn planet_longitude(index: usize, t: f64) -> f64 {
+    let u = t / 10.0;
+    let correction = crate::analytic_data::PLANET_CORRECTION[index]
+        .iter()
+        .rev()
+        .fold(0.0, |acc, c| acc * u + c);
+    (planet_longitude_j2000(index, t) - crate::analytic_data::AYANAMSHA_J2000 + correction)
+        .rem_euclid(360.0)
+}
