@@ -145,14 +145,12 @@ function adFixed(r: Rule, gregorianYear: number): number | null {
   return back.month === m && back.day === d ? jdn : null;
 }
 
-// The server's tropical Sun: Drik adds its own ayanamsha; Surya adds a linear precession from J2000.
-const PRECESSION_DEG_PER_DAY = 5028.796195 / 3600 / 36525;
-const AYANAMSHA_J2000_DEG = 23.853056;
+// The tropical Sun: the sidereal Sun plus the system's own ayanamsha. Drik's is the Lahiri one; the
+// Surya Siddhanta's is the text's own ayana-chalana (a libration of 27 degrees either way, about
+// 22.9 degrees in 2026), not a modern precession.
 function tropicalSun(sky: Sky, jd: number): number | null {
-  const p = sky.positionsAt(jd);
-  if (!p) return null;
-  const add = sky.system === "drik" ? p.ayanamsha : AYANAMSHA_J2000_DEG + (jd - 2451545) * PRECESSION_DEG_PER_DAY;
-  return p.longitude[0] + add;
+  const p = sky.positionsAt(jd, 1);
+  return p ? p.longitude[0] + p.ayanamsha : null;
 }
 
 const signedDiff = (deg: number) => ((((deg % 360) + 360) % 360) + 540) % 360 - 180;

@@ -36,7 +36,8 @@ pub use boundaries::{
     karana_end, karana_start, moon_pada_end, moon_rashi_end, nakshatra_end, nakshatra_start,
     sun_nakshatra_end, tithi_end, tithi_start, yoga_end, yoga_start,
 };
-/// Tropical (sayana) Sun under the Surya Siddhanta: the text's Sun turned by real precession.
+/// Tropical (sayana) Sun: the system's sidereal Sun plus its own ayanamsha (for the Surya
+/// Siddhanta, the text's ayana-chalana).
 #[must_use]
 pub fn tropical_sun_longitude(system: astronomy::System, jd: f64) -> f64 {
     blocks_time::tropical_sun(system, jd)

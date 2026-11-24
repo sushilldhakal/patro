@@ -222,22 +222,11 @@ pub fn hora<I: PyInstant>(
     to_value(&hora_slot_list(sunrise, sunset, next_sunrise, vaara, zone))
 }
 
-/// Real precession (IAU 2006, linear term), degrees per day.
-const PRECESSION_DEG_PER_DAY: f64 = 5_028.796_195 / 3600.0 / 36525.0;
-/// Lahiri ayanamsha at J2000.0, which anchors the drift to the sidereal frame.
-const AYANAMSHA_J2000_DEG: f64 = 23.853_056;
-const J2000: f64 = 2_451_545.0;
-
-/// Tropical Sun under the Surya Siddhanta: the text's Sun turned by real precession.
+/// The tropical (sayana) Sun: the system's own sidereal Sun plus its own ayanamsha. Drik's is the
+/// Lahiri one. The Surya Siddhanta's is the text's ayana-chalana (a libration of 27 degrees either
+/// way, about 22.9 degrees in 2026), never a modern precession.
 pub(crate) fn tropical_sun(system: System, jd: f64) -> f64 {
-    if system.is_drik() {
-        // Drik's Sun is the apparent place: tropical = sidereal + the ayanamsha.
-        return py_mod(sun_longitude(system, jd) + system.ayanamsha(jd), 360.0);
-    }
-    py_mod(
-        sun_longitude(system, jd) + (AYANAMSHA_J2000_DEG + (jd - J2000) * PRECESSION_DEG_PER_DAY),
-        360.0,
-    )
+    py_mod(sun_longitude(system, jd) + system.ayanamsha(jd), 360.0)
 }
 
 fn sidereal_sun(system: System, jd: f64) -> f64 {
