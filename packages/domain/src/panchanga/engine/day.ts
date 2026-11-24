@@ -2,7 +2,6 @@
 // are listed in `DAY_BLOCKS`; the rest of the server's payload is added as each is ported, and
 // `isComplete` says whether the result may stand in for the server's answer.
 import { bsDateOf } from "../../astronomy/lunar-month";
-import { lagnaAt } from "../../astronomy/siddhanta-offline";
 import type { Sky } from "../../astronomy/sky";
 import {
   aayan,
@@ -30,6 +29,7 @@ import {
   type Json,
   type Place,
 } from "./blocks";
+import { lagnaBlock, lagnaRows, lagnaSpans, panchakaRahita, planetTable, udayaLagna } from "./lagna-blocks";
 import { solarCorrections } from "./solar-blocks";
 import { chandrabalaTable, chandrabalam, rashifal, tarabalaTable, tarabalam } from "./bala-blocks";
 import { displayHeaders, lunarCalendarBlock, lunarMonthBlock, nsDateBlock, pakshaBlock, samvatsaraBlock } from "./calendar-blocks";
@@ -54,7 +54,7 @@ export const DAY_BLOCKS = [
   "date", "date_ad", "jd_ut", "anchor", "display", "bs_date", "samvatsara", "ns_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
   "dinamaan", "ratrimana", "madhyahna", "lahiri_ayanamsa", "vaara", "aayan", "aayan_vedic", "tithi", "nakshatra", "yoga",
   "choghadiya", "hora", "solar_corrections", "karana", "paksha", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
-  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "planets_anchor", "lagna", "chandrabalam", "tarabalam", "tarabala_table", "chandrabala_table", "rashifal", "markers", "ayanamsa",
+  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "planets", "planets_anchor", "lagna", "lagna_spans", "udaya_lagna", "panchaka_rahita", "chandrabalam", "tarabalam", "tarabala_table", "chandrabala_table", "rashifal", "markers", "ayanamsa",
 ] as const;
 
 /** Whether every key of the server's payload (slim or full) is made here. */
@@ -81,7 +81,6 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
     degrees: sky.system === "drik" ? pyRound(sky.positionsAt(sunrise, 1, false)?.ayanamsha ?? 0, 6) : null,
   };
   const [sunLon, moonLon] = sunMoon(sky, sunrise);
-  const asc = lagnaAt(sky.source, sunrise, input.latitude, input.longitude);
   const observer = { sky, latitude: input.latitude, longitude: input.longitude, timeZone: zone };
   const lunar = lunarMonthBlock(jdn, tithi.paksha, observer);
   const nsBlock = nsDateBlock({ jdn, bsYear: bs.year, display: tithi.display, absolute: tithi.number, tithiNameNe: (tithiBlockOf(tithi) as string), paksha: tithi.paksha, month: lunar.name as string | null, isAdhik: Boolean(lunar.is_adhik) }, observer);
@@ -139,10 +138,13 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
     label_ne: "उदयकालिक स्पष्टग्रह (सूर्योदय)",
     label_en: "Udayakalika Spashtagraha (sunrise)",
   };
-  if (asc !== null) {
-    const i = Math.trunc(asc / 30) % 12;
-    b.lagna = { number: i + 1, name: RASHI_NAMES[i], name_ne: RASHI_NAMES_NE[i], longitude: pyRound(asc, 6), degree_in_rashi: pyRound(pyMod(asc, 30), 4), anchor: "sunrise" };
-  }
+  b.planets = planetTable(sky, sunrise);
+  b.lagna = lagnaBlock(sky, sunrise, input.latitude, input.longitude);
+  const spans = lagnaSpans(sky, sunrise, nextSunrise, input);
+  if (!spans) return null;
+  b.lagna_spans = lagnaRows(spans);
+  b.udaya_lagna = udayaLagna(spans);
+  b.panchaka_rahita = panchakaRahita(sky, sunrise, spans, vaara, zone);
   b.markers = { is_purnima: tithi.paksha === "shukla" && tithi.display === 15, is_Aausi: tithi.paksha === "krishna" && tithi.display === 15, is_ekadashi: tithi.display === 11 };
   b.ayanamsa = ayanamsa;
   const ordered: Json = {};
