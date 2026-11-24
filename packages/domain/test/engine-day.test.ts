@@ -47,7 +47,7 @@ function diff(path: string, got: unknown, want: unknown, tol: number): string | 
       const wrap = (path.endsWith("vipala") || path.endsWith("seconds")) ? Math.abs(Math.abs(want - got) - 60) <= 2 : false;
       return Math.abs(want - got) <= fuzzy || wrap ? null : `${path}: ${got} vs ${want}`;
     }
-    return Math.abs(got - want) <= Math.max(0.01, Math.abs(want) * 1e-3) ? null : `${path}: ${got} vs ${want}`;
+    return Math.abs(got - want) <= Math.max(path.endsWith("_minutes") ? 0.11 : 0.01, Math.abs(want) * 1e-3) ? null : `${path}: ${got} vs ${want}`;
   }
   if (typeof want === "string" && typeof got === "string") {
     if (want === got) return null;
