@@ -11,7 +11,7 @@ use serde_json::{Map, Value, json};
 use sha2::{Digest, Sha512};
 use timescale::CivilDay;
 
-use crate::catalog::CatalogError;
+use crate::{catalog::CatalogError, r2_signing::R2Signing};
 
 const DEFAULT_DOC_CACHE: &str =
     "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400";
@@ -45,15 +45,26 @@ struct DocumentRecord {
 pub struct DocumentsService {
     db_path: PathBuf,
     r2_public_base_url: Option<String>,
+    /// Set when the four R2 S3 settings are present: audio links are then signed and expire.
+    r2_signing: Option<R2Signing>,
+    /// Cache-Control for document payloads; bounded by the signed links' life when signing is on.
+    document_cache: &'static str,
 }
 
 impl DocumentsService {
     /// Service rooted at `../api/data`.
     #[must_use]
     pub fn new(data_dir: &Path) -> Self {
+        let r2_signing = discover_r2_signing(data_dir);
+        let document_cache = r2_signing.as_ref().map_or(DEFAULT_DOC_CACHE, |signing| {
+            // Built once per service and kept for the life of the process.
+            Box::leak(signing.document_cache_control().into_boxed_str())
+        });
         Self {
             db_path: data_dir.join("documents.db"),
             r2_public_base_url: discover_r2_public_base_url(data_dir),
+            r2_signing,
+            document_cache,
         }
     }
 
@@ -80,7 +91,7 @@ impl DocumentsService {
     /// Cache header for document detail routes.
     #[must_use]
     pub fn document_cache_header(&self) -> &'static str {
-        DEFAULT_DOC_CACHE
+        self.document_cache
     }
 
     /// Cache header for `/veda/daily`.
@@ -329,6 +340,13 @@ impl DocumentsService {
         };
         if raw.starts_with("http://") || raw.starts_with("https://") {
             return Value::String(raw.to_owned());
+        }
+        // The bucket is private: a recording is only reachable through a signed, expiring link.
+        if let Some(signing) = &self.r2_signing {
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map_or(0, |d| d.as_secs());
+            return Value::String(signing.signed_url(raw, now));
         }
         self.r2_public_base_url
             .as_ref()
@@ -1473,6 +1491,39 @@ fn sukta_audio_key(audio_key: Option<&str>, sukta: Option<&Value>) -> Option<Str
     }
     let sukta = sukta.and_then(Value::as_i64)?;
     Some(format!("{prefix}rigveda_{}_sukta_{sukta:03}.mp3", parts[1]))
+}
+
+/// A setting from the process environment, else from the `.env` files next to the data folder.
+fn r2_setting(name: &str, data_dir: &Path) -> Option<String> {
+    if let Ok(value) = std::env::var(name) {
+        if !value.trim().is_empty() {
+            return Some(value);
+        }
+    }
+    let api_dir = data_dir.parent()?;
+    [
+        api_dir.join(".env.local"),
+        api_dir.join(".env"),
+        api_dir.join("../../.env.local"),
+        api_dir.join("../../.env"),
+    ]
+    .iter()
+    .find_map(|path| read_env_value(path, name).filter(|v| !v.trim().is_empty()))
+}
+
+/// The signer, when `R2_S3_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
+/// are all set (what Python's `config.r2_signing()` needs).
+fn discover_r2_signing(data_dir: &Path) -> Option<R2Signing> {
+    let get = |name: &str| r2_setting(name, data_dir);
+    let hours = |name: &str| get(name).and_then(|v| v.trim().parse::<f64>().ok());
+    R2Signing::new(
+        &get("R2_S3_ENDPOINT")?,
+        &get("R2_BUCKET")?,
+        &get("R2_ACCESS_KEY_ID")?,
+        &get("R2_SECRET_ACCESS_KEY")?,
+        hours("R2_SIGNING_WINDOW_HOURS"),
+        hours("R2_SIGNED_URL_TTL_HOURS"),
+    )
 }
 
 fn discover_r2_public_base_url(data_dir: &Path) -> Option<String> {

@@ -16,6 +16,7 @@ mod midnight;
 pub mod month;
 pub mod nepal_panchanga;
 pub mod presentation;
+mod r2_signing;
 pub mod reference;
 pub mod sait;
 pub mod seasons;

@@ -256,7 +256,6 @@ impl Vara {
 #[must_use]
 #[expect(
     clippy::cast_possible_truncation,
-    clippy::cast_sign_loss,
     reason = "a Julian Day Number fits an i64 and rem_euclid(7) is 0..=6"
 )]
 pub fn vara(jd_ut: f64, zone: &Zone) -> Vara {
