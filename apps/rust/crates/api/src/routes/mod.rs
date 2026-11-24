@@ -93,6 +93,10 @@ fn siddhanta() -> Router<AppState> {
         .route("/v1/siddhanta/cheb", get(handlers::client_data::surya_cheb))
         .route("/v1/drik/index", get(handlers::client_data::drik_index))
         .route("/v1/drik/cheb", get(handlers::client_data::drik_cheb))
+        .route(
+            "/v1/shared/month/{key}",
+            get(handlers::shared_results::get_month).put(handlers::shared_results::put_month),
+        )
 }
 
 /// Health, the day and month panchanga, calendar header and date conversion.

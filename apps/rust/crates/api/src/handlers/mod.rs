@@ -19,5 +19,6 @@ pub mod panchanga;
 pub mod rashifal;
 pub mod sait;
 pub mod share;
+pub mod shared_results;
 pub mod siddhanta;
 pub mod vastu;

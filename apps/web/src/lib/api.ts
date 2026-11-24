@@ -15,6 +15,7 @@ import {
 import {
   appendLocation,
   configureApiClient,
+  sharedMonthStore,
   fetchMonthCalendarRaw,
   fetchPersonalRashifalForDay,
   fetchRashifalForDay,
@@ -431,6 +432,7 @@ configureApiClient({
   locationKey: webLocationKey,
   // Festival lists and holidays from the sky the site carries; the server answers what it cannot.
   local: makeLocalCalendar({
+    shared: sharedMonthStore,
     loadSky: async (system) => (await import("./sky")).getSky(system),
     system: () => skyChoiceOf(getCalculation()),
     enabled: skyLocalEnabled,

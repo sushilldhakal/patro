@@ -77,7 +77,7 @@ import type { Era } from "@vedic-patro/domain/calendar/era";
 import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
 import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
-import { rememberCity, type LocalCalendar } from "@vedic-patro/domain/festivals/local-calendar";
+import { rememberCity, type LocalCalendar, type SharedMonthStore } from "@vedic-patro/domain/festivals/local-calendar";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────
@@ -156,6 +156,35 @@ export function apiDataBaseUrl(): string {
 export function get<T>(path: string): Promise<T> {
   return current().get<T>(path);
 }
+
+/**
+ * Months other devices already worked out for the same place (`/v1/shared/month/{key}`): a plain
+ * lookup the CDN keeps. A device that finds none computes the month itself and offers it here; the
+ * server serves a month once three different devices sent the same bytes.
+ */
+export const sharedMonthStore: SharedMonthStore = {
+  async get(key) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+    try {
+      const res = await fetch(`${apiDataBaseUrl()}/shared/month/${key}`, { signal: controller.signal });
+      if (res.status === 404) return "miss";
+      if (!res.ok) return "error";
+      return (await res.json()) as Record<string, unknown>;
+    } catch {
+      return "error";
+    } finally {
+      clearTimeout(timer);
+    }
+  },
+  put(key, body) {
+    void fetch(`${apiDataBaseUrl()}/shared/month/${key}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body,
+    }).catch(() => {});
+  },
+};
 
 /** The app's own answer, or null (no local calendar, switched off, outside its years, or any failure). */
 async function fromLocal<T>(ask: (local: LocalCalendar) => Promise<Record<string, unknown> | null>): Promise<T | null> {
@@ -844,7 +873,7 @@ export function fetchPersonalRashifalForDay(
  * rows into its own CalendarDay (they differ in which day number they show for
  * an AD month), so this returns the raw rows.
  */
-export const fetchMonthCalendarRaw = (
+export const fetchMonthCalendarRaw = async (
   year: number,
   month: number,
   location?: LocationParams,
@@ -876,8 +905,18 @@ export const fetchMonthCalendarRaw = (
       : era === "bc"
         ? `/panchanga/bc/${year}/${month}`
         : `/panchanga/${year}/${month}`;
-  return get<MonthCalendar & { calendar: RawMonthDay[] }>(
-    appendLocation(withPanchangaCacheVersion(`${base}?${params.toString()}`), location),
+  // The lite BS grid (home, month, Abhijit, Gochar pages) is made from the sky the app carries.
+  const local =
+    era === "bs" && options?.full === false && !options?.clock
+      ? await fromLocal<MonthCalendar & { calendar: RawMonthDay[] }>((l) =>
+          l.month({ year, month, era, language, excludeInternational: options?.excludeInternational }, location),
+        )
+      : null;
+  return (
+    local ??
+    get<MonthCalendar & { calendar: RawMonthDay[] }>(
+      appendLocation(withPanchangaCacheVersion(`${base}?${params.toString()}`), location),
+    )
   );
 };
 

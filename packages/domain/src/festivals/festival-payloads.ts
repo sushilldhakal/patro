@@ -32,6 +32,9 @@ export interface FestivalPlace {
   timeZone: string;
   /** Printed in `location.name` for the national listing only. */
   name?: string;
+  /** The city a request named by id, echoed in a month's `location`. */
+  cityId?: number;
+  cityName?: string;
 }
 
 export const KATHMANDU_PLACE: FestivalPlace = { latitude: 27.7172, longitude: 85.324, timeZone: "Asia/Kathmandu", name: "Kathmandu" };

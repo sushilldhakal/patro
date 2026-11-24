@@ -13,6 +13,7 @@ import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import {
   appendLocation,
   configureApiClient,
+  sharedMonthStore,
   fetchFestivals as fetchFestivalsFor,
   fetchMonthCalendarRaw,
   fetchPersonalRashifalForDay,
@@ -477,6 +478,7 @@ configureApiClient({
   // Festival lists and holidays from the sky the app carries; the server answers what it cannot.
   // An update can turn it off with EXPO_PUBLIC_SKY_LOCAL=off.
   local: makeLocalCalendar({
+    shared: sharedMonthStore,
     loadSky: async (system) => (await import("@/lib/sky")).getSky(system),
     system: () => skyChoiceOf(getCalculation()),
     enabled: () => process.env.EXPO_PUBLIC_SKY_LOCAL !== "off",
