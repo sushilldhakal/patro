@@ -24,7 +24,11 @@ pub fn festival_location(location: &Location) -> Location {
         && location.lat.to_bits() == kathmandu.lat.to_bits()
         && location.lon.to_bits() == kathmandu.lon.to_bits()
     {
-        return kathmandu;
+        // The national listing, in the siddhanta the request asked for.
+        return Location {
+            system: location.system,
+            ..kathmandu
+        };
     }
     let round1 = |x: f64| format!("{x:.1}").parse().unwrap_or(x);
     Location {

@@ -21,7 +21,6 @@ use timescale::{CivilDay, Moment, UtcInstant, Zone};
 const RULE_VERSION: &str = "v3";
 const ENGINE_VERSION: &str = "1.0.13+a6";
 const RULES_HASH: &str = "97a63657ed87";
-const SIDDHANTA: &str = "surya_siddhanta";
 const FESTIVAL_STACK_MIN_YEAR: i32 = 60;
 const SIGNED_YEAR_MIN: i32 = -3_891_138;
 const SIGNED_YEAR_MAX: i32 = 17_053;
@@ -225,7 +224,12 @@ fn stamp(mut payload: Map<String, Value>, location: &Location) -> Value {
     payload.insert("engine_version".into(), json!(ENGINE_VERSION));
     payload.insert("rules_hash".into(), json!(RULES_HASH));
     payload.insert("location_key".into(), json!(location_key(location)));
-    payload.insert("siddhanta".into(), json!(SIDDHANTA));
+    let siddhanta = if location.system.is_drik() {
+        "drik"
+    } else {
+        "surya_siddhanta"
+    };
+    payload.insert("siddhanta".into(), json!(siddhanta));
     payload.insert("generated_at".into(), json!(now_utc_iso()));
     let hash = payload_hash(&payload);
     payload.insert("hash".into(), json!(hash));

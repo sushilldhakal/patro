@@ -51,10 +51,10 @@ for (const c of cases) {
       language: q.get("language") ?? undefined,
     };
     const make = c.kind === "festivals" ? festivalListingPayload : holidayListingPayload;
-    const local = makeLocalCalendar({ loadSky: surya, enabled: () => true });
+    const local = makeLocalCalendar({ loadSky: surya, system: () => "surya", enabled: () => true });
     const got = c.city_id
       ? await local[c.kind](query, { city_id: c.city_id })
-      : make(await surya(), c.place ?? KATHMANDU_PLACE, query);
+      : make({ sky: await surya(), surya: await surya() }, c.place ?? KATHMANDU_PLACE, query);
     assert.ok(got, "answered locally");
     delete got.generated_at;
     delete got.hash;
@@ -65,7 +65,7 @@ for (const c of cases) {
 
 test("upcoming festivals: today's window, sorted, with days_until", async () => {
   const now = Date.UTC(2026, 10, 24, 6, 0);
-  const got = upcomingFestivalsPayload(await surya(), KATHMANDU_PLACE, { days: 90, limit: 15, holidaysOnly: false, nowMs: now });
+  const got = upcomingFestivalsPayload({ sky: await surya(), surya: await surya() }, KATHMANDU_PLACE, { days: 90, limit: 15, holidaysOnly: false, nowMs: now });
   assert.ok(got);
   assert.equal(got.from, "2026-11-24");
   const list = got.festivals as { start_date: string; days_until: number; bs_start_date: string }[];
@@ -75,19 +75,56 @@ test("upcoming festivals: today's window, sorted, with days_until", async () => 
 });
 
 test("the local calendar: off switch, unknown cities and names go to the server", async () => {
-  const off = makeLocalCalendar({ loadSky: surya, enabled: () => false });
+  const off = makeLocalCalendar({ loadSky: surya, system: () => "surya", enabled: () => false });
   assert.equal(await off.holidays({ year: 2083, era: "bs" }), null);
-  const on = makeLocalCalendar({ loadSky: surya, enabled: () => true });
+  const on = makeLocalCalendar({ loadSky: surya, system: () => "surya", enabled: () => true });
   assert.equal(await on.holidays({ year: 2083, era: "bs" }, { city_id: 42 }), null);
   assert.equal(await on.holidays({ year: 2083, era: "bs" }, { city: "Kathmandu" }), null);
   assert.equal(await on.holidays({ year: 2083, era: "bs" }, { lat: 27.7 }), null);
-  const broken = makeLocalCalendar({ loadSky: () => Promise.reject(new Error("no file")), enabled: () => true });
+  const broken = makeLocalCalendar({ loadSky: () => Promise.reject(new Error("no file")), system: () => "surya", enabled: () => true });
   assert.equal(await broken.holidays({ year: 2083, era: "bs" }), null);
 });
 
 test("years the bundled sky cannot answer go to the server", async () => {
-  const s = await surya();
+  const s = { sky: await surya(), surya: await surya() };
   assert.equal(festivalListingPayload(s, KATHMANDU_PLACE, { year: 2160, era: "bs" }), null);
   assert.equal(festivalListingPayload(s, KATHMANDU_PLACE, { year: 1900, era: "bs" }), null);
   assert.equal(festivalListingPayload(s, KATHMANDU_PLACE, { year: 100, era: "bbs" }), null);
 });
+
+// Drik: lunar festivals on the Drik sky's tithis (owner, 2026-11-24). Oracle: production Python,
+// which already honoured `siddhanta=drik`; it pins Padmini and Parama to Jestha, while the owner's
+// rule gives them to the adhik month, so those two rows are left out on both sides.
+const drikCases = JSON.parse(readFileSync(new URL("./fixtures/festival-routes-drik.json", import.meta.url), "utf8")) as {
+  path: string;
+  response: Record<string, unknown>;
+}[];
+const ADHIK_OWNED = new Set(["padmini-ekadashi", "parama-ekadashi"]);
+let drikSky: Sky | null = null;
+for (const c of drikCases) {
+  test(`drik ${c.path} matches the server`, async () => {
+    if (!drikSky) {
+      drikSky = new Sky("drik", io);
+      await drikSky.open();
+    }
+    const q = new URLSearchParams(c.path.split("?")[1]);
+    const place = q.has("lat")
+      ? { latitude: Number(q.get("lat")), longitude: Number(q.get("lon")), timeZone: q.get("timezone") ?? "" }
+      : KATHMANDU_PLACE;
+    const kind = c.path.includes("/holidays") ? "holidays" : "festivals";
+    const make = kind === "holidays" ? holidayListingPayload : festivalListingPayload;
+    const got = make({ sky: drikSky, surya: await surya() }, place, {
+      year: Number(q.get("year")),
+      era: q.get("era") ?? "bs",
+      language: q.get("language") ?? undefined,
+    });
+    assert.ok(got);
+    delete got.generated_at;
+    delete got.hash;
+    const strip = (p: Record<string, unknown>) => {
+      const rows = (p[kind] as { id: string }[]).filter((f) => !ADHIK_OWNED.has(f.id));
+      return { ...p, [kind]: rows, count: rows.length };
+    };
+    assert.deepEqual(strip(got), strip(c.response));
+  });
+}

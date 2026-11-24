@@ -17,10 +17,11 @@ calendar routes stay only for app versions that still call them (1.2.2), then ar
 | Festival routes (`/nepal/festivals`, `/nepal/holidays`, `/nepal/festivals/upcoming`) | calculated | made on the client (`festival-payloads.ts`, byte-equal to the server's JSON), wired in both apps through `api-client` `local`, with the off switch |
 | Other screens (day, month, year, at-time, sankranti, sait…) | call the server | **not switched**: needs the day/month/year payload builders (`patro` + `panchanga` crates, about 20k lines) ported |
 
-**Note (festival lists and the system):** the server's festival routes ignore `siddhanta` and always
-compute on the Surya Siddhanta sky (`SIDDHANTA = "surya_siddhanta"` in `patro/src/festivals.rs`).
-The client does the same so nothing changes for users. Computing Drik festivals on Drik tithis would
-move dozens of dates a day each year (Fulpati 2026 to 18 Oct, for one); that is the owner's call.
+**Festival lists and the system (owner, 2026-11-24):** in Drik, lunar festivals follow Drik tithis.
+The Rust server had lost this: `festival_location` swapped an exact-Kathmandu request for
+`Location::kathmandu()` (always Surya) and the payload printed a fixed `siddhanta`. Python honoured
+it. Both fixed; the client computes lunar rules on the chosen system's sky (another ayanamsha goes to
+the server). The BS civil grid and solar rules stay on the Surya table in both systems.
 
 ## Steps, in order
 

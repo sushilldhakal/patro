@@ -3,8 +3,8 @@
 // a screen cannot tell which one answered. Only what the bundled sky covers is answered here;
 // anything else returns null and the caller asks the server.
 //
-// Festival lists are computed on the Surya Siddhanta sky in both systems, as the server does
-// (its festival routes ignore `siddhanta`).
+// Lunar festivals follow the chosen system's tithis (Drik on the Drik sky, owner 2026-11-24); the BS
+// civil grid and the solar rules stay on the Surya Siddhanta table in both, as on the server.
 import { bsDateOf, bsMonth, civilFromJdn, civilJdn, isoFromJdn, jdnFromIso, localJdn, type PatroObserver } from "../astronomy/lunar-month";
 import type { Sky } from "../astronomy/sky";
 import {
@@ -23,7 +23,6 @@ const OVERRIDES = (overridesBook as { bs_years: Record<string, Record<string, Ru
 const RULE_VERSION = "v3";
 const ENGINE_VERSION = "1.0.13+a6";
 const RULES_HASH = "97a63657ed87";
-const SIDDHANTA = "surya_siddhanta";
 const FESTIVAL_STACK_MIN_YEAR = 60;
 
 /** A place as the routes read it. Without one, the national (Kathmandu) listing. */
@@ -40,6 +39,12 @@ export const KATHMANDU_PLACE: FestivalPlace = { latitude: 27.7172, longitude: 85
 /** The BS years a phone answers by itself: the bundled years, less one at each end for the lunar years around them. */
 export const LOCAL_BS_YEARS: [number, number] = [1951, 2149];
 
+/** The system's sky (lunar rules) and the Surya Siddhanta sky (solar rules' sankranti fallback); the same object for Surya. */
+export interface FestivalSkies {
+  sky: Sky;
+  surya: Sky;
+}
+
 function observerFor(sky: Sky, place: FestivalPlace): PatroObserver {
   return festivalObserver({ sky, latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone });
 }
@@ -53,18 +58,19 @@ function locationJson(o: PatroObserver): Record<string, unknown> {
 }
 
 const locationKey = (o: PatroObserver) => `${o.latitude.toFixed(4)}_${o.longitude.toFixed(4)}_${o.timeZone}`;
+const siddhantaOf = (o: PatroObserver) => (o.sky.system === "drik" ? "drik" : "surya_siddhanta");
 
 // A BS year's festivals take a few hundred milliseconds; screens ask for the same few years often.
 const yearCache = new Map<string, Row[]>();
-function bsYearRows(sky: Sky, o: PatroObserver, bsYear: number): Row[] {
-  const key = `${bsYear}|${locationKey(o)}`;
+function bsYearRows(skies: FestivalSkies, o: PatroObserver, bsYear: number): Row[] {
+  const key = `${bsYear}|${locationKey(o)}|${o.sky.system}`;
   const hit = yearCache.get(key);
   if (hit) {
     yearCache.delete(key);
     yearCache.set(key, hit);
     return hit;
   }
-  const rows = generateBsFestivals({ observer: o, surya: sky }, bsYear) as Row[];
+  const rows = generateBsFestivals({ observer: o, surya: skies.surya }, bsYear) as Row[];
   yearCache.set(key, rows);
   while (yearCache.size > 12) yearCache.delete(yearCache.keys().next().value as string);
   return rows;
@@ -148,7 +154,7 @@ function stamp(payload: Record<string, unknown>, o: PatroObserver): Record<strin
     engine_version: ENGINE_VERSION,
     rules_hash: RULES_HASH,
     location_key: locationKey(o),
-    siddhanta: SIDDHANTA,
+    siddhanta: siddhantaOf(o),
     generated_at: new Date().toISOString(),
     hash: "local",
   };
@@ -193,8 +199,8 @@ function holidayOverrideEntry(id: string, o: Rule): Row | null {
   return row;
 }
 
-function bsHolidayRows(sky: Sky, o: PatroObserver, bsYear: number): Row[] {
-  const merged: [string, Row][] = bsYearRows(sky, o, bsYear).filter(isListedHoliday).map((r) => [r.id, r]);
+function bsHolidayRows(skies: FestivalSkies, o: PatroObserver, bsYear: number): Row[] {
+  const merged: [string, Row][] = bsYearRows(skies, o, bsYear).filter(isListedHoliday).map((r) => [r.id, r]);
   for (const [id, ov] of Object.entries(OVERRIDES[String(bsYear)] ?? {})) {
     const omit = ov.omit;
     if (omit !== undefined && omit !== null && omit !== false && omit !== 0 && omit !== "") {
@@ -237,14 +243,14 @@ function localYear(era: string, year: number): boolean {
 }
 
 /** `/nepal/festivals` (era bs or ad), or null when the server should answer. */
-export function festivalListingPayload(sky: Sky, place: FestivalPlace, q: ListingQuery): Record<string, unknown> | null {
+export function festivalListingPayload(skies: FestivalSkies, place: FestivalPlace, q: ListingQuery): Record<string, unknown> | null {
   if (!localYear(q.era, q.year)) return null;
   if (q.month !== undefined && !(q.month >= 1 && q.month <= 12)) return null;
   const tradition = normalizeTradition(q.tradition);
   if (tradition === null) return null;
-  const o = observerFor(sky, place);
+  const o = observerFor(skies.sky, place);
   if (q.era === "ad") {
-    let rows = mergeBsYearRows([q.year + 56, q.year + 57], (y) => bsYearRows(sky, o, y), (r) => touchesAdYear(r, q.year));
+    let rows = mergeBsYearRows([q.year + 56, q.year + 57], (y) => bsYearRows(skies, o, y), (r) => touchesAdYear(r, q.year));
     if (q.month !== undefined) rows = touchesAdMonth(rows, q.year, q.month);
     const festivals = applyTradition(withBsDates(rows), tradition);
     const out: Record<string, unknown> = { ad_year: q.year, era: "ad", count: festivals.length, festivals };
@@ -254,7 +260,7 @@ export function festivalListingPayload(sky: Sky, place: FestivalPlace, q: Listin
   if (q.year < FESTIVAL_STACK_MIN_YEAR) return null;
   const range = bsYearRange(q.year);
   if (!range) return null;
-  const rows = bsYearRows(sky, o, q.year);
+  const rows = bsYearRows(skies, o, q.year);
   const picked = q.month !== undefined ? inBsMonth(rows, q.year, q.month) : rows;
   const festivals = applyTradition(withBsDates(picked), tradition);
   const out: Record<string, unknown> = stamp(
@@ -276,19 +282,19 @@ export function festivalListingPayload(sky: Sky, place: FestivalPlace, q: Listin
 }
 
 /** `/nepal/holidays` (era bs or ad), or null when the server should answer. */
-export function holidayListingPayload(sky: Sky, place: FestivalPlace, q: ListingQuery): Record<string, unknown> | null {
+export function holidayListingPayload(skies: FestivalSkies, place: FestivalPlace, q: ListingQuery): Record<string, unknown> | null {
   if (!localYear(q.era, q.year)) return null;
   if (q.month !== undefined && !(q.month >= 1 && q.month <= 12)) return null;
-  const o = observerFor(sky, place);
+  const o = observerFor(skies.sky, place);
   if (q.era === "ad") {
-    let rows = mergeBsYearRows([q.year + 56, q.year + 57], (y) => bsHolidayRows(sky, o, y), (r) => touchesAdYear(r, q.year));
+    let rows = mergeBsYearRows([q.year + 56, q.year + 57], (y) => bsHolidayRows(skies, o, y), (r) => touchesAdYear(r, q.year));
     if (q.month !== undefined) rows = touchesAdMonth(rows, q.year, q.month);
     const holidays = withBsDates(rows);
     return rendered({ ad_year: q.year, era: "ad", count: holidays.length, holidays }, q);
   }
   const range = bsYearRange(q.year);
   if (!range || q.year < FESTIVAL_STACK_MIN_YEAR) return null;
-  let rows = bsHolidayRows(sky, o, q.year);
+  let rows = bsHolidayRows(skies, o, q.year);
   if (q.month !== undefined) rows = inBsMonth(rows, q.year, q.month);
   const holidays = withBsDates(rows);
   return rendered(
@@ -305,7 +311,7 @@ export function holidayListingPayload(sky: Sky, place: FestivalPlace, q: Listing
 
 /** `/nepal/festivals/upcoming` from today at the place, or null when the server should answer. */
 export function upcomingFestivalsPayload(
-  sky: Sky,
+  skies: FestivalSkies,
   place: FestivalPlace,
   q: { days: number; limit: number; holidaysOnly: boolean; nowMs?: number },
 ): Record<string, unknown> | null {
@@ -313,11 +319,11 @@ export function upcomingFestivalsPayload(
   const start = localJdn(nowJd, place.timeZone);
   const y = civilFromJdn(start).year;
   if (!localYear("ad", y) || !localYear("ad", y + 1)) return null;
-  const o = observerFor(sky, place);
+  const o = observerFor(skies.sky, place);
   const windowEnd = start + q.days;
   const rows = mergeBsYearRows(
     [y + 56, y + 57, y + 58],
-    (bs) => bsYearRows(sky, o, bs),
+    (bs) => bsYearRows(skies, o, bs),
     (r) => {
       const s = span(r);
       if (!s || s[1] < start || s[0] > windowEnd) return false;

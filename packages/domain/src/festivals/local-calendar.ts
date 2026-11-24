@@ -2,8 +2,8 @@
 // (see festival-payloads.ts). An app builds one with its own sky loader and off switch and hands it
 // to the API client; every method returns null rather than throwing, and null means "ask the server".
 // The payload code and the rule book load on first use (a dynamic import), never at launch.
-import type { Sky } from "../astronomy/sky";
-import type { FestivalPlace } from "./festival-payloads";
+import type { Sky, SkySystem } from "../astronomy/sky";
+import type { FestivalPlace, FestivalSkies } from "./festival-payloads";
 
 /** The place fields a request carries (the API client's LocationParams). */
 export interface LocalPlaceQuery {
@@ -32,8 +32,13 @@ export interface LocalCalendar {
 }
 
 export interface LocalCalendarOptions {
-  /** The app's Surya sky (festival lists are Surya in both systems, as on the server). */
-  loadSky: () => Promise<Sky>;
+  /** The app's sky of one system, opened once. */
+  loadSky: (system: SkySystem) => Promise<Sky>;
+  /**
+   * The system the request is for (read on every call): "surya", "drik" (our own Drik sky is
+   * Lahiri), or null for anything the bundled skies do not hold (another ayanamsha), which the server answers.
+   */
+  system: () => SkySystem | null;
   /** Read on every call: false sends every request to the server (the kill switch). */
   enabled: () => boolean;
   /** For a breadcrumb; never rethrown. */
@@ -83,23 +88,33 @@ function placeOf(location: LocalPlaceQuery | undefined, kathmandu: FestivalPlace
 export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar {
   const run = async (
     location: LocalPlaceQuery | undefined,
-    make: (m: typeof import("./festival-payloads"), sky: Sky, place: FestivalPlace) => Record<string, unknown> | null,
+    make: (m: typeof import("./festival-payloads"), skies: FestivalSkies, place: FestivalPlace) => Record<string, unknown> | null,
   ): Promise<Record<string, unknown> | null> => {
     if (!options.enabled()) return null;
     try {
       const m = await import("./festival-payloads");
       const place = placeOf(location, m.KATHMANDU_PLACE);
       if (!place) return null;
-      const sky = await options.loadSky();
-      return make(m, sky, place);
+      const system = options.system();
+      if (system === null) return null;
+      const surya = await options.loadSky("surya");
+      const sky = system === "surya" ? surya : await options.loadSky(system);
+      return make(m, { sky, surya }, place);
     } catch (error) {
       options.onError?.(error);
       return null;
     }
   };
   return {
-    festivals: (q, location) => run(location, (m, sky, place) => m.festivalListingPayload(sky, place, q)),
-    holidays: (q, location) => run(location, (m, sky, place) => m.holidayListingPayload(sky, place, q)),
-    upcoming: (q, location) => run(location, (m, sky, place) => m.upcomingFestivalsPayload(sky, place, q)),
+    festivals: (q, location) => run(location, (m, skies, place) => m.festivalListingPayload(skies, place, q)),
+    holidays: (q, location) => run(location, (m, skies, place) => m.holidayListingPayload(skies, place, q)),
+    upcoming: (q, location) => run(location, (m, skies, place) => m.upcomingFestivalsPayload(skies, place, q)),
   };
+}
+
+/** The bundled sky for a calculation key (`calculationKey()`): Surya, Lahiri Drik, or null for any other ayanamsha. */
+export function skySystemOf(calculationKey: string): SkySystem | null {
+  if (calculationKey === "surya_siddhanta") return "surya";
+  if (calculationKey === "drik") return "drik";
+  return null;
 }
