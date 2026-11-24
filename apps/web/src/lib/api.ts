@@ -133,8 +133,7 @@ import type {
   CalendarDay,
 } from "@vedic-patro/api-client";
 import { tFor } from "@vedic-patro/i18n/runtime";
-import { makeLocalCalendar, skySystemOf } from "@vedic-patro/domain/festivals/local-calendar";
-import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
+import { makeLocalCalendar, skyChoiceOf } from "@vedic-patro/domain/festivals/local-calendar";
 import { skyLocalEnabled } from "./sky-day";
 export type {
   LocationParams,
@@ -433,7 +432,7 @@ configureApiClient({
   // Festival lists and holidays from the sky the site carries; the server answers what it cannot.
   local: makeLocalCalendar({
     loadSky: async (system) => (await import("./sky")).getSky(system),
-    system: () => skySystemOf(calculationKey()),
+    system: () => skyChoiceOf(getCalculation()),
     enabled: skyLocalEnabled,
   }),
 });

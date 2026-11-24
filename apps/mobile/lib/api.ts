@@ -130,8 +130,7 @@ import type {
   CalendarDay,
   MonthBrowseEra,
 } from "@vedic-patro/api-client";
-import { makeLocalCalendar, skySystemOf } from "@vedic-patro/domain/festivals/local-calendar";
-import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
+import { makeLocalCalendar, skyChoiceOf } from "@vedic-patro/domain/festivals/local-calendar";
 export type {
   LocationParams,
   JanmaRashi,
@@ -479,7 +478,7 @@ configureApiClient({
   // An update can turn it off with EXPO_PUBLIC_SKY_LOCAL=off.
   local: makeLocalCalendar({
     loadSky: async (system) => (await import("@/lib/sky")).getSky(system),
-    system: () => skySystemOf(calculationKey()),
+    system: () => skyChoiceOf(getCalculation()),
     enabled: () => process.env.EXPO_PUBLIC_SKY_LOCAL !== "off",
   }),
 });

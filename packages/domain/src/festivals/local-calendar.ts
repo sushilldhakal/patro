@@ -2,6 +2,7 @@
 // (see festival-payloads.ts). An app builds one with its own sky loader and off switch and hands it
 // to the API client; every method returns null rather than throwing, and null means "ask the server".
 // The payload code and the rule book load on first use (a dynamic import), never at launch.
+import { drikAyanamshaOf, type DrikAyanamsha } from "../astronomy/ayanamsha-modes";
 import type { Sky, SkySystem } from "../astronomy/sky";
 import type { FestivalPlace, FestivalSkies } from "./festival-payloads";
 
@@ -34,11 +35,8 @@ export interface LocalCalendar {
 export interface LocalCalendarOptions {
   /** The app's sky of one system, opened once. */
   loadSky: (system: SkySystem) => Promise<Sky>;
-  /**
-   * The system the request is for (read on every call): "surya", "drik" (our own Drik sky is
-   * Lahiri), or null for anything the bundled skies do not hold (another ayanamsha), which the server answers.
-   */
-  system: () => SkySystem | null;
+  /** The calculation the request is for, read on every call (the app's choice); null sends it to the server. */
+  system: () => { system: SkySystem; ayanamsha: DrikAyanamsha } | null;
   /** Read on every call: false sends every request to the server (the kill switch). */
   enabled: () => boolean;
   /** For a breadcrumb; never rethrown. */
@@ -95,10 +93,10 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
       const m = await import("./festival-payloads");
       const place = placeOf(location, m.KATHMANDU_PLACE);
       if (!place) return null;
-      const system = options.system();
-      if (system === null) return null;
+      const calc = options.system();
+      if (calc === null) return null;
       const surya = await options.loadSky("surya");
-      const sky = system === "surya" ? surya : await options.loadSky(system);
+      const sky = calc.system === "surya" ? surya : (await options.loadSky("drik")).withAyanamsha(calc.ayanamsha);
       return make(m, { sky, surya }, place);
     } catch (error) {
       options.onError?.(error);
@@ -112,9 +110,10 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
   };
 }
 
-/** The bundled sky for a calculation key (`calculationKey()`): Surya, Lahiri Drik, or null for any other ayanamsha. */
-export function skySystemOf(calculationKey: string): SkySystem | null {
-  if (calculationKey === "surya_siddhanta") return "surya";
-  if (calculationKey === "drik") return "drik";
-  return null;
+/** The app's calculation (`getCalculation()`) as a sky choice: Surya, or Drik in any ayanamsha the apps offer. */
+export function skyChoiceOf(calculation: { system: string; ayanamsha: string }): { system: SkySystem; ayanamsha: DrikAyanamsha } | null {
+  if (calculation.system === "surya_siddhanta") return { system: "surya", ayanamsha: "lahiri" };
+  if (calculation.system !== "drik") return null;
+  const ayanamsha = drikAyanamshaOf(calculation.ayanamsha);
+  return ayanamsha ? { system: "drik", ayanamsha } : null;
 }

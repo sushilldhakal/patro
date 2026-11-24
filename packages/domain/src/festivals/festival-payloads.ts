@@ -63,7 +63,7 @@ const siddhantaOf = (o: PatroObserver) => (o.sky.system === "drik" ? "drik" : "s
 // A BS year's festivals take a few hundred milliseconds; screens ask for the same few years often.
 const yearCache = new Map<string, Row[]>();
 function bsYearRows(skies: FestivalSkies, o: PatroObserver, bsYear: number): Row[] {
-  const key = `${bsYear}|${locationKey(o)}|${o.sky.system}`;
+  const key = `${bsYear}|${locationKey(o)}|${o.sky.system}|${o.sky.ayanamsha}`;
   const hit = yearCache.get(key);
   if (hit) {
     yearCache.delete(key);

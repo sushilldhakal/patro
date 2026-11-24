@@ -9,10 +9,18 @@
 // When there is neither a stored window nor a reachable server, the built-in fallback answers:
 // the Surya Siddhanta's own formulas (exact, any date) or our own approximate Drik series.
 //
+// The Drik files hold no ayanamsha of their own (each stores longitude less a placeholder written in
+// its header, so the tropical place is exact). The reader's ayanamsha is applied here, as the Swiss
+// Ephemeris applies a sidereal mode: `sky.withAyanamsha("kp")`. Boundaries that do not depend on it
+// (tithi, karana, yoga, phases) are read from the index for every mode; those that do (nakshatra,
+// pada, the Moon's rashi, the Sun's nakshatra, sankranti, degree) are read from the index for
+// Lahiri, the mode it was solved in, and solved from positions for any other.
+//
 // Kundali, dashas, muhurta and festivals are separate products and not part of this module.
 //
 // The module does no input or output of its own. The app passes in a `SkyIo` (bundled files,
 // a cache, and a way to fetch), so the same logic runs on the web and on a phone.
+import { ayanamshaFor, type DrikAyanamsha } from "./ayanamsha-modes";
 import { chebLastJd, chebPositionsAt, chebScalars, parseChebTable, type ChebScalars, type ChebTable } from "./chebyshev";
 import { drikAnalyticSource } from "./drik-analytic";
 import { drikFrame } from "./drik-source";
@@ -79,8 +87,24 @@ function makeWindow(origin: SkyOrigin, indexBytes: Uint8Array, chebBytes: Uint8A
 const SERVER_PATH: Record<SkySystem, string> = { surya: "/v1/siddhanta", drik: "/v1/drik" };
 
 /** One system's sky. */
+/** Kinds whose boundaries move with the ayanamsha: the body they follow and the size of one span. */
+const SIDEREAL_KINDS: Partial<Record<VidxKind, { body: 0 | 1; count: number }>> = {
+  nakshatra: { body: 1, count: 27 },
+  pada: { body: 1, count: 108 },
+  moonRashi: { body: 1, count: 12 },
+  sunNakshatra: { body: 0, count: 27 },
+  sankranti: { body: 0, count: 12 },
+  sunDegree: { body: 0, count: 360 },
+};
+
+const wrap = (deg: number) => ((deg % 360) + 360) % 360;
+const signed = (deg: number) => wrap(deg + 180) - 180;
+
 export class Sky {
   readonly system: SkySystem;
+  /** The Drik ayanamsha this view reads in (Lahiri unless `withAyanamsha` says otherwise). */
+  readonly ayanamsha: DrikAyanamsha = "lahiri";
+  private views?: Map<DrikAyanamsha, Sky>;
   private readonly io: SkyIo;
   private readonly options: { timeoutMs?: number };
   private readonly windows: Window[] = [];
@@ -91,6 +115,55 @@ export class Sky {
     this.system = system;
     this.io = io;
     this.options = options;
+  }
+
+  /**
+   * This sky read in another Drik ayanamsha: the same loaded data, a view of its own (so caches keyed
+   * by the sky stay per mode). The Surya Siddhanta has its own ayanamsha and ignores the choice.
+   */
+  withAyanamsha(mode: DrikAyanamsha): Sky {
+    if (this.system !== "drik" || mode === this.ayanamsha) return this;
+    const base = (Object.getPrototypeOf(this) instanceof Sky ? Object.getPrototypeOf(this) : this) as Sky;
+    if (mode === "lahiri") return base;
+    base.views ??= new Map();
+    let view = base.views.get(mode);
+    if (!view) {
+      view = Object.create(base, { ayanamsha: { value: mode, enumerable: true } }) as Sky;
+      base.views.set(mode, view);
+    }
+    return view;
+  }
+
+  /** Whether `kind` must be solved from positions in this view (an ayanamsha the index was not solved in). */
+  private solved(kind: VidxKind): { body: 0 | 1; count: number } | null {
+    return this.system === "drik" && this.ayanamsha !== "lahiri" ? (SIDEREAL_KINDS[kind] ?? null) : null;
+  }
+
+  /** The instant after (dir 1) or before (dir -1) `jd` at which `body` reaches `target` degrees. */
+  private reach(body: 0 | 1, target: number, jd: number, dir: 1 | -1): number | null {
+    let p = this.positionsAt(jd);
+    if (!p) return null;
+    const speed0 = Math.max(p.speed[body], body === 1 ? 10 : 0.9);
+    let gap = dir === 1 ? wrap(target - p.longitude[body]) : -wrap(p.longitude[body] - target);
+    if (dir === 1 && gap === 0) gap = 360;
+    let t = jd + gap / speed0;
+    for (let i = 0; i < 12; i += 1) {
+      p = this.positionsAt(t);
+      if (!p) return null;
+      const diff = signed(target - p.longitude[body]);
+      t += diff / Math.max(p.speed[body], 0.1);
+      if (Math.abs(diff) < 1e-9) break;
+    }
+    return t;
+  }
+
+  private solvedNext(spec: { body: 0 | 1; count: number }, jd: number): VidxCrossing | null {
+    const p = this.positionsAt(jd);
+    if (!p) return null;
+    const size = 360 / spec.count;
+    const next = (Math.floor(wrap(p.longitude[spec.body]) / size) + 1) % spec.count;
+    const at = this.reach(spec.body, next * size, jd, 1);
+    return at === null ? null : { jd: at, multiple: next };
   }
 
   /** Opens the files shipped in the app. Call once; it is cheap when they are missing. */
@@ -180,11 +253,12 @@ export class Sky {
   /** Positions at a Julian Day (UT): stored data when there is some, else the fallback. */
   positionsAt(jd: number): SiddhantaPositions | null {
     const w = this.windowFor(jd, 0);
-    if (w) {
-      const stored = chebPositionsAt(w.cheb, jd, w.scalars);
-      if (stored) return stored;
-    }
-    return this.fallback.positionsAt(jd);
+    const raw = (w ? chebPositionsAt(w.cheb, jd, w.scalars) : null) ?? this.fallback.positionsAt(jd);
+    if (!raw || this.system !== "drik") return raw;
+    // Drik: the tropical place is longitude + the file's placeholder; take off the reader's ayanamsha.
+    const ayanamsha = ayanamshaFor(this.ayanamsha, jd);
+    const shift = raw.ayanamsha - ayanamsha;
+    return { ...raw, longitude: raw.longitude.map((l) => wrap(l + shift)), ayanamsha };
   }
 
   private get fallback(): PositionSource {
@@ -206,6 +280,8 @@ export class Sky {
 
   /** The first boundary of `kind` after `jd`: stored when it can be, else found from positions. */
   nextBoundary(kind: VidxKind, jd: number): VidxCrossing | null {
+    const spec = this.solved(kind);
+    if (spec) return this.solvedNext(spec, jd);
     const stored = this.indexAt(jd)?.nextEvent(kind, jd);
     if (stored) return stored;
     // Without stored data, tithi and nakshatra can still be found from positions.
@@ -218,22 +294,48 @@ export class Sky {
 
   /** The last boundary of `kind` at or before `jd`, from stored data. */
   prevBoundary(kind: VidxKind, jd: number): VidxCrossing | null {
+    const spec = this.solved(kind);
+    if (spec) {
+      const p = this.positionsAt(jd);
+      if (!p) return null;
+      const size = 360 / spec.count;
+      const span = Math.floor(wrap(p.longitude[spec.body]) / size) % spec.count;
+      const at = this.reach(spec.body, span * size, jd, -1);
+      return at === null ? null : { jd: at, multiple: span };
+    }
     return this.indexAt(jd)?.prevEvent(kind, jd) ?? null;
   }
 
   /** The first boundary after `jd` at which `kind` enters span `multiple`, from stored data. */
   nextEntry(kind: VidxKind, multiple: number, jd: number): VidxCrossing | null {
+    const spec = this.solved(kind);
+    if (spec) {
+      const at = this.reach(spec.body, (multiple % spec.count) * (360 / spec.count), jd, 1);
+      return at === null ? null : { jd: at, multiple: multiple % spec.count };
+    }
     return this.indexAt(jd)?.nextEntry(kind, multiple, jd) ?? null;
   }
 
   /** The span of `kind` holding `jd` (tithi 0-29, nakshatra 0-26, ...), from stored data. */
   spanAt(kind: VidxKind, jd: number): number | null {
+    const spec = this.solved(kind);
+    if (spec) {
+      const p = this.positionsAt(jd);
+      return p ? Math.floor(wrap(p.longitude[spec.body]) / (360 / spec.count)) % spec.count : null;
+    }
     return this.indexAt(jd)?.spanAt(kind, jd) ?? null;
   }
 
   /** Every boundary of `kind` with `from < jd <= to`, reading across stored windows. */
   eventsBetween(kind: VidxKind, from: number, to: number): VidxCrossing[] {
     const out: VidxCrossing[] = [];
+    const spec = this.solved(kind);
+    if (spec) {
+      for (let at = this.solvedNext(spec, from); at && at.jd <= to && out.length < 4000; at = this.solvedNext(spec, at.jd + 1e-7)) {
+        out.push(at);
+      }
+      return out;
+    }
     let cursor = from;
     for (let guard = 0; guard < 64 && cursor < to; guard += 1) {
       const w = this.windowFor(cursor, EVENT_MARGIN_DAYS);

@@ -51,7 +51,7 @@ for (const c of cases) {
       language: q.get("language") ?? undefined,
     };
     const make = c.kind === "festivals" ? festivalListingPayload : holidayListingPayload;
-    const local = makeLocalCalendar({ loadSky: surya, system: () => "surya", enabled: () => true });
+    const local = makeLocalCalendar({ loadSky: surya, system: () => ({ system: "surya", ayanamsha: "lahiri" }), enabled: () => true });
     const got = c.city_id
       ? await local[c.kind](query, { city_id: c.city_id })
       : make({ sky: await surya(), surya: await surya() }, c.place ?? KATHMANDU_PLACE, query);
@@ -75,13 +75,13 @@ test("upcoming festivals: today's window, sorted, with days_until", async () => 
 });
 
 test("the local calendar: off switch, unknown cities and names go to the server", async () => {
-  const off = makeLocalCalendar({ loadSky: surya, system: () => "surya", enabled: () => false });
+  const off = makeLocalCalendar({ loadSky: surya, system: () => ({ system: "surya", ayanamsha: "lahiri" }), enabled: () => false });
   assert.equal(await off.holidays({ year: 2083, era: "bs" }), null);
-  const on = makeLocalCalendar({ loadSky: surya, system: () => "surya", enabled: () => true });
+  const on = makeLocalCalendar({ loadSky: surya, system: () => ({ system: "surya", ayanamsha: "lahiri" }), enabled: () => true });
   assert.equal(await on.holidays({ year: 2083, era: "bs" }, { city_id: 42 }), null);
   assert.equal(await on.holidays({ year: 2083, era: "bs" }, { city: "Kathmandu" }), null);
   assert.equal(await on.holidays({ year: 2083, era: "bs" }, { lat: 27.7 }), null);
-  const broken = makeLocalCalendar({ loadSky: () => Promise.reject(new Error("no file")), system: () => "surya", enabled: () => true });
+  const broken = makeLocalCalendar({ loadSky: () => Promise.reject(new Error("no file")), system: () => ({ system: "surya", ayanamsha: "lahiri" }), enabled: () => true });
   assert.equal(await broken.holidays({ year: 2083, era: "bs" }), null);
 });
 
