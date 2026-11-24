@@ -1,10 +1,10 @@
-//! Batches of stored astronomy for clients: `GET /v1/{siddhanta,drik}/{index,cheb}`.
+//! Batches of stored astronomy for clients: `GET /v1/{siddhanta,drik}/cheb`.
 //!
 //! The apps carry a window of years themselves (BS 1950 to 2150). For any year outside it
 //! they ask here, a few years at a time, and keep the answer. The server does no maths: the
-//! index slice is a copy of stored boundaries (`Index::slice`), the Chebyshev slice a copy of
-//! stored segments (`ChebTable::slice`). Both are in the same formats as the files the apps
-//! carry, so one reader serves both.
+//! slice is a copy of stored segments (`ChebTable::slice`), in the same format as the file the
+//! apps carry, so one reader serves both. It holds graha positions only; the apps work out every
+//! boundary from them.
 //!
 //! `from_jd` and `to_jd` are Julian Days (UT), at most 4000 days apart. 501 when the file is
 //! not loaded, 400 for a bad window, 404 when the window is outside the file.
@@ -57,28 +57,6 @@ fn octets(bytes: Vec<u8>) -> Response {
         })
 }
 
-fn index_slice(state: &AppState, sys: Sys, q: &Query) -> Response {
-    let (from, to) = match window(q) {
-        Ok(w) => w,
-        Err(e) => return detail(StatusCode::BAD_REQUEST, &e),
-    };
-    let index = match sys {
-        Sys::Surya => astronomy::surya_index(),
-        Sys::Drik => state
-            .drik
-            .as_ref()
-            .and_then(|files| files.system.drik())
-            .and_then(|sky| sky.index()),
-    };
-    let Some(index) = index else {
-        return detail(StatusCode::NOT_IMPLEMENTED, "event index is not loaded");
-    };
-    match index.slice(from, to) {
-        Ok(bytes) => octets(bytes),
-        Err(_) => detail(StatusCode::NOT_FOUND, "window is outside the event index"),
-    }
-}
-
 fn cheb_slice(state: &AppState, sys: Sys, q: &Query) -> Response {
     let (from, to) = match window(q) {
         Ok(w) => w,
@@ -98,16 +76,6 @@ fn cheb_slice(state: &AppState, sys: Sys, q: &Query) -> Response {
             "window is outside the chebyshev file",
         ),
     }
-}
-
-/// `GET /v1/siddhanta/index`: Surya Siddhanta boundaries.
-pub async fn surya_index(AxumQuery(q): AxumQuery<Query>, State(s): State<AppState>) -> Response {
-    index_slice(&s, Sys::Surya, &q)
-}
-
-/// `GET /v1/drik/index`: Drik boundaries.
-pub async fn drik_index(AxumQuery(q): AxumQuery<Query>, State(s): State<AppState>) -> Response {
-    index_slice(&s, Sys::Drik, &q)
 }
 
 /// `GET /v1/siddhanta/cheb`: Surya Siddhanta graha positions.

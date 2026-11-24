@@ -2,9 +2,7 @@
 
 use astronomy::{
     System,
-    angles::Anga,
     engine::{moon_longitude, sun_moon_longitudes},
-    events::anga_index_at,
 };
 use timescale::{Moment, Zone};
 
@@ -114,12 +112,10 @@ pub fn tithi(system: System, jd_ut: f64) -> Tithi {
     }
 }
 
-/// The tithi number (1–30) at `jd_ut`: from the stored boundaries when the system has
-/// them (one search), from the positions otherwise.
+/// The tithi number (1–30) at `jd_ut`.
 #[must_use]
 pub fn tithi_number(system: System, jd_ut: f64) -> u32 {
-    anga_index_at(&system, Anga::Tithi, jd_ut)
-        .map_or_else(|| tithi(system, jd_ut).number, |i| i + 1)
+    tithi(system, jd_ut).number
 }
 
 /// The Moon's nakshatra at an instant.
@@ -154,11 +150,10 @@ pub fn nakshatra(system: System, jd_ut: f64) -> Nakshatra {
     }
 }
 
-/// The nakshatra number (1–27) at `jd_ut`, read from the stored boundaries when there are any.
+/// The nakshatra number (1–27) at `jd_ut`.
 #[must_use]
 pub fn nakshatra_number(system: System, jd_ut: f64) -> u32 {
-    anga_index_at(&system, Anga::Nakshatra, jd_ut)
-        .map_or_else(|| nakshatra(system, jd_ut).number, |i| i + 1)
+    nakshatra(system, jd_ut).number
 }
 
 /// The yoga at an instant: a cut of the Sun + Moon longitude sum.
@@ -189,10 +184,10 @@ pub fn yoga(system: System, jd_ut: f64) -> Yoga {
     }
 }
 
-/// The yoga number (1–27) at `jd_ut`, read from the stored boundaries when there are any.
+/// The yoga number (1–27) at `jd_ut`.
 #[must_use]
 pub fn yoga_number(system: System, jd_ut: f64) -> u32 {
-    anga_index_at(&system, Anga::Yoga, jd_ut).map_or_else(|| yoga(system, jd_ut).number, |i| i + 1)
+    yoga(system, jd_ut).number
 }
 
 /// The karana at an instant: half a tithi.

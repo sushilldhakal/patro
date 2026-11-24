@@ -575,7 +575,7 @@ pub(crate) fn request_system(state: &AppState, q: &Query) -> Result<System, Resp
         "drik" => state.drik.map(|d| d.system).ok_or_else(|| {
             detail(
                 StatusCode::NOT_IMPLEMENTED,
-                "siddhanta=drik needs the own-ephemeris files: set PATRO_RS_EPHDATA to the folder holding kernel.veph and events.vidx",
+                "siddhanta=drik needs the own-ephemeris files: set PATRO_RS_EPHDATA to the folder holding kernel.veph",
             )
         }),
         _ => Err(python_json_400(&format!(

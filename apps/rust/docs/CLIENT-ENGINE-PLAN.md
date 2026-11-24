@@ -9,7 +9,7 @@ calendar routes stay only for app versions that still call them (1.2.2), then ar
 
 | Piece | Server | Client |
 |---|---|---|
-| Boundaries (tithi, nakshatra, yoga, karana, sankranti, phases) | lookup in the stored index | reads the same index (done, `vidx.ts`, `sky.ts`) |
+| Boundaries (tithi, nakshatra, yoga, karana, sankranti, phases) | none stored (index removed 2026-11-25) | solved from the stored positions, in any ayanamsha (done, `sky.ts`; lean view with no files); laptop: month grid 0.3 s, festival year 0.2 s |
 | Graha positions | calculated per request | from Chebyshev data (done, `sky.ts`) |
 | Sunrise, sunset, lagna, panchanga strip | calculated per request | `sky-day.ts` done and tested against the server for a month, **not wired to any screen** |
 | Lunar months (amanta/purnimanta windows, adhik, kshaya) | calculated (`lunar_month.rs`) | ported: `lunar-month.ts` (checked through the festival lists below) |

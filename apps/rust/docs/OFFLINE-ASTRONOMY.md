@@ -165,3 +165,5 @@ systems, no request to `/v1/panchanga*`, no error in Sentry or the console.
   (4713 BCE): a panic in debug, a wrong day in release.
 - The server answers month panchangas for both systems from 13000 BCE to 16900 CE (118 of 120 sampled
   requests 200; the other two are the last month of 16900 CE, past the supported span).
+
+> **2026-11-25: the event index is gone.** `surya.vidx`, `drik.vidx`, the VIDX reader (`vidx.ts`), the `/v1/{siddhanta,drik}/index` routes and the index builders were removed. The stored files are the two `.cheb` files (planet positions); the client solves every boundary from them (`sky.ts`), and the built-in formulas answer where no file covers a date (or in the `lean` view, with no file at all).

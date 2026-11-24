@@ -3,29 +3,21 @@
 
 use std::sync::Arc;
 
-use ephdata::{Index, Sky};
+use ephdata::Sky;
 
 use super::{Ephemeris, Pos};
 
-/// Sun and Moon from our own kernel, optionally with the precomputed event index.
+/// Sun and Moon from our own kernel.
 #[derive(Debug, Clone)]
 pub struct OwnDrik {
     sky: Arc<Sky>,
-    index: Option<Arc<Index>>,
 }
 
 impl OwnDrik {
     /// Positions computed on demand.
     #[must_use]
     pub const fn new(sky: Arc<Sky>) -> Self {
-        Self { sky, index: None }
-    }
-
-    /// With every boundary read from `index` where it has them.
-    #[must_use]
-    pub fn with_index(mut self, index: Arc<Index>) -> Self {
-        self.index = Some(index);
-        self
+        Self { sky }
     }
 
     /// The underlying sky.
@@ -48,9 +40,5 @@ impl Ephemeris for OwnDrik {
             },
             |(sun, moon)| Pos { sun, moon },
         )
-    }
-
-    fn index(&self) -> Option<&Index> {
-        self.index.as_deref()
     }
 }

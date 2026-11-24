@@ -41,11 +41,9 @@ pub struct DrikFiles {
     pub system: astronomy::System,
     /// Kernel file size, bytes.
     pub kernel_bytes: u64,
-    /// Event index file size, bytes; 0 when the index is not loaded.
-    pub index_bytes: u64,
 }
 
-/// Loads `kernel.veph` (and `events.vidx`, when present) from the folder named by
+/// Loads `kernel.veph` from the folder named by
 /// `PATRO_RS_EPHDATA`, once. The data is leaked on purpose: it lives as long as the
 /// process and every request reads it without reference counting.
 fn load_drik() -> Option<DrikFiles> {
@@ -63,51 +61,16 @@ fn load_drik_files() -> Option<DrikFiles> {
             return None;
         }
     };
-    let index_path = dir.join("events.vidx");
-    let index = match ephdata::Index::open(&index_path) {
-        Ok(index) => Some(Arc::new(index)),
-        Err(e) => {
-            tracing::warn!(error = %e, path = %index_path.display(), "event index not loaded: drik solves every boundary");
-            None
-        }
-    };
     let size = |p: &std::path::Path| std::fs::metadata(p).map_or(0, |m| m.len());
     let files = DrikFiles {
         kernel_bytes: size(&kernel_path),
-        index_bytes: if index.is_some() {
-            size(&index_path)
-        } else {
-            0
-        },
-        system: astronomy::System::Drik(Box::leak(Box::new(astronomy::DrikSky::new(sky, index)))),
+        system: astronomy::System::Drik(Box::leak(Box::new(astronomy::DrikSky::new(sky)))),
     };
     tracing::info!(
         kernel_bytes = files.kernel_bytes,
-        index_bytes = files.index_bytes,
         "own ephemeris loaded: siddhanta=drik is on"
     );
     Some(files)
-}
-
-/// Installs the Surya Siddhanta event index from the file named by `PATRO_RS_SURYA_INDEX`, once.
-/// Without it the text's boundaries are solved on demand and the index endpoint answers 501.
-fn load_surya_index() {
-    static LOADED: OnceLock<()> = OnceLock::new();
-    LOADED.get_or_init(|| {
-        let Some(path) = std::env::var_os("PATRO_RS_SURYA_INDEX") else {
-            return;
-        };
-        match ephdata::Index::open(std::path::Path::new(&path)) {
-            Ok(index) => {
-                let (from, to) = index.coverage();
-                astronomy::install_surya_index(index);
-                tracing::info!(from, to, "surya event index loaded: boundaries are lookups");
-            }
-            Err(e) => {
-                tracing::error!(error = %e, "surya event index not loaded: boundaries are solved on demand");
-            }
-        }
-    });
 }
 
 /// A Chebyshev file named by the environment variable `var`, or `None` (logged) when unset or unreadable.
@@ -150,7 +113,6 @@ impl AppState {
     /// State for one running server.
     #[must_use]
     pub fn new(config: AppConfig) -> Self {
-        load_surya_index();
         let cities = Cities::new(config.cities_db());
         let documents = documents_service(&config.data_dir);
         Self {

@@ -29,10 +29,4 @@ pub trait Ephemeris: Sync {
 
     /// The Sun and the Moon at `jd_ut`.
     fn pos(&self, jd_ut: f64) -> Pos;
-
-    /// Every boundary this source has already solved and stored, if it has them: the
-    /// event engine reads these instead of solving again.
-    fn index(&self) -> Option<&ephdata::Index> {
-        None
-    }
 }

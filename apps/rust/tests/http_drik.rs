@@ -2,8 +2,8 @@
 //! order, types, list lengths), drik's own values, the headers, the errors outside the
 //! kernel, and `/meta/provenance`.
 //!
-//! Needs the pilot files: set `PATRO_RS_EPHDATA` to a folder holding `kernel.veph` and
-//! `events.vidx`. Skipped without it.
+//! Needs the pilot files: set `PATRO_RS_EPHDATA` to a folder holding `kernel.veph`.
+//! Skipped without it.
 
 use api::AppState;
 use axum::{body::Body, http::Request};
@@ -173,7 +173,6 @@ async fn provenance_describes_our_files() {
     assert_eq!(status, 200);
     let p = &body["provenance"];
     assert_eq!(p["engine"], "own_drik");
-    assert_eq!(p["event_index"]["loaded"], true);
     assert!(p["ephemeris"]["kernel_bytes"].as_u64().unwrap_or(0) > 1_000_000);
     assert_eq!(p["ephemeris"]["answers_for_years"][0], 1);
     assert_eq!(p["provenance_hash"].as_str().map(str::len), Some(64));

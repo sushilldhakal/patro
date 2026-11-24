@@ -505,33 +505,6 @@ fn retro_at<I: PyInstant>(system: System, graha: Graha, at: I) -> bool {
     is_retrograde(graha, speed_for(system, graha, at))
 }
 
-/// The stored stations of `graha` in `(from, until]`, as ingress entries.
-fn station_events<I: PyInstant>(
-    system: System,
-    graha: Graha,
-    from: I,
-    until: I,
-) -> Option<Vec<Ingress<I>>> {
-    if matches!(graha, Graha::Sun | Graha::Moon | Graha::Rahu | Graha::Ketu) {
-        // Never turn: the scan finds nothing either.
-        return system.is_drik().then(Vec::new);
-    }
-    let stored = system.station_events(body(graha), from.to_jd(), until.to_jd())?;
-    Some(
-        stored
-            .into_iter()
-            .filter_map(|(jd, retrograde)| {
-                let at = from.at_boundary(jd)?;
-                (at <= until).then_some(Ingress {
-                    graha,
-                    at,
-                    kind: Kind::Motion { retrograde },
-                })
-            })
-            .collect(),
-    )
-}
-
 /// `find_motion_stations_in_range` for `grahas`.
 pub(crate) fn motion_stations<I: PyInstant>(
     system: System,
@@ -541,11 +514,8 @@ pub(crate) fn motion_stations<I: PyInstant>(
 ) -> Vec<Ingress<I>> {
     let mut events = Vec::new();
     for &g in grahas {
-        // Drik reads the stored stations (they are the same events the scan below finds,
-        // to a few hundredths of a second); the text, and a span the index does not
-        // cover, are scanned.
-        if let Some(stored) = station_events(system, g, from, until) {
-            events.extend(stored);
+        // The Sun, the Moon and the nodes never turn.
+        if matches!(g, Graha::Sun | Graha::Moon | Graha::Rahu | Graha::Ketu) {
             continue;
         }
         let mut cursor = from;

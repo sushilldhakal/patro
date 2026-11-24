@@ -8,7 +8,7 @@
 
 use std::sync::{Arc, LazyLock};
 
-use ephdata::{Body as SkyBody, Index, Place, Sky, deltat::J2000, frames::mean_obliquity};
+use ephdata::{Body as SkyBody, Place, Sky, deltat::J2000, frames::mean_obliquity};
 
 use crate::{
     angles::{signed180, wrap360},
@@ -66,15 +66,11 @@ const fn body_id(body: Body) -> u8 {
 }
 
 impl DrikSky {
-    /// A drik sky over `sky`, reading boundaries from `index` where it has them.
+    /// A drik sky over `sky`.
     #[must_use]
-    pub fn new(sky: Arc<Sky>, index: Option<Arc<Index>>) -> Self {
-        let own = OwnDrik::new(sky);
+    pub fn new(sky: Arc<Sky>) -> Self {
         Self {
-            own: match index {
-                Some(index) => own.with_index(index),
-                None => own,
-            },
+            own: OwnDrik::new(sky),
         }
     }
 
@@ -88,12 +84,6 @@ impl DrikSky {
     #[must_use]
     pub fn sky(&self) -> &Sky {
         self.own.sky()
-    }
-
-    /// The stored events, if loaded.
-    #[must_use]
-    pub fn index(&self) -> Option<&Index> {
-        self.own.index()
     }
 
     /// The span (JD UT) the kernel covers.
@@ -395,9 +385,5 @@ impl Ephemeris for DrikSky {
 
     fn pos(&self, jd_ut: f64) -> crate::position::Pos {
         self.own.pos(jd_ut)
-    }
-
-    fn index(&self) -> Option<&Index> {
-        self.own.index()
     }
 }

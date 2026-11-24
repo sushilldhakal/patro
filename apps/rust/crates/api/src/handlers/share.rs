@@ -578,7 +578,7 @@ pub async fn og_image(
 
 /// `GET /meta/provenance`: the astronomical environment this process computes with,
 /// observed from the files it loaded (never typed in): our own `.veph` kernel, the
-/// `.vidx` event index, the frames and ΔT behaviour. Python reports its Swiss Ephemeris
+/// frames and ΔT behaviour. Python reports its Swiss Ephemeris
 /// build here; this server's own ephemeris is the environment, so the fields differ
 /// but the shape is the same (`provenance` + `cache`). Without `PATRO_RS_EPHDATA` there
 /// is no own ephemeris to describe, so it answers 501.
@@ -587,7 +587,7 @@ pub async fn provenance(State(state): State<AppState>) -> Response {
     let Some(files) = state.drik else {
         return detail(
             StatusCode::NOT_IMPLEMENTED,
-            "/meta/provenance describes the own ephemeris; set PATRO_RS_EPHDATA to the folder holding kernel.veph and events.vidx",
+            "/meta/provenance describes the own ephemeris; set PATRO_RS_EPHDATA to the folder holding kernel.veph",
         );
     };
     let Some(sky) = files.system.drik() else {
@@ -602,14 +602,6 @@ pub async fn provenance(State(state): State<AppState>) -> Response {
             json!({"jd": jd, "seconds": ephdata::deltat::delta_t_seconds(ephdata::deltat::year_of(*jd))})
         })
         .collect();
-    let index = sky.index().map(|ix| {
-        let (a, b) = ix.coverage();
-        json!({
-            "loaded": true, "bytes": files.index_bytes,
-            "coverage_jd_ut": [a, b], "coverage_years": [years(a), years(b)],
-            "stored": "tithi, karana, nakshatra, pada, yoga, Moon rashi, Sun nakshatra, sankranti, Sun degree, lunar phase, graha ingress and stations",
-        })
-    });
     let environment = json!({
         "engine": "own_drik",
         "siddhanta": "drik",
@@ -620,7 +612,6 @@ pub async fn provenance(State(state): State<AppState>) -> Response {
             "coverage_years": [years(first), years(last)],
             "answers_for_years": system_years(files.system),
         },
-        "event_index": index.unwrap_or_else(|| json!({"loaded": false})),
         "ayanamsha": {"name": "lahiri", "at_j2000_degrees": sky.ayanamsha(2_451_545.0)},
         "frames": "IAU 2006 precession and mean obliquity; apparent places (light-time and annual aberration); mean equator of date for hour angles",
         "delta_t": delta_t,

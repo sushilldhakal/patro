@@ -23,47 +23,6 @@ fn chunk_of(jd: f64) -> i64 {
     (jd / CHUNK_DAYS).floor() as i64
 }
 
-/// The index table for an anga.
-const fn kind_of(anga: Anga) -> ephdata::Kind {
-    match anga {
-        Anga::Tithi => ephdata::Kind::Tithi,
-        Anga::Karana => ephdata::Kind::Karana,
-        Anga::Nakshatra => ephdata::Kind::Nakshatra,
-        Anga::Pada => ephdata::Kind::Pada,
-        Anga::Yoga => ephdata::Kind::Yoga,
-        Anga::MoonRashi => ephdata::Kind::MoonRashi,
-        Anga::SunNakshatra => ephdata::Kind::SunNakshatra,
-        Anga::Sankranti => ephdata::Kind::Sankranti,
-        Anga::SunDegree => ephdata::Kind::SunDegree,
-    }
-}
-
-fn from_index(c: ephdata::Crossing) -> Crossing {
-    Crossing {
-        jd: c.jd,
-        multiple: c.multiple,
-    }
-}
-
-/// The stored index, when it covers `[from, to]` completely.
-fn covering(eph: &(impl Ephemeris + ?Sized), from: f64, to: f64) -> Option<&ephdata::Index> {
-    let index = eph.index()?;
-    let (a, b) = index.coverage();
-    (from.is_finite() && to.is_finite() && from >= a && to <= b).then_some(index)
-}
-
-/// The span of `anga` holding `jd` (the `multiple` its last boundary entered), read
-/// straight from the stored boundaries, or `None` without an index covering `jd`.
-///
-/// For a question that needs only *which* tithi, nakshatra or yoga it is, this is one
-/// binary search instead of two body positions.
-#[must_use]
-pub fn anga_index_at(eph: &(impl Ephemeris + ?Sized), anga: Anga, jd: f64) -> Option<u32> {
-    covering(eph, jd, jd)?
-        .prev_event(kind_of(anga), jd)
-        .map(|c| c.multiple)
-}
-
 /// How many empty chunks a lookup crosses before giving up (no positions).
 const MAX_EMPTY_CHUNKS: i64 = 64;
 
@@ -77,16 +36,6 @@ const NONE: Crossing = Crossing {
 pub fn next_event(eph: &(impl Ephemeris + ?Sized), anga: Anga, jd: f64) -> Crossing {
     if !jd.is_finite() {
         return NONE;
-    }
-    if let Some(ix) = eph.index() {
-        // An answer inside the covered span is complete: nothing lies between.
-        let (a, b) = ix.coverage();
-        if let Some(c) = ix
-            .next_event(kind_of(anga), jd)
-            .filter(|c| jd >= a && c.jd <= b)
-        {
-            return from_index(c);
-        }
     }
     for index in (0..MAX_EMPTY_CHUNKS).map(|k| chunk_of(jd) + k) {
         let table = chunk(eph, anga, index);
@@ -103,11 +52,6 @@ pub fn next_event(eph: &(impl Ephemeris + ?Sized), anga: Anga, jd: f64) -> Cross
 pub fn prev_event(eph: &(impl Ephemeris + ?Sized), anga: Anga, jd: f64) -> Crossing {
     if !jd.is_finite() {
         return NONE;
-    }
-    if let Some(ix) = covering(eph, jd, jd) {
-        if let Some(c) = ix.prev_event(kind_of(anga), jd) {
-            return from_index(c);
-        }
     }
     for index in (0..MAX_EMPTY_CHUNKS).map(|k| chunk_of(jd) - k) {
         let table = chunk(eph, anga, index);
@@ -127,13 +71,6 @@ pub fn events_between(
     from: f64,
     to: f64,
 ) -> Vec<Crossing> {
-    if let Some(ix) = covering(eph, from, to) {
-        return ix
-            .events_between(kind_of(anga), from, to)
-            .into_iter()
-            .map(from_index)
-            .collect();
-    }
     let mut out = Vec::new();
     for index in chunk_of(from)..=chunk_of(to) {
         let table = chunk(eph, anga, index);
@@ -145,12 +82,6 @@ pub fn events_between(
 /// The first boundary after `jd` at which `anga` enters span `multiple`.
 #[must_use]
 pub fn next_entry(eph: &(impl Ephemeris + ?Sized), anga: Anga, multiple: u32, jd: f64) -> Crossing {
-    if let Some(ix) = eph.index() {
-        let entry = ix.next_entry(kind_of(anga), multiple, jd);
-        if let Some(c) = entry.filter(|c| c.jd <= ix.coverage().1 && jd >= ix.coverage().0) {
-            return from_index(c);
-        }
-    }
     let mut at = jd;
     for _ in 0..anga.count() {
         let c = next_event(eph, anga, at);
@@ -165,12 +96,6 @@ pub fn next_entry(eph: &(impl Ephemeris + ?Sized), anga: Anga, multiple: u32, jd
 /// The last boundary at or before `jd` at which `anga` entered span `multiple`.
 #[must_use]
 pub fn prev_entry(eph: &(impl Ephemeris + ?Sized), anga: Anga, multiple: u32, jd: f64) -> Crossing {
-    if let Some(ix) = eph.index() {
-        let entry = ix.prev_entry(kind_of(anga), multiple, jd);
-        if let Some(c) = entry.filter(|c| c.jd >= ix.coverage().0 && jd <= ix.coverage().1) {
-            return from_index(c);
-        }
-    }
     let mut at = jd;
     for _ in 0..anga.count() {
         let c = prev_event(eph, anga, at);

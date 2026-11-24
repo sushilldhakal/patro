@@ -86,12 +86,7 @@ fn accounts() -> Router<AppState> {
 fn siddhanta() -> Router<AppState> {
     Router::new()
         .route("/v1/siddhanta/table", get(handlers::siddhanta::table))
-        .route(
-            "/v1/siddhanta/index",
-            get(handlers::client_data::surya_index),
-        )
         .route("/v1/siddhanta/cheb", get(handlers::client_data::surya_cheb))
-        .route("/v1/drik/index", get(handlers::client_data::drik_index))
         .route("/v1/drik/cheb", get(handlers::client_data::drik_cheb))
         .route(
             "/v1/shared/month/{key}",

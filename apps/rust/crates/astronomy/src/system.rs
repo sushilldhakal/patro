@@ -5,8 +5,6 @@
 //! threads that build months in parallel each carry their own. The Surya Siddhanta
 //! variant forwards to the text's functions unchanged; drik reads [`DrikSky`].
 
-use ephdata::Index;
-
 use crate::{
     drik::DrikSky,
     position::{Ephemeris, Pos},
@@ -23,21 +21,6 @@ pub enum System {
     SuryaSiddhanta,
     /// Our own ephemeris, loaded once at startup.
     Drik(&'static DrikSky),
-}
-
-/// The Surya Siddhanta's stored boundaries (`surya.vidx`), installed once at startup. Without
-/// them the text's boundaries are solved on demand, as before.
-static SURYA_INDEX: std::sync::OnceLock<Index> = std::sync::OnceLock::new();
-
-/// Installs the Surya Siddhanta event index. Returns `false` when one is already installed.
-pub fn install_surya_index(index: Index) -> bool {
-    SURYA_INDEX.set(index).is_ok()
-}
-
-/// The installed Surya Siddhanta event index, if any.
-#[must_use]
-pub fn surya_index() -> Option<&'static Index> {
-    SURYA_INDEX.get()
 }
 
 impl PartialEq for System {
@@ -237,32 +220,6 @@ impl System {
         }
     }
 
-    /// Every retrograde or direct station of a planet with `from < jd <= to`, as
-    /// `(jd, turned_retrograde)`, read from the stored events: `None` when this system
-    /// stores none for the span (no index loaded, or a span outside it) or the body has
-    /// no stations (the luminaries and the node).
-    #[must_use]
-    pub fn station_events(self, body: Body, from: f64, to: f64) -> Option<Vec<(f64, bool)>> {
-        use ephdata::index::{Graha, Series};
-        let graha = match body {
-            Body::Mercury => Graha::Mercury,
-            Body::Venus => Graha::Venus,
-            Body::Mars => Graha::Mars,
-            Body::Jupiter => Graha::Jupiter,
-            Body::Saturn => Graha::Saturn,
-            Body::Sun | Body::Moon | Body::Rahu => return None,
-        };
-        let index = Ephemeris::index(&self)?;
-        let (a, b) = index.coverage();
-        (from.is_finite() && to.is_finite() && from >= a && to <= b).then(|| {
-            index
-                .series_between(Series::Station(graha), from, to)
-                .into_iter()
-                .map(|(jd, payload)| (jd, payload == 1))
-                .collect()
-        })
-    }
-
     /// The first instant after `jd_from` the sidereal ascendant reaches `target`.
     #[must_use]
     pub fn next_ascendant_crossing(
@@ -314,13 +271,6 @@ impl Ephemeris for System {
                 moon: crate::engine::moon_longitude(*self, jd_ut),
             },
             Self::Drik(sky) => sky.pos(jd_ut),
-        }
-    }
-
-    fn index(&self) -> Option<&Index> {
-        match self {
-            Self::SuryaSiddhanta => surya_index(),
-            Self::Drik(sky) => sky.index(),
         }
     }
 }

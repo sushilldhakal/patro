@@ -24,4 +24,4 @@ pub mod system;
 pub mod yearly;
 
 pub use drik::DrikSky;
-pub use system::{System, install_surya_index, surya_index};
+pub use system::System;

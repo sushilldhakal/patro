@@ -34,7 +34,6 @@ PATRO_RS__LOG_FILTER=info
 PATRO_RS_DATABASE_URL=$db
 PATRO_RS_REDIS_URL=$redis_rust
 PATRO_RS_EPHDATA=/home/ubuntu/patro-rust/data/drik
-PATRO_RS_SURYA_INDEX=/home/ubuntu/patro-rust/data/surya/surya.vidx
 PATRO_RS_SURYA_CHEB=/home/ubuntu/patro-rust/data/surya/surya.cheb
 PATRO_RS_DRIK_CHEB=/home/ubuntu/patro-rust/data/drik/drik.cheb
 EOF2

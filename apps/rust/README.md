@@ -173,51 +173,27 @@ from it instead of searching again.
   our precession) are Rust (`ephdata::{kernel, deltat, frames, sky}`).
   `astronomy::position::OwnDrik` puts it behind the `Ephemeris` trait; `siddhanta=drik`
   now answers from it (see the next bullets).
-- **Event index (`ephdata::index`, `.vidx`).** Every tithi, karana, nakshatra, pada,
-  yoga, Moon rashi, Sun nakshatra, sankranti, Sun degree and lunar phase boundary, plus
-  rashi ingress and retrograde stations of Mercury–Saturn and Rahu (osculating node),
-  solved once and stored: 4 bytes per boundary (millisecond offset in a 32-day block, a
-  block table for O(1) access). The multiple is derived from the position, never stored,
-  and tithi, nakshatra, Moon rashi, sankranti and phase are not stored at all: each is
-  every n-th boundary of karana, pada or Sun degree, read as a strided view. AD 3–2945:
-  **38.5 MB**, 12.8 M boundaries, 221 s on two threads. `astronomy::events` reads it
-  first (`Ephemeris::index`) and falls back to the solver outside its span. Building the
-  full range caught a real bug: DE441's halves overlap, and joining them dropped a third
-  of a record instead of a whole one (the Sun jumped 128° at the 1969 seam); the build's
-  own sequence check refused the table, and the verifier now samples 500 instants round
-  every kernel seam.
-  Stations are the extremum of a longitude, so a speed difference is as noisy as the
-  longitudes it subtracts (±0.1 s); each is a degree-6 least-squares fit over ±0.4 day
-  (stable to 0.1 ms from degree 5 up; a quartic is seconds off for Mercury).
-  Verified against the original JPL data with independent code
-  (`scripts/ephdata/build.sh`, `verify.sh`): 10,500 random instants (500 round the 1969
-  seam), Chebyshev evaluation vs `jplephem`: float noise lossless, ≤ 3.5 m packed;
-  3,000 instants, frames, light-time, aberration and ayanamsha vs SOFA (`pyerfa`):
-  ≤ 2×10⁻³″ (all of it the Moon's 1 m packing; ~10⁻⁵″ for the rest);
-  19,997 random events re-solved from the original kernels: median 0.2–0.7 ms and worst
-  11 ms for the angas and ingresses, median 0.6–4.5 ms and worst 34 ms for stations.
-  `crates/astronomy/tests/own_drik.rs` (set `PATRO_RS_EPHDATA` to a folder holding
-  `kernel.veph` and `events.vidx`) checks the index against solving the same events from
-  our ephemeris, over the whole range.
-- Event lookups (`PATRO_RS_EPHDATA=<dir> cargo run --profile benchdev -p astronomy
-  --example bench_index -- ss|own|index`; `benchdev` is the dev profile at `opt-level = 3`
-  so all three sides are optimised alike; only `ephdata` is optimised in plain dev):
-  a panchanga day's eight boundary queries, cold, **2,093 µs** with the Surya Siddhanta
-  chunk solver, 19,484 µs solving our own ephemeris on demand, **1.4 µs** from the index
-  (0.7 µs warm); 40 years × 4 angas 453 ms / 3,945 ms / **3.1 ms**; memory grows 36 / 37 /
-  **0.1 MB** while it runs (the index variant holds 98 MB: 62.7 MB kernel, 38.5 MB index).
+- **Event index removed (2026-11-25).** There was a stored list of every tithi, karana,
+  nakshatra, yoga, rashi, sankranti, phase, ingress and station boundary (`ephdata::index`,
+  `.vidx`, 38.5 MB for Drik). The owner ruled that the stored file holds planet positions only
+  (the Chebyshev files); every boundary is worked out on the client from them, for the place and
+  ayanamsha the reader chose. The module, the `ephdata index/slice/sample/stations/check`
+  commands, `siddhanta-table index`, the `/v1/{siddhanta,drik}/index` routes, `Ephemeris::index`,
+  `PATRO_RS_SURYA_INDEX` and the events verifier are gone. The server's own routes solve boundaries
+  with the chunk solver (`astronomy::events`), as they always did where no index covered a date.
+  The kernel verification (`scripts/ephdata/verify.sh`: Chebyshev evaluation against `jplephem`,
+  frames against SOFA) is unchanged.
 - **`siddhanta=drik` on the routes (step 4h).** Design: `docs/DRIK-SYSTEM-DESIGN.md`.
   `astronomy::System` (`SuryaSiddhanta` | `Drik(&'static DrikSky)`) is a `Copy` value
   carried explicitly (inside `panchanga::daily::Location` and `engine::Observer`, or a
   leading argument where only a Julian Day was passed), never a global or a thread-local,
   so `months_in_parallel` threads each carry their own. `System` is itself an
-  `Ephemeris`, so the event engine reads the index through it. Every cache key holds
+  `Ephemeris`, so the event engine reads positions through it. Every cache key holds
   `System::key()` (event chunks by `name()`, rise/set, the day memos, lunar years, month
   days, kshaya drops, Nepal Sambat new years, festival lists); drik days are never read
   from or written to the persistent day store. Config: `PATRO_RS_EPHDATA=<dir>` (the
-  folder holding `kernel.veph` and `events.vidx`) is loaded once at startup; unset (or an
-  unreadable kernel) keeps `siddhanta=drik` and `/meta/provenance` answering 501. A
-  missing index only means drik solves its boundaries. Surya Siddhanta answers are
+  folder holding `kernel.veph`) is loaded once at startup; unset (or an
+  unreadable kernel) keeps `siddhanta=drik` and `/meta/provenance` answering 501. Surya Siddhanta answers are
   untouched: 806 responses (every golden GET path plus random days, months, years,
   at-time) are byte-identical before and after (`snap.py` oracle). Drik answers have
   the same keys, order, types and list lengths as the text's (`tests/http_drik.rs` pins

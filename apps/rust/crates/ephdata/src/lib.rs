@@ -7,9 +7,6 @@
 //! - [`frames`], [`deltat`]: our own coordinate transformations (IAU 2006
 //!   precession, mean obliquity, ΔT) and the Lahiri zero point.
 //! - [`sky`]: Sun, Moon and planets as sidereal longitudes, apparent places.
-//! - [`index`]: every anga boundary, sankranti, lunar phase, graha ingress and
-//!   station, solved once and stored in a second binary file (`.vidx`), so a request
-//!   reads an answer instead of solving for it.
 
 #![expect(
     clippy::cast_possible_truncation,
@@ -26,10 +23,8 @@ pub mod analytic_data;
 pub mod daf;
 pub mod deltat;
 pub mod frames;
-pub mod index;
 pub mod kernel;
 pub mod sky;
 
-pub use index::{Crossing, Index, Kind, Source};
 pub use kernel::Kernel;
 pub use sky::{Body, Place, Sky};

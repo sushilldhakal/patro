@@ -1,60 +1,29 @@
-//! `System::Drik` against the solver path and against its own definitions: the index is
-//! read through the system, rise and set sit on their horizon, the ascendant reaches the
-//! degree asked for, and the frames agree with the text where both are right.
+//! `System::Drik` against its own definitions: rise and set sit on their horizon, the ascendant
+//! reaches the degree asked for, and the frames agree with the text where both are right.
 //!
-//! Needs the pilot files: set `PATRO_RS_EPHDATA` to a folder holding `kernel.veph` and
-//! `events.vidx`. Skipped without it.
+//! Needs the pilot files: set `PATRO_RS_EPHDATA` to a folder holding `kernel.veph`. Skipped
+//! without it.
 
 use std::{path::PathBuf, sync::Arc};
 
 use astronomy::{
     DrikSky, System,
-    angles::Anga,
-    events::next_event,
     surya_siddhanta::{Body, Crossing},
 };
-use ephdata::{Index, Sky};
+use ephdata::Sky;
 
-fn systems() -> Option<(System, System)> {
+fn system() -> Option<System> {
     let dir = PathBuf::from(std::env::var_os("PATRO_RS_EPHDATA")?);
     let sky = Arc::new(Sky::open(&dir.join("kernel.veph")).ok()?);
-    let index = Arc::new(Index::open(&dir.join("events.vidx")).ok()?);
-    let leak = |s: DrikSky| System::Drik(Box::leak(Box::new(s)));
-    Some((
-        leak(DrikSky::new(Arc::clone(&sky), Some(index))),
-        leak(DrikSky::new(sky, None)),
-    ))
+    Some(System::Drik(Box::leak(Box::new(DrikSky::new(sky)))))
 }
 
 const JD_2026_11_22: f64 = 2_461_366.5;
 const KATHMANDU: (f64, f64) = (27.7172, 85.324);
 
 #[test]
-fn the_system_reads_the_index_the_solver_would_find() {
-    let Some((indexed, solved)) = systems() else {
-        eprintln!("PATRO_RS_EPHDATA not set: skipped");
-        return;
-    };
-    for anga in [Anga::Tithi, Anga::Nakshatra, Anga::Yoga, Anga::Karana] {
-        for k in 0..40 {
-            let jd = JD_2026_11_22 + f64::from(k) * 9.37;
-            let (i, s) = (
-                next_event(&indexed, anga, jd),
-                next_event(&solved, anga, jd),
-            );
-            assert_eq!(i.multiple, s.multiple, "{anga:?} at {jd}");
-            assert!(
-                (i.jd - s.jd).abs() < 1e-6,
-                "{anga:?} at {jd}: {} s",
-                (i.jd - s.jd).abs() * 86_400.0
-            );
-        }
-    }
-}
-
-#[test]
 fn rise_and_set_sit_on_the_horizon() {
-    let Some((system, _)) = systems() else {
+    let Some(system) = system() else {
         return;
     };
     let places = [
@@ -83,7 +52,7 @@ fn rise_and_set_sit_on_the_horizon() {
 
 #[test]
 fn the_first_crossing_is_the_first_one() {
-    let Some((system, _)) = systems() else {
+    let Some(system) = system() else {
         return;
     };
     let (lat, lon) = KATHMANDU;
@@ -126,7 +95,7 @@ fn the_first_crossing_is_the_first_one() {
 
 #[test]
 fn the_ascendant_reaches_the_degree_asked_for() {
-    let Some((system, _)) = systems() else {
+    let Some(system) = system() else {
         return;
     };
     let (lat, lon) = KATHMANDU;
@@ -161,7 +130,7 @@ fn greenwich_sidereal_time_at_j2000() {
 
 #[test]
 fn the_equation_of_time_agrees_with_the_text() {
-    let Some((system, _)) = systems() else {
+    let Some(system) = system() else {
         return;
     };
     for k in 0..24 {
@@ -177,7 +146,7 @@ fn the_equation_of_time_agrees_with_the_text() {
 
 #[test]
 fn outside_the_kernel_it_says_so() {
-    let Some((system, _)) = systems() else {
+    let Some(system) = system() else {
         return;
     };
     assert!(system.supports_jd(JD_2026_11_22));
@@ -188,58 +157,5 @@ fn outside_the_kernel_it_says_so() {
     assert!(
         System::SuryaSiddhanta.supports_jd(1_000_000.0),
         "the text answers anywhere"
-    );
-}
-
-#[test]
-fn stored_stations_are_the_planets_turning_points() {
-    let Some((system, solved)) = systems() else {
-        return;
-    };
-    for body in [
-        Body::Mercury,
-        Body::Venus,
-        Body::Mars,
-        Body::Jupiter,
-        Body::Saturn,
-    ] {
-        let events = system
-            .station_events(body, JD_2026_11_22, JD_2026_11_22 + 800.0)
-            .expect("the index covers 2026");
-        assert!(events.len() >= 2, "{body:?}: {events:?}");
-        for pair in events.windows(2) {
-            assert_ne!(
-                pair[0].1, pair[1].1,
-                "{body:?} alternates retrograde and direct"
-            );
-        }
-        for (jd, retrograde) in events {
-            // The longitude stops moving: over a minute either side it changes by far
-            // less than a day's motion, and afterwards it runs the way the event says.
-            let d = |t: f64| system.true_position(body, t).0;
-            let slip = |a: f64, b: f64| (b - a + 540.0).rem_euclid(360.0) - 180.0;
-            let around = slip(d(jd - 1.0 / 1440.0), d(jd + 1.0 / 1440.0)).abs();
-            assert!(
-                around < 2e-4,
-                "{body:?} at {jd}: moved {around}° in two minutes"
-            );
-            let after = slip(d(jd + 2.0), d(jd + 4.0));
-            assert_eq!(
-                after < 0.0,
-                retrograde,
-                "{body:?} at {jd}: motion after is {after}"
-            );
-        }
-    }
-    // The text has no stored stations, and no index means none either.
-    assert!(
-        System::SuryaSiddhanta
-            .station_events(Body::Mars, 0.0, 1.0)
-            .is_none()
-    );
-    assert!(
-        solved
-            .station_events(Body::Mars, JD_2026_11_22, JD_2026_11_22 + 800.0)
-            .is_none()
     );
 }
