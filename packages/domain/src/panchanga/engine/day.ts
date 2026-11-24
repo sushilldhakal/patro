@@ -30,6 +30,7 @@ import {
   type Json,
   type Place,
 } from "./blocks";
+import { solarCorrections } from "./solar-blocks";
 import { chandrabalaTable, chandrabalam, rashifal, tarabalaTable, tarabalam } from "./bala-blocks";
 import { displayHeaders, lunarCalendarBlock, lunarMonthBlock, nsDateBlock, pakshaBlock, samvatsaraBlock } from "./calendar-blocks";
 import { pyMod, pyRound } from "./py";
@@ -52,7 +53,7 @@ export interface DayInput extends Place {
 export const DAY_BLOCKS = [
   "date", "date_ad", "jd_ut", "anchor", "display", "bs_date", "samvatsara", "ns_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
   "dinamaan", "ratrimana", "madhyahna", "lahiri_ayanamsa", "vaara", "aayan", "aayan_vedic", "tithi", "nakshatra", "yoga",
-  "choghadiya", "hora", "karana", "paksha", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
+  "choghadiya", "hora", "solar_corrections", "karana", "paksha", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
   "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "planets_anchor", "lagna", "chandrabalam", "tarabalam", "tarabala_table", "chandrabala_table", "rashifal", "markers", "ayanamsa",
 ] as const;
 
@@ -103,6 +104,7 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.moonset = moonset === null ? null : timeBlock(moonset, zone, "truncated");
   b.choghadiya = choghadiya(dayGhati, vaara);
   b.hora = hora(sunrise, sunset, nextSunrise, vaara, zone);
+  b.solar_corrections = solarCorrections(sky, jdn, input, sunrise);
   b.dinamaan = dayLength(sunrise, sunset);
   b.ratrimana = dayLength(sunset, nextSunrise);
   b.madhyahna = timeBlock((sunrise + sunset) / 2, zone, "truncated");
