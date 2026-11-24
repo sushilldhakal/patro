@@ -1,0 +1,24 @@
+[Unit]
+Description=Vedic Patro API (Rust)
+After=network-online.target redis-server.service postgresql@16-main.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/patro-rust
+# The same secrets and settings the Python server reads (JWT_SECRET, SMTP_*, GOOGLE_*, FRONTEND_URL, ...).
+EnvironmentFile=-/home/ubuntu/patro/.env
+# Rust-only settings: port, data, the Postgres and Redis URLs (written by stage.sh from DATABASE_URL and REDIS_URL).
+EnvironmentFile=/home/ubuntu/patro-rust/rust.env
+ExecStart=/home/ubuntu/patro-rust/bin/vedic-patro
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=patro-rust
+
+[Install]
+WantedBy=multi-user.target

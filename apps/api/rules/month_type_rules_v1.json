@@ -1,0 +1,181 @@
+{
+  "_meta": {
+    "id": "month_type_rules_v1",
+    "owner_ruling_date": "2026-11-24",
+    "scope": "How adhik and kshaya lunar months are treated: what may be done in them, where the festivals of a lost month go, and how month-long vratas such as Swasthani behave around them.",
+    "read_by": "apps/rust only (festivals crate, GET /v1/nepal/month-kinds/{bs_year}). The Python server does not read this file.",
+    "convention": "Nepal purnimanta. A lunation here is amavasya to amavasya; its Shukla half is named for the month it belongs to and its Krishna half runs to the next amavasya.",
+    "sources": [
+      "P. V. Kane, History of Dharmasastra, Vol. 5 Part 1, p. 665 (an adhik before a kshaya is like an ordinary masa; the adhik after it is unsuitable for religious rites)",
+      "Kane, p. 671 (the limit of the adhik before a kshaya: marriages, Agnistoma-type sacrifices, non-obligatory festivals, auspicious rites of children such as namakarana)",
+      "Kane, pp. 673-674 (the malamasa rule: no kamya rite; what is avoided; what must still be done)"
+    ],
+    "examples_note": "Dates are the owner's own, stated 2026-11-24, and are what the tests check the engine against. The engine's BS month grid starts a day or two differently (it cuts at the civil day of each sankranti), which is not a disagreement."
+  },
+  "lunation_kinds": {
+    "nija": {
+      "meaning": "An ordinary lunar month: one sankranti inside it.",
+      "treatment": "ordinary"
+    },
+    "adhik_samsarpa": {
+      "name_ne": "संसर्प",
+      "meaning": "The adhik masa that comes before a kshaya masa in the same stretch of years. It has no sankranti inside it.",
+      "treatment": "ordinary_with_limits",
+      "kane": "p. 665: like all ordinary masas, no prohibition of doing religious acts in it. p. 671: not condemned for everything, only for the limits below.",
+      "do": [
+        "daily worship",
+        "ekadashi",
+        "pradosh",
+        "shraddha"
+      ],
+      "avoid": [
+        "marriage",
+        "Agnistoma-type sacrifices",
+        "non-obligatory festivals",
+        "auspicious rites of children such as namakarana",
+        "upanayana"
+      ],
+      "own_ekadashis": [
+        "padmini",
+        "parama"
+      ],
+      "festival_home": "A festival of the normal month of the same name goes to the normal month, never to this adhik month. Festivals whose own date falls outside the adhik month (for example Lakshmi Puja the day before it starts) are kept on their own dates."
+    },
+    "adhik_malimlucha": {
+      "name_ne": "मलिम्लुच",
+      "meaning": "The adhik masa that comes after a kshaya masa. It has no sankranti inside it.",
+      "treatment": "malamasa",
+      "kane": "p. 665: the adhik that follows a kshaya is the one declared unsuitable for religious rites. pp. 673-674: the malamasa rule.",
+      "forbid_all": [
+        "kamya rites"
+      ],
+      "avoid": [
+        "vratas",
+        "upanayana",
+        "namakarana",
+        "tonsure",
+        "consecration of fires or images",
+        "sacrifices",
+        "gifts",
+        "inauguration of a king",
+        "wedding",
+        "housewarming",
+        "any new samskara"
+      ],
+      "must_still_do": [
+        "daily sandhya",
+        "the five Mahayajnas",
+        "agnihotra",
+        "eclipse bath",
+        "funerary rites",
+        "monthly Amavasya shraddha",
+        "japa",
+        "homa"
+      ],
+      "continue_begun_rites": true,
+      "own_ekadashis": [
+        "padmini",
+        "parama"
+      ],
+      "festival_home": "Keep avoided rites for the normal month of the same name."
+    },
+    "adhik_ordinary_year": {
+      "meaning": "An adhik masa in a year with no kshaya masa near it.",
+      "treatment": "malamasa",
+      "status": "ASSUMED, not in the owner's text: the owner gave rules for the adhik before and after a kshaya only. Kane's general malamasa rule is used here until the owner says otherwise.",
+      "own_ekadashis": [
+        "padmini",
+        "parama"
+      ]
+    },
+    "kshaya": {
+      "name_ne": "क्षय",
+      "meaning": "A lunation with two sankrantis inside it. It keeps the name of the first sankranti's month; the month of the second sankranti is lost as a name. No days are lost, only the name. It is flanked by two adhik months.",
+      "treatment": "no_rule_in_kane",
+      "kane": "Kane gives no rule for festivals, vratas or shraddha in a kshaya month itself.",
+      "shraddha": "Do the annual shraddhas of both constituent months on one day, on the tithi, in the half it falls in.",
+      "festivals_of_the_lost_month": "follow"
+    }
+  },
+  "kshaya_festival_transfer": {
+    "default": "follow",
+    "follow": "A festival that belongs to the lost month does not vanish. It is held in the first lunation after the kshaya lunation, on the same tithi and paksha.",
+    "skip": "The festival is not held that year.",
+    "overrides": {
+      "swasthani-brata-arambha": {
+        "policy": "skip",
+        "why": "Swasthani opens on Pausha Purnima. When Pausha is the lost month there is no Pausha Purnima to open on, so the opening is skipped and the vrata still closes on Magha Purnima (owner, 2026-11-24)."
+      }
+    },
+    "supersedes": "The earlier owner rule that the lost masa's lunar festivals are not observed (crates/panchanga/tests/kshaya_shortcut.rs, 'a_kshaya_month_drops_its_skipped_masas_festivals')."
+  },
+  "vrata_rules": {
+    "swasthani": {
+      "normal": "Opens on Pausha Shukla Purnima, closes on Magha Shukla Purnima (samapti the day before, Chaturdashi).",
+      "pausha_is_kshaya": "Skip the opening. The closing stays on Magha Purnima.",
+      "magha_is_kshaya": "The opening stays on Pausha Purnima. The closing follows the lost Magha Purnima into the first lunation after the kshaya (BS 2039: Adhik Phalguna Shukla Purnima, 27 Feb 1983; samapti 26 Feb).",
+      "status": "The last sentence of the owner's instruction ('if magha is kshaya ... it will close on pausa end also, same vice versa') disagrees with the owner's own BS 2039 example, where the vrata ran 28 Jan to 27 Feb 1983 and was observed in Sankhu that year. The example is what is encoded. Needs the owner's ruling on the 'pausa end' wording."
+    }
+  },
+  "examples": [
+    {
+      "bs_year": 2039,
+      "gregorian": "14 Apr 1982 to 13 Apr 1983",
+      "adhik_samsarpa": {
+        "month": "Ashwin",
+        "stated": "Sep-Oct 1982"
+      },
+      "kshaya": {
+        "kept": "Poush",
+        "lost": "Magh",
+        "from": "1983-01-14",
+        "to": "1983-02-13"
+      },
+      "adhik_malimlucha": {
+        "month": "Falgun",
+        "from": "1983-02-13",
+        "to": "1983-03-14"
+      },
+      "festivals": {
+        "swasthani-brata-arambha": "1983-01-28",
+        "saraswati-puja": "1983-02-18",
+        "swasthani-brata-samapti": "1983-02-26",
+        "magh-purnima": "1983-02-27",
+        "holi": "1983-03-28"
+      },
+      "open": "Maha Shivaratri: the owner puts it on 11 Feb 1983 (Chaturdashi of the kshaya lunation, Sun in Makara). The festival rule book computes 13 Mar 1983. Not changed here."
+    },
+    {
+      "bs_year": 2085,
+      "gregorian": "14 Apr 2028 to 13 Apr 2029",
+      "adhik_samsarpa": {
+        "month": "Kartik",
+        "from": "2028-10-19",
+        "to": "2028-11-16"
+      },
+      "kshaya": {
+        "kept": "Mangsir",
+        "lost": "Poush",
+        "from": "2028-12-16",
+        "to": "2029-01-14"
+      },
+      "adhik_malimlucha": {
+        "month": "Chaitra",
+        "from": "2029-03-16",
+        "to": "2029-04-13"
+      },
+      "festivals": {
+        "swasthani-brata-arambha": null
+      }
+    }
+  ],
+  "adhik_only_festivals": {
+    "meaning": "Festivals that belong to the adhik lunation itself, whichever month it is, and to no other. The rule book names a month for them; that name is ignored.",
+    "ids": [
+      "padmini-ekadashi",
+      "parama-ekadashi"
+    ],
+    "padmini": "Adhik Shukla Ekadashi",
+    "parama": "Adhik Krishna Ekadashi"
+  }
+}

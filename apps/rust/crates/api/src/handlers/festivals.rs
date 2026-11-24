@@ -405,6 +405,37 @@ pub(crate) async fn nepal_special_months(
     json_payload(&payload, &q, &headers, directive, None, started)
 }
 
+/// `GET /v1/nepal/month-kinds/{bs_year}`: the adhik and kshaya lunations of a year, with the
+/// owner's treatment rules (`month_type_rules_v1.json`).
+pub(crate) async fn nepal_month_kinds(
+    State(state): State<AppState>,
+    Path(bs_year): Path<i64>,
+    AxumQuery(q): AxumQuery<Query>,
+    headers: HeaderMap,
+) -> Response {
+    let started = Instant::now();
+    if let Some(r) = era_error(&q).or_else(|| siddhanta_error(&state, &q)) {
+        return r;
+    }
+    let location = match super::panchanga::location(&q, &state) {
+        Ok(location) => location,
+        Err(r) => return r,
+    };
+    let Ok(year) = i32::try_from(bs_year) else {
+        return detail(StatusCode::BAD_REQUEST, "year must be a signed patro year");
+    };
+    let payload = match patro::festivals::month_kinds_payload(year, &location) {
+        Ok(payload) => payload,
+        Err(message) => return detail(StatusCode::BAD_REQUEST, &message),
+    };
+    let directive = if year < current_bs_year() {
+        IMMUTABLE
+    } else {
+        LIVE
+    };
+    json_payload(&payload, &q, &headers, directive, None, started)
+}
+
 /// `GET /v1/nepal/sankranti/year/{ad_year}`.
 pub(crate) async fn nepal_sankranti_year(
     State(state): State<AppState>,

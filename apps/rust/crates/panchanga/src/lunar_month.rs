@@ -942,6 +942,90 @@ pub fn find_festival_in_lunar_month(
         .filter(|day| kshaya.is_empty() || !swallowed_by_kshaya(*day, gregorian_year, &kshaya))
 }
 
+/// What a festival of the month a kshaya lunation swallowed does that year.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum KshayaTransfer {
+    /// It is held in the first lunation after the kshaya lunation, same tithi and paksha
+    /// (`month_type_rules_v1.json`, `kshaya_festival_transfer`).
+    #[default]
+    Follow,
+    /// It is not held that year.
+    Skip,
+}
+
+/// [`find_festival_in_lunar_month`] with the owner's rule for a lost month: the festival does
+/// not vanish, it follows into the first lunation after the kshaya lunation.
+#[must_use]
+pub fn find_festival_with_kshaya_rule(
+    name: &str,
+    display: u32,
+    paksha: Paksha,
+    gregorian_year: i32,
+    selection: DateSelection,
+    observer: &Observer,
+    transfer: KshayaTransfer,
+) -> Option<CivilDay> {
+    let found =
+        find_festival_in_lunar_month(name, display, paksha, gregorian_year, selection, observer);
+    if found.is_some() || transfer == KshayaTransfer::Skip {
+        return found;
+    }
+    kshaya_following_day(name, display, paksha, gregorian_year, selection, observer)
+}
+
+/// The day in the lunation after a kshaya lunation that swallowed `name`, when it falls in
+/// `gregorian_year`.
+fn kshaya_following_day(
+    name: &str,
+    display: u32,
+    paksha: Paksha,
+    gregorian_year: i32,
+    selection: DateSelection,
+    observer: &Observer,
+) -> Option<CivilDay> {
+    let system = observer.system;
+    if kshaya_drops(system, name, gregorian_year).is_empty() {
+        return None;
+    }
+    for year in [gregorian_year - 1, gregorian_year] {
+        if !kshaya_possible(system, year) {
+            continue;
+        }
+        let lunar = lunar_year(system, year);
+        let months = &lunar.months;
+        for (i, m) in months.iter().enumerate() {
+            let sankrantis = sankrantis_in_period(system, m.start_aausi, m.end_aausi);
+            if sankrantis.len() < 2 || BS_MONTH_NAMES[sankrantis[0] as usize] != name {
+                continue;
+            }
+            let next = match months.get(i + 1) {
+                Some(next) => next.clone(),
+                None => lunar_year(system, year + 1).months.first()?.clone(),
+            };
+            let (day, _) = resolve_tithi_day(&next, display, paksha, selection, observer)?;
+            if day.year == gregorian_year {
+                return Some(day);
+            }
+        }
+    }
+    None
+}
+
+/// The day of `display`/`paksha` inside the year's adhik lunation, for the festivals that
+/// belong to the adhik month itself (Padmini and Parama Ekadashi).
+#[must_use]
+pub fn adhik_month_tithi_day(
+    gregorian_year: i32,
+    display: u32,
+    paksha: Paksha,
+    selection: DateSelection,
+    observer: &Observer,
+) -> Option<CivilDay> {
+    let year = observed_year(gregorian_year, observer);
+    let (adhik, _) = year.months().find(|(m, _)| m.is_adhik)?;
+    resolve_tithi_day(adhik, display, paksha, selection, observer).map(|(day, _)| day)
+}
+
 /// First day of the year's Adhik Maas when it is `name` (`compute_adhik_arambha`), or of
 /// any Adhik Maas when `name` is `None`.
 #[must_use]

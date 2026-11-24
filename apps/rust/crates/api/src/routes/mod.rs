@@ -194,6 +194,10 @@ fn festivals() -> Router<AppState> {
             get(handlers::festivals::nepal_special_months),
         )
         .route(
+            "/v1/nepal/month-kinds/{bs_year}",
+            get(handlers::festivals::nepal_month_kinds),
+        )
+        .route(
             "/v1/nepal/sankranti/year/{ad_year}",
             get(handlers::festivals::nepal_sankranti_year),
         )

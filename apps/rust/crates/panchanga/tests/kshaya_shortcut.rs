@@ -38,9 +38,14 @@ fn the_shortcut_never_skips_a_kshaya_month_over_six_thousand_years() {
     println!("{} kshaya years: {found:?}", found.len());
 }
 
-/// Owner's rule: in a kshaya year the dropped masa's lunar festivals are not observed.
-/// 1983's kshaya month (Poush–Magh) drops Magh: Shree Panchami (Magh shukla 5) has no
-/// date that year, and returns the next.
+/// The raw finder still has no date for the masa a kshaya lunation swallowed: 1983's kshaya
+/// month (Poush–Magh) drops Magh, so Shree Panchami (Magh shukla 5) has none that year.
+///
+/// This used to be the owner's rule for the festival itself. On 2026-11-24 the owner ruled that
+/// a lost month's festival is not dropped but follows into the first lunation after the kshaya
+/// (`month_type_rules_v1.json`); festival dates now go through `find_festival_with_kshaya_rule`
+/// (Saraswati Puja 1983 is 18 Feb, see `crates/festivals/tests/month_type_rules.rs`). This test
+/// keeps pinning the finder underneath it.
 #[test]
 fn a_kshaya_month_drops_its_skipped_masas_festivals() {
     use astronomy::engine::Observer;

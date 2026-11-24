@@ -17,7 +17,7 @@ pub use lists::{
     FestivalList, festival_location, festivals_for_day,
     filter_day as filter_redundant_day_festivals, generate_bs_festivals, generate_festivals,
 };
-pub use rules::{is_public_holiday, rule};
+pub use rules::{is_public_holiday, month_type_rules, rule};
 pub use sait::{
     CEREMONY_SAITS, CeremonyWindows, attach_festival_saits, ceremony_saits, festival_saits,
 };

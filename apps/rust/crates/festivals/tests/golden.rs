@@ -50,16 +50,39 @@ fn compare(what: &str, got: &[Value], want: &Value) {
     );
 }
 
+/// The masa a kshaya lunation swallows, in the BS years the golden holds. Python (production)
+/// drops that masa's lunar festivals; the owner's rule (`month_type_rules_v1.json`) moves them
+/// into the lunation after the kshaya, which `month_type_rules.rs` checks against the dates the
+/// owner stated. So these rows are left out of the Python comparison, on both sides.
+const LOST_MASA: [(i32, &str); 2] = [(2039, "Magh"), (2085, "Poush")];
+
+fn without_lost_masa(bs_year: i32, festivals: &[Value]) -> Vec<Value> {
+    let lost = LOST_MASA
+        .iter()
+        .find(|(y, _)| *y == bs_year)
+        .map(|(_, masa)| *masa);
+    festivals
+        .iter()
+        .filter(|f| {
+            let rule = festivals::rule(f["id"].as_str().unwrap_or_default());
+            let is_lost = lost.is_some_and(|masa| {
+                rule.get("type").and_then(Value::as_str) == Some("lunar")
+                    && rule.get("lunar_month").and_then(Value::as_str) == Some(masa)
+            });
+            !is_lost
+        })
+        .cloned()
+        .collect()
+}
+
 #[test]
 fn bs_years_match() {
     for case in GOLDEN["bs_years"].as_array().expect("list") {
         let y = year(&case["bs_year"]);
         let loc = location(&case["location"]);
-        compare(
-            &format!("BS {y} {}", loc.name),
-            &generate_bs_festivals(y, &loc),
-            &case["festivals"],
-        );
+        let got = without_lost_masa(y, &generate_bs_festivals(y, &loc));
+        let want = without_lost_masa(y, case["festivals"].as_array().expect("list"));
+        compare(&format!("BS {y} {}", loc.name), &got, &Value::Array(want));
     }
 }
 

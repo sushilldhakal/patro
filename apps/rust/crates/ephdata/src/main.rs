@@ -241,6 +241,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             let sky = Sky::open(Path::new(&arg(&args, 2, "veph")?))?;
             let idx = index::Index::open(Path::new(&arg(&args, 3, "vidx")?))?;
             let n: usize = arg(&args, 4, "count")?.parse()?;
+            // How far either side of a boundary the flip must be seen, in milliseconds. 5 is
+            // right for the present; far from it (beyond ~4000 CE, where delta-T is days) the
+            // kernel evaluation itself is noisy to a few milliseconds, so use a looser one.
+            let tolerance_ms: f64 = args.get(5).map_or(Ok(5.0), |t| t.parse())?;
             let (a, b) = idx.coverage();
             let mut rng = Lcg(99);
             let mut bad = 0usize;
@@ -253,20 +257,22 @@ fn main() -> Result<(), Box<dyn Error>> {
                         continue;
                     };
                     let at = |t: f64| sky.sun_moon(t).map(|(s, m)| kind.multiple(s, m));
-                    let ms = 1.0 / 86_400_000.0;
+                    let ms = tolerance_ms / 86_400_000.0;
                     // nothing between the two boundaries; each flips where it says
                     let ok = at(jd)? == prev.multiple
-                        && at(next.jd - 5.0 * ms)? == prev.multiple
-                        && at(next.jd + 5.0 * ms)? == next.multiple
-                        && at(prev.jd - 5.0 * ms)? != prev.multiple
-                        && at(prev.jd + 5.0 * ms)? == prev.multiple;
+                        && at(next.jd - ms)? == prev.multiple
+                        && at(next.jd + ms)? == next.multiple
+                        && at(prev.jd - ms)? != prev.multiple
+                        && at(prev.jd + ms)? == prev.multiple;
                     if !ok {
                         bad += 1;
                         println!("BAD {kind:?} at {jd}: prev {prev:?} next {next:?}");
                     }
                 }
             }
-            println!("checked {n} random instants per kind: {bad} inconsistent");
+            println!(
+                "checked {n} random instants per kind at +/-{tolerance_ms} ms: {bad} inconsistent"
+            );
         }
         _ => return Err("commands: extract, index, dump, lon, sample, check".into()),
     }

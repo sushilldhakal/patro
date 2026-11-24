@@ -33,7 +33,9 @@ Surya and Drik files are never mixed: `surya.vidx`, `surya.cheb`, `drik.vidx`, `
    - Surya: the Surya Siddhanta formulas themselves, ported to TypeScript. Pure arithmetic, no
      data, exact for any date, so it is the same numbers as the server for all time.
    - Drik: a series fitted to our own kernel (`ephdata analytic-fit`), plus orbit elements for the
-     planets. No data file, any year. Measured per two centuries over AD 1-2947: Sun within 55",
+     planets. No data file. It answers for any date, but it is only MEASURED over the kernel's span,
+     AD 1-2947 (checked at 3000 BCE to 3000 CE: it stays bounded, Sun about 1.01 degrees a day and
+     Moon 12-14.5, but its error outside AD 1-2947 is unknown). Measured per two centuries over AD 1-2947: Sun within 55",
      Moon within 56" (a tithi end off by 1-2 minutes), Rahu within 145" (0.04 degrees), the
      ayanamsha exact, the planets about half a degree near the present and up to 12 degrees in the
      far past. It is shown as approximate.
@@ -104,3 +106,46 @@ Not built yet:
 
 Each step is checked against the existing golden numbers before the next starts. Nothing here is
 deployed until the owner says so.
+
+## Client integration plan (web and mobile), 2026-11-24
+
+What is true today, checked: the web production build passes (95 pages prerendered, `public/sky/*.bin`
+copied into `dist/sky`), and the mobile iOS bundle exports with no errors. **The mobile bundle does not
+yet contain the sky files**: Metro only bundles what the app imports, and no screen imports
+`apps/mobile/lib/sky.ts`. Until a screen does, the four `.bin` assets cost nothing and do nothing.
+
+Order of work. Each step ends with its own test and must not add a network call inside BS 1950-2150.
+
+1. **Day engine in `packages/domain`** (`sky-day.ts`): from a `Sky`, a date and a place, build the
+   day's panchanga strip: sunrise and sunset, tithi, nakshatra, yoga and karana with their end times
+   (from the index, so identical to the server), paksha, moon and graha rashis, lagna. Test against
+   the server's own answers for 50 dates and three places (Kathmandu, Sydney, New York).
+2. **Data layer switch** (mobile `lib/api.ts`, web `src/lib/api.ts`): for the day and month
+   panchanga routes, answer from the day engine when the date is inside the window, and from the
+   server only for what the engine cannot make (festivals, kundali, muhurta). A flag
+   (`SKY_LOCAL=on|off`) decides, so it can be turned off by an OTA update without a release.
+3. **Mobile**: import `getSky` from the data layer (this is what puts the `.bin` files in the
+   bundle), open the active system lazily on first use, never at launch (RAM and the launch
+   watchdog: parse about 4 MB only when a screen needs it). Check the Android low-RAM path.
+4. **System switch**: Surya and Drik are separate files. Open only the selected system; keep the
+   other closed until the user switches.
+5. **Festivals offline** (decision needed): festival dates depend on local sunrise and the rule
+   book, so going offline for them means porting the festival engine, or shipping a per-year
+   festival list for a few cities.
+6. **Account only**: login, signup, profile and sync keep using the server.
+7. **Release**: EAS update carries the assets (7.6 MB), a store build is needed only if the
+   native asset limit is hit. Web: serve `/sky/*.bin` with a long cache and `Content-Type:
+   application/octet-stream`; add gzip for `.bin`.
+
+Acceptance for the whole plan: airplane mode, open any date in BS 1950-2150 on both apps with both
+systems, no request to `/v1/panchanga*`, no error in Sentry or the console.
+
+## Range of the fallbacks and of the server's batches (owner's target: 3000 BCE to 3000 CE)
+
+| Piece | Covers today | Needed for 3000 BCE-3000 CE |
+|---|---|---|
+| Bundled window in the apps | BS 1950-2150 (AD 1893-2096), both systems | nothing, this is the offline window |
+| Surya formulas in the app (tier 3) | any date, exact | nothing |
+| Drik analytic series in the app (tier 3) | answers for any date; measured only AD 1-2947 | extract the kernel from the DE441 parts for 3000 BCE-3000 CE (both `.bsp` files are on this machine), refit the series, measure |
+| Server batches, Surya | only the bundled window is built | build `surya.vidx` and `surya.cheb` for 3000 BCE-3000 CE |
+| Server batches, Drik | kernel, index and Chebyshev cover AD 1-2947 | kernel and index for 3000 BCE-3000 CE |

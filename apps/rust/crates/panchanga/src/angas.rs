@@ -257,15 +257,48 @@ impl Vara {
 #[expect(
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
-    reason = "a Julian Day Number is positive and fits"
+    reason = "a Julian Day Number fits an i64 and rem_euclid(7) is 0..=6"
 )]
 pub fn vara(jd_ut: f64, zone: &Zone) -> Vara {
     let offset_seconds = match Moment::from_jd(jd_ut) {
         Moment::Utc(instant) => zone.offset_seconds_at(instant),
         Moment::Jd(_) => zone.reference_offset_seconds(),
     };
-    let weekday = ((jd_ut + f64::from(offset_seconds) / 86400.0 + 0.5) as i64 % 7) as u32;
+    // floor and rem_euclid, not truncation and `%`: before Julian Day 0 (4713 BCE) the day number
+    // is negative, and `-3.5 as i64` is -3 where the day is -4, so truncating names the wrong
+    // weekday and a negative remainder cannot become a u32. For Julian Day >= 0 this is identical
+    // to Python's `int(jd + offset + 0.5) % 7`.
+    let day_number = (jd_ut + f64::from(offset_seconds) / 86400.0 + 0.5).floor() as i64;
+    let weekday = day_number.rem_euclid(7) as u32;
     Vara {
         number: (weekday + 1) % 7,
+    }
+}
+
+#[cfg(test)]
+mod vara_before_julian_day_zero {
+    use super::*;
+
+    /// Weekdays repeat every 7 days at any epoch, including before Julian Day 0 (4713 BCE),
+    /// where the day number is negative. Python's truncation gets these wrong by a day.
+    #[test]
+    fn weekday_repeats_every_seven_days_into_the_far_past() {
+        let utc = Zone::get("UTC").expect("UTC zone");
+        for jd in [
+            -1.0e5 - 0.3,
+            -3_000_000.7,
+            -3_063_616.0,
+            -12.5,
+            -0.2,
+            0.2,
+            2_461_041.4,
+        ] {
+            let today = vara(jd, &utc).number;
+            let next = vara(jd + 7.0, &utc).number;
+            let tomorrow = vara(jd + 1.0, &utc).number;
+            assert_eq!(today, next, "JD {jd}");
+            assert_eq!((today + 1) % 7, tomorrow, "JD {jd}");
+            assert!(today < 7);
+        }
     }
 }

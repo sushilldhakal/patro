@@ -581,7 +581,13 @@ const DRIK_NAMES: [&str; 8] = [
 /// kernel: the Surya Siddhanta degrees, which are generous for the smooth
 /// Drik motion. A smaller measured set makes a smaller file; the build
 /// prints what it used, and `drik-check` re-verifies it.
-const DRIK_DEGREES: [usize; 8] = CHEB_DEGREES;
+/// Drik's Rahu is the osculating node, which swings a degree or so every fortnight; the
+/// Surya Siddhanta's mean node is smooth and needs only degree 4. Degree 4 left the Drik file
+/// 0.45 degrees off at worst (measured against the series fitted to the same kernel). The Sun's
+/// apparent longitude carries nutation, so degree 4 left it 1.4 arcsec off; 8 gives 0.11. Rahu
+/// settles at 0.62 arcsec from degree 20 up (the kernel's own node is slightly noisy), just
+/// over the 0.5 arcsec budget and invisible next to everything else.
+const DRIK_DEGREES: [usize; 8] = [8, 22, 15, 28, 13, 19, 8, 20];
 
 /// A Drik longitude from the kernel: the apparent sidereal longitude for
 /// bodies 0–6, the true node for body 7 (Rahu).
@@ -838,9 +844,14 @@ fn drik_header_fits(sky: &Sky, first_jd: f64, last_jd: f64) -> Result<HeaderFits
             "mean Sun rate {mean_sun_rate:.9} °/day does not advance 360° in a sidereal year"
         ));
     }
-    if aya_resid > 0.005 {
+    // A file for a span of tens of thousands of years cannot hold the ayanamsha as one line.
+    // With DRIK_WIDE=1 the header line is only a placeholder: the server sets each slice's own
+    // anchor and rate from the kernel before it sends the slice (handlers/client_data.rs).
+    let wide = std::env::var_os("DRIK_WIDE").is_some();
+    if aya_resid > 0.005 && !wide {
         return Err(format!(
-            "ayanamsha is not linear over the range (residual {aya_resid:.4}°)"
+            "ayanamsha is not linear over the range (residual {aya_resid:.4}°); \
+             set DRIK_WIDE=1 for a span meant to be served in slices"
         ));
     }
     Ok(HeaderFits {

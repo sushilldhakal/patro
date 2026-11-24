@@ -4,8 +4,9 @@
 # successful deploy (recorded in .deploy/<app>.sha):
 #   apps/api                      → apps/api/scripts/deploy.sh   (FastAPI service)
 #   apps/web, packages/*, locks   → scripts/deploy-web.sh        (static site)
+#   apps/rust, festival rules     → scripts/deploy-rust.sh       (Rust API: build, swap, health check)
 # The mobile app ships through EAS, not this script.
-# FORCE_DEPLOY=all|api|web deploys regardless of changes.
+# FORCE_DEPLOY=all|api|web|rust deploys regardless of changes.
 set -euo pipefail
 
 REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
@@ -55,6 +56,18 @@ if [[ "${force}" == "all" || "${force}" == "web" ]] \
   echo "${HEAD_SHA}" > "${STATE_DIR}/web.sha"
 else
   echo "==> Website unchanged — skipping"
+fi
+
+# The Rust API. The festival rules in apps/api/rules are compiled into it, so a change there
+# rebuilds it too. Until the Rust server takes traffic it runs beside Python on 8100 and this
+# step keeps it current; deploy-rust.sh skips itself on a box where it was never staged.
+if [[ "${force}" == "all" || "${force}" == "rust" ]] \
+  || changed_since_last_deploy rust apps/rust apps/api/rules apps/api/assets; then
+  echo "==> Deploying Rust API"
+  bash scripts/deploy-rust.sh
+  echo "${HEAD_SHA}" > "${STATE_DIR}/rust.sha"
+else
+  echo "==> Rust API unchanged — skipping"
 fi
 
 echo "Deploy successful."

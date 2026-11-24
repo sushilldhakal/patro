@@ -1172,6 +1172,107 @@ pub fn special_months_payload(bs_year: i32, location: &Location) -> Result<Value
     }))
 }
 
+/// `/nepal/month-kinds/{bs_year}` payload: every adhik and kshaya lunation of the BS year, each
+/// with its kind and the treatment the owner's rules give it (`month_type_rules_v1.json`).
+///
+/// An adhik masa is *samsarpa* when a kshaya masa follows it before the next adhik masa, and
+/// *malimlucha* when a kshaya masa precedes it after the previous adhik masa. A kshaya masa
+/// may sit in the neighbouring BS year, so the three years around are read.
+///
+/// # Errors
+///
+/// Returns a 400 detail string when the year is outside the supported BS axis.
+pub fn month_kinds_payload(bs_year: i32, location: &Location) -> Result<Value, String> {
+    validate_signed_bs_year(bs_year)?;
+    let rules = festivals::month_type_rules();
+    let mut adhik: Vec<Value> = Vec::new();
+    let mut kshaya: Vec<Value> = Vec::new();
+    for year in [bs_year - 1, bs_year, bs_year + 1] {
+        if validate_signed_bs_year(year).is_err() {
+            continue;
+        }
+        let special = special_months_payload(year, location)?;
+        for month in special["adhik_months"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default()
+        {
+            if month["start_date"].is_string()
+                && !adhik.iter().any(|m| m["start_date"] == month["start_date"])
+            {
+                adhik.push(month);
+            }
+        }
+        let k = &special["kshaya_maas"];
+        if k["is_kshaya"].as_bool() == Some(true)
+            && !kshaya.iter().any(|m| m["start_date"] == k["start_date"])
+        {
+            kshaya.push(k.clone());
+        }
+    }
+    adhik.sort_by_key(|m| m["start_date"].as_str().unwrap_or_default().to_owned());
+    kshaya.sort_by_key(|m| m["start_date"].as_str().unwrap_or_default().to_owned());
+    let date = |v: &Value, key: &str| v[key].as_str().unwrap_or_default().to_owned();
+    let Some((year_start, year_end)) = bs_year_range(bs_year) else {
+        return Err("could not resolve BS year range".to_owned());
+    };
+    let (first, last) = (year_start.to_string(), year_end.to_string());
+    let mut lunations: Vec<Value> = Vec::new();
+    for (i, month) in adhik.iter().enumerate() {
+        let start = date(month, "start_date");
+        let previous = i.checked_sub(1).map(|j| date(&adhik[j], "start_date"));
+        let next = adhik.get(i + 1).map(|m| date(m, "start_date"));
+        let before_next = kshaya.iter().any(|k| {
+            let ks = date(k, "start_date");
+            ks > start && next.as_ref().is_none_or(|n| ks < *n)
+        });
+        let after_previous = kshaya.iter().any(|k| {
+            let ks = date(k, "start_date");
+            ks < start && previous.as_ref().is_none_or(|p| ks > *p)
+        });
+        let kind = match (before_next, after_previous) {
+            (true, _) => "adhik_samsarpa",
+            (false, true) => "adhik_malimlucha",
+            (false, false) => "adhik_ordinary_year",
+        };
+        if start >= first && start <= last {
+            lunations.push(json!({
+                "kind": kind,
+                "month_name": month["month_name"],
+                "full_name_en": month["full_name_en"],
+                "full_name_ne": month["full_name_ne"],
+                "start_date": month["start_date"],
+                "end_date": month["end_date"],
+                "treatment": rules["lunation_kinds"][kind],
+            }));
+        }
+    }
+    for k in &kshaya {
+        let start = date(k, "start_date");
+        if start >= first && start <= last {
+            lunations.push(json!({
+                "kind": "kshaya",
+                "month_name": k["month_name"],
+                "lost_month_name": k["dropped_month_name"],
+                "full_name_en": k["full_name_en"],
+                "full_name_ne": k["full_name_ne"],
+                "start_date": k["start_date"],
+                "end_date": k["end_date"],
+                "treatment": rules["lunation_kinds"]["kshaya"],
+            }));
+        }
+    }
+    lunations.sort_by_key(|m| m["start_date"].as_str().unwrap_or_default().to_owned());
+    Ok(json!({
+        "bs_year": bs_year,
+        "gregorian_range": {"start": first, "end": last},
+        "location": location.as_json(),
+        "lunations": lunations,
+        "festival_transfer": rules["kshaya_festival_transfer"],
+        "vrata_rules": rules["vrata_rules"],
+    }))
+}
+
 /// `/nepal/panchanga/year/{bs_year}` payload.
 ///
 /// # Errors

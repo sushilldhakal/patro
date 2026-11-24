@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "chapters:check": "TSX_TSCONFIG_PATH=./tsconfig.app.json tsx scripts/check-chapters.ts",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "dev:lan:rust": "npm run i18n && VITE_DEV_API_TARGET=http://localhost:8092 VITE_API_BASE_URL=/api vite --host 0.0.0.0 --port 5173 --strictPort"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

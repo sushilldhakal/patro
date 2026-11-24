@@ -28,6 +28,27 @@ jobs:
       - run: npm run check:copy
       - run: npm run check:duplicates
 
+  rust:
+    # The Rust server (apps/rust): formatting, clippy with warnings denied, and every crate's
+    # tests. The root package's HTTP golden tests need the GeoNames city database and the
+    # ephemeris files, which are not in git, so they run on a developer machine and on the
+    # test box; this job runs everything that needs no data files.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/rust
+      - run: cargo fmt --check
+      - run: cargo clippy --workspace --exclude ephemeris --all-targets -- -D warnings
+      - run: cargo test --workspace --exclude ephemeris --exclude vedic-patro --no-fail-fast
+
   api-contract:
     # The TypeScript client is checked against contracts/openapi.json; this
     # fails if that file no longer matches the FastAPI routes.

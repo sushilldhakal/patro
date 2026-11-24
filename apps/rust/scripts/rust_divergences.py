@@ -57,7 +57,7 @@ fix, delete the entry here.
     The patch makes Python's ``udaya_day_on_or_after`` read the observer of the
     entry point that called it.
 
-12. Kshaya years: the masa a kshaya month skips (its second sankranti's name) keeps no
+12. (Superseded by 28 for the Rust server.) Kshaya years: the masa a kshaya month skips (its second sankranti's name) keeps no
     lunar festivals that year — the owner's rule. Python fell back to the
     neighbouring year's occurrence. 1983 (Poush–Magh kshaya): no Magh festivals.
     Only the occurrence the kshaya swallows is dropped (a fallback to another year's
@@ -131,6 +131,18 @@ The account layer (Postgres; not in any golden, the account recorder never sends
     registered".
 
     from rust_divergences import apply; apply()
+
+28. Kshaya and adhik months (``apps/api/rules/month_type_rules_v1.json``, owner ruling
+   2026-11-24), Rust only and not patched into Python: a festival of the month a kshaya
+   lunation swallowed follows into the first lunation after it instead of vanishing
+   (Saraswati Puja 1983 is 18 Feb; Swasthani's opening is skipped when Poush is lost, as in
+   2029); Padmini and Parama Ekadashi belong to the adhik lunation wherever it falls; and
+   ``GET /v1/nepal/month-kinds/{bs_year}`` names each adhik lunation samsarpa or
+   malimlucha. The Padmini / Parama part is patched into Python's recorders (``_patch_adhik_only_festivals``);
+    production Python still pins both to an ordinary Jestha. The lost-month "follow" part is NOT
+    imitated in Python (the golden test leaves that masa's festivals out in BS 2039 and 2085, see
+    ``LOST_MASA``; ``crates/festivals/tests/month_type_rules.rs`` checks the owner's dates). Item 12's "no festivals for the lost
+    masa" is superseded by this entry for the Rust server; no golden records a kshaya year.
 """
 
 from __future__ import annotations
@@ -238,7 +250,9 @@ def apply() -> None:
     _patch_civil_day_strftime()
     _patch_gochar_local_stamp()
     _patch_local_lunar_month_days()
+    _patch_no_disk_festival_cache()
     _patch_kshaya_drops_festivals()
+    _patch_adhik_only_festivals()
     _patch_midnight_utc_arithmetic()
     _patch_clock_gap_printing()
     _patch_fixed_bugs()
@@ -421,6 +435,132 @@ def _patch_kshaya_drops_festivals() -> None:
     lm.find_festival_in_lunar_month = find
     ns.find_festival_in_lunar_month = find
     fr.find_festival_in_lunar_month = find
+
+
+def _patch_no_disk_festival_cache() -> None:
+    """The recorders always compute festival calendars fresh: the Python server keeps them in
+    ``apps/api/cache/*.json`` stamped with its own code version, so a file written before a
+    divergence was added would be recorded as if the divergence did not exist."""
+    import services.festivals.holiday_generator as hg
+
+    for name in (
+        "load_festivals_cached",
+        "load_cached",
+        "load_bs_festivals_cached",
+        "load_bs_cached",
+    ):
+        original = getattr(hg, name)
+        none = lambda *args, **kwargs: None  # noqa: E731
+        setattr(hg, name, none)
+        _replace_everywhere(original, none)
+    for name in (
+        "save_festivals_cache",
+        "save_cache",
+        "save_bs_festivals_cache",
+        "save_bs_cache",
+    ):
+        original = getattr(hg, name)
+        nothing = lambda *args, **kwargs: None  # noqa: E731
+        setattr(hg, name, nothing)
+        _replace_everywhere(original, nothing)
+
+
+def _patch_adhik_only_festivals() -> None:
+    """The owner's month-type rules (``month_type_rules_v1.json``): Padmini and Parama Ekadashi
+    belong to the adhik lunation itself (Python pinned them to Jestha), and a festival of the
+    month a kshaya lunation swallowed follows into the lunation after it (Python dropped it,
+    item 12) unless its rule says skip."""
+    import engine.festivals.festival_rules as fr
+    import engine.panchanga.lunar_month as lm
+
+    original = fr.compute_festival_dates
+    adhik_only = ("padmini-ekadashi", "parama-ekadashi")
+
+    import json
+    from datetime import timedelta
+    from pathlib import Path
+
+    import engine.panchanga.nepal_sambat  # noqa: F401  (imports the module the patch rebinds)
+    from engine.calendar.constants import BS_MONTH_NAMES
+    from engine.panchanga.kshaya_maas import count_sankrantis_in_period
+
+    month_types = json.loads(
+        (Path(__file__).resolve().parents[2] / "api/rules/month_type_rules_v1.json").read_text()
+    )
+    skip_ids = {
+        fid
+        for fid, o in month_types["kshaya_festival_transfer"]["overrides"].items()
+        if o.get("policy") == "skip"
+    }
+
+    def following_day(rule, gregorian_year, location):
+        """A lost month's festival is held in the first lunation after the kshaya lunation."""
+        name = rule["lunar_month"]
+        for year in (gregorian_year - 1, gregorian_year):
+            months = lm.get_lunar_year(year).months
+            for i, m in enumerate(months):
+                sankrantis = count_sankrantis_in_period(m.start_Aausi, m.end_Aausi)
+                if len(sankrantis) < 2 or BS_MONTH_NAMES[sankrantis[0]] != name:
+                    continue
+                nxt = months[i + 1] if i + 1 < len(months) else lm.get_lunar_year(year + 1).months[0]
+                # The day must fall inside that lunation itself, not in another year's month
+                # of the same name.
+                for lookup_year in (year, year + 1):
+                    day = lm.find_festival_in_lunar_month(
+                        lunar_month_name=nxt.month_name,
+                        tithi=int(rule["tithi"]),
+                        paksha=rule["paksha"],
+                        gregorian_year=lookup_year,
+                        adhik_policy="use_adhik" if nxt.is_adhik else "skip",
+                        date_selection=rule.get("date_selection", "udaya"),
+                        location=location,
+                        month_model="amanta",
+                    )
+                    if (
+                        day is not None
+                        and day.year == gregorian_year
+                        and nxt.start_Aausi.date() <= day <= nxt.end_Aausi.date()
+                    ):
+                        return day
+        return None
+
+    # The follow rule is implemented in Rust only. Imitating it here gave dates a day apart and
+    # fell back to next year's month, and Python is the rule being replaced, so it is not a
+    # reference for it: the golden test leaves the lost masa's festivals out instead
+    # (crates/festivals/tests/golden.rs, LOST_MASA), and month_type_rules.rs checks the owner's dates.
+    follow_lost_month = False
+
+    def compute(festival_id, rule, gregorian_year, location=fr.DEFAULT_LOCATION):
+        if follow_lost_month and festival_id not in adhik_only and rule.get("type", "lunar") == "lunar":
+            result = original(festival_id, rule, gregorian_year, location)
+            if result is None and festival_id not in skip_ids and rule.get("lunar_month"):
+                start = following_day(rule, gregorian_year, location)
+                if start is not None:
+                    duration = max(int(rule.get("duration_days", 1)), 1)
+                    return start, start + timedelta(days=duration - 1)
+            return result
+        if festival_id not in adhik_only or rule.get("type", "lunar") != "lunar":
+            return original(festival_id, rule, gregorian_year, location)
+        adhik = next((m for m in lm.get_lunar_year(gregorian_year).months if m.is_adhik), None)
+        if adhik is None:
+            return None
+        start = lm.find_festival_in_lunar_month(
+            lunar_month_name=adhik.month_name,
+            tithi=int(rule["tithi"]),
+            paksha=rule["paksha"],
+            gregorian_year=gregorian_year,
+            adhik_policy="use_adhik",
+            date_selection=rule.get("date_selection", "udaya"),
+            location=location,
+            month_model="amanta",
+        )
+        if start is None:
+            return None
+        duration = max(int(rule.get("duration_days", 1)), 1)
+        return start, start + timedelta(days=duration - 1)
+
+    fr.compute_festival_dates = compute
+    _replace_everywhere(original, compute)
 
 
 def _patch_midnight_utc_arithmetic() -> None:

@@ -8,13 +8,15 @@ use astronomy::{
 use calendar::{BsDate, bs_to_civil, find_sankranti_after_jd};
 use panchanga::{
     Paksha,
-    lunar_month::{DateSelection, adhik_month_first_day, find_festival_in_lunar_month},
+    lunar_month::{
+        DateSelection, adhik_month_first_day, adhik_month_tithi_day, find_festival_with_kshaya_rule,
+    },
     tropical_sun_longitude,
 };
 use serde_json::{Map, Value};
 use timescale::{CivilDay, Moment, UtcInstant, Zone};
 
-use crate::rules::rules;
+use crate::rules::{id_of, is_adhik_only, kshaya_transfer, rules};
 
 fn int(rule: &Map<String, Value>, key: &str) -> Option<i64> {
     rule.get(key).and_then(|v| {
@@ -37,13 +39,23 @@ fn lunar(rule: &Map<String, Value>, gregorian_year: i32, observer: &Observer) ->
     } else {
         Paksha::Shukla
     };
-    find_festival_in_lunar_month(
+    if is_adhik_only(id_of(rule)) {
+        return adhik_month_tithi_day(
+            gregorian_year,
+            u(int(rule, "tithi")?),
+            paksha,
+            DateSelection::from_rule(text(rule, "date_selection")),
+            observer,
+        );
+    }
+    find_festival_with_kshaya_rule(
         text(rule, "lunar_month")?,
         u(int(rule, "tithi")?),
         paksha,
         gregorian_year,
         DateSelection::from_rule(text(rule, "date_selection")),
         observer,
+        kshaya_transfer(id_of(rule)),
     )
 }
 
