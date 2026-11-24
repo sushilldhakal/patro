@@ -83,10 +83,12 @@ function pyMod(x: number, m: number): number {
 
 /** Fractional revolution after the days of motion up to `jdUt`, exactly. */
 function revolutionFraction(revs: bigint, periodDays: bigint, jdUt: number): number {
-  const days = Number(DAYS_CREATION_TO_KALI) + (jdUt - KALI_EPOCH_JD);
-  const whole = Math.floor(days);
-  const part = days - whole;
-  let numerator = (revs * BigInt(whole)) % periodDays;
+  // The day count since creation is about 7e11: as a double it would only resolve ten seconds, so the
+  // whole days stay in BigInt and only the day's fraction is a float.
+  const since = jdUt - KALI_EPOCH_JD;
+  const dayWhole = Math.floor(since);
+  const part = since - dayWhole;
+  let numerator = (revs * (DAYS_CREATION_TO_KALI + BigInt(dayWhole))) % periodDays;
   if (numerator < 0n) numerator += periodDays;
   return pyMod((Number(numerator) + Number(revs) * part) / Number(periodDays), 1);
 }

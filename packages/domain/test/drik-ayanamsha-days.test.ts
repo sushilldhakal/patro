@@ -12,6 +12,8 @@ import { localClock, skyDay } from "../src/astronomy/sky-day";
 const NAKSHATRA = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"];
 const RASHI = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"];
 
+const YOGA = ["Vishkumbha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda", "Sukarma", "Dhriti", "Shula", "Ganda", "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra", "Siddhi", "Vyatipata", "Variyan", "Parigha", "Shiva", "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma", "Indra", "Vaidhriti"];
+
 const io: SkyIo = {
   bundled: async (name) => new Uint8Array(readFileSync(new URL(`../../../apps/web/public/sky/${name}.bin`, import.meta.url))),
   readCache: async () => null,
@@ -22,7 +24,7 @@ const io: SkyIo = {
 };
 const fixture = JSON.parse(readFileSync(new URL("./fixtures/drik-ayanamsha-days.json", import.meta.url), "utf8")) as {
   place: { latitude: number; longitude: number; utcOffsetMinutes: number };
-  modes: Record<DrikAyanamsha, { date_ad: string; nakshatra: string; nakshatra_end: string; chandra_rashi: string }[]>;
+  modes: Record<DrikAyanamsha, { date_ad: string; nakshatra: string; nakshatra_end: string; chandra_rashi: string; yoga: string; yoga_end: string }[]>;
 };
 
 const minutesOf = (stamp: string) => {
@@ -54,5 +56,21 @@ for (const mode of Object.keys(fixture.modes) as DrikAyanamsha[]) {
       assert.ok(diff <= 2, `${row.date_ad} ends ${localClock(day.nakshatra.endJd, utcOffsetMinutes)} vs ${row.nakshatra_end}`);
     }
     assert.ok(worst <= 2);
+  });
+
+  test(`drik ${mode}: a month of yogas matches Swiss`, async () => {
+    base ??= new Sky("drik", io);
+    await base.open();
+    const sky = base.withAyanamsha(mode);
+    const { latitude, longitude, utcOffsetMinutes } = fixture.place;
+    for (const row of fixture.modes[mode]) {
+      const [y, m, d] = row.date_ad.split("-").map(Number);
+      const day = skyDay(sky, { year: y, month: m, day: d, latitude, longitude, utcOffsetMinutes });
+      assert.ok(day?.yoga.endJd);
+      assert.equal(YOGA[day.yoga.number - 1], row.yoga, `${row.date_ad} yoga`);
+      const endLocal = (day.yoga.endJd + 0.5) * 1440 + utcOffsetMinutes - 2440588 * 1440;
+      const diff = Math.abs(endLocal - minutesOf(row.yoga_end));
+      assert.ok(diff <= 2, `${row.date_ad} yoga ends ${localClock(day.yoga.endJd, utcOffsetMinutes)} vs ${row.yoga_end}`);
+    }
   });
 }

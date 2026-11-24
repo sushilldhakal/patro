@@ -8,6 +8,8 @@ import * as FileSystem from "expo-file-system/legacy";
 import { getBytes } from "@vedic-patro/api-client";
 import { Sky, type SkyIo, type SkySystem } from "@vedic-patro/domain/astronomy/sky";
 
+import { IS_LOW_MEMORY_DEVICE } from "@/lib/device-memory";
+
 /** Metro asset ids of the shipped files, by the names the module asks for. */
 const BUNDLED: Record<string, number> = {
   "surya.index": require("@/assets/sky/surya.index.bin"),
@@ -75,7 +77,8 @@ const opened = new Map<SkySystem, Promise<Sky>>();
 export function getSky(system: SkySystem): Promise<Sky> {
   let sky = opened.get(system);
   if (!sky) {
-    const created = new Sky(system, io);
+    // Low-memory phones load no sky files: every boundary is solved from the formulas (see `lean`).
+    const created = new Sky(system, io, { lean: IS_LOW_MEMORY_DEVICE });
     sky = created.open().then(
       () => created,
       () => created,

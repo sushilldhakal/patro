@@ -1,1 +1,1369 @@
-{"place": {"latitude": 27.7172, "longitude": 85.324, "utcOffsetMinutes": 345}, "modes": {"lahiri": [{"date_ad": "2026-11-01", "nakshatra": "Pushya", "nakshatra_end": "2026-11-02 04:45", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-02", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-03 04:01", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-03", "nakshatra": "Magha", "nakshatra_end": "2026-11-04 03:41", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-04", "nakshatra": "Purva Phalguni", "nakshatra_end": "2026-11-05 03:45", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-05", "nakshatra": "Uttara Phalguni", "nakshatra_end": "2026-11-06 04:11", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-06", "nakshatra": "Hasta", "nakshatra_end": "2026-11-07 04:58", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-07", "nakshatra": "Chitra", "nakshatra_end": "2026-11-08 06:07", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-08", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 07:39", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-09", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 07:39", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-10", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 09:34", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-11", "nakshatra": "Anuradha", "nakshatra_end": "2026-11-11 11:53", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-12", "nakshatra": "Jyeshtha", "nakshatra_end": "2026-11-12 14:34", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-13", "nakshatra": "Mula", "nakshatra_end": "2026-11-13 17:32", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-14", "nakshatra": "Purva Ashadha", "nakshatra_end": "2026-11-14 20:39", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-15", "nakshatra": "Uttara Ashadha", "nakshatra_end": "2026-11-15 23:44", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-16", "nakshatra": "Shravana", "nakshatra_end": "2026-11-17 02:32", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-17", "nakshatra": "Dhanishta", "nakshatra_end": "2026-11-18 04:49", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-18", "nakshatra": "Shatabhisha", "nakshatra_end": "2026-11-19 06:25", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-19", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 07:11", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-20", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 07:11", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-21", "nakshatra": "Uttara Bhadrapada", "nakshatra_end": "2026-11-21 07:05", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-22", "nakshatra": "Ashwini", "nakshatra_end": "2026-11-23 04:30", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-23", "nakshatra": "Bharani", "nakshatra_end": "2026-11-24 02:17", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-24", "nakshatra": "Krittika", "nakshatra_end": "2026-11-24 23:40", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-25", "nakshatra": "Rohini", "nakshatra_end": "2026-11-25 20:51", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-26", "nakshatra": "Mrigashira", "nakshatra_end": "2026-11-26 18:02", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-27", "nakshatra": "Ardra", "nakshatra_end": "2026-11-27 15:23", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-28", "nakshatra": "Punarvasu", "nakshatra_end": "2026-11-28 13:05", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-29", "nakshatra": "Pushya", "nakshatra_end": "2026-11-29 11:14", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-30", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-30 09:57", "chandra_rashi": "Karka", "sunrise": null}], "kp": [{"date_ad": "2026-11-01", "nakshatra": "Pushya", "nakshatra_end": "2026-11-02 04:35", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-02", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-03 03:51", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-03", "nakshatra": "Magha", "nakshatra_end": "2026-11-04 03:31", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-04", "nakshatra": "Purva Phalguni", "nakshatra_end": "2026-11-05 03:34", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-05", "nakshatra": "Uttara Phalguni", "nakshatra_end": "2026-11-06 04:00", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-06", "nakshatra": "Hasta", "nakshatra_end": "2026-11-07 04:47", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-07", "nakshatra": "Chitra", "nakshatra_end": "2026-11-08 05:56", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-08", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 07:28", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-09", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 07:28", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-10", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 09:23", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-11", "nakshatra": "Anuradha", "nakshatra_end": "2026-11-11 11:41", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-12", "nakshatra": "Jyeshtha", "nakshatra_end": "2026-11-12 14:22", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-13", "nakshatra": "Mula", "nakshatra_end": "2026-11-13 17:20", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-14", "nakshatra": "Purva Ashadha", "nakshatra_end": "2026-11-14 20:27", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-15", "nakshatra": "Uttara Ashadha", "nakshatra_end": "2026-11-15 23:32", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-16", "nakshatra": "Shravana", "nakshatra_end": "2026-11-17 02:20", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-17", "nakshatra": "Dhanishta", "nakshatra_end": "2026-11-18 04:38", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-18", "nakshatra": "Shatabhisha", "nakshatra_end": "2026-11-19 06:14", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-19", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 07:01", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-20", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 07:01", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-21", "nakshatra": "Uttara Bhadrapada", "nakshatra_end": "2026-11-21 06:55", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-22", "nakshatra": "Ashwini", "nakshatra_end": "2026-11-23 04:21", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-23", "nakshatra": "Bharani", "nakshatra_end": "2026-11-24 02:07", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-24", "nakshatra": "Krittika", "nakshatra_end": "2026-11-24 23:31", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-25", "nakshatra": "Rohini", "nakshatra_end": "2026-11-25 20:42", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-26", "nakshatra": "Mrigashira", "nakshatra_end": "2026-11-26 17:53", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-27", "nakshatra": "Ardra", "nakshatra_end": "2026-11-27 15:14", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-28", "nakshatra": "Punarvasu", "nakshatra_end": "2026-11-28 12:55", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-29", "nakshatra": "Pushya", "nakshatra_end": "2026-11-29 11:05", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-30", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-30 09:47", "chandra_rashi": "Karka", "sunrise": null}], "raman": [{"date_ad": "2026-11-01", "nakshatra": "Pushya", "nakshatra_end": "2026-11-02 02:15", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-02", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-03 01:28", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-03", "nakshatra": "Magha", "nakshatra_end": "2026-11-04 01:06", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-04", "nakshatra": "Purva Phalguni", "nakshatra_end": "2026-11-05 01:07", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-05", "nakshatra": "Uttara Phalguni", "nakshatra_end": "2026-11-06 01:31", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-06", "nakshatra": "Hasta", "nakshatra_end": "2026-11-07 02:16", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-07", "nakshatra": "Chitra", "nakshatra_end": "2026-11-08 03:22", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-08", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 04:52", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-09", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 06:44", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-10", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 06:44", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-11", "nakshatra": "Anuradha", "nakshatra_end": "2026-11-11 09:01", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-12", "nakshatra": "Jyeshtha", "nakshatra_end": "2026-11-12 11:39", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-13", "nakshatra": "Mula", "nakshatra_end": "2026-11-13 14:36", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-14", "nakshatra": "Purva Ashadha", "nakshatra_end": "2026-11-14 17:42", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-15", "nakshatra": "Uttara Ashadha", "nakshatra_end": "2026-11-15 20:48", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-16", "nakshatra": "Shravana", "nakshatra_end": "2026-11-16 23:39", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-17", "nakshatra": "Dhanishta", "nakshatra_end": "2026-11-18 02:00", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-18", "nakshatra": "Shatabhisha", "nakshatra_end": "2026-11-19 03:41", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-19", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 04:33", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-20", "nakshatra": "Uttara Bhadrapada", "nakshatra_end": "2026-11-21 04:32", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-21", "nakshatra": "Revati", "nakshatra_end": "2026-11-22 03:42", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-22", "nakshatra": "Ashwini", "nakshatra_end": "2026-11-23 02:07", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-23", "nakshatra": "Bharani", "nakshatra_end": "2026-11-23 23:56", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-24", "nakshatra": "Krittika", "nakshatra_end": "2026-11-24 21:21", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-25", "nakshatra": "Rohini", "nakshatra_end": "2026-11-25 18:33", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-26", "nakshatra": "Mrigashira", "nakshatra_end": "2026-11-26 15:44", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-27", "nakshatra": "Ardra", "nakshatra_end": "2026-11-27 13:04", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-28", "nakshatra": "Punarvasu", "nakshatra_end": "2026-11-28 10:43", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-29", "nakshatra": "Pushya", "nakshatra_end": "2026-11-29 08:49", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-30", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-30 07:28", "chandra_rashi": "Karka", "sunrise": null}], "true_citra": [{"date_ad": "2026-11-01", "nakshatra": "Pushya", "nakshatra_end": "2026-11-02 04:43", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-02", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-03 03:59", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-03", "nakshatra": "Magha", "nakshatra_end": "2026-11-04 03:39", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-04", "nakshatra": "Purva Phalguni", "nakshatra_end": "2026-11-05 03:43", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-05", "nakshatra": "Uttara Phalguni", "nakshatra_end": "2026-11-06 04:08", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-06", "nakshatra": "Hasta", "nakshatra_end": "2026-11-07 04:56", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-07", "nakshatra": "Chitra", "nakshatra_end": "2026-11-08 06:05", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-08", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 07:36", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-09", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 07:36", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-10", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 09:32", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-11", "nakshatra": "Anuradha", "nakshatra_end": "2026-11-11 11:50", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-12", "nakshatra": "Jyeshtha", "nakshatra_end": "2026-11-12 14:31", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-13", "nakshatra": "Mula", "nakshatra_end": "2026-11-13 17:29", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-14", "nakshatra": "Purva Ashadha", "nakshatra_end": "2026-11-14 20:37", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-15", "nakshatra": "Uttara Ashadha", "nakshatra_end": "2026-11-15 23:41", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-16", "nakshatra": "Shravana", "nakshatra_end": "2026-11-17 02:29", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-17", "nakshatra": "Dhanishta", "nakshatra_end": "2026-11-18 04:47", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-18", "nakshatra": "Shatabhisha", "nakshatra_end": "2026-11-19 06:23", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-19", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 07:09", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-20", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 07:09", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-21", "nakshatra": "Uttara Bhadrapada", "nakshatra_end": "2026-11-21 07:03", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-22", "nakshatra": "Ashwini", "nakshatra_end": "2026-11-23 04:28", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-23", "nakshatra": "Bharani", "nakshatra_end": "2026-11-24 02:15", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-24", "nakshatra": "Krittika", "nakshatra_end": "2026-11-24 23:38", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-25", "nakshatra": "Rohini", "nakshatra_end": "2026-11-25 20:49", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-26", "nakshatra": "Mrigashira", "nakshatra_end": "2026-11-26 18:00", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-27", "nakshatra": "Ardra", "nakshatra_end": "2026-11-27 15:21", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-28", "nakshatra": "Punarvasu", "nakshatra_end": "2026-11-28 13:03", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-29", "nakshatra": "Pushya", "nakshatra_end": "2026-11-29 11:12", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-30", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-30 09:55", "chandra_rashi": "Karka", "sunrise": null}], "true_pushya": [{"date_ad": "2026-11-01", "nakshatra": "Pushya", "nakshatra_end": "2026-11-02 02:48", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-02", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-03 02:01", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-03", "nakshatra": "Magha", "nakshatra_end": "2026-11-04 01:40", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-04", "nakshatra": "Purva Phalguni", "nakshatra_end": "2026-11-05 01:41", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-05", "nakshatra": "Uttara Phalguni", "nakshatra_end": "2026-11-06 02:05", "chandra_rashi": "Simha", "sunrise": null}, {"date_ad": "2026-11-06", "nakshatra": "Hasta", "nakshatra_end": "2026-11-07 02:51", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-07", "nakshatra": "Chitra", "nakshatra_end": "2026-11-08 03:58", "chandra_rashi": "Kanya", "sunrise": null}, {"date_ad": "2026-11-08", "nakshatra": "Swati", "nakshatra_end": "2026-11-09 05:28", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-09", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 07:21", "chandra_rashi": "Tula", "sunrise": null}, {"date_ad": "2026-11-10", "nakshatra": "Vishakha", "nakshatra_end": "2026-11-10 07:21", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-11", "nakshatra": "Anuradha", "nakshatra_end": "2026-11-11 09:38", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-12", "nakshatra": "Jyeshtha", "nakshatra_end": "2026-11-12 12:17", "chandra_rashi": "Vrishchika", "sunrise": null}, {"date_ad": "2026-11-13", "nakshatra": "Mula", "nakshatra_end": "2026-11-13 15:14", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-14", "nakshatra": "Purva Ashadha", "nakshatra_end": "2026-11-14 18:21", "chandra_rashi": "Dhanu", "sunrise": null}, {"date_ad": "2026-11-15", "nakshatra": "Uttara Ashadha", "nakshatra_end": "2026-11-15 21:26", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-16", "nakshatra": "Shravana", "nakshatra_end": "2026-11-17 00:16", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-17", "nakshatra": "Dhanishta", "nakshatra_end": "2026-11-18 02:37", "chandra_rashi": "Makara", "sunrise": null}, {"date_ad": "2026-11-18", "nakshatra": "Shatabhisha", "nakshatra_end": "2026-11-19 04:17", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-19", "nakshatra": "Purva Bhadrapada", "nakshatra_end": "2026-11-20 05:07", "chandra_rashi": "Kumbha", "sunrise": null}, {"date_ad": "2026-11-20", "nakshatra": "Uttara Bhadrapada", "nakshatra_end": "2026-11-21 05:06", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-21", "nakshatra": "Revati", "nakshatra_end": "2026-11-22 04:14", "chandra_rashi": "Meena", "sunrise": null}, {"date_ad": "2026-11-22", "nakshatra": "Ashwini", "nakshatra_end": "2026-11-23 02:38", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-23", "nakshatra": "Bharani", "nakshatra_end": "2026-11-24 00:27", "chandra_rashi": "Mesha", "sunrise": null}, {"date_ad": "2026-11-24", "nakshatra": "Krittika", "nakshatra_end": "2026-11-24 21:51", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-25", "nakshatra": "Rohini", "nakshatra_end": "2026-11-25 19:03", "chandra_rashi": "Vrishabha", "sunrise": null}, {"date_ad": "2026-11-26", "nakshatra": "Mrigashira", "nakshatra_end": "2026-11-26 16:14", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-27", "nakshatra": "Ardra", "nakshatra_end": "2026-11-27 13:34", "chandra_rashi": "Mithuna", "sunrise": null}, {"date_ad": "2026-11-28", "nakshatra": "Punarvasu", "nakshatra_end": "2026-11-28 11:13", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-29", "nakshatra": "Pushya", "nakshatra_end": "2026-11-29 09:20", "chandra_rashi": "Karka", "sunrise": null}, {"date_ad": "2026-11-30", "nakshatra": "Ashlesha", "nakshatra_end": "2026-11-30 08:00", "chandra_rashi": "Karka", "sunrise": null}]}}
+{
+ "place": {
+  "latitude": 27.7172,
+  "longitude": 85.324,
+  "utcOffsetMinutes": 345
+ },
+ "modes": {
+  "lahiri": [
+   {
+    "date_ad": "2026-11-01",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-02 04:45",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-01 14:54"
+   },
+   {
+    "date_ad": "2026-11-02",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-03 04:01",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-02 12:21"
+   },
+   {
+    "date_ad": "2026-11-03",
+    "nakshatra": "Magha",
+    "nakshatra_end": "2026-11-04 03:41",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-03 10:09"
+   },
+   {
+    "date_ad": "2026-11-04",
+    "nakshatra": "Purva Phalguni",
+    "nakshatra_end": "2026-11-05 03:45",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-04 08:16"
+   },
+   {
+    "date_ad": "2026-11-05",
+    "nakshatra": "Uttara Phalguni",
+    "nakshatra_end": "2026-11-06 04:11",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-05 06:41"
+   },
+   {
+    "date_ad": "2026-11-06",
+    "nakshatra": "Hasta",
+    "nakshatra_end": "2026-11-07 04:58",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Vishkumbha",
+    "yoga_end": "2026-11-07 04:25"
+   },
+   {
+    "date_ad": "2026-11-07",
+    "nakshatra": "Chitra",
+    "nakshatra_end": "2026-11-08 06:07",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Priti",
+    "yoga_end": "2026-11-08 03:42"
+   },
+   {
+    "date_ad": "2026-11-08",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 07:39",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Ayushman",
+    "yoga_end": "2026-11-09 03:18"
+   },
+   {
+    "date_ad": "2026-11-09",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 07:39",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Saubhagya",
+    "yoga_end": "2026-11-10 03:12"
+   },
+   {
+    "date_ad": "2026-11-10",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 09:34",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Shobhana",
+    "yoga_end": "2026-11-11 03:24"
+   },
+   {
+    "date_ad": "2026-11-11",
+    "nakshatra": "Anuradha",
+    "nakshatra_end": "2026-11-11 11:53",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Atiganda",
+    "yoga_end": "2026-11-12 03:55"
+   },
+   {
+    "date_ad": "2026-11-12",
+    "nakshatra": "Jyeshtha",
+    "nakshatra_end": "2026-11-12 14:34",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Sukarma",
+    "yoga_end": "2026-11-13 04:41"
+   },
+   {
+    "date_ad": "2026-11-13",
+    "nakshatra": "Mula",
+    "nakshatra_end": "2026-11-13 17:32",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Dhriti",
+    "yoga_end": "2026-11-14 05:37"
+   },
+   {
+    "date_ad": "2026-11-14",
+    "nakshatra": "Purva Ashadha",
+    "nakshatra_end": "2026-11-14 20:39",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 06:37"
+   },
+   {
+    "date_ad": "2026-11-15",
+    "nakshatra": "Uttara Ashadha",
+    "nakshatra_end": "2026-11-15 23:44",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 06:37"
+   },
+   {
+    "date_ad": "2026-11-16",
+    "nakshatra": "Shravana",
+    "nakshatra_end": "2026-11-17 02:32",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Ganda",
+    "yoga_end": "2026-11-16 07:31"
+   },
+   {
+    "date_ad": "2026-11-17",
+    "nakshatra": "Dhanishta",
+    "nakshatra_end": "2026-11-18 04:49",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Vriddhi",
+    "yoga_end": "2026-11-17 08:09"
+   },
+   {
+    "date_ad": "2026-11-18",
+    "nakshatra": "Shatabhisha",
+    "nakshatra_end": "2026-11-19 06:25",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Dhruva",
+    "yoga_end": "2026-11-18 08:20"
+   },
+   {
+    "date_ad": "2026-11-19",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 07:11",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Vyaghata",
+    "yoga_end": "2026-11-19 07:57"
+   },
+   {
+    "date_ad": "2026-11-20",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 07:11",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Harshana",
+    "yoga_end": "2026-11-20 06:55"
+   },
+   {
+    "date_ad": "2026-11-21",
+    "nakshatra": "Uttara Bhadrapada",
+    "nakshatra_end": "2026-11-21 07:05",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Siddhi",
+    "yoga_end": "2026-11-22 02:45"
+   },
+   {
+    "date_ad": "2026-11-22",
+    "nakshatra": "Ashwini",
+    "nakshatra_end": "2026-11-23 04:30",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Vyatipata",
+    "yoga_end": "2026-11-22 23:44"
+   },
+   {
+    "date_ad": "2026-11-23",
+    "nakshatra": "Bharani",
+    "nakshatra_end": "2026-11-24 02:17",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Variyan",
+    "yoga_end": "2026-11-23 20:13"
+   },
+   {
+    "date_ad": "2026-11-24",
+    "nakshatra": "Krittika",
+    "nakshatra_end": "2026-11-24 23:40",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Parigha",
+    "yoga_end": "2026-11-24 16:20"
+   },
+   {
+    "date_ad": "2026-11-25",
+    "nakshatra": "Rohini",
+    "nakshatra_end": "2026-11-25 20:51",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Shiva",
+    "yoga_end": "2026-11-25 12:14"
+   },
+   {
+    "date_ad": "2026-11-26",
+    "nakshatra": "Mrigashira",
+    "nakshatra_end": "2026-11-26 18:02",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Siddha",
+    "yoga_end": "2026-11-26 08:04"
+   },
+   {
+    "date_ad": "2026-11-27",
+    "nakshatra": "Ardra",
+    "nakshatra_end": "2026-11-27 15:23",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-28 00:06"
+   },
+   {
+    "date_ad": "2026-11-28",
+    "nakshatra": "Punarvasu",
+    "nakshatra_end": "2026-11-28 13:05",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-28 20:33"
+   },
+   {
+    "date_ad": "2026-11-29",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-29 11:14",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-29 17:23"
+   },
+   {
+    "date_ad": "2026-11-30",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-30 09:57",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-30 14:42"
+   }
+  ],
+  "kp": [
+   {
+    "date_ad": "2026-11-01",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-02 04:35",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-01 14:35"
+   },
+   {
+    "date_ad": "2026-11-02",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-03 03:51",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-02 12:02"
+   },
+   {
+    "date_ad": "2026-11-03",
+    "nakshatra": "Magha",
+    "nakshatra_end": "2026-11-04 03:31",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-03 09:50"
+   },
+   {
+    "date_ad": "2026-11-04",
+    "nakshatra": "Purva Phalguni",
+    "nakshatra_end": "2026-11-05 03:34",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-04 07:56"
+   },
+   {
+    "date_ad": "2026-11-05",
+    "nakshatra": "Uttara Phalguni",
+    "nakshatra_end": "2026-11-06 04:00",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-05 06:21"
+   },
+   {
+    "date_ad": "2026-11-06",
+    "nakshatra": "Hasta",
+    "nakshatra_end": "2026-11-07 04:47",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Vishkumbha",
+    "yoga_end": "2026-11-07 04:04"
+   },
+   {
+    "date_ad": "2026-11-07",
+    "nakshatra": "Chitra",
+    "nakshatra_end": "2026-11-08 05:56",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Priti",
+    "yoga_end": "2026-11-08 03:22"
+   },
+   {
+    "date_ad": "2026-11-08",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 07:28",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Ayushman",
+    "yoga_end": "2026-11-09 02:57"
+   },
+   {
+    "date_ad": "2026-11-09",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 07:28",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Saubhagya",
+    "yoga_end": "2026-11-10 02:51"
+   },
+   {
+    "date_ad": "2026-11-10",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 09:23",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Shobhana",
+    "yoga_end": "2026-11-11 03:03"
+   },
+   {
+    "date_ad": "2026-11-11",
+    "nakshatra": "Anuradha",
+    "nakshatra_end": "2026-11-11 11:41",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Atiganda",
+    "yoga_end": "2026-11-12 03:34"
+   },
+   {
+    "date_ad": "2026-11-12",
+    "nakshatra": "Jyeshtha",
+    "nakshatra_end": "2026-11-12 14:22",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Sukarma",
+    "yoga_end": "2026-11-13 04:19"
+   },
+   {
+    "date_ad": "2026-11-13",
+    "nakshatra": "Mula",
+    "nakshatra_end": "2026-11-13 17:20",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Dhriti",
+    "yoga_end": "2026-11-14 05:16"
+   },
+   {
+    "date_ad": "2026-11-14",
+    "nakshatra": "Purva Ashadha",
+    "nakshatra_end": "2026-11-14 20:27",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 06:15"
+   },
+   {
+    "date_ad": "2026-11-15",
+    "nakshatra": "Uttara Ashadha",
+    "nakshatra_end": "2026-11-15 23:32",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Ganda",
+    "yoga_end": "2026-11-16 07:09"
+   },
+   {
+    "date_ad": "2026-11-16",
+    "nakshatra": "Shravana",
+    "nakshatra_end": "2026-11-17 02:20",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Ganda",
+    "yoga_end": "2026-11-16 07:09"
+   },
+   {
+    "date_ad": "2026-11-17",
+    "nakshatra": "Dhanishta",
+    "nakshatra_end": "2026-11-18 04:38",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Vriddhi",
+    "yoga_end": "2026-11-17 07:47"
+   },
+   {
+    "date_ad": "2026-11-18",
+    "nakshatra": "Shatabhisha",
+    "nakshatra_end": "2026-11-19 06:14",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Dhruva",
+    "yoga_end": "2026-11-18 07:59"
+   },
+   {
+    "date_ad": "2026-11-19",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 07:01",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Vyaghata",
+    "yoga_end": "2026-11-19 07:37"
+   },
+   {
+    "date_ad": "2026-11-20",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 07:01",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Harshana",
+    "yoga_end": "2026-11-20 06:35"
+   },
+   {
+    "date_ad": "2026-11-21",
+    "nakshatra": "Uttara Bhadrapada",
+    "nakshatra_end": "2026-11-21 06:55",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Siddhi",
+    "yoga_end": "2026-11-22 02:27"
+   },
+   {
+    "date_ad": "2026-11-22",
+    "nakshatra": "Ashwini",
+    "nakshatra_end": "2026-11-23 04:21",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Vyatipata",
+    "yoga_end": "2026-11-22 23:26"
+   },
+   {
+    "date_ad": "2026-11-23",
+    "nakshatra": "Bharani",
+    "nakshatra_end": "2026-11-24 02:07",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Variyan",
+    "yoga_end": "2026-11-23 19:56"
+   },
+   {
+    "date_ad": "2026-11-24",
+    "nakshatra": "Krittika",
+    "nakshatra_end": "2026-11-24 23:31",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Parigha",
+    "yoga_end": "2026-11-24 16:03"
+   },
+   {
+    "date_ad": "2026-11-25",
+    "nakshatra": "Rohini",
+    "nakshatra_end": "2026-11-25 20:42",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Shiva",
+    "yoga_end": "2026-11-25 11:57"
+   },
+   {
+    "date_ad": "2026-11-26",
+    "nakshatra": "Mrigashira",
+    "nakshatra_end": "2026-11-26 17:53",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Siddha",
+    "yoga_end": "2026-11-26 07:47"
+   },
+   {
+    "date_ad": "2026-11-27",
+    "nakshatra": "Ardra",
+    "nakshatra_end": "2026-11-27 15:14",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-27 23:49"
+   },
+   {
+    "date_ad": "2026-11-28",
+    "nakshatra": "Punarvasu",
+    "nakshatra_end": "2026-11-28 12:55",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-28 20:15"
+   },
+   {
+    "date_ad": "2026-11-29",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-29 11:05",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-29 17:05"
+   },
+   {
+    "date_ad": "2026-11-30",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-30 09:47",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-30 14:23"
+   }
+  ],
+  "raman": [
+   {
+    "date_ad": "2026-11-01",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-02 02:15",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-01 10:17"
+   },
+   {
+    "date_ad": "2026-11-02",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-03 01:28",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-02 07:40"
+   },
+   {
+    "date_ad": "2026-11-03",
+    "nakshatra": "Magha",
+    "nakshatra_end": "2026-11-04 01:06",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-04 03:26"
+   },
+   {
+    "date_ad": "2026-11-04",
+    "nakshatra": "Purva Phalguni",
+    "nakshatra_end": "2026-11-05 01:07",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-05 01:48"
+   },
+   {
+    "date_ad": "2026-11-05",
+    "nakshatra": "Uttara Phalguni",
+    "nakshatra_end": "2026-11-06 01:31",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Vaidhriti",
+    "yoga_end": "2026-11-06 00:27"
+   },
+   {
+    "date_ad": "2026-11-06",
+    "nakshatra": "Hasta",
+    "nakshatra_end": "2026-11-07 02:16",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Vishkumbha",
+    "yoga_end": "2026-11-06 23:24"
+   },
+   {
+    "date_ad": "2026-11-07",
+    "nakshatra": "Chitra",
+    "nakshatra_end": "2026-11-08 03:22",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Priti",
+    "yoga_end": "2026-11-07 22:38"
+   },
+   {
+    "date_ad": "2026-11-08",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 04:52",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Ayushman",
+    "yoga_end": "2026-11-08 22:09"
+   },
+   {
+    "date_ad": "2026-11-09",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 06:44",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Saubhagya",
+    "yoga_end": "2026-11-09 21:59"
+   },
+   {
+    "date_ad": "2026-11-10",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 06:44",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Shobhana",
+    "yoga_end": "2026-11-10 22:08"
+   },
+   {
+    "date_ad": "2026-11-11",
+    "nakshatra": "Anuradha",
+    "nakshatra_end": "2026-11-11 09:01",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Atiganda",
+    "yoga_end": "2026-11-11 22:35"
+   },
+   {
+    "date_ad": "2026-11-12",
+    "nakshatra": "Jyeshtha",
+    "nakshatra_end": "2026-11-12 11:39",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Sukarma",
+    "yoga_end": "2026-11-12 23:18"
+   },
+   {
+    "date_ad": "2026-11-13",
+    "nakshatra": "Mula",
+    "nakshatra_end": "2026-11-13 14:36",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Dhriti",
+    "yoga_end": "2026-11-14 00:12"
+   },
+   {
+    "date_ad": "2026-11-14",
+    "nakshatra": "Purva Ashadha",
+    "nakshatra_end": "2026-11-14 17:42",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 01:12"
+   },
+   {
+    "date_ad": "2026-11-15",
+    "nakshatra": "Uttara Ashadha",
+    "nakshatra_end": "2026-11-15 20:48",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Ganda",
+    "yoga_end": "2026-11-16 02:08"
+   },
+   {
+    "date_ad": "2026-11-16",
+    "nakshatra": "Shravana",
+    "nakshatra_end": "2026-11-16 23:39",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Vriddhi",
+    "yoga_end": "2026-11-17 02:50"
+   },
+   {
+    "date_ad": "2026-11-17",
+    "nakshatra": "Dhanishta",
+    "nakshatra_end": "2026-11-18 02:00",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Dhruva",
+    "yoga_end": "2026-11-18 03:08"
+   },
+   {
+    "date_ad": "2026-11-18",
+    "nakshatra": "Shatabhisha",
+    "nakshatra_end": "2026-11-19 03:41",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Vyaghata",
+    "yoga_end": "2026-11-19 02:53"
+   },
+   {
+    "date_ad": "2026-11-19",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 04:33",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Harshana",
+    "yoga_end": "2026-11-20 01:59"
+   },
+   {
+    "date_ad": "2026-11-20",
+    "nakshatra": "Uttara Bhadrapada",
+    "nakshatra_end": "2026-11-21 04:32",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Vajra",
+    "yoga_end": "2026-11-21 00:24"
+   },
+   {
+    "date_ad": "2026-11-21",
+    "nakshatra": "Revati",
+    "nakshatra_end": "2026-11-22 03:42",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Siddhi",
+    "yoga_end": "2026-11-21 22:08"
+   },
+   {
+    "date_ad": "2026-11-22",
+    "nakshatra": "Ashwini",
+    "nakshatra_end": "2026-11-23 02:07",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Vyatipata",
+    "yoga_end": "2026-11-22 19:14"
+   },
+   {
+    "date_ad": "2026-11-23",
+    "nakshatra": "Bharani",
+    "nakshatra_end": "2026-11-23 23:56",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Variyan",
+    "yoga_end": "2026-11-23 15:49"
+   },
+   {
+    "date_ad": "2026-11-24",
+    "nakshatra": "Krittika",
+    "nakshatra_end": "2026-11-24 21:21",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Parigha",
+    "yoga_end": "2026-11-24 12:00"
+   },
+   {
+    "date_ad": "2026-11-25",
+    "nakshatra": "Rohini",
+    "nakshatra_end": "2026-11-25 18:33",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Shiva",
+    "yoga_end": "2026-11-25 07:56"
+   },
+   {
+    "date_ad": "2026-11-26",
+    "nakshatra": "Mrigashira",
+    "nakshatra_end": "2026-11-26 15:44",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-26 23:39"
+   },
+   {
+    "date_ad": "2026-11-27",
+    "nakshatra": "Ardra",
+    "nakshatra_end": "2026-11-27 13:04",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-27 19:43"
+   },
+   {
+    "date_ad": "2026-11-28",
+    "nakshatra": "Punarvasu",
+    "nakshatra_end": "2026-11-28 10:43",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-28 16:05"
+   },
+   {
+    "date_ad": "2026-11-29",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-29 08:49",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-29 12:50"
+   },
+   {
+    "date_ad": "2026-11-30",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-30 07:28",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-30 10:02"
+   }
+  ],
+  "true_citra": [
+   {
+    "date_ad": "2026-11-01",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-02 04:43",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-01 14:50"
+   },
+   {
+    "date_ad": "2026-11-02",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-03 03:59",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-02 12:17"
+   },
+   {
+    "date_ad": "2026-11-03",
+    "nakshatra": "Magha",
+    "nakshatra_end": "2026-11-04 03:39",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-03 10:04"
+   },
+   {
+    "date_ad": "2026-11-04",
+    "nakshatra": "Purva Phalguni",
+    "nakshatra_end": "2026-11-05 03:43",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-04 08:11"
+   },
+   {
+    "date_ad": "2026-11-05",
+    "nakshatra": "Uttara Phalguni",
+    "nakshatra_end": "2026-11-06 04:08",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-05 06:37"
+   },
+   {
+    "date_ad": "2026-11-06",
+    "nakshatra": "Hasta",
+    "nakshatra_end": "2026-11-07 04:56",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Vishkumbha",
+    "yoga_end": "2026-11-07 04:20"
+   },
+   {
+    "date_ad": "2026-11-07",
+    "nakshatra": "Chitra",
+    "nakshatra_end": "2026-11-08 06:05",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Priti",
+    "yoga_end": "2026-11-08 03:38"
+   },
+   {
+    "date_ad": "2026-11-08",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 07:36",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Ayushman",
+    "yoga_end": "2026-11-09 03:13"
+   },
+   {
+    "date_ad": "2026-11-09",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 07:36",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Saubhagya",
+    "yoga_end": "2026-11-10 03:07"
+   },
+   {
+    "date_ad": "2026-11-10",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 09:32",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Shobhana",
+    "yoga_end": "2026-11-11 03:20"
+   },
+   {
+    "date_ad": "2026-11-11",
+    "nakshatra": "Anuradha",
+    "nakshatra_end": "2026-11-11 11:50",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Atiganda",
+    "yoga_end": "2026-11-12 03:50"
+   },
+   {
+    "date_ad": "2026-11-12",
+    "nakshatra": "Jyeshtha",
+    "nakshatra_end": "2026-11-12 14:31",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Sukarma",
+    "yoga_end": "2026-11-13 04:36"
+   },
+   {
+    "date_ad": "2026-11-13",
+    "nakshatra": "Mula",
+    "nakshatra_end": "2026-11-13 17:29",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Dhriti",
+    "yoga_end": "2026-11-14 05:33"
+   },
+   {
+    "date_ad": "2026-11-14",
+    "nakshatra": "Purva Ashadha",
+    "nakshatra_end": "2026-11-14 20:37",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 06:32"
+   },
+   {
+    "date_ad": "2026-11-15",
+    "nakshatra": "Uttara Ashadha",
+    "nakshatra_end": "2026-11-15 23:41",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 06:32"
+   },
+   {
+    "date_ad": "2026-11-16",
+    "nakshatra": "Shravana",
+    "nakshatra_end": "2026-11-17 02:29",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Ganda",
+    "yoga_end": "2026-11-16 07:26"
+   },
+   {
+    "date_ad": "2026-11-17",
+    "nakshatra": "Dhanishta",
+    "nakshatra_end": "2026-11-18 04:47",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Vriddhi",
+    "yoga_end": "2026-11-17 08:04"
+   },
+   {
+    "date_ad": "2026-11-18",
+    "nakshatra": "Shatabhisha",
+    "nakshatra_end": "2026-11-19 06:23",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Dhruva",
+    "yoga_end": "2026-11-18 08:16"
+   },
+   {
+    "date_ad": "2026-11-19",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 07:09",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Vyaghata",
+    "yoga_end": "2026-11-19 07:53"
+   },
+   {
+    "date_ad": "2026-11-20",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 07:09",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Harshana",
+    "yoga_end": "2026-11-20 06:50"
+   },
+   {
+    "date_ad": "2026-11-21",
+    "nakshatra": "Uttara Bhadrapada",
+    "nakshatra_end": "2026-11-21 07:03",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Siddhi",
+    "yoga_end": "2026-11-22 02:41"
+   },
+   {
+    "date_ad": "2026-11-22",
+    "nakshatra": "Ashwini",
+    "nakshatra_end": "2026-11-23 04:28",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Vyatipata",
+    "yoga_end": "2026-11-22 23:40"
+   },
+   {
+    "date_ad": "2026-11-23",
+    "nakshatra": "Bharani",
+    "nakshatra_end": "2026-11-24 02:15",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Variyan",
+    "yoga_end": "2026-11-23 20:09"
+   },
+   {
+    "date_ad": "2026-11-24",
+    "nakshatra": "Krittika",
+    "nakshatra_end": "2026-11-24 23:38",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Parigha",
+    "yoga_end": "2026-11-24 16:17"
+   },
+   {
+    "date_ad": "2026-11-25",
+    "nakshatra": "Rohini",
+    "nakshatra_end": "2026-11-25 20:49",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Shiva",
+    "yoga_end": "2026-11-25 12:11"
+   },
+   {
+    "date_ad": "2026-11-26",
+    "nakshatra": "Mrigashira",
+    "nakshatra_end": "2026-11-26 18:00",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Siddha",
+    "yoga_end": "2026-11-26 08:01"
+   },
+   {
+    "date_ad": "2026-11-27",
+    "nakshatra": "Ardra",
+    "nakshatra_end": "2026-11-27 15:21",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-28 00:03"
+   },
+   {
+    "date_ad": "2026-11-28",
+    "nakshatra": "Punarvasu",
+    "nakshatra_end": "2026-11-28 13:03",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-28 20:29"
+   },
+   {
+    "date_ad": "2026-11-29",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-29 11:12",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-29 17:20"
+   },
+   {
+    "date_ad": "2026-11-30",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-30 09:55",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-30 14:38"
+   }
+  ],
+  "true_pushya": [
+   {
+    "date_ad": "2026-11-01",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-02 02:48",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-01 11:17"
+   },
+   {
+    "date_ad": "2026-11-02",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-03 02:01",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-02 08:41"
+   },
+   {
+    "date_ad": "2026-11-03",
+    "nakshatra": "Magha",
+    "nakshatra_end": "2026-11-04 01:40",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-03 06:25"
+   },
+   {
+    "date_ad": "2026-11-04",
+    "nakshatra": "Purva Phalguni",
+    "nakshatra_end": "2026-11-05 01:41",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-05 02:51"
+   },
+   {
+    "date_ad": "2026-11-05",
+    "nakshatra": "Uttara Phalguni",
+    "nakshatra_end": "2026-11-06 02:05",
+    "chandra_rashi": "Simha",
+    "sunrise": null,
+    "yoga": "Vaidhriti",
+    "yoga_end": "2026-11-06 01:31"
+   },
+   {
+    "date_ad": "2026-11-06",
+    "nakshatra": "Hasta",
+    "nakshatra_end": "2026-11-07 02:51",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Vishkumbha",
+    "yoga_end": "2026-11-07 00:29"
+   },
+   {
+    "date_ad": "2026-11-07",
+    "nakshatra": "Chitra",
+    "nakshatra_end": "2026-11-08 03:58",
+    "chandra_rashi": "Kanya",
+    "sunrise": null,
+    "yoga": "Priti",
+    "yoga_end": "2026-11-07 23:43"
+   },
+   {
+    "date_ad": "2026-11-08",
+    "nakshatra": "Swati",
+    "nakshatra_end": "2026-11-09 05:28",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Ayushman",
+    "yoga_end": "2026-11-08 23:16"
+   },
+   {
+    "date_ad": "2026-11-09",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 07:21",
+    "chandra_rashi": "Tula",
+    "sunrise": null,
+    "yoga": "Saubhagya",
+    "yoga_end": "2026-11-09 23:06"
+   },
+   {
+    "date_ad": "2026-11-10",
+    "nakshatra": "Vishakha",
+    "nakshatra_end": "2026-11-10 07:21",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Shobhana",
+    "yoga_end": "2026-11-10 23:16"
+   },
+   {
+    "date_ad": "2026-11-11",
+    "nakshatra": "Anuradha",
+    "nakshatra_end": "2026-11-11 09:38",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Atiganda",
+    "yoga_end": "2026-11-11 23:44"
+   },
+   {
+    "date_ad": "2026-11-12",
+    "nakshatra": "Jyeshtha",
+    "nakshatra_end": "2026-11-12 12:17",
+    "chandra_rashi": "Vrishchika",
+    "sunrise": null,
+    "yoga": "Sukarma",
+    "yoga_end": "2026-11-13 00:27"
+   },
+   {
+    "date_ad": "2026-11-13",
+    "nakshatra": "Mula",
+    "nakshatra_end": "2026-11-13 15:14",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Dhriti",
+    "yoga_end": "2026-11-14 01:23"
+   },
+   {
+    "date_ad": "2026-11-14",
+    "nakshatra": "Purva Ashadha",
+    "nakshatra_end": "2026-11-14 18:21",
+    "chandra_rashi": "Dhanu",
+    "sunrise": null,
+    "yoga": "Shula",
+    "yoga_end": "2026-11-15 02:22"
+   },
+   {
+    "date_ad": "2026-11-15",
+    "nakshatra": "Uttara Ashadha",
+    "nakshatra_end": "2026-11-15 21:26",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Ganda",
+    "yoga_end": "2026-11-16 03:18"
+   },
+   {
+    "date_ad": "2026-11-16",
+    "nakshatra": "Shravana",
+    "nakshatra_end": "2026-11-17 00:16",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Vriddhi",
+    "yoga_end": "2026-11-17 03:59"
+   },
+   {
+    "date_ad": "2026-11-17",
+    "nakshatra": "Dhanishta",
+    "nakshatra_end": "2026-11-18 02:37",
+    "chandra_rashi": "Makara",
+    "sunrise": null,
+    "yoga": "Dhruva",
+    "yoga_end": "2026-11-18 04:16"
+   },
+   {
+    "date_ad": "2026-11-18",
+    "nakshatra": "Shatabhisha",
+    "nakshatra_end": "2026-11-19 04:17",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Vyaghata",
+    "yoga_end": "2026-11-19 03:59"
+   },
+   {
+    "date_ad": "2026-11-19",
+    "nakshatra": "Purva Bhadrapada",
+    "nakshatra_end": "2026-11-20 05:07",
+    "chandra_rashi": "Kumbha",
+    "sunrise": null,
+    "yoga": "Harshana",
+    "yoga_end": "2026-11-20 03:04"
+   },
+   {
+    "date_ad": "2026-11-20",
+    "nakshatra": "Uttara Bhadrapada",
+    "nakshatra_end": "2026-11-21 05:06",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Vajra",
+    "yoga_end": "2026-11-21 01:26"
+   },
+   {
+    "date_ad": "2026-11-21",
+    "nakshatra": "Revati",
+    "nakshatra_end": "2026-11-22 04:14",
+    "chandra_rashi": "Meena",
+    "sunrise": null,
+    "yoga": "Siddhi",
+    "yoga_end": "2026-11-21 23:08"
+   },
+   {
+    "date_ad": "2026-11-22",
+    "nakshatra": "Ashwini",
+    "nakshatra_end": "2026-11-23 02:38",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Vyatipata",
+    "yoga_end": "2026-11-22 20:13"
+   },
+   {
+    "date_ad": "2026-11-23",
+    "nakshatra": "Bharani",
+    "nakshatra_end": "2026-11-24 00:27",
+    "chandra_rashi": "Mesha",
+    "sunrise": null,
+    "yoga": "Variyan",
+    "yoga_end": "2026-11-23 16:46"
+   },
+   {
+    "date_ad": "2026-11-24",
+    "nakshatra": "Krittika",
+    "nakshatra_end": "2026-11-24 21:51",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Parigha",
+    "yoga_end": "2026-11-24 12:56"
+   },
+   {
+    "date_ad": "2026-11-25",
+    "nakshatra": "Rohini",
+    "nakshatra_end": "2026-11-25 19:03",
+    "chandra_rashi": "Vrishabha",
+    "sunrise": null,
+    "yoga": "Shiva",
+    "yoga_end": "2026-11-25 08:52"
+   },
+   {
+    "date_ad": "2026-11-26",
+    "nakshatra": "Mrigashira",
+    "nakshatra_end": "2026-11-26 16:14",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Sadhya",
+    "yoga_end": "2026-11-27 00:36"
+   },
+   {
+    "date_ad": "2026-11-27",
+    "nakshatra": "Ardra",
+    "nakshatra_end": "2026-11-27 13:34",
+    "chandra_rashi": "Mithuna",
+    "sunrise": null,
+    "yoga": "Shubha",
+    "yoga_end": "2026-11-27 20:40"
+   },
+   {
+    "date_ad": "2026-11-28",
+    "nakshatra": "Punarvasu",
+    "nakshatra_end": "2026-11-28 11:13",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Shukla",
+    "yoga_end": "2026-11-28 17:03"
+   },
+   {
+    "date_ad": "2026-11-29",
+    "nakshatra": "Pushya",
+    "nakshatra_end": "2026-11-29 09:20",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Brahma",
+    "yoga_end": "2026-11-29 13:49"
+   },
+   {
+    "date_ad": "2026-11-30",
+    "nakshatra": "Ashlesha",
+    "nakshatra_end": "2026-11-30 08:00",
+    "chandra_rashi": "Karka",
+    "sunrise": null,
+    "yoga": "Indra",
+    "yoga_end": "2026-11-30 11:03"
+   }
+  ]
+ }
+}

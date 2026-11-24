@@ -13,8 +13,13 @@
 // its header, so the tropical place is exact). The reader's ayanamsha is applied here, as the Swiss
 // Ephemeris applies a sidereal mode: `sky.withAyanamsha("kp")`. Boundaries that do not depend on it
 // (tithi, karana, yoga, phases) are read from the index for every mode; those that do (nakshatra,
-// pada, the Moon's rashi, the Sun's nakshatra, sankranti, degree) are read from the index for
-// Lahiri, the mode it was solved in, and solved from positions for any other.
+// pada, the Moon's rashi, the Sun's nakshatra, sankranti, degree) and the yoga (a sum of the two
+// sidereal longitudes) are read from the index for Lahiri, the mode it was solved in, and solved from
+// positions for any other.
+//
+// Every kind can be solved from positions alone (the index is only a shortcut): that is what answers
+// where no stored data covers a date, and always in the `lean` view, which loads no files at all (for
+// phones with little memory).
 //
 // Kundali, dashas, muhurta and festivals are separate products and not part of this module.
 //
@@ -24,12 +29,7 @@ import { ayanamshaFor, type DrikAyanamsha } from "./ayanamsha-modes";
 import { chebLastJd, chebPositionsAt, chebScalars, parseChebTable, type ChebScalars, type ChebTable } from "./chebyshev";
 import { drikAnalyticSource } from "./drik-analytic";
 import { drikFrame } from "./drik-source";
-import {
-  nextNakshatraBoundary,
-  nextTithiBoundary,
-  type PositionSource,
-  type SiddhantaPositions,
-} from "./siddhanta-offline";
+import type { PositionSource, SiddhantaPositions } from "./siddhanta-offline";
 import { suryaFormulaSource } from "./surya-formulas";
 import { parseVidx, type VidxCrossing, type VidxIndex, type VidxKind } from "./vidx";
 
@@ -86,19 +86,40 @@ function makeWindow(origin: SkyOrigin, indexBytes: Uint8Array, chebBytes: Uint8A
 
 const SERVER_PATH: Record<SkySystem, string> = { surya: "/v1/siddhanta", drik: "/v1/drik" };
 
-/** One system's sky. */
-/** Kinds whose boundaries move with the ayanamsha: the body they follow and the size of one span. */
-const SIDEREAL_KINDS: Partial<Record<VidxKind, { body: 0 | 1; count: number }>> = {
-  nakshatra: { body: 1, count: 27 },
-  pada: { body: 1, count: 108 },
-  moonRashi: { body: 1, count: 12 },
-  sunNakshatra: { body: 0, count: 27 },
-  sankranti: { body: 0, count: 12 },
-  sunDegree: { body: 0, count: 360 },
+/**
+ * How a kind is read from positions: the angle is `sun * a + moon * b` (degrees, sidereal in the
+ * reader's ayanamsha), cut into `count` equal spans; `minSpeed` keeps a Newton step finite.
+ */
+interface Spec {
+  sun: number;
+  moon: number;
+  count: number;
+  minSpeed: number;
+}
+const MOON: Omit<Spec, "count"> = { sun: 0, moon: 1, minSpeed: 10 };
+const SUN: Omit<Spec, "count"> = { sun: 1, moon: 0, minSpeed: 0.9 };
+const ELONGATION: Omit<Spec, "count"> = { sun: -1, moon: 1, minSpeed: 10 };
+const SPECS: Record<VidxKind, Spec> = {
+  tithi: { ...ELONGATION, count: 30 },
+  karana: { ...ELONGATION, count: 60 },
+  phase: { ...ELONGATION, count: 4 },
+  yoga: { sun: 1, moon: 1, count: 27, minSpeed: 11 },
+  nakshatra: { ...MOON, count: 27 },
+  pada: { ...MOON, count: 108 },
+  moonRashi: { ...MOON, count: 12 },
+  sunNakshatra: { ...SUN, count: 27 },
+  sankranti: { ...SUN, count: 12 },
+  sunDegree: { ...SUN, count: 360 },
 };
+/** Kinds that move with the ayanamsha (yoga does: it adds two sidereal longitudes). */
+const AYANAMSHA_KINDS = new Set<VidxKind>(["nakshatra", "pada", "moonRashi", "sunNakshatra", "sankranti", "sunDegree", "yoga"]);
 
 const wrap = (deg: number) => ((deg % 360) + 360) % 360;
 const signed = (deg: number) => wrap(deg + 180) - 180;
+
+const angleOf = (spec: Spec, p: SiddhantaPositions) => wrap(spec.sun * p.longitude[0] + spec.moon * p.longitude[1]);
+const speedOf = (spec: Spec, p: SiddhantaPositions) =>
+  Math.max(spec.sun * p.speed[0] + spec.moon * p.speed[1], spec.minSpeed);
 
 export class Sky {
   readonly system: SkySystem;
@@ -106,12 +127,16 @@ export class Sky {
   readonly ayanamsha: DrikAyanamsha = "lahiri";
   private views?: Map<DrikAyanamsha, Sky>;
   private readonly io: SkyIo;
-  private readonly options: { timeoutMs?: number };
+  private readonly options: { timeoutMs?: number; lean?: boolean };
   private readonly windows: Window[] = [];
   private readonly loading = new Map<number, Promise<void>>();
   private readonly failedUntil = new Map<number, number>();
 
-  constructor(system: SkySystem, io: SkyIo, options: { timeoutMs?: number } = {}) {
+  /**
+   * `lean`: load no files and ask no server; every answer comes from the formulas (Surya) or the
+   * built-in series (Drik) and every boundary is solved from positions. For low-memory phones.
+   */
+  constructor(system: SkySystem, io: SkyIo, options: { timeoutMs?: number; lean?: boolean } = {}) {
     this.system = system;
     this.io = io;
     this.options = options;
@@ -134,40 +159,42 @@ export class Sky {
     return view;
   }
 
-  /** Whether `kind` must be solved from positions in this view (an ayanamsha the index was not solved in). */
-  private solved(kind: VidxKind): { body: 0 | 1; count: number } | null {
-    return this.system === "drik" && this.ayanamsha !== "lahiri" ? (SIDEREAL_KINDS[kind] ?? null) : null;
+  /** The spec when `kind` at `jd` must be solved from positions: no stored data, or an ayanamsha the index was not solved in. */
+  private solved(kind: VidxKind, jd: number): Spec | null {
+    if (this.options.lean || !this.indexAt(jd)) return SPECS[kind];
+    return this.system === "drik" && this.ayanamsha !== "lahiri" && AYANAMSHA_KINDS.has(kind) ? SPECS[kind] : null;
   }
 
-  /** The instant after (dir 1) or before (dir -1) `jd` at which `body` reaches `target` degrees. */
-  private reach(body: 0 | 1, target: number, jd: number, dir: 1 | -1): number | null {
+  /** The instant after (dir 1) or before (dir -1) `jd` at which the angle of `spec` reaches `target` degrees. */
+  private reach(spec: Spec, target: number, jd: number, dir: 1 | -1): number | null {
     let p = this.positionsAt(jd);
     if (!p) return null;
-    const speed0 = Math.max(p.speed[body], body === 1 ? 10 : 0.9);
-    let gap = dir === 1 ? wrap(target - p.longitude[body]) : -wrap(p.longitude[body] - target);
+    let gap = dir === 1 ? wrap(target - angleOf(spec, p)) : -wrap(angleOf(spec, p) - target);
     if (dir === 1 && gap === 0) gap = 360;
-    let t = jd + gap / speed0;
+    let t = jd + gap / speedOf(spec, p);
     for (let i = 0; i < 12; i += 1) {
       p = this.positionsAt(t);
       if (!p) return null;
-      const diff = signed(target - p.longitude[body]);
-      t += diff / Math.max(p.speed[body], 0.1);
+      const diff = signed(target - angleOf(spec, p));
+      // A step is never more than a day: a bad speed must not throw the solve across the year.
+      t += Math.max(-1, Math.min(1, diff / speedOf(spec, p)));
       if (Math.abs(diff) < 1e-9) break;
     }
     return t;
   }
 
-  private solvedNext(spec: { body: 0 | 1; count: number }, jd: number): VidxCrossing | null {
+  private solvedNext(spec: Spec, jd: number): VidxCrossing | null {
     const p = this.positionsAt(jd);
     if (!p) return null;
     const size = 360 / spec.count;
-    const next = (Math.floor(wrap(p.longitude[spec.body]) / size) + 1) % spec.count;
-    const at = this.reach(spec.body, next * size, jd, 1);
+    const next = (Math.floor(angleOf(spec, p) / size) + 1) % spec.count;
+    const at = this.reach(spec, next * size, jd, 1);
     return at === null ? null : { jd: at, multiple: next };
   }
 
   /** Opens the files shipped in the app. Call once; it is cheap when they are missing. */
   async open(): Promise<void> {
+    if (this.options.lean) return;
     const [indexBytes, chebBytes] = await Promise.all([
       this.io.bundled(`${this.system}.index`),
       this.io.bundled(`${this.system}.cheb`),
@@ -194,6 +221,7 @@ export class Sky {
    * built-in fallback.
    */
   async ensure(fromJd: number, toJd: number): Promise<void> {
+    if (this.options.lean) return;
     const first = Math.floor((fromJd - EVENT_MARGIN_DAYS) / TILE_DAYS);
     const last = Math.floor((toJd + EVENT_MARGIN_DAYS) / TILE_DAYS);
     const jobs: Promise<void>[] = [];
@@ -280,56 +308,41 @@ export class Sky {
 
   /** The first boundary of `kind` after `jd`: stored when it can be, else found from positions. */
   nextBoundary(kind: VidxKind, jd: number): VidxCrossing | null {
-    const spec = this.solved(kind);
-    if (spec) return this.solvedNext(spec, jd);
-    const stored = this.indexAt(jd)?.nextEvent(kind, jd);
-    if (stored) return stored;
-    // Without stored data, tithi and nakshatra can still be found from positions.
-    if (kind === "tithi" || kind === "nakshatra") {
-      const found = kind === "tithi" ? nextTithiBoundary(this.source, jd) : nextNakshatraBoundary(this.source, jd);
-      return found === null ? null : { jd: found, multiple: -1 };
-    }
-    return null;
+    const spec = this.solved(kind, jd);
+    return spec ? this.solvedNext(spec, jd) : (this.indexAt(jd)?.nextEvent(kind, jd) ?? null);
   }
 
-  /** The last boundary of `kind` at or before `jd`, from stored data. */
+  /** The last boundary of `kind` at or before `jd`. */
   prevBoundary(kind: VidxKind, jd: number): VidxCrossing | null {
-    const spec = this.solved(kind);
-    if (spec) {
-      const p = this.positionsAt(jd);
-      if (!p) return null;
-      const size = 360 / spec.count;
-      const span = Math.floor(wrap(p.longitude[spec.body]) / size) % spec.count;
-      const at = this.reach(spec.body, span * size, jd, -1);
-      return at === null ? null : { jd: at, multiple: span };
-    }
-    return this.indexAt(jd)?.prevEvent(kind, jd) ?? null;
+    const spec = this.solved(kind, jd);
+    if (!spec) return this.indexAt(jd)?.prevEvent(kind, jd) ?? null;
+    const p = this.positionsAt(jd);
+    if (!p) return null;
+    const span = Math.floor(angleOf(spec, p) / (360 / spec.count)) % spec.count;
+    const at = this.reach(spec, span * (360 / spec.count), jd, -1);
+    return at === null ? null : { jd: at, multiple: span };
   }
 
-  /** The first boundary after `jd` at which `kind` enters span `multiple`, from stored data. */
+  /** The first boundary after `jd` at which `kind` enters span `multiple`. */
   nextEntry(kind: VidxKind, multiple: number, jd: number): VidxCrossing | null {
-    const spec = this.solved(kind);
-    if (spec) {
-      const at = this.reach(spec.body, (multiple % spec.count) * (360 / spec.count), jd, 1);
-      return at === null ? null : { jd: at, multiple: multiple % spec.count };
-    }
-    return this.indexAt(jd)?.nextEntry(kind, multiple, jd) ?? null;
+    const spec = this.solved(kind, jd);
+    if (!spec) return this.indexAt(jd)?.nextEntry(kind, multiple, jd) ?? null;
+    const at = this.reach(spec, (multiple % spec.count) * (360 / spec.count), jd, 1);
+    return at === null ? null : { jd: at, multiple: multiple % spec.count };
   }
 
-  /** The span of `kind` holding `jd` (tithi 0-29, nakshatra 0-26, ...), from stored data. */
+  /** The span of `kind` holding `jd` (tithi 0-29, nakshatra 0-26, ...). */
   spanAt(kind: VidxKind, jd: number): number | null {
-    const spec = this.solved(kind);
-    if (spec) {
-      const p = this.positionsAt(jd);
-      return p ? Math.floor(wrap(p.longitude[spec.body]) / (360 / spec.count)) % spec.count : null;
-    }
-    return this.indexAt(jd)?.spanAt(kind, jd) ?? null;
+    const spec = this.solved(kind, jd);
+    if (!spec) return this.indexAt(jd)?.spanAt(kind, jd) ?? null;
+    const p = this.positionsAt(jd);
+    return p ? Math.floor(angleOf(spec, p) / (360 / spec.count)) % spec.count : null;
   }
 
   /** Every boundary of `kind` with `from < jd <= to`, reading across stored windows. */
   eventsBetween(kind: VidxKind, from: number, to: number): VidxCrossing[] {
     const out: VidxCrossing[] = [];
-    const spec = this.solved(kind);
+    const spec = this.solved(kind, from);
     if (spec) {
       for (let at = this.solvedNext(spec, from); at && at.jd <= to && out.length < 4000; at = this.solvedNext(spec, at.jd + 1e-7)) {
         out.push(at);

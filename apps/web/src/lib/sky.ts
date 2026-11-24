@@ -6,6 +6,9 @@ import { Sky, SKY_DATA_VERSION, type SkyIo, type SkySystem } from "@vedic-patro/
 
 import { getBytes } from "@vedic-patro/api-client";
 
+/** Browsers that report 2 GB or less (`navigator.deviceMemory`, in GB, capped at 8) load no sky files. */
+const LEAN = typeof navigator !== "undefined" && ((navigator as { deviceMemory?: number }).deviceMemory ?? 8) <= 2;
+
 const CACHE_NAME = `sky-${SKY_DATA_VERSION}`;
 
 async function bytesOf(response: Response): Promise<Uint8Array> {
@@ -41,7 +44,7 @@ const opened = new Map<SkySystem, Promise<Sky>>();
 export function getSky(system: SkySystem): Promise<Sky> {
   let sky = opened.get(system);
   if (!sky) {
-    const created = new Sky(system, io);
+    const created = new Sky(system, io, { lean: LEAN });
     sky = created.open().then(
       () => created,
       () => created,

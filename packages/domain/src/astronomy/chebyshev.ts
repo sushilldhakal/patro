@@ -210,7 +210,8 @@ export function chebPositionsAt(
     if (hi > lo) {
       const diff =
         (chebLongitudeAt(table, hi, b) ?? lon) - (chebLongitudeAt(table, lo, b) ?? lon);
-      speed.push(diff / (hi - lo));
+      // The fitted value is a longitude, so it may wrap 360 inside the window: take the short way round.
+      speed.push((((diff + 180) % 360 + 360) % 360 - 180) / (hi - lo));
     } else {
       speed.push(0);
     }
