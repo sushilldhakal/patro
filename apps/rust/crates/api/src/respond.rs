@@ -69,7 +69,13 @@ pub(crate) fn flag(q: &Query, name: &str) -> Result<bool, Response> {
     }
 }
 
+/// A directive that starts with `=` is sent exactly as written, without `stale-if-error`. The
+/// documents and Veda routes use it: Python serves them outside its Redis layer, and their
+/// payloads carry signed audio links that expire, so an edge must not keep serving a stale copy.
 fn with_stale_if_error(directive: &str) -> String {
+    if let Some(raw) = directive.strip_prefix('=') {
+        return raw.to_owned();
+    }
     if directive.starts_with("public") && !directive.contains("stale-if-error") {
         format!("{directive}, {STALE_IF_ERROR}")
     } else {

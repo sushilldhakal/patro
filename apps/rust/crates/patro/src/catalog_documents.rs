@@ -18,6 +18,12 @@ const DEFAULT_DOC_CACHE: &str =
 const LIST_CACHE: &str = "no-cache, max-age=0, must-revalidate";
 const LIST_CDN_CACHE: &str = "public, s-maxage=30";
 const VEDA_DAILY_CACHE: &str = "public, max-age=3600, s-maxage=3600";
+// With signed audio links on, Python keeps these payloads out of its permanent cache tier and
+// does not add `stale-if-error`: a stale copy would carry expired links. A leading `=` tells the
+// response layer (`with_stale_if_error` in the api crate) to send the directive as written.
+const LIST_CACHE_SIGNED: &str = "=no-cache, max-age=0, must-revalidate";
+const LIST_CDN_CACHE_SIGNED: &str = "=public, s-maxage=30";
+const VEDA_DAILY_CACHE_SIGNED: &str = "=public, max-age=3600, s-maxage=3600";
 const CHAPTER_PAGE_DEFAULT: i64 = 25;
 const CHAPTER_PAGE_MAX: i64 = 100;
 const DAILY_MIN_CHARS: i64 = 20;
@@ -58,7 +64,7 @@ impl DocumentsService {
         let r2_signing = discover_r2_signing(data_dir);
         let document_cache = r2_signing.as_ref().map_or(DEFAULT_DOC_CACHE, |signing| {
             // Built once per service and kept for the life of the process.
-            Box::leak(signing.document_cache_control().into_boxed_str())
+            Box::leak(format!("={}", signing.document_cache_control()).into_boxed_str())
         });
         Self {
             db_path: data_dir.join("documents.db"),
@@ -85,7 +91,11 @@ impl DocumentsService {
     /// Cache headers for `/documents`.
     #[must_use]
     pub fn list_cache_headers(&self) -> (&'static str, &'static str) {
-        (LIST_CACHE, LIST_CDN_CACHE)
+        if self.r2_signing.is_some() {
+            (LIST_CACHE_SIGNED, LIST_CDN_CACHE_SIGNED)
+        } else {
+            (LIST_CACHE, LIST_CDN_CACHE)
+        }
     }
 
     /// Cache header for document detail routes.
@@ -97,7 +107,11 @@ impl DocumentsService {
     /// Cache header for `/veda/daily`.
     #[must_use]
     pub fn veda_daily_cache_header(&self) -> &'static str {
-        VEDA_DAILY_CACHE
+        if self.r2_signing.is_some() {
+            VEDA_DAILY_CACHE_SIGNED
+        } else {
+            VEDA_DAILY_CACHE
+        }
     }
 
     /// `GET /documents`.
