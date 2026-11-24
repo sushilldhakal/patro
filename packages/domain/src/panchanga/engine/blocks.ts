@@ -7,6 +7,12 @@ import type { Sky } from "../../astronomy/sky";
 import { pyFloorDiv, pyInt, pyMod, pyRound, pyRoundInt } from "./py";
 import { addSeconds, secondsSince, wallIn } from "./instant";
 import {
+  CHOGHADIYA,
+  CHO_DAY_START,
+  CHO_NIGHT_START,
+  DAY_LORD,
+  HORA_PLANETS,
+  HORA_SEQUENCE,
   KARANA_NAMES,
   KARANA_NAMES_NE,
   NAKSHATRA_NAMES,
@@ -393,3 +399,64 @@ export function dayTimes(sky: Sky, civilJdn: number, place: Place): DayTimes | n
   };
 }
 export { wholeSeconds, VAARA_NAMES, VAARA_NAMES_NE };
+
+// ---------------------------------------------------------------- choghadiya and hora
+
+/** `build_choghadiya`: eight day and eight night segments in ghati coordinates. */
+export function choghadiya(dayGhati: number, vaara: number): Json[] {
+  const dSeg = dayGhati / 8;
+  const nSeg = (60 - dayGhati) / 8;
+  const dow = vaara % 7;
+  const seg = (c: readonly [string, string, string, string, boolean], start: number, end: number, phase: string): Json => ({
+    name_ne: c[0],
+    name_en: c[1],
+    name: c[1],
+    quality_ne: c[2],
+    quality_en: c[3],
+    start_g: start,
+    end_g: end,
+    bad: c[4],
+    phase,
+  });
+  const out: Json[] = [];
+  for (let i = 0; i < 8; i += 1) out.push(seg(CHOGHADIYA[(CHO_DAY_START[dow] + i) % 7], i * dSeg, (i + 1) * dSeg, "day"));
+  for (let i = 0; i < 8; i += 1) out.push(seg(CHOGHADIYA[(CHO_NIGHT_START[dow] + 5 * i) % 7], dayGhati + i * nSeg, dayGhati + (i + 1) * nSeg, "night"));
+  return out;
+}
+
+function horaLord(vaara: number, index: number): string {
+  const start = Math.max(0, HORA_SEQUENCE.indexOf(DAY_LORD[vaara % 7]));
+  return HORA_SEQUENCE[(start + index) % 7];
+}
+
+/** `build_hora`: twelve day and twelve night slots. */
+export function hora(sunrise: number, sunset: number, nextSunrise: number, vaara: number, zone: string): Json[] {
+  const dayS = secondsSince(sunset, sunrise);
+  const nightS = secondsSince(nextSunrise, sunset);
+  const dayGhati = Math.min((dayS / (dayS + nightS)) * 60, 60);
+  const [dayHora, nightHora] = [dayS / 12, nightS / 12];
+  const [dayG, nightG] = [dayGhati / 12, (60 - dayGhati) / 12];
+  const slot = (index: number, night: boolean, planet: string, start: number, end: number, sg: number, eg: number): Json => {
+    const row = HORA_PLANETS.find((p) => p[0] === planet) ?? HORA_PLANETS[0];
+    const bad = row[3];
+    return {
+      index,
+      phase: night ? "night" : "day",
+      phase_ne: night ? "रात" : "दिन",
+      planet,
+      planet_ne: row[1],
+      planet_en: row[2],
+      quality_ne: bad ? "अशुभ" : "शुभ",
+      tone: bad ? "bad" : "good",
+      bad,
+      start_local_time_short: wallIn(start, zone).hm,
+      end_local_time_short: wallIn(end, zone).hm,
+      start_g: pyRound(sg, 4),
+      end_g: pyRound(eg, 4),
+    };
+  };
+  const out: Json[] = [];
+  for (let i = 0; i < 12; i += 1) out.push(slot(i + 1, false, horaLord(vaara, i), addSeconds(sunrise, i * dayHora), addSeconds(sunrise, (i + 1) * dayHora), i * dayG, (i + 1) * dayG));
+  for (let i = 0; i < 12; i += 1) out.push(slot(i + 1, true, horaLord(vaara, 12 + i), addSeconds(sunset, i * nightHora), addSeconds(sunset, (i + 1) * nightHora), dayGhati + i * nightG, dayGhati + (i + 1) * nightG));
+  return out;
+}

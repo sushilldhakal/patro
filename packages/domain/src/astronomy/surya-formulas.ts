@@ -223,3 +223,19 @@ export function suryaMeanDailyMotion(body: "sun" | "moon"): number {
 export function suryaMeanSun(jdUt: number): number {
   return meanLongitude(REVS.sun, jdUt);
 }
+
+/** Whole zodiac signs the mean Jupiter has entered since the Kali epoch (the samvatsara's count). */
+export function suryaJupiterSignIngresses(jdUt: number): number {
+  const since = jdUt - KALI_EPOCH_JD;
+  const whole = Math.floor(since);
+  const part = since - whole;
+  const perDay = 12n * REVS.jupiter;
+  const product = perDay * BigInt(whole);
+  let q = product / MAHAYUGA_DAYS;
+  let rem = product % MAHAYUGA_DAYS;
+  if (rem < 0n) {
+    rem += MAHAYUGA_DAYS;
+    q -= 1n;
+  }
+  return Number(q) + Math.floor((Number(rem) + Number(perDay) * part) / Number(MAHAYUGA_DAYS));
+}

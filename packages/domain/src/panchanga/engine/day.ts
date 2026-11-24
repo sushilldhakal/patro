@@ -6,6 +6,8 @@ import { lagnaAt } from "../../astronomy/siddhanta-offline";
 import type { Sky } from "../../astronomy/sky";
 import {
   aayan,
+  choghadiya,
+  hora,
   aayanVedic,
   chandraRashiSpans,
   dayLength,
@@ -28,10 +30,13 @@ import {
   type Json,
   type Place,
 } from "./blocks";
+import { displayHeaders, lunarCalendarBlock, lunarMonthBlock, nsDateBlock, pakshaBlock, samvatsaraBlock } from "./calendar-blocks";
 import { pyMod, pyRound } from "./py";
 import { addSeconds, secondsSince, wallAt } from "./instant";
 import { utcOffsetMinutes, civilJdn as jdnOf } from "../../astronomy/lunar-month";
-import { BS_MONTH_NAMES, BS_MONTH_NAMES_NE, PAYLOAD_KEYS, RASHI_NAMES, RASHI_NAMES_NE, VAARA_ENGLISH, VAARA_NAMES, VAARA_NAMES_NE } from "./tables.generated";
+import { BS_MONTH_NAMES, BS_MONTH_NAMES_NE, PAYLOAD_KEYS, RASHI_NAMES, TITHI_NAMES_NE, RASHI_NAMES_NE, VAARA_ENGLISH, VAARA_NAMES, VAARA_NAMES_NE } from "./tables.generated";
+
+const tithiBlockOf = (t: { display: number; paksha: string }): string => (t.display === 15 ? (t.paksha === "shukla" ? "पूर्णिमा" : "औंसी") : (TITHI_NAMES_NE[t.display - 1] as string));
 
 export interface DayInput extends Place {
   year: number;
@@ -44,10 +49,10 @@ export interface DayInput extends Place {
 
 /** Keys of the server's day payload this engine makes today. */
 export const DAY_BLOCKS = [
-  "date", "date_ad", "jd_ut", "anchor", "bs_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
+  "date", "date_ad", "jd_ut", "anchor", "display", "bs_date", "samvatsara", "ns_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
   "dinamaan", "ratrimana", "madhyahna", "lahiri_ayanamsa", "vaara", "aayan", "aayan_vedic", "tithi", "nakshatra", "yoga",
-  "karana", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
-  "ritu", "ritu_vedic", "planets_anchor", "lagna", "markers", "ayanamsa",
+  "choghadiya", "hora", "karana", "paksha", "chandra_rashi", "moon_phase", "chandra_rashi_spans", "nakshatra_pada_spans", "surya_rashi", "surya_nakshatra",
+  "ritu", "ritu_vedic", "lunar_month", "lunar_calendar", "planets_anchor", "lagna", "markers", "ayanamsa",
 ] as const;
 
 /** Whether every key of the server's payload (slim or full) is made here. */
@@ -75,19 +80,28 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   };
   const [sunLon, moonLon] = sunMoon(sky, sunrise);
   const asc = lagnaAt(sky.source, sunrise, input.latitude, input.longitude);
+  const observer = { sky, latitude: input.latitude, longitude: input.longitude, timeZone: zone };
+  const lunar = lunarMonthBlock(jdn, tithi.paksha, observer);
+  const nsBlock = nsDateBlock({ jdn, bsYear: bs.year, display: tithi.display, absolute: tithi.number, tithiNameNe: (tithiBlockOf(tithi) as string), paksha: tithi.paksha, month: lunar.name as string | null, isAdhik: Boolean(lunar.is_adhik) }, observer);
+  if (!nsBlock) return null;
   const date = `${String(input.year).padStart(4, "0")}-${String(input.month).padStart(2, "0")}-${String(input.day).padStart(2, "0")}`;
   const b: Json = {};
   b.date = date;
   b.date_ad = date;
   b.jd_ut = jdn - 0.5;
   b.anchor = "sunrise";
+  b.display = displayHeaders(jdn, bs, VAARA_ENGLISH[vaara], nsBlock);
   b.bs_date = { year: bs.year, month: bs.month, day: bs.day, month_name: BS_MONTH_NAMES[bs.month - 1], month_name_ne: BS_MONTH_NAMES_NE[bs.month - 1] };
+  b.samvatsara = samvatsaraBlock(bs.year);
+  b.ns_date = nsBlock;
   b.location = { lat: input.latitude, lon: input.longitude, timezone: zone, name: input.name ?? "Kathmandu", ...(input.cityId !== undefined ? { city_id: input.cityId } : {}) };
   b.sunrise = timeBlock(sunrise, zone, "nearest");
   b.sunset = timeBlock(sunset, zone, "nearest");
   b.day_ghati = dayGhati;
   b.moonrise = moonrise === null ? null : timeBlock(moonrise, zone, "truncated");
   b.moonset = moonset === null ? null : timeBlock(moonset, zone, "truncated");
+  b.choghadiya = choghadiya(dayGhati, vaara);
+  b.hora = hora(sunrise, sunset, nextSunrise, vaara, zone);
   b.dinamaan = dayLength(sunrise, sunset);
   b.ratrimana = dayLength(sunset, nextSunrise);
   b.madhyahna = timeBlock((sunrise + sunset) / 2, zone, "truncated");
@@ -99,6 +113,7 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.nakshatra = nakshatraBlock(sky, sunrise, sunrise, zone);
   b.yoga = yogaBlock(sky, sunrise, sunrise, zone);
   b.karana = karanaBlock(sky, sunrise, sunrise, zone);
+  b.paksha = pakshaBlock(lunar, tithi.paksha);
   b.chandra_rashi = rashiPayload(moonLon);
   b.moon_phase = moonPhase(sky, sunrise);
   b.chandra_rashi_spans = chandraRashiSpans(sky, sunrise, nextSunrise, zone);
@@ -107,6 +122,8 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.surya_nakshatra = suryaNakshatra(sunLon);
   b.ritu = rituAt(sky, sunrise, input.latitude);
   b.ritu_vedic = rituVedic(sky, sunrise, input.latitude);
+  b.lunar_calendar = lunarCalendarBlock(jdn, tithi.paksha, observer);
+  b.lunar_month = lunar;
   b.planets_anchor = {
     type: "udayakal",
     local_time: wallAt(addSeconds(sunrise, 30), utcOffsetMinutes(zone, sunrise)).hm,
