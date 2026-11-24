@@ -238,6 +238,58 @@ function monthStartFor(year: number, month: number): BsMonthStart | undefined {
   return at && at.year === year && at.month === month ? at : starts.find((s) => s.year === year && s.month === month)
 }
 
+function tableFor(key: string): BsTable | null {
+  const packed = PACKED_TABLES[key]
+  if (!packed) return null
+  let table = unpacked.get(key)
+  if (!table) {
+    table = unpackCalendar(packed)
+    unpacked.set(key, table)
+  }
+  return table
+}
+
+/**
+ * A BS month in one named table (not the reader's choice): its first day as days since 1970-01-01
+ * (proleptic Gregorian) and its length. The festival engine reads the Surya Siddhanta table this
+ * way whatever the reader chose, because the server keeps the civil month grid on it.
+ */
+export function bsMonthInTable(
+  key: string,
+  year: number,
+  month: number,
+): { startDays: number; length: number } | null {
+  const table = tableFor(key)
+  if (!table) return null
+  const at = table.monthStarts[(year - calendarData.first_year) * 12 + (month - 1)]
+  const start = at && at.year === year && at.month === month ? at : table.monthStarts.find((m) => m.year === year && m.month === month)
+  if (!start) return null
+  const length = table.lengths[year]?.[month - 1]
+  if (!length) return null
+  return { startDays: Math.round(start.adMs / 86_400_000), length }
+}
+
+/** The BS date of a civil day (days since 1970-01-01) in one named table, or null outside it. */
+export function bsDateInTable(key: string, days: number): { year: number; month: number; day: number } | null {
+  const table = tableFor(key)
+  if (!table) return null
+  const starts = table.monthStarts
+  const ms = days * 86_400_000
+  let lo = 0
+  let hi = starts.length - 1
+  if (hi < 0 || ms < starts[0].adMs) return null
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >>> 1
+    if (starts[mid].adMs <= ms) lo = mid
+    else hi = mid - 1
+  }
+  const start = starts[lo]
+  const day = Math.floor((ms - start.adMs) / 86_400_000) + 1
+  const length = table.lengths[start.year]?.[start.month - 1] ?? 32
+  if (day > length) return null
+  return { year: start.year, month: start.month, day }
+}
+
 export function getBSMonthLength(year: number, month: number): number {
   const { lengths: BS_YEAR_MONTH_LENGTHS, baisakh1: BAISAKH_1_AD } = activeTable()
   const monthLength = BS_YEAR_MONTH_LENGTHS[year]?.[month - 1]

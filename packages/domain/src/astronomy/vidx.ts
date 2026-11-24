@@ -193,7 +193,9 @@ export class VidxIndex {
     if (block >= this.blocks) return t.events;
     let lo = this.blockStart(t, block);
     let hi = this.blockStart(t, block + 1);
-    const ms = (jd - this.origin - BLOCK_DAYS * block) * MS_PER_DAY;
+    // Half a millisecond of slack: an instant read back from the index (`timeOf`) must count as
+    // at-or-before its own boundary, which float rounding would otherwise put a hair ahead of.
+    const ms = (jd - this.origin - BLOCK_DAYS * block) * MS_PER_DAY + 0.5;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
       if (this.offset(t, mid) <= ms) lo = mid + 1;
@@ -240,6 +242,16 @@ export class VidxIndex {
       out.push(this.crossing(v, k));
     }
     return out;
+  }
+
+  /** The first boundary after `jd` at which `kind` enters span `multiple` (index arithmetic). */
+  nextEntry(kind: VidxKind, multiple: number, jd: number): VidxCrossing | null {
+    const v = this.kindView(kind);
+    const k = this.afterView(v, jd);
+    const now = (v.firstMultiple + k) % v.count;
+    const ahead = (multiple + v.count - now) % v.count;
+    const at = k + ahead;
+    return at < v.events ? this.crossing(v, at) : null;
   }
 
   /** The span of `kind` holding `jd` (the one its last boundary entered). */

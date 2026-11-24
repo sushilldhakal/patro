@@ -1,0 +1,38 @@
+{
+  "_meta": {
+    "version": "1.4.0",
+    "description": "Nepal government holidays per MoHA gazette. General rest days only. Dashain and Tihar are multi-day blocks; Ghatasthapana is a separate day. Audience-limited days (women, education, valley, ethnic, disability, Kirat) are listed from festival_rules audience flags, not here. v1.4: drop Dashain sub-days, Vishwakarma, and Women's Day from the general list.",
+    "source": "aligned with festivals.json is_national_holiday",
+    "notes": "Regional jatras and sub-days already covered by Dashain/Tihar ranges are excluded."
+  },
+  "holiday_ids": [
+    "bs-new-year",
+    "maghe-sankranti",
+    "maghi-parwa",
+    "buddha-jayanti",
+    "janai-purnima",
+    "krishna-janmashtami",
+    "ganatantra-diwas",
+    "sambidhan-diwas",
+    "shahid-diwas",
+    "prajatantra-diwas",
+    "prithvi-jayanti",
+    "ghatasthapana",
+    "dashain-vidaa",
+    "tihar",
+    "chhath",
+    "pahadma-holi",
+    "terai-holi",
+    "shivaratri",
+    "tamu-lhosar",
+    "sonam-lhosar",
+    "gyalpo-lhosar",
+    "udhauli-parwa",
+    "christmas",
+    "labour-day",
+    "eid-ul-fitr",
+    "eid-ul-adha",
+    "ram-navami",
+    "janajati-shahid-diwas"
+  ]
+}

@@ -216,6 +216,16 @@ export class Sky {
     return null;
   }
 
+  /** The last boundary of `kind` at or before `jd`, from stored data. */
+  prevBoundary(kind: VidxKind, jd: number): VidxCrossing | null {
+    return this.indexAt(jd)?.prevEvent(kind, jd) ?? null;
+  }
+
+  /** The first boundary after `jd` at which `kind` enters span `multiple`, from stored data. */
+  nextEntry(kind: VidxKind, multiple: number, jd: number): VidxCrossing | null {
+    return this.indexAt(jd)?.nextEntry(kind, multiple, jd) ?? null;
+  }
+
   /** The span of `kind` holding `jd` (tithi 0-29, nakshatra 0-26, ...), from stored data. */
   spanAt(kind: VidxKind, jd: number): number | null {
     return this.indexAt(jd)?.spanAt(kind, jd) ?? null;
