@@ -12,7 +12,8 @@ rules and fonts compiled in) changed since the last good deploy, runs `scripts/d
 5. if it never answers, puts the previous binary back (stopping the socket, since an older binary
    binds the port itself) and fails the deploy.
 
-`nginx/` holds copies of the live sites (`/etc/nginx/sites-enabled/*`, 2026-11-26); nothing
+`nginx/` holds copies of the live sites (`/etc/nginx/sites-enabled/*`) and the cache snippet
+(`snippet-*` = `/etc/nginx/snippets/*`), taken 2026-11-26; nothing
 installs them. Edit the live file, reload nginx, then copy it here.
 
 **CI** (`.github/workflows/ci.yml`, job `rust`) runs `cargo fmt --check`, clippy with warnings
