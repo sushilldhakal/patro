@@ -1017,7 +1017,9 @@ export const patroKeys = {
 };
 
 export const fetchPatroMonth = (year: number, month: number) =>
-  get<PatroMonth>(withPanchangaCacheVersion(`/nepal/patro/${year}/${month}`));
+  fromLocal<PatroMonth>((l) => l.patro({ year, month })).then(
+    (local) => local ?? get<PatroMonth>(withPanchangaCacheVersion(`/nepal/patro/${year}/${month}`)),
+  );
 
 // ─── Holidays & Festivals ─────────────────────────────────────────────────────
 

@@ -56,6 +56,8 @@ export interface LocalCalendar {
   yearWheel(q: { year: number; era: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** An element route (`/panchanga/element/...`, `/panchanga/elements`, Surya Siddhanta), or null for the server. */
   element(q: LocalElementQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The printable patro month (`/nepal/patro/{y}/{m}`, the default format), or null for the server. */
+  patro(q: { year: number; month: number }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -177,7 +179,7 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     };
   };
 
-  return {
+  const calendar: LocalCalendar = {
     month: async (q, location) => {
       if (q.era !== "bs") return null;
       const calc = options.system();
@@ -334,7 +336,23 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         return null;
       }
     },
+    patro: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        // The patro page is the lite month grid under a header the month's middle day gives.
+        const month = await calendar.month({ year: q.year, month: q.month, era: "bs" }, location);
+        if (!month) return null;
+        const pm = await import("../panchanga/engine/patro-month");
+        const header = pm.calendarHeader(ctx.sky, q.year, q.month, ctx.place);
+        return header ? pm.patroMonth(q.year, q.month, month, header) : null;
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
   };
+  return calendar;
 }
 
 /** The app's calculation (`getCalculation()`) as a sky choice: Surya, or Drik in any ayanamsha the apps offer. */
