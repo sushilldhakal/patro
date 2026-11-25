@@ -41,7 +41,7 @@ export interface LocalCalendar {
     location?: LocalPlaceQuery,
   ): Promise<Record<string, unknown> | null>;
   /** A day's panchanga (`/panchanga/{date}`, Surya Siddhanta, a known city or the default place), or null for the server. */
-  day(q: { date: string; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  day(q: { date: string; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean; midnight?: boolean; civil?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -230,7 +230,7 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         return dayResponse(
           surya,
           { year: day.year, month: day.month, day: day.day, latitude: snap(place.latitude), longitude: snap(place.longitude), timeZone: place.timeZone, name: place.cityName ?? "Kathmandu", ...(place.cityId !== undefined ? { cityId: place.cityId } : {}) },
-          { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya } : undefined },
+          { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya } : undefined, midnight: q.midnight, civil: q.civil, surya },
         );
       } catch (error) {
         options.onError?.(error);

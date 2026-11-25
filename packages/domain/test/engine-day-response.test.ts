@@ -57,8 +57,10 @@ test("the day response made on the device matches the server's ", async () => {
   await sky.open();
   const failures: string[] = [];
   let checked = 0;
+  let civilChecked = 0;
+  let midChecked = 0;
   for (const c of cases) {
-    if (c.status !== 200 || /reference=|civil=|siddhanta|ayanamsha|year|at-time|element/.test(c.path)) continue;
+    if (c.status !== 200 || /siddhanta|ayanamsha|year|at-time|element/.test(c.path)) continue;
     const m = /^\/v1\/panchanga\/(jd\/([\d.]+)|today|tomorrow|(\d{4})-(\d\d)-(\d\d))\?(.*)$/.exec(c.path);
     if (!m) continue;
     const q = new URLSearchParams(m[6]);
@@ -72,12 +74,15 @@ test("the day response made on the device matches the server's ", async () => {
     else continue;
     const day = new Date((jdn - 2440588) * 86_400_000);
     const place = PLACES[city];
-    const got = dayResponse(sky, { year: day.getUTCFullYear(), month: day.getUTCMonth() + 1, day: day.getUTCDate(), latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone, name: place.name, cityId: place.cityId }, { era, detail: q.get("detail") !== "false", slim: q.get("slim") === "true", language: q.get("language") ?? undefined, festivals: q.get("festivals") === "true" ? { surya: sky } : undefined });
+    const got = dayResponse(sky, { year: day.getUTCFullYear(), month: day.getUTCMonth() + 1, day: day.getUTCDate(), latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone, name: place.name, cityId: place.cityId }, { era, detail: q.get("detail") !== "false", slim: q.get("slim") === "true", language: q.get("language") ?? undefined, festivals: q.get("festivals") === "true" ? { surya: sky } : undefined, midnight: q.get("reference") === "midnight", civil: q.get("civil") === "true", surya: sky });
     if (!got) continue;
     checked += 1;
+    if (q.get('civil') === 'true') civilChecked += 1;
+    if (q.get('reference') === 'midnight') midChecked += 1;
     const err = diff("", got, JSON.parse(c.body));
     if (err) failures.push(`${c.path}: ${err}`);
   }
-  assert.ok(checked >= 3, `checked ${checked}`);
+  console.log('checked', checked, 'civil', civilChecked, 'midnight', midChecked);
+  assert.ok(checked >= 3 && civilChecked >= 3 && midChecked >= 5, `checked ${checked}`);
   assert.equal(failures.length, 0, failures.slice(0, 8).join("\n"));
 });

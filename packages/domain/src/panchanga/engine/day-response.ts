@@ -7,6 +7,8 @@ import type { Json } from "./blocks";
 import { wallIn } from "./instant";
 import { civilJdn } from "../../astronomy/lunar-month";
 import { dayFestivals } from "../../festivals/day-festivals";
+import { midnightOverlay } from "./midnight";
+import { civilTimeline } from "./civil-timeline";
 
 export interface DayOptions {
   /** `detail=` (default true). */
@@ -18,6 +20,12 @@ export interface DayOptions {
   language?: string;
   /** `festivals=`: the day's festivals, their details and the sait windows (needs the Surya sky). */
   festivals?: { surya: Sky };
+  /** `reference=midnight`: the moving angas re-read at local midnight. */
+  midnight?: boolean;
+  /** `civil=true`: attach the midnight to midnight `civil_timeline`. */
+  civil?: boolean;
+  /** The Surya sky, needed for the festival rows the midnight state keeps in its detail. */
+  surya?: Sky;
 }
 
 const get = (o: unknown, ...path: string[]): unknown => path.reduce<unknown>((v, k) => (v && typeof v === "object" ? (v as Json)[k] : undefined), o) ?? null;
@@ -64,8 +72,15 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
  * part of it yet: the caller must not use this for a request with `festivals=true`.
  */
 export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Json | null {
-  const f = buildDay(sky, input);
-  if (!f) return null;
+  const base = buildDay(sky, input);
+  if (!base) return null;
+  let f = base;
+  let overlay: Json | null = null;
+  if (options.midnight) {
+    overlay = midnightOverlay(sky, civilJdn(input.year, input.month, input.day), input, base.lunar_month as Json, (base.vaara as Json).number as number);
+    if (!overlay) return null;
+    f = { ...base, ...overlay };
+  }
   const zone = input.timeZone;
   const bs = f.bs_date as Json;
   const hora = (f.hora as Json[]) ?? [];
@@ -82,7 +97,7 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
   out.paksha_ne = get(f.paksha, "label_ne");
   out.chandra_rashi = get(f.chandra_rashi, "name");
   out.chandra_rashi_ne = get(f.chandra_rashi, "name_ne");
-  out.chandra_rashi_spans = f.chandra_rashi_spans ?? [];
+  out.chandra_rashi_spans = base.chandra_rashi_spans ?? [];
   out.surya_rashi = get(f.surya_rashi, "name");
   out.surya_rashi_ne = get(f.surya_rashi, "name_ne");
   out.ritu = get(f.ritu, "name");
@@ -109,8 +124,9 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
   out.lunar_month = f.lunar_month ?? null;
   out.bs_date = bs;
   out.from_cache = false;
-  const bundle = options.festivals ? dayFestivals(sky, options.festivals.surya, civilJdn(input.year, input.month, input.day), input.year, input, true) : null;
-  if (bundle) out.festivals = bundle.slim;
+  const surya = options.festivals?.surya ?? options.surya;
+  const bundle = surya && (options.festivals || options.midnight) ? dayFestivals(sky, surya, civilJdn(input.year, input.month, input.day), input.year, input, Boolean(options.festivals)) : null;
+  if (bundle && options.festivals) out.festivals = bundle.slim;
   const detailOn = options.detail !== false;
   if (detailOn) out.detail = { ...f, ...(bundle ? { festivals: bundle.detail } : {}) };
   out.hora = hora;
@@ -119,6 +135,12 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
   out.tarabala_table = f.tarabala_table ?? null;
   out.chandrabala_table = f.chandrabala_table ?? null;
   out.rashifal = f.rashifal ?? null;
+  if (overlay) {
+    out.mode = "civil";
+    out.boundary = "midnight";
+    out.anchor = "midnight";
+    out.panchanga_date_ad = f.date_ad;
+  }
   if (bundle?.saits) out.festival_saits = bundle.saits;
   if (options.slim) {
     delete out.rashifal;
@@ -137,5 +159,10 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
   }
   out.jd_ut = f.jd_ut;
   out.date_ad = f.date_ad;
+  if (options.civil) {
+    const timeline = civilTimeline(sky, input);
+    if (!timeline) return null;
+    out.civil_timeline = timeline;
+  }
   return renderForEra(out, options.era, options.language ?? eraLanguage(options.era));
 }

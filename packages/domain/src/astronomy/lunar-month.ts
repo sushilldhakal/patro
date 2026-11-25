@@ -112,7 +112,7 @@ export function utcOffsetMinutes(timeZone: string, jd: number): number {
   const key = `${timeZone}|${hour}`;
   const hit = offsetCache.get(key);
   if (hit !== undefined) return hit;
-  const ms = (hour / 24 - 2440587.5) * 86_400_000;
+  const ms = Math.round((hour / 24 - 2440587.5) * 86_400_000);
   let offset = 0;
   try {
     const p = getZonedDateTimeParts(new Date(ms), validTimeZone(timeZone));

@@ -624,11 +624,15 @@ export const fetchPatroCapabilities = async (): Promise<PatroApiLimits> => {
 // ─── Day panchanga ────────────────────────────────────────────────────────────
 
 export const fetchCivilTimeline = (date: string, era: Era = "ad", location?: LocationParams) =>
-  get<{ civil_timeline: CivilTimeline }>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&detail=false&civil=true`),
-      location,
-    ),
+  fromLocal<{ civil_timeline: CivilTimeline }>((l) => l.day({ date, era, detail: false, civil: true }, location)).then(
+    (local) =>
+      local ??
+      get<{ civil_timeline: CivilTimeline }>(
+        appendLocation(
+          withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&detail=false&civil=true`),
+          location,
+        ),
+      ),
   ).then((r) => r.civil_timeline);
 
 // ─── Gochar and graha detail ──────────────────────────────────────────────────
@@ -1176,12 +1180,16 @@ export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?:
  * view. Date properties stay tied to the date.
  */
 export const fetchPanchangaAtMidnight = (date: string, era: "bs" | "ad" = "ad", location?: LocationParams) =>
-  get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&reference=midnight&slim=true`),
-      location,
-    ),
-  ).then(relinkDayDetail);
+  fromLocal<PanchangaDay>((l) => l.day({ date, era, detail: true, slim: true, festivals: true, midnight: true }, location)).then((local) =>
+    local
+      ? relinkDayDetail(local)
+      : get<PanchangaDay>(
+          appendLocation(
+            withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&reference=midnight&slim=true`),
+            location,
+          ),
+        ).then(relinkDayDetail),
+  );
 
 export function timeShort(v: PanchangaDay["sunrise"]): string {
   if (!v) return "—";
