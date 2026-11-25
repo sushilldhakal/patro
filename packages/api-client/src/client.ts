@@ -240,7 +240,9 @@ export const fetchNearestCity = (lat: number, lon: number, country?: string) => 
  */
 export function fetchJanmaRashi(moment: InstantQuery, birthTz: string) {
   const qs = appendBirthInstantParams(new URLSearchParams({ birth_tz: birthTz }), moment).toString();
-  return get<JanmaRashi>(`/panchanga/rashifal/janma?${qs}`);
+  return fromLocal<JanmaRashi>((l) =>
+    l.janma({ birth: { era: moment.inputEra, year: moment.year, month: moment.month, day: moment.day, clock: moment.clock, tz: birthTz } }),
+  ).then((local) => local ?? get<JanmaRashi>(`/panchanga/rashifal/janma?${qs}`));
 }
 
 export const fetchPanchangaAtTime = (
@@ -880,11 +882,36 @@ export async function streamKundaliReport(
 // the app by an AD civil date (`date`, `era=ad`). Without an explicit era the
 // API reads a bare date as BS, which silently returns a rashifal ~57 years off.
 
+/** The day a rashifal request names, in the local calendar's terms: the page's own state, as the server reads it. */
+function namedRashifalDay(params: URLSearchParams) {
+  const num = (key: string) => (params.get(key) ? Number(params.get(key)) : undefined);
+  const date = params.get("date") ?? undefined;
+  const jd = num("jd");
+  const year = num("year");
+  const month = num("month");
+  const dayOfMonth = num("day");
+  return {
+    date,
+    jd,
+    year,
+    month,
+    day: dayOfMonth,
+    inputEra: params.get("inputEra") ?? params.get("input_era") ?? undefined,
+    today: date === undefined && jd === undefined && year === undefined,
+    era: params.get("era") ?? undefined,
+    language: params.get("language") ?? undefined,
+  };
+}
+
 export function fetchRashifalForDay(day: URLSearchParams, period: RashifalPeriod, location?: LocationParams) {
   const params = new URLSearchParams(day);
   params.set("period", period);
-  return get<RashifalBlock>(
-    appendLocation(withPanchangaCacheVersion(`/panchanga/rashifal?${params.toString()}`), location),
+  return fromLocal<RashifalBlock>((l) => l.rashifal({ ...namedRashifalDay(params), period }, location)).then(
+    (local) =>
+      local ??
+      get<RashifalBlock>(
+        appendLocation(withPanchangaCacheVersion(`/panchanga/rashifal?${params.toString()}`), location),
+      ),
   );
 }
 
@@ -900,11 +927,21 @@ export function fetchPersonalRashifalForDay(
   params.set("birth_lon", String(birth.birthLon));
   params.set("birth_tz", birth.birthTz);
   appendBirthInstantParams(params, birth.moment);
-  return get<RashifalPersonal>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/rashifal/personal?${params.toString()}`),
+  const m = birth.moment;
+  return fromLocal<RashifalPersonal>((l) =>
+    l.personalRashifal(
+      { ...namedRashifalDay(params), period, birth: { era: m.inputEra, year: m.year, month: m.month, day: m.day, clock: m.clock, tz: birth.birthTz }, birthLat: birth.birthLat, birthLon: birth.birthLon },
       location,
     ),
+  ).then(
+    (local) =>
+      local ??
+      get<RashifalPersonal>(
+        appendLocation(
+          withPanchangaCacheVersion(`/panchanga/rashifal/personal?${params.toString()}`),
+          location,
+        ),
+      ),
   );
 }
 

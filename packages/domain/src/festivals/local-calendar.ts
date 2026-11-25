@@ -35,6 +35,43 @@ export interface LocalMonthQuery {
   slim?: boolean;
 }
 
+/** The day a rashifal reads (the same ways a day is named) and its window. */
+export interface LocalRashifalQuery {
+  date?: string;
+  inputEra?: string;
+  year?: number;
+  month?: number;
+  day?: number;
+  jd?: number;
+  /** No day named: today at the place. */
+  today?: boolean;
+  era?: string;
+  language?: string;
+  period: string;
+}
+
+/** A birth moment: a civil day in `era` and the clock on the birth zone's wall (12:00 when absent). */
+export interface LocalBirth {
+  era: string;
+  year: number;
+  month: number;
+  day: number;
+  clock?: string;
+  tz: string;
+}
+export interface LocalPersonalRashifalQuery extends LocalRashifalQuery {
+  birth: LocalBirth;
+  birthLat: number;
+  birthLon: number;
+  /** When the dasha is read, as a Julian Day (UT); now when absent. */
+  asOfJd?: number;
+}
+export interface LocalJanmaQuery {
+  birth: LocalBirth;
+  era?: string;
+  language?: string;
+}
+
 /** One of the gochar routes: a day (`date` or `jd`), the BS year summary (`year`), a timeline (`from`/`to`), a graha year (`graha` + `year`) or graha sthiti (`sthiti`). */
 export interface LocalGocharQuery {
   date?: string;
@@ -61,6 +98,12 @@ export type LocalElementQuery =
 export interface LocalCalendar {
   /** A BS month grid (lite), or null for the server. */
   month(q: LocalMonthQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The scored rashifal for a day's window (`/panchanga/rashifal`), or null for the server. */
+  rashifal(q: LocalRashifalQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The rashifal read against one birth chart (`/panchanga/rashifal/personal`), or null for the server. */
+  personalRashifal(q: LocalPersonalRashifalQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The birth Moon's nakshatra and rashi (`/panchanga/rashifal/janma`), or null for the server. */
+  janma(q: LocalJanmaQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The gochar routes (transit table, ingress timelines, year summary, graha asta/vakri, graha sthiti), or null for the server. */
   gochar(q: LocalGocharQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The lite grid alone (what `month` builds on). */
@@ -218,6 +261,32 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     };
   };
 
+  /** The civil day (JDN) a request names: a Julian Day, today at the place, or a date in the era it is written in. */
+  const namedJdn = async (
+    q: { date?: string; inputEra?: string; jd?: number; today?: boolean; year?: number; month?: number; day?: number; era?: string },
+    zone: string,
+  ): Promise<number | null> => {
+    const { jdnFromIso, bsToJdn } = await import("../astronomy/lunar-month");
+    if (q.jd !== undefined) return Math.floor(q.jd + 0.5);
+    if (q.today) {
+      const { wallIn } = await import("../panchanga/engine/instant");
+      return jdnFromIso(wallIn(Date.now() / 86_400_000 + 2_440_587.5, zone).iso.slice(0, 10));
+    }
+    const era = q.inputEra ?? q.era ?? "bs";
+    if (q.year !== undefined && q.month !== undefined && q.day !== undefined) {
+      const pad = (n: number) => String(n).padStart(2, "0");
+      if (era === "ad") return jdnFromIso(`${String(q.year).padStart(4, "0")}-${pad(q.month)}-${pad(q.day)}`);
+      return era === "bs" ? bsToJdn(q.year, q.month, q.day) : null;
+    }
+    if (q.date === undefined) return null;
+    if (era === "ad") return jdnFromIso(q.date);
+    if (era === "bs") {
+      const [y, mo, d] = q.date.split("-").map(Number);
+      return bsToJdn(y, mo, d);
+    }
+    return null;
+  };
+
   const FULL_MONTHS = new Map<string, Record<string, unknown>>();
 
   const calendar: LocalCalendar = {
@@ -334,19 +403,8 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
       try {
         const ctx = await surya(location);
         if (!ctx) return null;
-        const { jdnFromIso, bsToJdn, civilFromJdn } = await import("../astronomy/lunar-month");
-        let jdn: number | null;
-        if (q.jd !== undefined) jdn = Math.floor(q.jd + 0.5);
-        else if (q.today) {
-          // "Today" is the observer's own date, read on the clock of the place's zone.
-          const { wallIn } = await import("../panchanga/engine/instant");
-          jdn = jdnFromIso(wallIn(Date.now() / 86_400_000 + 2_440_587.5, ctx.place.timeZone).iso.slice(0, 10));
-        } else if (q.date === undefined) jdn = null;
-        else if ((q.inputEra ?? q.era) === "ad") jdn = jdnFromIso(q.date);
-        else if ((q.inputEra ?? q.era) === "bs") {
-          const [y, mo, d] = q.date.split("-").map(Number);
-          jdn = bsToJdn(y, mo, d);
-        } else jdn = null;
+        const { civilFromJdn } = await import("../astronomy/lunar-month");
+        const jdn = await namedJdn(q, ctx.place.timeZone);
         if (jdn === null || jdn === undefined) return null;
         const day = civilFromJdn(jdn);
         const { dayResponse } = await import("../panchanga/engine/day-response");
@@ -416,6 +474,63 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const day = civilFromJdn(Math.floor(q.jd + 0.5));
         const { atTimeResponse } = await import("../panchanga/engine/at-time");
         return atTimeResponse(ctx.sky, { year: day.year, month: day.month, day: day.day, ...ctx.place }, { clock: q.clock, era: q.era, language: q.language, surya: ctx.surya });
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    rashifal: async (q, location) => {
+      try {
+        const period = q.period as import("../jyotish/rashifal/engine").Period;
+        if (!["daily", "weekly", "monthly", "yearly"].includes(period)) return null;
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const jdn = await namedJdn(q, ctx.place.timeZone);
+        if (jdn === null) return null;
+        const { rashifalForDay } = await import("../jyotish/rashifal/engine");
+        const payload = rashifalForDay(ctx.sky, jdn, ctx.place, period);
+        if (!payload) return null;
+        const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
+        return q.era ? renderForEra(payload, q.era, q.language ?? eraLanguage(q.era)) : payload;
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    personalRashifal: async (q, location) => {
+      try {
+        const period = q.period as import("../jyotish/rashifal/engine").Period;
+        if (!["daily", "weekly", "monthly", "yearly"].includes(period)) return null;
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const jdn = await namedJdn(q, ctx.place.timeZone);
+        if (jdn === null) return null;
+        const e = await import("../jyotish/rashifal/engine");
+        const moment = e.birthMoment(q.birth, { lat: q.birthLat, lon: q.birthLon });
+        if (!moment) return null;
+        const natal = e.castNatal(ctx.sky, moment.utc, moment.wall, moment.zone, q.birthLat, q.birthLon);
+        if (!natal) return null;
+        const asOf = q.asOfJd ?? Date.now() / 86_400_000 + 2_440_587.5;
+        const payload = e.personalRashifalForDay(ctx.sky, natal, jdn, ctx.place, period, asOf);
+        if (!payload) return null;
+        const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
+        return q.era ? renderForEra(payload, q.era, q.language ?? eraLanguage(q.era)) : payload;
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    janma: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const e = await import("../jyotish/rashifal/engine");
+        const moment = e.birthMoment(q.birth);
+        if (!moment) return null;
+        const payload = e.janma(ctx.sky, moment.utc);
+        if (!payload) return null;
+        const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
+        return q.era ? renderForEra(payload, q.era, q.language ?? eraLanguage(q.era)) : payload;
       } catch (error) {
         options.onError?.(error);
         return null;
