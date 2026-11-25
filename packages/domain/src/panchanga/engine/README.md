@@ -28,6 +28,8 @@ block: translate the Rust builder, add its key to `DAY_BLOCKS`, run that test.
   `surya-formulas.ts`, instant lagna, upagrahas, `muhurta_now`).
 - `/panchanga/year/{y}/sun` and the year wheel (`year.ts`).
 - `/panchanga/elements` and `element/{name}/day|month|spans` (`element.ts`).
+- The printable patro month `/nepal/patro/{y}/{m}` (`patro-month.ts`, over the lite month grid and the middle day's header).
+- `/nepal/panchak/year/{y}` (`panchak.ts`, with `yearSpanJd` and `stampYear` the other graha year routes will reuse).
 - Surya eclipses (`astronomy/surya-eclipse.ts`, wired through `LocalCalendar.eclipse`).
 - All of these are reached through `LocalCalendar` (`festivals/local-calendar.ts`) and `fromLocal` in `api-client/src/client.ts`;
   they answer for the Surya Siddhanta at the default place or a known city, and return null (the server answers) otherwise.
@@ -37,8 +39,15 @@ Tests: `test/engine-day.test.ts`, `engine-day-response.test.ts`, `engine-at-time
 (instants within 20 s, clocks within a minute, text by shape).
 
 ## Still to port
-- rashifal (`jyotish/src/rashifal`, about 3,500 lines) and rashifal/personal
-- `/nepal/patro/{y}/{m}`, `/nepal/panchanga/*`, the year route's lite/full shapes, `/panchanga/ad/{y}/{m}` browse grids
-- sait routes (`patro/src/sait.rs`: list, month, detail, personalize), graha year routes (asta, vakri, sthiti, panchak), gochar
+- rashifal (`jyotish/src/rashifal`, about 3,500 lines) and rashifal/personal, `rashifal/janma`
+- gochar (`jyotish/src/gochar.rs`, 1,150 lines: planet ingress/station/udayast solvers on the text's positions) and, on top
+  of it, graha-asta, graha-vakri, graha-sthiti, gochar ingress/day/year
+- sait routes (`patro/src/sait.rs`: list, month, detail, personalize)
+- the month grid with `full=true` (the apps ask for it), `/panchanga/ad|bc/{y}/{m}`, the year route's lite/full shapes
+- `/nepal/panchanga/*` (no screen calls it)
 - Drik for any of the above (the text's own Surya numbers only so far; Drik graha latitudes need the sky's ecliptic latitude)
 - Days before 1970 (zone clocks on local mean time to the second) are left to the server.
+
+Calls the apps still make to the server for Surya at the default place: rashifal (+personal, janma), the full month grid,
+sait, gochar and the graha year routes (asta, vakri, sthiti). Everything else under `/panchanga*`, `/nepal/festivals*` and
+`/nepal/patro*` is answered on the device first.
