@@ -70,7 +70,7 @@ function elementState(block: Json, zone: string): Json {
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
- * The day response, or null when the engine cannot answer (a year before 1970, no sunrise). `festivals` is not
+ * The day response, or null when the engine cannot answer (no sunrise, a day outside the BS tables). `festivals` is not
  * part of it yet: the caller must not use this for a request with `festivals=true`.
  */
 export function dayState(sky: Sky, input: DayInput, options: DayOptions): Json | null {
@@ -161,7 +161,8 @@ export function dayState(sky: Sky, input: DayInput, options: DayOptions): Json |
   }
   out.jd_ut = f.jd_ut;
   out.date_ad = f.date_ad;
-  if (options.civil) {
+  // The server attaches the civil timeline only from the Gregorian cutover (1582-10-15) on.
+  if (options.civil && civilJdn(input.year, input.month, input.day) >= 2299161) {
     const timeline = civilTimeline(sky, input);
     if (!timeline) return null;
     out.civil_timeline = timeline;

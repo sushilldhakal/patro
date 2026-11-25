@@ -1,6 +1,6 @@
 // Instants are Julian Days (UT). These print them as the server does: ISO with the zone's offset,
 // the microseconds left off when zero, and the zone's clock (`HH:MM:SS`, `HH:MM`).
-import { civilFromJdn, utcOffsetMinutes } from "../../astronomy/lunar-month";
+import { civilFromJdn, utcOffsetMinutes, utcOffsetText } from "../../astronomy/lunar-month";
 
 const pad = (n: number, w = 2) => String(n).padStart(w, "0");
 
@@ -30,18 +30,18 @@ export interface Wall {
 
 /** The instant on a clock `offsetMinutes` east of UTC. */
 export function wallAt(jd: number, offsetMinutes: number): Wall {
-  const { jdn, micros } = split(jd + offsetMinutes / 1440);
+  // Whole seconds over 86400, as the server divides its offset: a local mean time offset (+05:41:16)
+  // from fractional minutes rounds to a different double and lands microseconds off the second.
+  const { jdn, micros } = split(jd + Math.round(offsetMinutes * 60) / 86400);
   const c = civilFromJdn(jdn);
   const totalSeconds = Math.floor(micros / 1_000_000);
   const frac = micros % 1_000_000;
   const hh = Math.floor(totalSeconds / 3600);
   const mm = Math.floor((totalSeconds % 3600) / 60);
   const ss = totalSeconds % 60;
-  const sign = offsetMinutes < 0 ? "-" : "+";
-  const ao = Math.abs(offsetMinutes);
   const hms = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
   return {
-    iso: `${pad(c.year, 4)}-${pad(c.month)}-${pad(c.day)}T${hms}${frac ? `.${pad(frac, 6)}` : ""}${sign}${pad(Math.floor(ao / 60))}:${pad(ao % 60)}`,
+    iso: `${pad(c.year, 4)}-${pad(c.month)}-${pad(c.day)}T${hms}${frac ? `.${pad(frac, 6)}` : ""}${utcOffsetText(offsetMinutes)}`,
     hms,
     hm: `${pad(hh)}:${pad(mm)}`,
     jdn,

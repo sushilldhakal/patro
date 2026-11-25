@@ -1,6 +1,6 @@
 // The panchanga element routes (`/panchanga/element/{name}/day|month|spans`, `patro::catalog`): one anga or table
 // of the day payload, a BS month of it, or its spans over a window.
-import { civilFromJdn, bsMonth, civilJdn } from "../../astronomy/lunar-month";
+import { civilFromJdn, bsMonth, civilJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import type { Sky } from "../../astronomy/sky";
 import { KARANA_NAMES, KARANA_NAMES_NE, NAKSHATRA_NAMES, NAKSHATRA_NAMES_NE, RASHI_NAMES, RASHI_NAMES_NE, TITHI_NAMES, TITHI_NAMES_NE, YOGA_NAMES, YOGA_NAMES_NE } from "./tables.generated";
 import { endOf, karanaAt, karanaName, nakshatraAt, startOf, sunMoon, sunTimes, tithiInfo, yogaAt, type Json } from "./blocks";
@@ -186,7 +186,7 @@ export function elementSpans(sky: Sky, name: string, startJd: number, endJd: num
   if (!spec || spec.kind !== "span" || !spec.boundary || endJd < startJd || endJd - startJd > 400) return null;
   const startDay = civilFromJdn(Math.floor(startJd + 0.5));
   const endDay = civilFromJdn(Math.floor(endJd + 0.5));
-  if (startDay.year < 1970) return null;
+  if (Math.floor(startJd + 0.5) < FIRST_DEVICE_JDN) return null;
   const zone = place.timeZone;
   const start = localMidnight(civilJdn(startDay.year, startDay.month, startDay.day), zone);
   const end = localMidnight(civilJdn(endDay.year, endDay.month, endDay.day), zone) + 1;

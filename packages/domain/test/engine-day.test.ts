@@ -22,9 +22,15 @@ const golden = JSON.parse(readFileSync(new URL("apps/rust/crates/panchanga/tests
   payload: Record<string, unknown>;
 }[];
 
-const ISO = /^-?\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?[+-]\d\d:\d\d$/;
+const ISO = /^-?\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?[+-]\d\d:\d\d(:\d\d)?$/;
+// Date.parse has no offset with seconds (local mean time, `+05:41:16`): take the seconds off by hand.
+const isoSecs = (s: string) => {
+  const m = /([+-])(\d\d):(\d\d):(\d\d)$/.exec(s);
+  if (!m) return Date.parse(s) / 1000;
+  return Date.parse(`${s.slice(0, -9)}Z`) / 1000 - (m[1] === "-" ? -1 : 1) * (Number(m[2]) * 3600 + Number(m[3]) * 60 + Number(m[4]));
+};
 const CLOCK = /^-?\d+:\d\d:\d\d$/;
-const secs = (s: string) => (CLOCK.test(s) ? s.split(":").reduce((a, v) => a * 60 + Number(v), 0) : Date.parse(s) / 1000);
+const secs = (s: string) => (CLOCK.test(s) ? s.split(":").reduce((a, v) => a * 60 + Number(v), 0) : isoSecs(s));
 /** Texts that differ only by digits a second or so apart ("10 Hours 59 Mins 04 Secs"). */
 const closeText = (a: string, b: string) => {
   if (a.replace(/\d+/g, "#") !== b.replace(/\d+/g, "#")) return false;

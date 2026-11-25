@@ -5,7 +5,7 @@
 //
 // BS months only (Surya civil grid), BS 1951-2149 where the bundled sky answers. Anything else
 // returns null and the caller asks the server.
-import { bsDateOf, bsMonth, civilFromJdn, civilJdn, isoFromJdn, observedYear, setReferenceOffsetDate, utcOffsetMinutes, type PatroObserver } from "./lunar-month";
+import { bsDateOf, bsMonth, civilFromJdn, civilJdn, isoFromJdn, observedYear, setReferenceOffsetDate, utcOffsetMinutes, utcOffsetText, type PatroObserver } from "./lunar-month";
 import { moonRiseSet } from "./moon-rise";
 import type { Sky } from "./sky";
 import { skyDay } from "./sky-day";
@@ -74,9 +74,7 @@ export function isoLocal(jd: number, offsetMinutes: number): string {
   const dayNumber = Math.floor(totalSeconds / 86400);
   const rem = totalSeconds - dayNumber * 86400;
   const c = civilFromJdn(dayNumber); // (jd + 0.5) counts days from the Julian Day epoch: the integer part is the civil JDN
-  const sign = offsetMinutes < 0 ? "-" : "+";
-  const ao = Math.abs(offsetMinutes);
-  return `${c.year}-${pad(c.month)}-${pad(c.day)}T${pad(Math.floor(rem / 3600))}:${pad(Math.floor((rem % 3600) / 60))}:${pad(rem % 60)}${sign}${pad(Math.floor(ao / 60))}:${pad(ao % 60)}`;
+  return `${c.year}-${pad(c.month)}-${pad(c.day)}T${pad(Math.floor(rem / 3600))}:${pad(Math.floor((rem % 3600) / 60))}:${pad(rem % 60)}${utcOffsetText(offsetMinutes)}`;
 }
 
 function karanaName(number: number): number {

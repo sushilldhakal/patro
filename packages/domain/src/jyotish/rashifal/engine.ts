@@ -1259,8 +1259,7 @@ export function birthMoment(birth: { era: string; year: number; month: number; d
   if (birth.era === "ad") jdn = civilJdnOf(birth.year, birth.month, birth.day);
   else if (birth.era === "bs") jdn = bsToJdnOf(birth.year, birth.month, birth.day);
   else return null;
-  if (jdn === null) return null;
-  if (civilFromJdn(jdn).year < 1970) return null;
+  if (jdn === null || jdn < FIRST_DEVICE_JDN) return null;
   const inNepal = coords !== undefined && coords.lat >= 26.35 && coords.lat <= 30.45 && coords.lon >= 80.05 && coords.lon <= 88.2;
   const zone = inNepal ? "Asia/Kathmandu" : birth.tz || "Asia/Kathmandu";
   const clock = (birth.clock && birth.clock !== "" ? birth.clock : "12:00").trim().split(":");
@@ -1270,7 +1269,7 @@ export function birthMoment(birth: { era: string; year: number; month: number; d
   const seconds = h * 3600 + m * 60 + s;
   return { utc: localInstant(jdn, seconds, zone), wall: jdn - 0.5 + seconds / 86400, zone };
 }
-import { civilJdn as civilJdnOf, bsToJdn as bsToJdnOf } from "../../astronomy/lunar-month";
+import { civilJdn as civilJdnOf, bsToJdn as bsToJdnOf, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 
 /** `compute_janma_from_instant`: the birth Moon's nakshatra (1 to 27) and rashi (1 to 12). */
 export function janma(sky: Sky, utc: number): { janma_nakshatra: number; janma_rashi: number } | null {

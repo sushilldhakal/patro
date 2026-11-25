@@ -48,6 +48,11 @@ export interface PatroObserver {
 
 const CUTOVER_JD = 2299160.5; // 1582-10-15 00:00 UT
 const CUTOVER_JDN = 2299161;
+/**
+ * The first day this device answers: the Gregorian cutover. Before it the server reads days on the
+ * Julian calendar with another builder, so those requests stay with the server.
+ */
+export const FIRST_DEVICE_JDN = CUTOVER_JDN;
 const DAY = 1;
 
 /** Julian Day Number of a civil date: Gregorian from 1582-10-15, Julian before. */
@@ -102,30 +107,49 @@ const UNIX_DAY_JDN = 2440588;
 
 // ---------------------------------------------------------------- the place's clock
 
-const offsetCache = new Map<string, number>();
+const offsetCache = new Map<string, [number, number]>();
 let referenceYearMs = Date.UTC(2026, 0, 15);
 
-/** The zone's UTC offset in minutes at an instant (its modern offset before 1582, as the server). */
+/**
+ * The zone's UTC offset in minutes at an instant (its modern offset before 1582, as the server), exact
+ * to the second: local mean time before a zone's standard time is fractional (Kathmandu +05:41:16 = 341.27).
+ */
 export function utcOffsetMinutes(timeZone: string, jd: number): number {
   const at = jd < CUTOVER_JD ? (referenceYearMs / 86_400_000 + 2440587.5) : jd;
   const hour = Math.floor(at * 24);
   const key = `${timeZone}|${hour}`;
-  const hit = offsetCache.get(key);
-  if (hit !== undefined) return hit;
-  const ms = Math.round((hour / 24 - 2440587.5) * 86_400_000);
-  let offset = 0;
+  let hit = offsetCache.get(key);
+  if (hit === undefined) {
+    // One entry per UT hour: the offset at both ends, which differ only in an hour holding a change.
+    hit = [offsetAtMs(timeZone, hourMs(hour)), offsetAtMs(timeZone, hourMs(hour + 1) - 1000)];
+    if (offsetCache.size > 50_000) offsetCache.clear();
+    offsetCache.set(key, hit);
+  }
+  // Local mean time ended mid-hour (Kathmandu: 1920-01-01 00:00 LMT = 18:18:44 UT): read that hour exactly.
+  return hit[0] === hit[1] ? hit[0] : offsetAtMs(timeZone, Math.floor((at - 2440587.5) * 86_400_000));
+}
+
+const hourMs = (hour: number) => Math.round((hour / 24 - 2440587.5) * 86_400_000);
+
+/** The zone's offset at one instant (ms since 1970), in minutes exact to the second. */
+function offsetAtMs(timeZone: string, ms: number): number {
   try {
     const p = getZonedDateTimeParts(new Date(ms), validTimeZone(timeZone));
     const wall = new Date(0);
     wall.setUTCFullYear(p.year, p.month - 1, p.day);
     wall.setUTCHours(p.hour % 24, p.minute, p.second, 0);
-    offset = Math.round((wall.getTime() - ms) / 60_000);
+    return Math.round((wall.getTime() - Math.floor(ms / 1000) * 1000) / 1000) / 60;
   } catch {
-    offset = 0;
+    return 0;
   }
-  if (offsetCache.size > 50_000) offsetCache.clear();
-  offsetCache.set(key, offset);
-  return offset;
+}
+
+/** An offset as the server prints it: `+05:45`, with seconds when it has some (`+05:41:16`). */
+export function utcOffsetText(offsetMinutes: number): string {
+  const total = Math.round(Math.abs(offsetMinutes) * 60);
+  const two = (n: number) => String(n).padStart(2, "0");
+  const hm = `${offsetMinutes < 0 ? "-" : "+"}${two(Math.floor(total / 3600))}:${two(Math.floor(total / 60) % 60)}`;
+  return total % 60 ? `${hm}:${two(total % 60)}` : hm;
 }
 
 /** For tests: the date the modern offset is read at. */

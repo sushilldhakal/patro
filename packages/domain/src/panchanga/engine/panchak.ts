@@ -1,6 +1,6 @@
 // पञ्चक: the Moon's transit from Dhanishta pada 3 through Revati (`jyotish::panchak`,
 // `engine/jyotish/panchak_calendar.py`), and the year routes' shared front half (`handlers::graha`).
-import { bsDateOf, bsMonth, civilFromJdn, civilJdn } from "../../astronomy/lunar-month";
+import { bsDateOf, bsMonth, civilFromJdn, civilJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import type { Sky } from "../../astronomy/sky";
 import { nepaliDigits, sunMoon, type Json } from "./blocks";
 import { locationBlock, type DayInput } from "./day";
@@ -47,11 +47,11 @@ function duration(start: number, end: number): [string, string] {
   return [`${days} day${plural(days)} ${hours} hour${plural(hours)}`, `${nepaliDigits(days)} दिन ${nepaliDigits(hours)} घण्टा`];
 }
 
-/** `build_panchak_span(jd_start, jd_end, location)`; null before 1970 (the server answers those). */
+/** `build_panchak_span(jd_start, jd_end, location)`. */
 export function panchakSpan(sky: Sky, jdStart: number, jdEnd: number, place: Place): Json | null {
   const start = Math.floor(jdStart + 0.5);
   const end = Math.floor(jdEnd + 0.5);
-  if (civilFromJdn(start).year < 1970) return null;
+  if (start < FIRST_DEVICE_JDN) return null;
   // The Moon's entries into the first Panchak pada and into Ashwini, from a week before the window to a week after.
   const from = start - 0.5 - 14;
   const to = end + 0.5 + 7;
@@ -94,7 +94,6 @@ export function panchakSpan(sky: Sky, jdStart: number, jdEnd: number, place: Pla
 /** `year_span_jd(era, year)` for the eras the apps send: the first and last day (0h UT) of a BS or AD year. */
 export function yearSpanJd(era: string, year: number): [number, number] | null {
   if (era === "ad") {
-    if (year < 1970) return null;
     return [civilJdn(year, 1, 1) - 0.5, civilJdn(year, 12, 31) - 0.5];
   }
   if (era !== "bs") return null;

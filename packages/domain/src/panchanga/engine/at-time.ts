@@ -5,7 +5,7 @@ import { lagnaAt, wrap360, ayanamshaAt } from "../../astronomy/siddhanta-offline
 import { suryaLatitude, suryaLongitude } from "../../astronomy/surya-formulas";
 import { drikLatitudeAt } from "../../astronomy/drik-analytic";
 import { drikFrame } from "../../astronomy/drik-source";
-import { civilFromJdn, civilJdn } from "../../astronomy/lunar-month";
+import { civilFromJdn, civilJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import type { Sky } from "../../astronomy/sky";
 import { dayState, type DayOptions } from "./day-response";
 import type { DayInput } from "./day";
@@ -163,7 +163,7 @@ export function atTimeResponse(sky: Sky, input: DayInput, options: AtTimeOptions
   const parts = options.clock.trim().split(":");
   if (parts.length < 2 || parts.length > 3 || parts.some((p) => !/^\d{1,2}$/.test(p.trim()))) return null;
   const [h, m, s] = [Number(parts[0]), Number(parts[1]), parts[2] === undefined ? 0 : Number(parts[2])];
-  if (h > 23 || m > 59 || s > 59 || input.year < 1970) return null;
+  if (h > 23 || m > 59 || s > 59 || civilJdn(input.year, input.month, input.day) < FIRST_DEVICE_JDN) return null;
   const zone = input.timeZone;
   const jdn = civilJdn(input.year, input.month, input.day);
   const instant = localInstant(jdn, h * 3600 + m * 60 + s, zone);

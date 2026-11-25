@@ -1,7 +1,13 @@
 // The server's recorded responses against the engine's: instants within 20 s, clocks within a minute, text by shape.
 type Json = Record<string, unknown>;
-const ISO = /^-?\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?[+-]\d\d:\d\d$/;
-const t = (s: string) => Date.parse(s) / 1000;
+const ISO = /^-?\d{4,}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?[+-]\d\d:\d\d(:\d\d)?$/;
+// Date.parse has no offset with seconds (local mean time, `+05:41:16`): take the seconds off by hand.
+const t = (s: string) => {
+  const m = /([+-])(\d\d):(\d\d):(\d\d)$/.exec(s);
+  if (!m) return Date.parse(s) / 1000;
+  const off = (m[1] === "-" ? -1 : 1) * (Number(m[2]) * 3600 + Number(m[3]) * 60 + Number(m[4]));
+  return Date.parse(`${s.slice(0, -9)}Z`) / 1000 - off;
+};
 export function diff(path: string, got: unknown, want: unknown): string | null {
   if (typeof want === "number" && typeof got === "number" && Number.isInteger(want) && /\.(seconds|vipala|pala|ghadi|minutes|hours|total_minutes)$/.test(path)) return Math.abs(got - want) <= (path.endsWith('.vipala') ? 5 : 2) || Math.abs(Math.abs(got - want) - 60) <= 2 ? null : `${path}: ${got} vs ${want}`;
   if (typeof want === "number" && typeof got === "number") return Math.abs(got - want) <= Math.max(0.2, Math.abs(want) * 1e-3) ? null : `${path}: ${got} vs ${want}`;

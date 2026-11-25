@@ -37,7 +37,7 @@ import { chandrabalaTable, chandrabalam, rashifal, tarabalaTable, tarabalam } fr
 import { displayHeaders, lunarCalendarBlock, lunarMonthBlock, nsDateBlock, pakshaBlock, samvatsaraBlock } from "./calendar-blocks";
 import { pyRound } from "./py";
 import { addSeconds, secondsSince, wallAt } from "./instant";
-import { utcOffsetMinutes, civilJdn as jdnOf } from "../../astronomy/lunar-month";
+import { utcOffsetMinutes, civilJdn as jdnOf, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import { BS_MONTH_NAMES, BS_MONTH_NAMES_NE, PAYLOAD_KEYS, TITHI_NAMES_NE, VAARA_ENGLISH, VAARA_NAMES, VAARA_NAMES_NE } from "./tables.generated";
 
 const tithiBlockOf = (t: { display: number; paksha: string }): string => (t.display === 15 ? (t.paksha === "shukla" ? "पूर्णिमा" : "औंसी") : (TITHI_NAMES_NE[t.display - 1] as string));
@@ -66,9 +66,8 @@ export const DAY_BLOCKS = [
 export const isComplete = (): boolean => PAYLOAD_KEYS.every((k) => (DAY_BLOCKS as readonly string[]).includes(k));
 
 export function buildDay(sky: Sky, input: DayInput): Json | null {
-  // Before 1970 the zone clocks run on local mean time to the second: the server answers those days.
-  if (input.year < 1970) return null;
   const jdn = jdnOf(input.year, input.month, input.day);
+  if (jdn < FIRST_DEVICE_JDN) return null;
   const zone = input.timeZone;
   const times = dayTimes(sky, jdn, input);
   if (!times) return null;

@@ -46,7 +46,6 @@ Tests: `test/engine-day.test.ts`, `engine-day-response.test.ts`, `engine-at-time
 - the month grid with `full=true` (the apps ask for it), `/panchanga/ad|bc/{y}/{m}`, the year route's lite/full shapes
 - `/nepal/panchanga/*` (no screen calls it)
 - Drik for any of the above (the text's own Surya numbers only so far; Drik graha latitudes need the sky's ecliptic latitude)
-- Days before 1970 (zone clocks on local mean time to the second) are left to the server.
 
 Calls the apps still make to the server for Surya at the default place: rashifal (+personal, janma), the full month grid,
 sait, gochar and the graha year routes (asta, vakri, sthiti). Everything else under `/panchanga*`, `/nepal/festivals*` and

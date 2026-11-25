@@ -105,7 +105,7 @@ export function saitMonthAll(sky: Sky, bsYear: number, bsMonthNumber: number, pl
 
 // ---------------------------------------------------------------- detail: the muhurta window of each day
 
-import { civilJdn, bsToJdn } from "../astronomy/lunar-month";
+import { civilJdn, bsToJdn, FIRST_DEVICE_JDN } from "../astronomy/lunar-month";
 import { localInstant } from "../panchanga/engine/midnight";
 import { wallIn } from "../panchanga/engine/instant";
 import { nakshatraAt } from "../panchanga/engine/blocks";
@@ -413,7 +413,7 @@ export function saitPersonalize(sky: Sky, bsYear: number, category: string, plac
   if (birth.moment) {
     const m = birth.moment;
     const jdn = m.era === "ad" ? civilJdn(m.year, m.month, m.day) : m.era === "bs" ? bsToJdn(m.year, m.month, m.day) : null;
-    if (jdn === null || jdn === undefined || civilFromJdn(jdn).year < 1970) return null;
+    if (jdn === null || jdn === undefined || jdn < FIRST_DEVICE_JDN) return null;
     const clock = (m.clock && m.clock !== "" ? m.clock : "12:00").split(":");
     const [h, min] = [Number(clock[0]), Number(clock[1])];
     if (!Number.isInteger(h) || !Number.isInteger(min) || h > 23 || min > 59) return null;

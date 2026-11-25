@@ -1,5 +1,5 @@
 // The BS year views (`patro::year`): the sunrise/sunset/ayana grid of every day (`build_year_sun_times`).
-import { bsMonth, civilFromJdn, isoFromJdn } from "../../astronomy/lunar-month";
+import { bsMonth, civilFromJdn, isoFromJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import type { Sky } from "../../astronomy/sky";
 import { aayan, sunTimes, timeBlock, type Json } from "./blocks";
 import { locationBlock, type DayInput } from "./day";
@@ -17,9 +17,8 @@ export function ayanaMark(block: Json): string {
 
 /** `build_year_sun_times`: sunrise, sunset and ayana for every day of a BS year; null when this device cannot answer. */
 export function yearSunTimes(sky: Sky, bsYear: number, place: Omit<DayInput, "year" | "month" | "day">, era?: { era: string; language?: string }): Json | null {
-  // Before 1970 the zone clocks run on local mean time to the second: the server answers those days.
   const first = bsMonth(bsYear, 1);
-  if (!first || civilFromJdn(first.first).year < 1970) return null;
+  if (!first || first.first < FIRST_DEVICE_JDN) return null;
   const months: Json[] = [];
   for (let m = 1; m <= 12; m += 1) {
     const span = bsMonth(bsYear, m);
@@ -59,7 +58,7 @@ const WHEEL_DROP = new Set(["lagna_spans", "muhurta", "hora", "hora_day", "nivas
 
 /**
  * `build_year_calendar(..., shape=wheel)`: every day of a BS year once in `calendar`, each trimmed to what the year
- * wheel reads, and the twelve month headers in `months`. Null when this device cannot answer (a day before 1970).
+ * wheel reads, and the twelve month headers in `months`. Null when this device cannot answer (a year outside the BS tables).
  */
 export function yearWheel(sky: Sky, bsYear: number, place: Omit<DayInput, "year" | "month" | "day">, era?: { era: string; language?: string }): Json | null {
   const months: Json[] = [];
