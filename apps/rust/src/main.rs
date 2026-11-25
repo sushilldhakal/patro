@@ -50,10 +50,16 @@ async fn serve() -> anyhow::Result<()> {
         tracing::warn!("PATRO_RS_DATABASE_URL not set — auth/profile routes are disabled");
     }
     let app = api::router(state);
-    let listener = tokio::net::TcpListener::bind(addr)
-        .await
-        .with_context(|| format!("binding {addr}"))?;
-    tracing::info!(%addr, "listening");
+    let listener = if let Some(inherited) = systemd_listener()? {
+        tracing::info!(addr = ?inherited.local_addr().ok(), "listening on the systemd socket");
+        inherited
+    } else {
+        let bound = tokio::net::TcpListener::bind(addr)
+            .await
+            .with_context(|| format!("binding {addr}"))?;
+        tracing::info!(%addr, "listening");
+        bound
+    };
 
     axum::serve(
         listener,
@@ -63,6 +69,45 @@ async fn serve() -> anyhow::Result<()> {
     .await
     .context("serving")?;
     Ok(())
+}
+
+/// The socket `patro-rust.socket` hands over (systemd socket activation), if any.
+///
+/// systemd keeps that socket open across restarts, so connections that arrive while a new
+/// binary starts wait in its backlog instead of failing with a 502.
+fn systemd_listener() -> anyhow::Result<Option<tokio::net::TcpListener>> {
+    let for_us = std::env::var("LISTEN_PID")
+        .ok()
+        .and_then(|pid| pid.trim().parse::<u32>().ok())
+        .is_some_and(|pid| pid == std::process::id());
+    let count = std::env::var("LISTEN_FDS")
+        .ok()
+        .and_then(|n| n.trim().parse::<u32>().ok())
+        .unwrap_or(0);
+    if !for_us || count == 0 {
+        return Ok(None);
+    }
+    anyhow::ensure!(count == 1, "expected one systemd socket, got {count}");
+    inherited_listener()
+        .map(Some)
+        .context("using the systemd socket")
+}
+
+#[cfg(unix)]
+fn inherited_listener() -> anyhow::Result<tokio::net::TcpListener> {
+    use std::os::fd::FromRawFd;
+    /// `SD_LISTEN_FDS_START`: the first descriptor systemd passes.
+    const FIRST_FD: i32 = 3;
+    // SAFETY: LISTEN_PID names this process and LISTEN_FDS is 1, so systemd passed exactly
+    // one open listening socket at descriptor 3 and nothing else in this process owns it.
+    let std_listener = unsafe { std::net::TcpListener::from_raw_fd(FIRST_FD) };
+    std_listener.set_nonblocking(true)?;
+    Ok(tokio::net::TcpListener::from_std(std_listener)?)
+}
+
+#[cfg(not(unix))]
+fn inherited_listener() -> anyhow::Result<tokio::net::TcpListener> {
+    anyhow::bail!("systemd sockets are Unix only")
 }
 
 async fn shutdown_signal() {

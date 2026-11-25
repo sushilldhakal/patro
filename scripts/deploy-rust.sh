@@ -50,6 +50,24 @@ healthy() {
   return 1
 }
 
+# systemd holds the listening socket (patro-rust.socket), so a restart queues requests in
+# its backlog instead of nginx answering 502 while the new binary loads. The first deploy
+# that carries the units installs them: one stop/start, then every later restart is seamless.
+UNITS="${REPO_DIR}/apps/rust/deploy"
+units_changed() {
+  ! cmp -s "${UNITS}/${SERVICE}.socket" "/etc/systemd/system/${SERVICE}.socket" \
+    || ! cmp -s "${UNITS}/${SERVICE}.service" "/etc/systemd/system/${SERVICE}.service"
+}
+if units_changed || ! systemctl is-active --quiet "${SERVICE}.socket"; then
+  echo "==> Installing ${SERVICE}.service and ${SERVICE}.socket"
+  sudo cp -f "${UNITS}/${SERVICE}.service" "${UNITS}/${SERVICE}.socket" /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable "${SERVICE}.socket" "${SERVICE}" >/dev/null 2>&1
+  # The running process holds the port itself; the socket can only bind once it is gone.
+  sudo systemctl stop "${SERVICE}"
+  sudo systemctl start "${SERVICE}.socket"
+fi
+
 echo "==> Restarting ${SERVICE}"
 sudo systemctl restart "${SERVICE}"
 if healthy; then
@@ -58,8 +76,10 @@ else
   echo "Rust API did not come up; restoring the previous binary." >&2
   if [[ -f "${BIN}.prev" ]]; then
     cp -f "${BIN}.prev" "${BIN}"
-    sudo systemctl restart "${SERVICE}"
-    healthy && echo "Previous binary is running again." >&2
+    # A binary from before socket activation binds the port itself: free it first.
+    sudo systemctl stop "${SERVICE}.socket" "${SERVICE}"
+    sudo systemctl start "${SERVICE}"
+    healthy && echo "Previous binary is running again (socket off until the next good deploy)." >&2
   fi
   sudo journalctl -u "${SERVICE}" -n 30 --no-pager >&2 || true
   exit 1

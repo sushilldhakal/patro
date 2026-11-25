@@ -1,6 +1,8 @@
 [Unit]
 Description=Vedic Patro API (Rust)
-After=network-online.target redis-server.service postgresql@16-main.service
+After=network-online.target redis-server.service postgresql@16-main.service patro-rust.socket
+# patro-rust.socket (same name) hands the listening socket over when it is active; with it
+# stopped the binary binds PATRO_RS__PORT itself, as before.
 Wants=network-online.target
 
 [Service]

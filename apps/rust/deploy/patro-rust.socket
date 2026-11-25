@@ -1,0 +1,12 @@
+[Unit]
+Description=Vedic Patro API (Rust) listening socket
+# systemd holds this socket across `systemctl restart patro-rust`: requests that arrive
+# while the new binary loads (~20 s) wait in the backlog instead of nginx answering 502.
+
+[Socket]
+ListenStream=127.0.0.1:8000
+Backlog=4096
+NoDelay=true
+
+[Install]
+WantedBy=sockets.target
