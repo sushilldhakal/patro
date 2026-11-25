@@ -55,7 +55,7 @@ export interface LocalCalendar {
   /** A day's panchanga (`/panchanga/{date}`, Surya Siddhanta, a known city or the default place), or null for the server. */
   day(q: { date?: string; inputEra?: string; jd?: number; today?: boolean; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean; midnight?: boolean; civil?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The panchanga at a clock on a civil day (`/panchanga/at-time?jd=&clock=`, Surya Siddhanta), or null for the server. */
-  atTime(q: { jd: number; clock: string; era?: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  atTime(q: { jd: number; clock: string; era?: string; language?: string; ayanamsha?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The sunrise / sunset / ayana grid of a BS year (`/panchanga/year/{year}/sun`), or null for the server. */
   yearSun(q: { year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The year wheel's payload (`/panchanga/year/{year}?wheel=true`, a BS year), or null for the server. */
@@ -177,9 +177,12 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
    * solar festival rules always read it) and the place the device can answer for (the default, or a
    * known city), or null for the server.
    */
-  const surya = async (location?: LocalPlaceQuery) => {
+  const surya = async (location?: LocalPlaceQuery, ayanamsha?: string) => {
     if (!options.enabled()) return null;
-    const calc = options.system();
+    // A request that names an ayanamsha is read in it, from the Drik sky (the Surya Siddhanta has none).
+    const named = ayanamsha ? drikAyanamshaOf(ayanamsha) : null;
+    if (ayanamsha && !named) return null;
+    const calc = named ? { system: "drik" as const, ayanamsha: named } : options.system();
     if (calc === null) return null;
     // A coordinate pair needs the server's city lookup (it names the place); the default and known cities do not.
     if (location && (location.city_id == null || location.lat != null || location.lon != null)) return null;
@@ -225,6 +228,32 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
       }
     },
     liteMonth: async (q, location) => {
+      if (q.era === "ad" || q.era === "bc") {
+        // A Gregorian month is the same rows over the civil days of that month, each with its BS date.
+        const calc = options.system();
+        if (calc === null) return null;
+        return run(location, async (_m, skies, place) => {
+          const lat = Math.round(place.latitude * 100) / 100;
+          const lon = Math.round(place.longitude * 100) / 100;
+          const key = `${monthKey(calc, q, lat, lon)}.${q.era}`;
+          const echo = {
+            lat,
+            lon,
+            timezone: place.timeZone,
+            name: place.cityName ?? (place.cityId !== undefined ? "" : "Kathmandu"),
+            ...(place.cityId !== undefined ? { city_id: place.cityId } : {}),
+          };
+          const memo = MONTHS.get(key);
+          const finish = (shared: Record<string, unknown>) => ({ ...shared, location: echo, language: q.language === "en" || q.language === "ne" ? q.language : "en" });
+          if (memo) return finish(memo);
+          const { skyGregorianMonth } = await import("../astronomy/sky-month");
+          const made = skyGregorianMonth(skies, { year: q.year, month: q.month, era: q.era as "ad" | "bc", excludeInternational: q.excludeInternational, language: q.language, place: { latitude: lat, longitude: lon, timeZone: place.timeZone } });
+          if (!made) return null;
+          const { location: _l, language: _g, ...shareable } = made;
+          remember(key, shareable);
+          return finish(shareable);
+        });
+      }
       if (q.era !== "bs") return null;
       const calc = options.system();
       if (calc === null) return null;
@@ -362,7 +391,7 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     },
     atTime: async (q, location) => {
       try {
-        const ctx = await surya(location);
+        const ctx = await surya(location, q.ayanamsha);
         if (!ctx) return null;
         const { civilFromJdn } = await import("../astronomy/lunar-month");
         const day = civilFromJdn(Math.floor(q.jd + 0.5));

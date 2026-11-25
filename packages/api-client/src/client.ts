@@ -933,7 +933,7 @@ export const fetchMonthCalendarRaw = async (
         : `/panchanga/${year}/${month}`;
   // The BS grid, lite or with each day's panchanga (full, slim), is made from the sky the app carries.
   const local =
-    era === "bs" && !options?.clock
+    !options?.clock
       ? await fromLocal<MonthCalendar & { calendar: RawMonthDay[] }>((l) =>
           l.month(
             { year, month, era, language, excludeInternational: options?.excludeInternational, full: options?.full !== false, slim: options?.slim === true },
@@ -1009,9 +1009,8 @@ export const fetchPanchangaAtTimeJd = (
         location,
       ),
     );
-  // An ayanamsha is a Drik choice; the Surya Siddhanta has none, so only a plain request is the device's to answer.
-  if (options?.ayanamsha) return server();
-  return fromLocal<PanchangaDay>((l) => l.atTime({ jd: jdUt, clock }, location)).then((local) => local ?? server());
+  // An ayanamsha is a Drik choice: the device reads the Drik sky in the one asked for.
+  return fromLocal<PanchangaDay>((l) => l.atTime({ jd: jdUt, clock, ayanamsha: options?.ayanamsha }, location)).then((local) => local ?? server());
 };
 
 export const fetchCalendarHeader = (year: number, month: number) =>

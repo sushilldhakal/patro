@@ -5,7 +5,7 @@
 //
 // BS months only (Surya civil grid), BS 1951-2149 where the bundled sky answers. Anything else
 // returns null and the caller asks the server.
-import { bsMonth, civilFromJdn, isoFromJdn, observedYear, setReferenceOffsetDate, utcOffsetMinutes, type PatroObserver } from "./lunar-month";
+import { bsDateOf, bsMonth, civilFromJdn, civilJdn, isoFromJdn, observedYear, setReferenceOffsetDate, utcOffsetMinutes, type PatroObserver } from "./lunar-month";
 import { moonRiseSet } from "./moon-rise";
 import type { Sky } from "./sky";
 import { skyDay } from "./sky-day";
@@ -96,20 +96,24 @@ function festivalNames(list: FestivalEntry[], excludeInternational: boolean): st
   return names;
 }
 
-/** The month grid, or null when the sky cannot answer for it. */
-export function skyMonth(skies: SkyMonthSkies, input: SkyMonthInput): Record<string, unknown> | null {
-  const { bsYear, bsMonth: month, place } = input;
-  if (!(month >= 1 && month <= 12) || bsYear < MONTH_BS_YEARS[0] || bsYear > MONTH_BS_YEARS[1]) return null;
-  const range = bsMonth(bsYear, month);
-  if (!range) return null;
-  const observer: PatroObserver = { sky: skies.sky, latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone };
-  setReferenceOffsetDate(Date.now());
-  const festivals = generateBsFestivals({ observer, surya: skies.surya }, bsYear);
+interface GridRows {
+  rows: Record<string, unknown>[];
+  /** The lunar month of the grid's middle day (the 15th, or the last day of a short grid). */
+  midLunar: { name: string; full: string; adhik: boolean } | null;
+}
+
+/**
+ * One grid row per civil day (`jdns`): the angas at sunrise, the Moon's rise and set, the ayana, the Abhijit window
+ * and the day's festivals. The BS grid and the Gregorian grid differ only in which days they list and what they add.
+ */
+function gridRows(skies: SkyMonthSkies, input: Pick<SkyMonthInput, "place" | "excludeInternational" | "language">, jdns: number[], festivals: FestivalEntry[], observer: PatroObserver, firstJdn: number): GridRows | null {
+  const { place } = input;
   const rows: Record<string, unknown>[] = [];
-  let midLunar: { name: string; full: string; adhik: boolean } | null = null;
-  const lunar = [-1, 0, 1].map((d) => observedYear(observer, civilFromJdn(range.first).year + d));
-  for (let offset = 0; offset < range.length; offset += 1) {
-    const jdn = range.first + offset;
+  let midLunar: GridRows["midLunar"] = null;
+  const lunar = [-1, 0, 1].map((d) => observedYear(observer, civilFromJdn(firstJdn).year + d));
+  const middle = Math.min(jdns.length, 15) - 1;
+  for (let offset = 0; offset < jdns.length; offset += 1) {
+    const jdn = jdns[offset];
     const c = civilFromJdn(jdn);
     const off = utcOffsetMinutes(place.timeZone, jdn - 0.5 + 0.5);
     const day = skyDay(skies.sky, { year: c.year, month: c.month, day: c.day, latitude: place.latitude, longitude: place.longitude, utcOffsetMinutes: off });
@@ -164,7 +168,7 @@ export function skyMonth(skies: SkyMonthSkies, input: SkyMonthInput): Record<str
       row.abhijit = { start_time: hm(rise + 7 * unit, off), end_time: hm(rise + 8 * unit, off), solar_noon: hm(rise + (set - rise) / 2, off) };
     }
     rows.push(row);
-    if (offset + 1 === Math.min(range.length, 15)) {
+    if (offset === middle) {
       for (const y of lunar) {
         const i = y.days.findIndex((d) => d.first <= jdn && jdn <= d.last);
         if (i >= 0) {
@@ -175,6 +179,21 @@ export function skyMonth(skies: SkyMonthSkies, input: SkyMonthInput): Record<str
       }
     }
   }
+  return { rows, midLunar };
+}
+
+/** The month grid, or null when the sky cannot answer for it. */
+export function skyMonth(skies: SkyMonthSkies, input: SkyMonthInput): Record<string, unknown> | null {
+  const { bsYear, bsMonth: month, place } = input;
+  if (!(month >= 1 && month <= 12) || bsYear < MONTH_BS_YEARS[0] || bsYear > MONTH_BS_YEARS[1]) return null;
+  const range = bsMonth(bsYear, month);
+  if (!range) return null;
+  const observer: PatroObserver = { sky: skies.sky, latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone };
+  setReferenceOffsetDate(Date.now());
+  const festivals = generateBsFestivals({ observer, surya: skies.surya }, bsYear);
+  const made = gridRows(skies, input, Array.from({ length: range.length }, (_, i) => range.first + i), festivals, observer, range.first);
+  if (!made) return null;
+  const { rows, midLunar } = made;
   const start = civilFromJdn(range.first);
   return {
     year_bs: bsYear,
@@ -194,5 +213,75 @@ export function skyMonth(skies: SkyMonthSkies, input: SkyMonthInput): Record<str
     limits: LIMITS,
     era: "bs",
     language: input.language === "en" || input.language === "ne" ? input.language : "ne",
+  };
+}
+
+const AD_MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+export interface SkyGregorianMonthInput {
+  /** The year as the page names it: a CE year for `ad`, a BCE year for `bc`. */
+  year: number;
+  month: number;
+  era: "ad" | "bc";
+  place: MonthPlace;
+  excludeInternational?: boolean;
+  language?: string;
+}
+
+/**
+ * A Gregorian month (`/panchanga/ad/{y}/{m}`): each day with its BS date, the lite row as the BS grid has it.
+ * `build_gregorian_browse_month_calendar` on the server. Null when the sky cannot answer for a day of it.
+ */
+export function skyGregorianMonth(skies: SkyMonthSkies, input: SkyGregorianMonthInput): Record<string, unknown> | null {
+  const { era, month, place } = input;
+  if (!(month >= 1 && month <= 12)) return null;
+  const astro = era === "ad" ? input.year : 1 - input.year;
+  const first = civilJdn(astro, month, 1);
+  const next = civilJdn(month === 12 ? astro + 1 : astro, month === 12 ? 1 : month + 1, 1);
+  const length = next - first;
+  const jdns = Array.from({ length }, (_, i) => first + i);
+  const bsDates = jdns.map((j) => bsDateOf(j));
+  if (bsDates.some((d) => d === null)) return null;
+  const bsYears = [...new Set(bsDates.map((d) => (d as { year: number }).year))];
+  if (bsYears.some((y) => y < MONTH_BS_YEARS[0] || y > MONTH_BS_YEARS[1])) return null;
+  const observer: PatroObserver = { sky: skies.sky, latitude: place.latitude, longitude: place.longitude, timeZone: place.timeZone };
+  setReferenceOffsetDate(Date.now());
+  // One occurrence of each festival (by id and start date): a month at a BS year's edge reads two lists.
+  const seen = new Set<string>();
+  const festivals = bsYears.flatMap((y) => generateBsFestivals({ observer, surya: skies.surya }, y)).filter((f) => {
+    const key = `${f.id}|${f.start_date}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const made = gridRows(skies, input, jdns, festivals, observer, first);
+  if (!made) return null;
+  const { rows, midLunar } = made;
+  const calendar = rows.map((row, i) => {
+    const bs = bsDates[i] as { year: number; month: number; day: number };
+    const { day: _d, date_ad: _a, ...rest } = row;
+    return { day: civilFromJdn(jdns[i]).day, date_ad: row.date_ad, day_bs: bs.day, month_bs: bs.month, year_bs: bs.year, ...rest };
+  });
+  const mid = civilFromJdn(jdns[Math.min(14, length - 1)]);
+  const label = AD_MONTH[mid.month - 1];
+  return {
+    era,
+    month_ad: month,
+    year_bs: bsYears.length === 1 ? bsYears[0] : null,
+    month_bs: null,
+    month_name: label,
+    month_name_ne: label,
+    month_start_ad: isoFromJdn(first),
+    month_length: length,
+    lunar_month: midLunar?.name ?? null,
+    lunar_month_full: midLunar?.full ?? null,
+    lunar_month_is_adhik: midLunar?.adhik ?? false,
+    lunar_month_type: midLunar ? (midLunar.adhik ? "adhik" : "nija") : null,
+    location: place.location ?? { lat: place.latitude, lon: place.longitude, timezone: place.timeZone, name: "observer" },
+    calendar,
+    [era === "ad" ? "year_ad" : "year_bc"]: input.year,
+    first_weekday: first % 7,
+    limits: LIMITS,
+    language: input.language === "en" || input.language === "ne" ? input.language : era === "ad" ? "en" : "en",
   };
 }
