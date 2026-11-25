@@ -29,10 +29,11 @@ function lonSpeed(body: "sun" | "moon", jd: number): [number, number] {
 
 const elongation = (jd: number) => wrap(suryaLongitude("moon", jd) - suryaLongitude("sun", jd));
 
-/** The next moment after `jd` at which the elongation equals `target` (0 new, 180 full). */
-function nextSyzygy(jd: number, target: number): number {
+/** The next (or previous) moment from `jd` at which the elongation equals `target` (0 new, 180 full). */
+function nextSyzygy(jd: number, target: number, backward = false): number {
   let ahead = pyMod(target - elongation(jd), 360);
-  if (ahead < 1e-6) ahead = 360;
+  if (backward) ahead = ahead > 1e-6 ? ahead - 360 : -360;
+  else if (ahead < 1e-6) ahead = 360;
   let t = jd + ahead / (360 / SYNODIC_DAYS);
   for (let i = 0; i < 8; i += 1) {
     const step = signed(target - elongation(t)) / (lonSpeed("moon", t)[1] - lonSpeed("sun", t)[1]);
@@ -238,4 +239,15 @@ export function suryaEclipseSpan(
     cursor = max + 10;
   }
   return { kind, range_start_jd: startJd, range_end_jd: endJd, events };
+}
+
+/** The middle of the next (or previous) eclipse of a kind from `jd`, or null. */
+export function nextEclipseMax(jd: number, kind: "solar" | "lunar", backward = false): number | null {
+  let t = jd;
+  for (let i = 0; i < MAX_LUNATIONS; i += 1) {
+    t = nextSyzygy(t, kind === "solar" ? 0 : 180, backward);
+    if (kind === "solar" ? solarGlobal(t) : lunarAt(t)) return t;
+    t += backward ? -1 : 1;
+  }
+  return null;
 }

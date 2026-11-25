@@ -5,6 +5,8 @@ import { buildDay, type DayInput } from "./day";
 import { eraLanguage, renderForEra } from "./era-render";
 import type { Json } from "./blocks";
 import { wallIn } from "./instant";
+import { civilJdn } from "../../astronomy/lunar-month";
+import { dayFestivals } from "../../festivals/day-festivals";
 
 export interface DayOptions {
   /** `detail=` (default true). */
@@ -14,6 +16,8 @@ export interface DayOptions {
   /** The era the request names (`era=`); the response is rendered for it. */
   era: string;
   language?: string;
+  /** `festivals=`: the day's festivals, their details and the sait windows (needs the Surya sky). */
+  festivals?: { surya: Sky };
 }
 
 const get = (o: unknown, ...path: string[]): unknown => path.reduce<unknown>((v, k) => (v && typeof v === "object" ? (v as Json)[k] : undefined), o) ?? null;
@@ -105,14 +109,17 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
   out.lunar_month = f.lunar_month ?? null;
   out.bs_date = bs;
   out.from_cache = false;
+  const bundle = options.festivals ? dayFestivals(sky, options.festivals.surya, civilJdn(input.year, input.month, input.day), input.year, input, true) : null;
+  if (bundle) out.festivals = bundle.slim;
   const detailOn = options.detail !== false;
-  if (detailOn) out.detail = { ...f };
+  if (detailOn) out.detail = { ...f, ...(bundle ? { festivals: bundle.detail } : {}) };
   out.hora = hora;
   out.hora_day = hora.filter((s) => s.phase === "day");
   out.choghadiya = f.choghadiya ?? [];
   out.tarabala_table = f.tarabala_table ?? null;
   out.chandrabala_table = f.chandrabala_table ?? null;
   out.rashifal = f.rashifal ?? null;
+  if (bundle?.saits) out.festival_saits = bundle.saits;
   if (options.slim) {
     delete out.rashifal;
     const detail = out.detail as Json | undefined;

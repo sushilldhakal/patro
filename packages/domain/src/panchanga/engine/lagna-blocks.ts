@@ -149,7 +149,7 @@ export function nextAscendantCrossing(sky: Sky, jdFrom: number, lat: number, lon
 }
 
 const FALLBACK_SPAN_DAYS = 4 / 24;
-function nextLagnaBoundary(sky: Sky, jd: number, lat: number, lon: number): number {
+export function nextLagnaBoundary(sky: Sky, jd: number, lat: number, lon: number): number {
   const asc = ascendant(sky, jd, lat, lon);
   if (asc === null) return jd + FALLBACK_SPAN_DAYS;
   const target = (Math.floor(asc / 30) + 1) * 30;
