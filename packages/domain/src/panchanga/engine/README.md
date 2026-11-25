@@ -19,11 +19,21 @@ Each file follows one Rust builder, so a payload made here is the payload the se
 `test/engine-day.test.ts` compares every block in `DAY_BLOCKS` with the 113 recorded daily payloads. To port the next
 block: translate the Rust builder, add its key to `DAY_BLOCKS`, run that test.
 
-## Still to port (daily payload)
-- `muhurta` (`blocks_muhurta.rs`: rahu/yamaganda/gulika, abhijit, extended timings) and `nivas_shool` (`blocks_nivas.rs`)
+## Done
+- All 54 blocks of the daily payload (`buildDay`, `isComplete() === true`), checked against the 113 recorded days.
+- The day route's response without festivals (`day-response.ts`: the app's day shape, `detail`/`slim`/`detail_shared`, era
+  labels and `date_parts` from `era-render.ts`), checked against the recorded day responses.
+- Surya eclipses (`astronomy/surya-eclipse.ts`, wired through `LocalCalendar.eclipse`).
 
-## Still to port (routes, in `apps/rust/crates/patro` and `api`)
-- the day response layer (`patro::day`: festivals rows, `slim`, `detail`/`detail_shared`, civil timeline, midnight reference)
+## Why no screen reads it yet
+The apps ask for `festivals=true`. That adds, per day, the festival rows with their details (`festivals/src/details.rs`, the
+`festival_details_v1.json` rules) and `festival_saits` (`festivals/src/sait.rs`, plus the ceremony windows in
+`patro/src/sait.rs`, about 3,000 lines). Until those are ported a local answer would lack them, so the API client keeps asking
+the server for the day route.
+
+## Still to port
+- festival details + `festival_saits` + ceremony saits, then wire `fetchPanchanga` through `LocalCalendar`
+- `reference=midnight` (`patro/src/midnight.rs`) and `civil=true` (`civil_timeline.rs`) variants
 - `/panchanga/at-time`, `/panchanga/year/*`, `/panchanga/element/*`, rashifal (+ personal), `/nepal/patro/*`,
-  `/nepal/panchanga/*`, sait, graha year routes (asta, vakri, sthiti, panchak), gochar
+  `/nepal/panchanga/*`, sait routes, graha year routes (asta, vakri, sthiti, panchak), gochar
 - Days before 1970 (zone clocks on local mean time to the second) are left to the server.
