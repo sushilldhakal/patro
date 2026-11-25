@@ -530,8 +530,12 @@ export const fetchPanchakYear = (year: number, location?: LocationParams, era: E
   );
 
 export const fetchYearSunTimes = (year: number, era: Era = "bs", location?: LocationParams, language?: Lang) =>
-  get<SunYearResponse>(
-    appendLocation(`/panchanga/year/${year}/sun?${eraQuery(era, year, language)}`, location),
+  fromLocal<SunYearResponse>((l) => l.yearSun({ year, era, language: language ?? normalizeLang() }, location)).then(
+    (local) =>
+      local ??
+      get<SunYearResponse>(
+        appendLocation(`/panchanga/year/${year}/sun?${eraQuery(era, year, language)}`, location),
+      ),
   );
 
 // ─── Cities ───────────────────────────────────────────────────────────────────
@@ -949,7 +953,9 @@ export const yearWheelRequestPath = (year: number, location?: LocationParams, er
   );
 
 export const fetchYearWheelCalendar = (year: number, location?: LocationParams, era: Era = "bs") =>
-  get<YearWheelCalendar>(yearWheelRequestPath(year, location, era));
+  fromLocal<YearWheelCalendar>((l) => l.yearWheel({ year, era }, location)).then(
+    (local) => local ?? get<YearWheelCalendar>(yearWheelRequestPath(year, location, era)),
+  );
 
 // ─── Endpoints only one app calls so far ─────────────────────────────────────
 // Kept here anyway so every endpoint is written once; the other app can use them.

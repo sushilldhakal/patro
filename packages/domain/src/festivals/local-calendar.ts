@@ -44,6 +44,10 @@ export interface LocalCalendar {
   day(q: { date: string; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean; midnight?: boolean; civil?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The panchanga at a clock on a civil day (`/panchanga/at-time?jd=&clock=`, Surya Siddhanta), or null for the server. */
   atTime(q: { jd: number; clock: string; era?: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The sunrise / sunset / ayana grid of a BS year (`/panchanga/year/{year}/sun`), or null for the server. */
+  yearSun(q: { year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The year wheel's payload (`/panchanga/year/{year}?wheel=true`, a BS year), or null for the server. */
+  yearWheel(q: { year: number; era: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -243,6 +247,32 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
           { year: day.year, month: day.month, day: day.day, ...ctx.place },
           { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya: ctx.sky } : undefined, midnight: q.midnight, civil: q.civil, surya: ctx.sky },
         );
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    yearSun: async (q, location) => {
+      // The year in the path is the BS year; another era's reading of it is the server's.
+      if (q.era !== "bs") return null;
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const { yearSunTimes } = await import("../panchanga/engine/year");
+        return yearSunTimes(ctx.sky, q.year, ctx.place, { era: q.era, language: q.language });
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    yearWheel: async (q, location) => {
+      if (q.era !== "bs" && q.era !== "ad") return null;
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const { yearWheel } = await import("../panchanga/engine/year");
+        // The request names an era only for BS (the app's `yearWheelRequestPath`); the response is rendered for it then.
+        return yearWheel(ctx.sky, q.year, ctx.place, q.era === "bs" ? { era: "bs" } : undefined);
       } catch (error) {
         options.onError?.(error);
         return null;

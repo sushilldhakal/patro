@@ -380,6 +380,13 @@ export interface DayTimes {
 /** Whole seconds, as the server prints a rise or set. */
 const wholeSeconds = (jd: number) => Math.floor((jd + 0.5) * 86400) / 86400 - 0.5;
 
+/** The day's own sunrise and sunset (whole seconds), or null where the Sun does not rise or set. */
+export function sunTimes(sky: Sky, civilJdn: number, place: Place): { sunrise: number; sunset: number } | null {
+  const today = sunriseSunset(sky.source, civilJdn - 0.5, place.latitude, place.longitude);
+  if (today.sunriseJd === null || today.sunsetJd === null) return null;
+  return { sunrise: wholeSeconds(today.sunriseJd), sunset: wholeSeconds(today.sunsetJd) };
+}
+
 /** Sunrise, sunset, the next sunrise and the Moon's rise and set that fall between sunrises. */
 export function dayTimes(sky: Sky, civilJdn: number, place: Place): DayTimes | null {
   const source: PositionSource = sky.source;

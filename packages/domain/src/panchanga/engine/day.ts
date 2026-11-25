@@ -51,6 +51,9 @@ export interface DayInput extends Place {
   cityId?: number;
 }
 
+/** The `location` block every route echoes. */
+export const locationBlock = (input: DayInput): Json => ({ lat: input.latitude, lon: input.longitude, timezone: input.timeZone, name: input.name ?? "Kathmandu", ...(input.cityId !== undefined ? { city_id: input.cityId } : {}) });
+
 /** Keys of the server's day payload this engine makes today. */
 export const DAY_BLOCKS = [
   "date", "date_ad", "jd_ut", "anchor", "display", "bs_date", "samvatsara", "ns_date", "location", "sunrise", "sunset", "day_ghati", "moonrise", "moonset",
@@ -97,7 +100,7 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.bs_date = { year: bs.year, month: bs.month, day: bs.day, month_name: BS_MONTH_NAMES[bs.month - 1], month_name_ne: BS_MONTH_NAMES_NE[bs.month - 1] };
   b.samvatsara = samvatsaraBlock(bs.year);
   b.ns_date = nsBlock;
-  b.location = { lat: input.latitude, lon: input.longitude, timezone: zone, name: input.name ?? "Kathmandu", ...(input.cityId !== undefined ? { city_id: input.cityId } : {}) };
+  b.location = locationBlock(input);
   b.sunrise = timeBlock(sunrise, zone, "nearest");
   b.sunset = timeBlock(sunset, zone, "nearest");
   b.day_ghati = dayGhati;
