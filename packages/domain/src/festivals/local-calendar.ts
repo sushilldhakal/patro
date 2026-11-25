@@ -31,6 +31,12 @@ export interface LocalMonthQuery {
   language?: string;
 }
 
+export type LocalElementQuery =
+  | { route: "list" }
+  | { route: "day"; name: string; date: string; era: string; language?: string }
+  | { route: "month"; name: string; year: number; month: number }
+  | { route: "spans"; name: string; era: string; year: number; month: number; language?: string };
+
 export interface LocalCalendar {
   /** A BS month grid (lite), or null for the server. */
   month(q: LocalMonthQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
@@ -48,6 +54,8 @@ export interface LocalCalendar {
   yearSun(q: { year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The year wheel's payload (`/panchanga/year/{year}?wheel=true`, a BS year), or null for the server. */
   yearWheel(q: { year: number; era: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** An element route (`/panchanga/element/...`, `/panchanga/elements`, Surya Siddhanta), or null for the server. */
+  element(q: LocalElementQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -273,6 +281,28 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const { yearWheel } = await import("../panchanga/engine/year");
         // The request names an era only for BS (the app's `yearWheelRequestPath`); the response is rendered for it then.
         return yearWheel(ctx.sky, q.year, ctx.place, q.era === "bs" ? { era: "bs" } : undefined);
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    element: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const el = await import("../panchanga/engine/element");
+        if (q.route === "list") return el.elementsList();
+        if (q.route === "month") return el.elementMonth(ctx.sky, q.name, q.year, q.month, ctx.place);
+        if (q.route === "spans") {
+          const window = el.eraMonthWindow(q.era, q.year, q.month);
+          return window ? el.elementSpans(ctx.sky, q.name, window[0], window[1], ctx.place, { era: q.era, language: q.language }) : null;
+        }
+        if (q.era !== "ad") return null;
+        const { jdnFromIso, civilFromJdn } = await import("../astronomy/lunar-month");
+        const jdn = jdnFromIso(q.date);
+        if (jdn === null) return null;
+        const day = civilFromJdn(jdn);
+        return el.elementDay(ctx.sky, q.name, { year: day.year, month: day.month, day: day.day, ...ctx.place }, { era: q.era, language: q.language });
       } catch (error) {
         options.onError?.(error);
         return null;

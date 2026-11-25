@@ -352,11 +352,15 @@ export const fetchSaitPersonalize = (
 };
 
 export const fetchElementDay = (name: string, dateAd: string, location?: LocationParams) =>
-  get<ElementDayResponse>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/element/${name}/day/${dateAd}?era=ad`),
-      location,
-    ),
+  fromLocal<ElementDayResponse>((l) => l.element({ route: "day", name, date: dateAd, era: "ad" }, location)).then(
+    (local) =>
+      local ??
+      get<ElementDayResponse>(
+        appendLocation(
+          withPanchangaCacheVersion(`/panchanga/element/${name}/day/${dateAd}?era=ad`),
+          location,
+        ),
+      ),
   );
 
 export const fetchAdToBs = (date: string) =>
@@ -751,11 +755,17 @@ export const fetchElementSpans = (
     year: String(range.year),
     month: String(range.month),
   });
-  return get<ElementSpansResponse>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/element/${name}/spans?${query.toString()}`),
-      location,
-    ),
+  return fromLocal<ElementSpansResponse>((l) =>
+    l.element({ route: "spans", name, era: range.era, year: range.year, month: range.month, language }, location),
+  ).then(
+    (local) =>
+      local ??
+      get<ElementSpansResponse>(
+        appendLocation(
+          withPanchangaCacheVersion(`/panchanga/element/${name}/spans?${query.toString()}`),
+          location,
+        ),
+      ),
   );
 };
 
@@ -1056,9 +1066,9 @@ export const fetchSaitAboutCategory = (category: string) =>
   get<SaitAboutCategory>(`/nepal/sait/${category}/about`);
 
 export const fetchElements = () =>
-  get<{ elements: ElementInfo[] }>(withPanchangaCacheVersion("/panchanga/elements")).then(
-    (r) => r.elements,
-  );
+  fromLocal<{ elements: ElementInfo[] }>((l) => l.element({ route: "list" })).then(
+    (local) => local ?? get<{ elements: ElementInfo[] }>(withPanchangaCacheVersion("/panchanga/elements")),
+  ).then((r) => r.elements);
 
 export const fetchElementMonth = (
   name: string,
@@ -1066,11 +1076,15 @@ export const fetchElementMonth = (
   bsMonth: number,
   location?: LocationParams,
 ) =>
-  get<ElementMonthResponse>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/element/${name}/month/${bsYear}/${bsMonth}`),
-      location,
-    ),
+  fromLocal<ElementMonthResponse>((l) => l.element({ route: "month", name, year: bsYear, month: bsMonth }, location)).then(
+    (local) =>
+      local ??
+      get<ElementMonthResponse>(
+        appendLocation(
+          withPanchangaCacheVersion(`/panchanga/element/${name}/month/${bsYear}/${bsMonth}`),
+          location,
+        ),
+      ),
   );
 
 // ─── Convertor ────────────────────────────────────────────────────────────────

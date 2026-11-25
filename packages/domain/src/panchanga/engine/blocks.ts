@@ -81,7 +81,7 @@ export const karanaAt = (sky: Sky, jd: number) => {
   const el = pyMod(m - s, 360);
   return { number: pyInt(el / 6) + 1, progress: pyMod(el, 6) / 6 };
 };
-function karanaName(number: number): { name: string; ne: string } {
+export function karanaName(number: number): { name: string; ne: string } {
   const i = number - 1;
   const index = i === 0 ? 10 : i >= 57 ? 7 + (i - 57) : (i - 1) % 7;
   return { name: KARANA_NAMES[index], ne: KARANA_NAMES_NE[index] };
@@ -95,12 +95,12 @@ export function varaAt(jd: number, timeZone: string): number {
 // ---------------------------------------------------------------- boundaries of the angas
 
 type Kind = "tithi" | "nakshatra" | "yoga" | "karana" | "moonRashi" | "pada";
-const endOf = (sky: Sky, kind: Kind, jd: number): number => {
+export const endOf = (sky: Sky, kind: Kind, jd: number): number => {
   const b = sky.nextBoundary(kind, jd);
   if (!b) throw new Error(`no ${kind} boundary`);
   return b.jd;
 };
-const startOf = (sky: Sky, kind: Kind, jd: number): number => {
+export const startOf = (sky: Sky, kind: Kind, jd: number): number => {
   const b = sky.prevBoundary(kind, jd);
   if (!b) throw new Error(`no ${kind} boundary`);
   return b.jd;
