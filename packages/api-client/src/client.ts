@@ -529,8 +529,12 @@ export const fetchEclipseYear = (
   );
 
 export const fetchPanchakYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>
-  get<PanchakYearResponse>(
-    appendLocation(`/nepal/panchak/year/${year}?${eraQuery(era, year, language)}`, location),
+  fromLocal<PanchakYearResponse>((l) => l.grahaYear({ kind: "panchak", year, era, language: language ?? normalizeLang() }, location)).then(
+    (local) =>
+      local ??
+      get<PanchakYearResponse>(
+        appendLocation(`/nepal/panchak/year/${year}?${eraQuery(era, year, language)}`, location),
+      ),
   );
 
 export const fetchYearSunTimes = (year: number, era: Era = "bs", location?: LocationParams, language?: Lang) =>

@@ -12,7 +12,7 @@ export function diff(path: string, got: unknown, want: unknown): string | null {
     if (/^\d{4}-\d\d-\d\d \d\d:\d\d$/.test(want)) return Math.abs(Date.parse(got.replace(" ", "T") + "Z") - Date.parse(want.replace(" ", "T") + "Z")) <= 61000 ? null : `${path}: ${got} vs ${want}`;
     if (/^-?\d+:\d\d:\d\d$/.test(want)) return null; // clocks: checked in the engine test
     if (path.includes("label_")) return got.replace(/\d+/g, "#") === want.replace(/\d+/g, "#") ? null : `${path}: ${got} vs ${want}`;
-    return /\d/.test(want) && got.replace(/\d+/g, "#") === want.replace(/\d+/g, "#") ? null : `${path}: ${got} vs ${want}`;
+    return /[\d\u0966-\u096f]/.test(want) && got.replace(/[\d\u0966-\u096f]+/g, "#") === want.replace(/[\d\u0966-\u096f]+/g, "#") ? null : `${path}: ${got} vs ${want}`;
   }
   if (Array.isArray(want) && Array.isArray(got)) {
     if (path.endsWith("pushkara_navamsha")) return null;

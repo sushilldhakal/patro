@@ -58,6 +58,8 @@ export interface LocalCalendar {
   element(q: LocalElementQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The printable patro month (`/nepal/patro/{y}/{m}`, the default format), or null for the server. */
   patro(q: { year: number; month: number }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** A graha year route (`/nepal/panchak/year/{year}`), or null for the server. */
+  grahaYear(q: { kind: "panchak"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -331,6 +333,17 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const place = placeOf(location, m.KATHMANDU_PLACE);
         if (!place) return null;
         return (await import("./eclipse-payload")).eclipseYearPayload(q, place);
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    grahaYear: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const { panchakYear } = await import("../panchanga/engine/panchak");
+        return panchakYear(ctx.sky, q.era, q.year, ctx.place, q.language);
       } catch (error) {
         options.onError?.(error);
         return null;
