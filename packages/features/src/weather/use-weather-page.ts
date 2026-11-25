@@ -5,8 +5,14 @@
  * holds the page's state (hourly filter, open day, today's details), so both apps
  * behave the same and only draw.
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import type { LocateDevice } from "../panchanga/use-location-selector";
+import {
+  HERE_ID,
+  useWeatherPlaces,
+  type WeatherPlace,
+  type WeatherPlacesStorage,
+} from "./use-weather-places";
 import { useQuery } from "@tanstack/react-query";
 import { fetchWeatherForecast, weatherKeys } from "@vedic-patro/api-client";
 import {
@@ -28,6 +34,7 @@ import {
 } from "./model";
 
 export * from "./model";
+export * from "./use-weather-places";
 
 export type WeatherPage = {
   copy: {
@@ -59,11 +66,41 @@ export type WeatherPage = {
     /** Accessible name of a row's ⓘ button. */
     aboutRow: string;
     close: string;
+    addPlace: string;
+    placesTitle: string;
+    primaryAsk: string;
+    primaryAskBody: string;
+    makePrimary: string;
+    justAdd: string;
+    primary: string;
+    remove: string;
+    swipeHint: string;
   };
   /** The city the forecast is for (the server's nearest city, else the picked place). */
   placeName: string;
   /** True while the forecast is for the device's GPS position rather than the chosen place. */
   usingGps: boolean;
+  /** The pages the reader swipes through: "here" first, then the added places. */
+  places: {
+    pages: { id: string; name: string; primary: boolean; here: boolean }[];
+    index: number;
+    select: (i: number) => void;
+    next: () => void;
+    prev: () => void;
+    remove: (id: string) => void;
+    makePrimary: (id: string) => void;
+    /** The "+" drawer (search a city to add). */
+    addOpen: boolean;
+    setAddOpen: (open: boolean) => void;
+    /** A city just picked in the drawer, waiting for "make it primary?". */
+    pending: { name: string } | null;
+    pick: (place: PanchangaLocation) => void;
+    confirm: (primary: boolean) => void;
+    cancel: () => void;
+    /** The list of places (change primary, remove). */
+    listOpen: boolean;
+    setListOpen: (open: boolean) => void;
+  };
   status: PageStatus;
   now: WeatherNowView | null;
   todayOpen: boolean;
@@ -91,62 +128,27 @@ export type WeatherPage = {
   toggleDay: (key: string) => void;
 };
 
-/** Give up on GPS after this long (a permission prompt left open, no fix indoors) and use the chosen place. */
-const GPS_WAIT_MS = 12_000;
-
 export function useWeatherPage({
   location,
   locate,
+  storage,
 }: {
   location: PanchangaLocation;
-  /** The app's "use my location": the forecast follows the device when it answers. */
+  /** The app's "use my location": the first page follows the device when it answers. */
   locate?: LocateDevice;
+  /** Where the added places are kept. */
+  storage?: WeatherPlacesStorage;
 }): WeatherPage {
   const { t, lang, digits } = useLocale();
-
-  // GPS first, once per visit; the chosen place when it is refused or slow. A place picked on
-  // this page afterwards is the reader's choice, so it wins over GPS.
-  const [gps, setGps] = useState<{ lat: number; lon: number } | null>(null);
-  const [gpsState, setGpsState] = useState<"trying" | "on" | "off">(
-    locate ? "trying" : "off",
-  );
-  useEffect(() => {
-    if (!locate) return;
-    let live = true;
-    const timer = setTimeout(
-      () => live && setGpsState((s) => (s === "trying" ? "off" : s)),
-      GPS_WAIT_MS,
-    );
-    locate()
-      .then(({ lat, lon }) => {
-        if (!live) return;
-        // ~1 km: the server snaps to the nearest city anyway, and the exact position never leaves the device.
-        setGps({
-          lat: Math.round(lat * 100) / 100,
-          lon: Math.round(lon * 100) / 100,
-        });
-        setGpsState((s) => (s === "trying" ? "on" : s));
-      })
-      .catch(() => live && setGpsState("off"))
-      .finally(() => clearTimeout(timer));
-    return () => {
-      live = false;
-      clearTimeout(timer);
-    };
-  }, [locate]);
-  const placeKey = JSON.stringify(location.params);
-  const startKey = useRef(placeKey);
-  useEffect(() => {
-    if (placeKey !== startKey.current) setGpsState("off");
-  }, [placeKey]);
-  const usingGps = gpsState === "on" && gps != null;
-  const params = usingGps ? gps : location.params;
+  const places = useWeatherPlaces({ location, locate, storage });
+  const { usingGps } = places;
+  const params = places.current.params;
 
   const query = useQuery({
     queryKey: weatherKeys.forecast(params),
     queryFn: () => fetchWeatherForecast(params),
-    enabled: gpsState !== "trying",
-    // The server refreshes every 45 minutes; asking more often only returns the same copy.
+    enabled: !places.waiting,
+    // The server refreshes every 20 minutes; asking more often only returns the same copy.
     staleTime: 1000 * 60 * 15,
   });
   const data = query.data;
@@ -163,6 +165,19 @@ export function useWeatherPage({
   const [allDays, setAllDays] = useState(false);
   const [openDay, setOpenDay] = useState<string | null>(null);
   const [infoRow, setInfoRow] = useState<WeatherHourlyRow | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
+  const [pending, setPending] = useState<PanchangaLocation | null>(null);
+  const nameOf = (p: WeatherPlace) =>
+    p.id === HERE_ID
+      ? t("weather.current_location")
+      : displayLocationLabel(
+          { label: p.label, params: p.params },
+          undefined,
+          lang,
+        )
+          .split(",")[0]!
+          .trim();
 
   // "Nearby location" is the server's name for a grid cell with no city: show the picked place then.
   const serverName =
@@ -173,7 +188,11 @@ export function useWeatherPage({
         serverName,
         lang,
       ) || t("weather.current_location")
-    : displayLocationLabel(location, serverName, lang);
+    : displayLocationLabel(
+        { label: places.current.label, params },
+        serverName,
+        lang,
+      );
   const displayDays = data?.display_days ?? 7;
   const ago = data ? Math.max(60_000, nowMs - data.fetched_at * 1000) : 0;
 
@@ -221,10 +240,59 @@ export function useWeatherPage({
       source: t("weather.source"),
       rows: rowCopy,
       aboutRow: t("weather.about_row"),
+      addPlace: t("weather.add_place"),
+      placesTitle: t("weather.places_title"),
+      primaryAsk: t("weather.primary_ask", {
+        place: pending
+          ? nameOf({ id: "", label: pending.label, params: pending.params })
+          : "",
+      }),
+      primaryAskBody: t("weather.primary_ask_body"),
+      makePrimary: t("weather.make_primary"),
+      justAdd: t("weather.just_add"),
+      primary: t("weather.primary"),
+      remove: t("weather.remove"),
+      swipeHint: t("weather.swipe_hint"),
       close: t("common.close"),
     },
     placeName,
     usingGps,
+    places: {
+      pages: places.pages.map((p) => ({
+        id: p.id,
+        name: nameOf(p),
+        primary: p.id === places.primaryId,
+        here: p.id === HERE_ID,
+      })),
+      index: places.index,
+      select: places.select,
+      next: places.next,
+      prev: places.prev,
+      remove: places.remove,
+      makePrimary: places.makePrimary,
+      addOpen,
+      setAddOpen,
+      pending: pending
+        ? {
+            name: nameOf({
+              id: "",
+              label: pending.label,
+              params: pending.params,
+            }),
+          }
+        : null,
+      pick: (place) => {
+        setAddOpen(false);
+        setPending(place);
+      },
+      confirm: (primary) => {
+        if (pending) places.add(pending, primary);
+        setPending(null);
+      },
+      cancel: () => setPending(null),
+      listOpen,
+      setListOpen,
+    },
     status: statusOf(query),
     now: view.now,
     todayOpen,

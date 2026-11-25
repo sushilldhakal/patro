@@ -9,17 +9,26 @@ import { SearchSheetFrame } from "@/components/search/SearchSheetFrame";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { usePanchangaLocation, type PanchangaLocation } from "@/lib/use-panchanga-location";
 
 /**
  * The place picker, drawn like festival search (SearchSheetFrame): the current place and "use my
  * location" at the top, the matching cities under them, and the search field floating at the foot. Every
  * screen's usePanchangaLocation follows the place picked here.
  */
-export function LocationSearchSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function LocationSearchSheet({
+  open,
+  onClose,
+  onPick,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** Add mode (the weather page's "+"): the picked place goes here and the app's own place stays as it is. */
+  onPick?: (location: PanchangaLocation) => void;
+}) {
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
-  const picker = useLocationSelector({ location, onLocationChange: setLocation, locate: locateDevice, open });
+  const picker = useLocationSelector({ location, onLocationChange: onPick ?? setLocation, locate: locateDevice, open });
 
   const { setQuery } = picker;
   useEffect(() => {
@@ -34,7 +43,7 @@ export function LocationSearchSheet({ open, onClose }: { open: boolean; onClose:
 
   const header = (
     <View className="gap-1 pb-2">
-      <View className="flex-row items-center gap-3 border-b border-border py-3.5">
+      {onPick ? null : <View className="flex-row items-center gap-3 border-b border-border py-3.5">
         <View className="h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: colors.secondary }}>
           <Ionicons name="location" size={16} color={colors.card} />
         </View>
@@ -47,7 +56,7 @@ export function LocationSearchSheet({ open, onClose }: { open: boolean; onClose:
           </Text>
         </View>
         <Ionicons name="checkmark" size={20} color={colors.secondary} />
-      </View>
+      </View>}
       <Pressable
         disabled={picker.geoLoading}
         onPress={() =>
@@ -97,7 +106,7 @@ export function LocationSearchSheet({ open, onClose }: { open: boolean; onClose:
           }
           ItemSeparatorComponent={() => <View className="h-px bg-border" />}
           renderItem={({ item: city }) => {
-            const selected = picker.isSelected(city);
+            const selected = !onPick && picker.isSelected(city);
             return (
               <Pressable onPress={() => choose(city)} className="flex-row items-center gap-3 py-3.5 active:opacity-60">
                 <View className="h-8 w-8 items-center justify-center rounded-full bg-muted">

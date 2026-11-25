@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   Pressable,
   ScrollView,
@@ -24,6 +24,7 @@ import {
   type WeatherHourView,
   type WeatherHourlyRow,
   type WeatherPage,
+  type WeatherPlacesStorage,
 } from "@vedic-patro/features/weather";
 import { weatherInk } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -44,7 +45,13 @@ import {
 import { Sheet } from "@vedic-patro/ui";
 import { Text } from "@/components/ui/Text";
 import { locateDevice } from "@/components/panchanga/locate-device";
-import { requestLocationPicker } from "@/lib/menu-request";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from "react-native-gesture-handler";
+import { LocationSearchSheet } from "@/components/search/LocationSearchSheet";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -177,7 +184,7 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
           <PressScale
             accessibilityRole="button"
             accessibilityLabel={page.copy.changePlace}
-            onPress={requestLocationPicker}
+            onPress={() => page.places.setListOpen(true)}
             className={cn("flex-row", wc.placeButton)}
           >
             <UiIcon
@@ -194,10 +201,20 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
             </Text>
             <UiIcon name="chevron-down" size={18} tone="foreground" />
           </PressScale>
+          <PressScale
+            accessibilityRole="button"
+            accessibilityLabel={page.copy.addPlace}
+            onPress={() => page.places.setAddOpen(true)}
+            hitSlop={8}
+            className="size-11 items-center justify-center"
+          >
+            <UiIcon name="plus" size={26} tone="foreground" />
+          </PressScale>
         </View>
 
         {now ? (
           <Animated.View
+            key={page.places.index}
             entering={FadeIn.duration(250)}
             className={wc.heroBody}
           >
@@ -442,21 +459,23 @@ function Hourly({ page }: { page: WeatherPage }) {
           {page.rows.map((row) => (
             <View key={row}>
               <View className={wc.rowCaption}>
-                <Animated.View
-                  style={pinned}
-                  className={cn("flex-row", wc.rowCaptionInner)}
-                >
-                  <Text className={wc.rowCaptionText} style={nepaliTextStyle()}>
-                    {page.copy.rows[row].label}
-                  </Text>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`${page.copy.aboutRow}: ${page.copy.rows[row].label}`}
-                    onPress={() => page.openInfo(row)}
-                    hitSlop={12}
-                  >
-                    <UiIcon name="info" size={18} />
-                  </Pressable>
+                <Animated.View style={pinned}>
+                  <View className={cn("flex-row", wc.rowCaptionInner)}>
+                    <Text
+                      className={wc.rowCaptionText}
+                      style={nepaliTextStyle()}
+                    >
+                      {page.copy.rows[row].label}
+                    </Text>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`${page.copy.aboutRow}: ${page.copy.rows[row].label}`}
+                      onPress={() => page.openInfo(row)}
+                      hitSlop={12}
+                    >
+                      <UiIcon name="info" size={18} />
+                    </Pressable>
+                  </View>
                 </Animated.View>
               </View>
               <View className="flex-row">
@@ -475,7 +494,7 @@ function Hourly({ page }: { page: WeatherPage }) {
 }
 
 function Daily({ page }: { page: WeatherPage }) {
-  const { isNarrow } = useBreakpoint();
+  const { isNarrow, isTablet } = useBreakpoint();
   const { copy } = page;
   return (
     <View className="border-b border-border bg-card">
@@ -501,7 +520,10 @@ function Daily({ page }: { page: WeatherPage }) {
                 )}
               >
                 <Text
-                  className={cn(isNarrow ? "w-20" : "w-28", wc.dayName)}
+                  className={cn(
+                    isTablet ? "w-36" : isNarrow ? "w-20" : "w-28",
+                    wc.dayName,
+                  )}
                   numberOfLines={1}
                   style={nepaliTextStyle()}
                 >
@@ -515,13 +537,27 @@ function Daily({ page }: { page: WeatherPage }) {
                 >
                   {d.glyph.label}
                 </Text>
-                <Text className={cn("w-8 text-right", wc.dayLow)}>{d.low}</Text>
-                <Text className={cn("w-8 text-right", wc.dayHigh)}>
+                <Text
+                  className={cn(
+                    isTablet ? "w-12" : "w-10",
+                    "text-right",
+                    wc.dayLow,
+                  )}
+                >
+                  {d.low}
+                </Text>
+                <Text
+                  className={cn(
+                    isTablet ? "w-12" : "w-10",
+                    "text-right",
+                    wc.dayHigh,
+                  )}
+                >
                   {d.high}
                 </Text>
                 <Text
                   className={cn(
-                    isNarrow ? "w-12" : "w-20",
+                    isTablet ? "w-32" : "w-16",
                     "text-right",
                     wc.dayRain,
                   )}
@@ -577,6 +613,132 @@ function Daily({ page }: { page: WeatherPage }) {
   );
 }
 
+/** Saved weather places: plain AsyncStorage (not secret). A module constant, so the hook reads it once. */
+const placesStorage: WeatherPlacesStorage = {
+  read: (key) => AsyncStorage.getItem(key),
+  write: (key, value) => void AsyncStorage.setItem(key, value),
+};
+
+/** Which place is showing, as dots at the bottom centre; a dot is also a button. */
+function PlaceDots({ page, bottom }: { page: WeatherPage; bottom: number }) {
+  const { places, copy } = page;
+  return (
+    <View
+      pointerEvents="box-none"
+      style={{ position: "absolute", left: 0, right: 0, bottom }}
+      className="items-center"
+    >
+      <View
+        accessibilityHint={copy.swipeHint}
+        className={cn("flex-row", wc.dotsPill)}
+      >
+        {places.pages.map((p, i) => (
+          <Pressable
+            key={p.id}
+            accessibilityRole="button"
+            accessibilityLabel={p.name}
+            accessibilityState={{ selected: i === places.index }}
+            onPress={() => places.select(i)}
+            hitSlop={6}
+            className="size-4 items-center justify-center"
+          >
+            {p.here ? (
+              <View style={{ opacity: i === places.index ? 1 : 0.4 }}>
+                <UiIcon name="arrow" size={10} tone="foreground" />
+              </View>
+            ) : (
+              <View className={i === places.index ? wc.dotActive : wc.dot} />
+            )}
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/** The weather places: open one, make it primary, remove it, or add another. */
+function PlacesSheet({ page }: { page: WeatherPage }) {
+  const { places, copy } = page;
+  const close = () => places.setListOpen(false);
+  return (
+    <Sheet
+      open={places.listOpen}
+      onClose={close}
+      title={copy.placesTitle}
+      closeLabel={copy.close}
+    >
+      {places.pages.map((p, i) => (
+        <View key={p.id} className={cn("flex-row", wc.placeRow)}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => {
+              places.select(i);
+              close();
+            }}
+            className={cn("flex-row", wc.placeRowPress)}
+          >
+            {p.here ? (
+              <UiIcon name="arrow" size={16} />
+            ) : (
+              <UiIcon name="map-pin" size={16} />
+            )}
+            <Text
+              className={cn(
+                "shrink",
+                i === places.index ? wc.placeNameActive : wc.placeName,
+              )}
+              numberOfLines={1}
+              style={nepaliTextStyle()}
+            >
+              {p.name}
+            </Text>
+            {p.primary ? (
+              <Text className={wc.primaryBadge} style={nepaliTextStyle()}>
+                {copy.primary}
+              </Text>
+            ) : null}
+          </Pressable>
+          {p.primary ? null : (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={copy.makePrimary}
+              onPress={() => places.makePrimary(p.id)}
+              hitSlop={8}
+              className="size-11 items-center justify-center"
+            >
+              <UiIcon name="star" size={20} />
+            </Pressable>
+          )}
+          {p.here ? null : (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={copy.remove}
+              onPress={() => places.remove(p.id)}
+              hitSlop={8}
+              className="size-11 items-center justify-center"
+            >
+              <UiIcon name="x" size={20} />
+            </Pressable>
+          )}
+        </View>
+      ))}
+      <PressScale
+        accessibilityRole="button"
+        onPress={() => {
+          close();
+          places.setAddOpen(true);
+        }}
+        className={cn("flex-row self-start", wc.chipActive, "mt-4 gap-2")}
+      >
+        <UiIcon name="plus" size={18} tone="foreground" />
+        <Text className={wc.chipTextActive} style={nepaliTextStyle()}>
+          {copy.addPlace}
+        </Text>
+      </PressScale>
+    </Sheet>
+  );
+}
+
 /**
  * Weather — the app's drawing of `useWeatherPage` (@vedic-patro/features). A screen of its own:
  * no app header or floating nav (not in PAGE_CHROME_ROUTES), a back arrow in the sky instead.
@@ -584,13 +746,33 @@ function Daily({ page }: { page: WeatherPage }) {
 export default function WeatherScreen() {
   const insets = useSafeAreaInsets();
   const { location } = usePanchangaLocation();
-  const page = useWeatherPage({ location, locate: locateDevice });
-  const { copy } = page;
+  const page = useWeatherPage({
+    location,
+    locate: locateDevice,
+    storage: placesStorage,
+  });
+  const { copy, places } = page;
+
+  // A horizontal fling on the sky moves to the next / previous place (finger involved: no slide,
+  // the new place fades in; the dots below say where you are).
+  const { next, prev } = places;
+  const swipe = useMemo(
+    () =>
+      Gesture.Race(
+        Gesture.Fling().direction(Directions.LEFT).runOnJS(true).onEnd(next),
+        Gesture.Fling().direction(Directions.RIGHT).runOnJS(true).onEnd(prev),
+      ),
+    [next, prev],
+  );
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
-        <Hero page={page} top={insets.top} />
+      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 72 }}>
+        <GestureDetector gesture={swipe}>
+          <View collapsable={false}>
+            <Hero page={page} top={insets.top} />
+          </View>
+        </GestureDetector>
         {page.now ? (
           <>
             <Today page={page} />
@@ -620,6 +802,46 @@ export default function WeatherScreen() {
           </>
         ) : null}
       </ScrollView>
+      {places.pages.length > 1 ? (
+        <PlaceDots page={page} bottom={insets.bottom + 12} />
+      ) : null}
+      <LocationSearchSheet
+        open={places.addOpen}
+        onClose={() => places.setAddOpen(false)}
+        onPick={places.pick}
+      />
+      <Sheet
+        open={places.pending != null}
+        onClose={places.cancel}
+        title={copy.primaryAsk}
+        closeLabel={copy.close}
+        placement="center"
+      >
+        <Text className={wc.infoBody} style={nepaliTextStyle()}>
+          {copy.primaryAskBody}
+        </Text>
+        <View className={cn("flex-row", wc.dialogActions)}>
+          <PressScale
+            accessibilityRole="button"
+            onPress={() => places.confirm(false)}
+            className={wc.chip}
+          >
+            <Text className={wc.chipText} style={nepaliTextStyle()}>
+              {copy.justAdd}
+            </Text>
+          </PressScale>
+          <PressScale
+            accessibilityRole="button"
+            onPress={() => places.confirm(true)}
+            className={wc.chipActive}
+          >
+            <Text className={wc.chipTextActive} style={nepaliTextStyle()}>
+              {copy.makePrimary}
+            </Text>
+          </PressScale>
+        </View>
+      </Sheet>
+      <PlacesSheet page={page} />
       <Sheet
         open={page.info != null}
         onClose={page.closeInfo}

@@ -1,15 +1,15 @@
 //! Open-Meteo forecast fetching with a process-wide, location-keyed shared cache.
 //!
-//! Cache entries retain the complete 16-day forecast. They are refreshed after 45
-//! minutes and may be served stale for up to six hours while a background refresh runs.
+//! Cache entries retain the complete 16-day forecast. They are refreshed after 20
+//! minutes and may be served stale for up to two hours while a background refresh runs.
 
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
 use serde_json::Value;
 use tokio::sync::{Mutex, RwLock};
 
-const REFRESH_AFTER: Duration = Duration::from_secs(45 * 60);
-const MAX_STALE: Duration = Duration::from_secs(6 * 60 * 60);
+const REFRESH_AFTER: Duration = Duration::from_secs(20 * 60);
+const MAX_STALE: Duration = Duration::from_secs(2 * 60 * 60);
 
 #[derive(Debug, Clone)]
 struct ForecastEntry {

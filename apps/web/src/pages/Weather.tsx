@@ -1,19 +1,30 @@
-import type { CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
 import { getRouteApi, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, CloudSun, MapPin, Navigation2 } from "lucide-react";
+import {
+  ChevronDown,
+  CloudSun,
+  MapPin,
+  Navigation2,
+  Plus,
+  Star,
+  X,
+} from "lucide-react";
 import {
   useWeatherPage,
   type WeatherFact,
   type WeatherHourView,
   type WeatherHourlyRow,
   type WeatherPage,
+  type WeatherPlacesStorage,
 } from "@vedic-patro/features/weather";
 import { weatherInk } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { weatherClasses as wc } from "@vedic-patro/design-tokens/classes/weather-classes";
 import { PageHeader, PageShell } from "@/components/PageShell";
-import { PatroHeaderLocation } from "@/components/patro-date";
-import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
+import {
+  usePanchangaLocation,
+  type PanchangaLocation,
+} from "@/components/panchanga/use-panchanga-location";
 import { Sheet } from "@vedic-patro/ui";
 import {
   FactIcon,
@@ -24,6 +35,8 @@ import {
 } from "@vedic-patro/ui/kit/weather";
 import { usePatroLocationUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useRouteLoading } from "@/lib/route-loading";
+import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
+import { LocationSearchPanel } from "@/components/panchanga/LocationSearchPanel";
 import { locateDevice } from "@/components/panchanga/locate-device";
 
 const routeApi = getRouteApi("/panchanga-shell/weather");
@@ -55,24 +68,51 @@ function Facts({ title, facts }: { title: string; facts: WeatherFact[] }) {
 
 function Hero({ page }: { page: WeatherPage }) {
   const now = page.now!;
+  // A horizontal swipe on the sky (touch screens) moves between places.
+  const touchX = useRef<number | null>(null);
   const { copy } = page;
   return (
     <section className={cn(wc.hero, wc.heroEnter)}>
       <div
         style={SKY}
+        onTouchStart={(e) => (touchX.current = e.touches[0]?.clientX ?? null)}
+        onTouchEnd={(e) => {
+          const start = touchX.current;
+          const end = e.changedTouches[0]?.clientX;
+          touchX.current = null;
+          if (start == null || end == null || Math.abs(end - start) < 50)
+            return;
+          if (end < start) page.places.next();
+          else page.places.prev();
+        }}
         className={cn(
           "flex flex-col bg-[linear-gradient(to_bottom,var(--wx-a),var(--wx-b))] dark:bg-[linear-gradient(to_bottom,var(--wx-c),var(--wx-d))]",
           wc.heroBody,
         )}
       >
-        <p className={cn("m-0 flex items-center gap-2", wc.heroPlace)}>
-          {page.usingGps ? (
-            <Navigation2 className="size-5 shrink-0" aria-hidden />
-          ) : (
-            <MapPin className="size-5 shrink-0" aria-hidden />
-          )}
-          {page.placeName}
-        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => page.places.setListOpen(true)}
+            className={cn(wc.placeTrigger, wc.heroPlace)}
+          >
+            {page.usingGps ? (
+              <Navigation2 className="size-5 shrink-0" aria-hidden />
+            ) : (
+              <MapPin className="size-5 shrink-0" aria-hidden />
+            )}
+            <span className="truncate">{page.placeName}</span>
+            <ChevronDown className="size-4 shrink-0" aria-hidden />
+          </button>
+          <button
+            type="button"
+            aria-label={page.copy.addPlace}
+            onClick={() => page.places.setAddOpen(true)}
+            className={cn(wc.iconButton, wc.chipPress)}
+          >
+            <Plus className="size-6 text-foreground" aria-hidden />
+          </button>
+        </div>
         <div className={cn("flex", wc.heroTempRow)}>
           <div>
             <p className={cn("m-0", wc.heroTemp)}>{now.temperature}</p>
@@ -355,13 +395,182 @@ function Daily({ page }: { page: WeatherPage }) {
   );
 }
 
+/** Saved weather places (localStorage). */
+const PLACES_STORAGE: WeatherPlacesStorage = {
+  read: getLocalStorageItem,
+  write: setLocalStorageItem,
+};
+
+/** Which place is showing; each dot is a button. Under the sky, centred. */
+function PlaceDots({ page }: { page: WeatherPage }) {
+  const { places, copy } = page;
+  if (places.pages.length < 2) return null;
+  return (
+    <div className="flex justify-center" title={copy.swipeHint}>
+      <div className={cn("flex", wc.dotsPill)}>
+        {places.pages.map((p, i) => (
+          <button
+            key={p.id}
+            type="button"
+            aria-label={p.name}
+            aria-current={i === places.index}
+            onClick={() => places.select(i)}
+            className={wc.dotButton}
+          >
+            {p.here ? (
+              <Navigation2
+                className={cn(
+                  "size-2.5",
+                  i === places.index ? "opacity-100" : "opacity-40",
+                )}
+                aria-hidden
+              />
+            ) : (
+              <span className={i === places.index ? wc.dotActive : wc.dot} />
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PlacesDialogs({
+  page,
+  location,
+}: {
+  page: WeatherPage;
+  location: PanchangaLocation;
+}) {
+  const { places, copy } = page;
+  const closeList = () => places.setListOpen(false);
+  return (
+    <>
+      <Sheet
+        open={places.addOpen}
+        onClose={() => places.setAddOpen(false)}
+        title={copy.addPlace}
+        closeLabel={copy.close}
+      >
+        <LocationSearchPanel
+          location={location}
+          onLocationChange={places.pick}
+          active={places.addOpen}
+        />
+      </Sheet>
+      <Sheet
+        open={places.pending != null}
+        onClose={places.cancel}
+        title={copy.primaryAsk}
+        closeLabel={copy.close}
+        placement="center"
+      >
+        <p className={cn("m-0", wc.infoBody)}>{copy.primaryAskBody}</p>
+        <div className={cn("flex", wc.dialogActions)}>
+          <button
+            type="button"
+            onClick={() => places.confirm(false)}
+            className={cn(wc.chip, wc.chipPress)}
+          >
+            <span className={wc.chipText}>{copy.justAdd}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => places.confirm(true)}
+            className={cn(wc.chipActive, wc.chipPress)}
+          >
+            <span className={wc.chipTextActive}>{copy.makePrimary}</span>
+          </button>
+        </div>
+      </Sheet>
+      <Sheet
+        open={places.listOpen}
+        onClose={closeList}
+        title={copy.placesTitle}
+        closeLabel={copy.close}
+      >
+        <ul className="m-0 list-none p-0">
+          {places.pages.map((p, i) => (
+            <li key={p.id} className={cn("flex", wc.placeRow)}>
+              <button
+                type="button"
+                onClick={() => {
+                  places.select(i);
+                  closeList();
+                }}
+                className={cn("flex", wc.placeRowButton)}
+              >
+                {p.here ? (
+                  <Navigation2 className="size-4 shrink-0 text-secondary dark:text-primary" />
+                ) : (
+                  <MapPin className="size-4 shrink-0 text-secondary dark:text-primary" />
+                )}
+                <span
+                  className={cn(
+                    "truncate",
+                    i === places.index ? wc.placeNameActive : wc.placeName,
+                  )}
+                >
+                  {p.name}
+                </span>
+                {p.primary ? (
+                  <span className={wc.primaryBadge}>{copy.primary}</span>
+                ) : null}
+              </button>
+              {p.primary ? null : (
+                <button
+                  type="button"
+                  aria-label={copy.makePrimary}
+                  onClick={() => places.makePrimary(p.id)}
+                  className={wc.iconButton}
+                >
+                  <Star className="size-5 text-secondary dark:text-primary" />
+                </button>
+              )}
+              {p.here ? null : (
+                <button
+                  type="button"
+                  aria-label={copy.remove}
+                  onClick={() => places.remove(p.id)}
+                  className={wc.iconButton}
+                >
+                  <X className="size-5 text-secondary dark:text-primary" />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          onClick={() => {
+            closeList();
+            places.setAddOpen(true);
+          }}
+          className={cn(
+            "mt-4 inline-flex items-center gap-2",
+            wc.chipActive,
+            wc.chipPress,
+          )}
+        >
+          <Plus className="size-4" aria-hidden />
+          <span className={wc.chipTextActive}>{copy.addPlace}</span>
+        </button>
+      </Sheet>
+    </>
+  );
+}
+
 /** Weather — the website's drawing of `useWeatherPage` (@vedic-patro/features). */
 export function Weather() {
   const navigate = useNavigate({ from: "/weather" });
   const search = routeApi.useSearch();
   const { location, setLocation } = usePanchangaLocation();
   usePatroLocationUrlBrowse(search, navigate, location, setLocation);
-  const page = useWeatherPage({ location, locate: locateDevice });
+  const page = useWeatherPage({
+    location,
+    locate: locateDevice,
+    storage: PLACES_STORAGE,
+  });
   const { copy } = page;
 
   useRouteLoading(page.status === "loading");
@@ -379,10 +588,6 @@ export function Weather() {
           title={copy.title}
           subtitle={copy.subtitle}
         />
-        <PatroHeaderLocation
-          location={location}
-          onLocationChange={setLocation}
-        />
       </div>
 
       {page.status === "error" ? (
@@ -394,6 +599,7 @@ export function Weather() {
       {page.now ? (
         <>
           <Hero page={page} />
+          <PlaceDots page={page} />
           <Hourly page={page} />
           <Daily page={page} />
           <footer className={cn("flex flex-col", wc.footer)}>
@@ -412,6 +618,7 @@ export function Weather() {
           </footer>
         </>
       ) : null}
+      <PlacesDialogs page={page} location={location} />
       <Sheet
         open={page.info != null}
         onClose={page.closeInfo}

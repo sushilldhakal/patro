@@ -112,13 +112,13 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, full
           </Pressable>
           {/* Tablet width on a plain view: beside an animated style in one style array, a plain
               width is dropped and the panel went full width. */}
-          {/* A centred panel caps its height here, against the screen: a percentage on the panel itself
-              resolved against this content-sized wrapper and cut a short dialog's text off. */}
-          <View style={tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center", maxHeight: "85%" } : full ? { width: "100%", flex: 1, paddingTop: TOP_SHEET_INSET } : center ? { width: "100%", maxHeight: `${maxHeightPercent ?? 85}%` } : { width: "100%" }}>
+          {/* The panel's height cap sits here, against the screen: a percentage on the panel itself
+              resolved against this content-sized wrapper and cut a short sheet's content off. */}
+          <View style={tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center", maxHeight: "85%" } : full ? { width: "100%", flex: 1, paddingTop: TOP_SHEET_INSET } : { width: "100%", maxHeight: `${maxHeightPercent ?? 85}%` }}>
             <Animated.View
               accessibilityViewIsModal
               onLayout={onPanelLayout}
-              style={[{ maxHeight: full || center ? "100%" : `${maxHeightPercent ?? 85}%`, flex: full ? 1 : undefined }, panelStyle]}
+              style={[{ maxHeight: "100%", flex: full ? 1 : undefined }, panelStyle]}
             >
               <View
                 className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}

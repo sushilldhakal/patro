@@ -364,8 +364,26 @@ export function buildWeatherView(
   const isDayAt = (i: number) => (hourly.is_day?.[i] ?? 1) === 1;
 
   // ── Now ──
-  const cur = data.forecast.current;
-  const nowDay = cur?.is_day != null ? cur.is_day === 1 : isDayAt(at);
+  // "Now". Open-Meteo's `current` block is only as fresh as the shared cache (up to an hour on a
+  // reopened app), so it is used only within half an hour of now; otherwise every now-value is
+  // read between the two hourly values around now.
+  const placeNow = nowMs + (data.forecast.utc_offset_seconds ?? 0) * 1000;
+  const raw = data.forecast.current;
+  const cur =
+    raw && Math.abs(Date.parse(`${raw.time}:00Z`) - placeNow) <= 30 * 60_000
+      ? raw
+      : undefined;
+  const frac = (placeNow / 3_600_000) % 1;
+  const between = (arr: (number | null)[] | undefined) => {
+    const a = arr?.[at];
+    const b = arr?.[at + 1];
+    if (a == null) return b ?? null;
+    return b == null ? a : a + (b - a) * frac;
+  };
+  const near = (arr: (number | null)[] | undefined) =>
+    arr?.[frac < 0.5 ? at : at + 1] ?? arr?.[at] ?? null;
+  const nowDay =
+    cur?.is_day != null ? cur.is_day === 1 : isDayAt(frac < 0.5 ? at : at + 1);
   const afternoon = Number(hourKey.slice(11, 13)) >= 15;
   const next = todayAt + 1;
   const range: WeatherFact[] = afternoon
@@ -396,8 +414,8 @@ export function buildWeatherView(
   const rainToday = daily.precipitation_sum?.[todayAt];
   const rainChance = round(daily.precipitation_probability_max[todayAt]);
   const nowWind = wind(
-    cur?.wind_speed_10m ?? hourly.wind_speed_10m[at],
-    cur?.wind_direction_10m ?? hourly.wind_direction_10m?.[at],
+    cur?.wind_speed_10m ?? between(hourly.wind_speed_10m),
+    cur?.wind_direction_10m ?? near(hourly.wind_direction_10m),
   );
 
   // Hours of today with UV ≥ 3: when to cover up.
@@ -415,11 +433,11 @@ export function buildWeatherView(
     );
 
   const now: WeatherNowView = {
-    glyph: glyph(cur?.weather_code ?? hourly.weather_code[at], nowDay),
-    temperature: deg(cur?.temperature_2m ?? hourly.temperature_2m[at], 1),
+    glyph: glyph(cur?.weather_code ?? near(hourly.weather_code), nowDay),
+    temperature: deg(cur?.temperature_2m ?? between(hourly.temperature_2m), 1),
     feelsLike: t("weather.feels_like", {
       temp: deg(
-        cur?.apparent_temperature ?? hourly.apparent_temperature?.[at],
+        cur?.apparent_temperature ?? between(hourly.apparent_temperature),
         1,
       ),
     }),
@@ -441,13 +459,13 @@ export function buildWeatherView(
         : []),
       {
         key: "gust",
-        value: kmh(cur?.wind_gusts_10m ?? hourly.wind_gusts_10m?.[at]),
+        value: kmh(cur?.wind_gusts_10m ?? between(hourly.wind_gusts_10m)),
         label: t("weather.gust"),
       },
       {
         key: "humidity",
         value: pct(
-          cur?.relative_humidity_2m ?? hourly.relative_humidity_2m?.[at],
+          cur?.relative_humidity_2m ?? between(hourly.relative_humidity_2m),
         ),
         label: t("weather.humidity"),
       },

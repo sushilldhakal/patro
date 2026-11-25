@@ -88,3 +88,24 @@ test("rain never shows a dash", () => {
   assert.equal(view.days[0]?.rainAmount, 'weather.mm:{"amount":"0"}');
   assert.equal(view.hourGroups[0]?.hours[0]?.rainMm, "0");
 });
+
+test("a stale `current` block is ignored: now is read between the hours", () => {
+  const nowMs = Date.UTC(2026, 10, 25, 8, 35); // 14:20 in Kathmandu
+  const stale = {
+    ...data,
+    forecast: {
+      ...data.forecast,
+      current: { ...data.forecast.hourly, time: "2026-11-25T12:45", temperature_2m: 30, apparent_temperature: 30, relative_humidity_2m: 1, is_day: 1, precipitation: 0, weather_code: 0, wind_speed_10m: 1, wind_direction_10m: 0, wind_gusts_10m: 1 },
+    },
+  } as unknown as WeatherForecastResponse;
+  // 14:00 19.6 → 15:00 null: falls back to 14:00's value, not the 12:45 reading of 30°.
+  assert.equal(buildWeatherView(stale, nowMs, text).now?.temperature, "19.6°");
+  const fresh = { ...stale, forecast: { ...stale.forecast, current: { ...stale.forecast.current!, time: "2026-11-25T14:15" } } };
+  assert.equal(buildWeatherView(fresh, nowMs, text).now?.temperature, "30.0°");
+});
+
+test("place ids are stable per city or ~1 km cell", async () => {
+  const { placeId } = await import("../src/weather/use-weather-places");
+  assert.equal(placeId({ city_id: 2172517 }), "city:2172517");
+  assert.equal(placeId({ lat: -37.9167, lon: 145.1167 }), "geo:-37.92,145.12");
+});
