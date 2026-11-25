@@ -1,3 +1,4 @@
+const http = require("http");
 const https = require("https");
 const path = require("path");
 /* Sentry's wrapper around Expo's default config: stamps each bundle with a debug ID so a crash
@@ -20,7 +21,9 @@ config.transformer = {
 };
 config.resolver = {
   ...config.resolver,
-  assetExts: config.resolver.assetExts.filter((ext) => ext !== "svg"),
+  // `.bin` is not a Metro asset extension by default, so `require("@/assets/sky/*.cheb.bin")`
+  // in `lib/sky.ts` failed to resolve even though the files are on disk. Register it.
+  assetExts: [...config.resolver.assetExts.filter((ext) => ext !== "svg"), "bin"],
   sourceExts: [...config.resolver.sourceExts, "svg"],
 };
 
@@ -36,9 +39,42 @@ config.resolver = {
 // never touch this.
 const API_PROXY_HOST = "www.vedicpatro.com";
 const PROXIED_PATH_PREFIXES = ["/api/", "/sky3d/"];
+// `npm start` sets EXPO_PUBLIC_API_BASE_URL to this Mac's Rust server (scripts/start-local.mjs):
+// then `/api/*` goes there (prefix stripped, like Vite's proxy). `/sky3d/*` stays on production.
+const LOCAL_API = (() => {
+  const raw = (process.env.EXPO_PUBLIC_API_BASE_URL || "").trim();
+  try {
+    return raw ? new URL(raw) : null;
+  } catch {
+    return null;
+  }
+})();
 config.server = {
   ...config.server,
   enhanceMiddleware: (middleware) => (req, res, next) => {
+    if (LOCAL_API && req.url && req.url.startsWith("/api/")) {
+      const client = LOCAL_API.protocol === "https:" ? https : http;
+      const base = LOCAL_API.pathname.replace(/\/$/, "");
+      const upstream = client.request(
+        {
+          hostname: LOCAL_API.hostname,
+          port: LOCAL_API.port || undefined,
+          path: base + req.url.slice("/api".length),
+          method: req.method,
+          headers: { ...req.headers, host: LOCAL_API.host },
+        },
+        (upRes) => {
+          res.writeHead(upRes.statusCode || 502, upRes.headers);
+          upRes.pipe(res);
+        },
+      );
+      upstream.on("error", () => {
+        res.writeHead(502, { "content-type": "text/plain" });
+        res.end("local api proxy error: is apps/rust/scripts/dev-local.sh running?");
+      });
+      req.pipe(upstream);
+      return;
+    }
     if (req.url && PROXIED_PATH_PREFIXES.some((p) => req.url.startsWith(p))) {
       const headers = { ...req.headers, host: API_PROXY_HOST };
       // Strip localhost origin/referer so the upstream/edge doesn't reject them.
