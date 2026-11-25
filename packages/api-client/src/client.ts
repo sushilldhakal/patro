@@ -447,9 +447,9 @@ export const fetchKundaliDetail = (
   const params = appendInstantParams(new URLSearchParams(), moment);
   if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
   params.set("ev", KUNDALI_ENGINE_VERSION);
-  return get<KundaliDetailResponse>(
-    appendLocation(`/kundali/detail?${params.toString()}`, location)
-  );
+  return fromLocal<KundaliDetailResponse>((l) =>
+    l.kundali({ route: "detail", moment: kundaliMoment(moment), ayanamsha: options?.ayanamsha, era: moment.inputEra }, location),
+  ).then((local) => local ?? get<KundaliDetailResponse>(appendLocation(`/kundali/detail?${params.toString()}`, location)));
 };
 
 export const fetchDashaChildren = (

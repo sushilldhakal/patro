@@ -660,6 +660,13 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const echo = { era: q.era, language: q.language };
         if (q.route === "vimshottari") return k.vimshottari(ctx.sky, jd, ctx.place, q.cycles ?? 1, echo);
         if (q.route === "shadbala") return k.shadbalaRoute(ctx.sky, jd, ctx.place, echo);
+        if (q.route === "detail") {
+          const { kundaliDetail } = await import("../jyotish/kundali/detail-engine");
+          const m = q.moment;
+          const pad = (n: number) => String(n).padStart(2, "0");
+          const date = m.year !== undefined && m.month !== undefined && m.day !== undefined ? `${m.year}-${pad(m.month)}-${pad(m.day)}` : undefined;
+          return kundaliDetail(ctx.sky, jd, ctx.place, Date.now() / 86_400_000 + 2440587.5, { ...echo, date });
+        }
         return null;
       } catch (error) {
         options.onError?.(error);

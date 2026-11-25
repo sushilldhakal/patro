@@ -160,3 +160,123 @@ export function dashaExpand(q: { lord: string; start: string; end: string; syste
   if (children.length) children[children.length - 1].end = isoAt(end.us, end.offset);
   return { lord: q.lord, system: q.system ?? "vimshottari", children };
 }
+
+// ---------------------------------------------------------------- the detail route's dasha trees
+
+/** `sub_periods_aware`: (lord index, start, end) laid over `full` years ending at `end`. */
+export function subPeriods(system: DashaSystem, first: number, start: number, end: number, parentFull: number | null): [number, number, number][] {
+  const visible = (end - start) / (YEAR_DAYS * US_PER_DAY);
+  let full = parentFull ?? visible;
+  if (full <= 0) full = visible;
+  let cursor = addDays(end, -full * YEAR_DAYS);
+  const count = system.keys.length;
+  const out: [number, number, number][] = [];
+  for (let step = 0; step < count; step += 1) {
+    const i = (first + step) % count;
+    const childEnd = step === count - 1 ? end : addDays(cursor, (system.years[i] * full) / system.cycleYears * YEAR_DAYS);
+    if (childEnd <= start) {
+      cursor = childEnd;
+      continue;
+    }
+    out.push([i, cursor >= start ? cursor : start, childEnd]);
+    cursor = childEnd;
+  }
+  if (out.length) out[out.length - 1][2] = end;
+  return out;
+}
+
+function treeNode(system: DashaSystem, i: number, start: number, end: number, depth: number, parentFull: number | null): Json {
+  const node: Json = { lord: system.keys[i], lord_ne: system.namesNe[i], start: isoAt(start, 0), end: isoAt(end, 0) };
+  if (depth > 1) {
+    const full = parentFull ?? (end - start) / (YEAR_DAYS * US_PER_DAY);
+    node.children = subPeriods(system, i, start, end, parentFull).map(([ci, cs, ce]) =>
+      treeNode(system, ci, cs, ce, depth - 1, (full * system.years[ci]) / system.cycleYears),
+    );
+  }
+  return node;
+}
+
+interface Row {
+  i: number;
+  start: number;
+  end: number;
+  years: number;
+}
+
+/** `mahadashas_from_birth`: the first lord's balance, then whole cycles. */
+function mahadashas(system: DashaSystem, first: number, balance: number, full: (i: number) => number, birth: number, cycles: number): Row[] {
+  const n = system.keys.length;
+  const rows: Row[] = [{ i: first, start: birth, end: addDays(birth, balance * YEAR_DAYS), years: balance }];
+  let cursor = rows[0].end;
+  for (let step = 1; step < n * cycles; step += 1) {
+    const i = (first + step) % n;
+    const end = addDays(cursor, full(i) * YEAR_DAYS);
+    rows.push({ i, start: cursor, end, years: full(i) });
+    cursor = end;
+  }
+  return rows;
+}
+
+const sequenceOf = (system: DashaSystem, rows: Row[]) =>
+  rows.map((r) => ({ lord: system.keys[r.i], lord_ne: system.namesNe[r.i], start: isoAt(r.start, 0), end: isoAt(r.end, 0), years: r.years }));
+
+/** The three mahadashas around now (the one before, the running one, the next), as trees `depth` deep. */
+function tree(system: DashaSystem, rows: Row[], now: number, depth: number, mdFull: (i: number) => number): Json[] {
+  const current = rows.findIndex((m) => m.start <= now && now < m.end);
+  const from = current < 0 ? 0 : Math.max(0, Math.min(Math.max(current - 1, 0), rows.length - 3));
+  return rows.slice(from, from + 3).map((m) => treeNode(system, m.i, m.start, m.end, depth, mdFull(m.i)));
+}
+
+/** `_cycles_for_horizon`: enough cycles to reach ten years past now. */
+const cyclesFor = (birth: number, cycleYears: number, now: number) =>
+  Math.max(1, Math.ceil((Math.max(0, (now - birth) / (YEAR_DAYS * US_PER_DAY)) + 10) / cycleYears));
+
+/** `dasha_trees`: the Vimshottari, Tribhagi and Yogini payloads of `/kundali/detail`. */
+export function dashaTrees(moonLongitude: number, birthUs: number, nowUs: number): { dasha: Json; tribhagiDasha: Json; yoginiDasha: Json; timeline: ReturnType<typeof vimshottariTimeline> } {
+  const span = 360 / 27;
+  const lon = pyMod(moonLongitude, 360);
+  const nak = pyInt(pyFloorDiv(lon, span));
+  const pos = pyMod(lon, span);
+  const fraction = pos / span;
+  const V = VIMSHOTTARI;
+
+  const cycles = cyclesFor(birthUs, 120, nowUs);
+  const timeline = vimshottariTimeline(moonLongitude, birthUs, cycles);
+  const vimRows: Row[] = timeline.periods.map((p) => ({ i: V.keys.indexOf(p.lord), start: p.start, end: p.end, years: p.years }));
+  const dasha = { ...vimshottariPayload(moonLongitude, birthUs, cycles), tree: tree(V, vimRows, nowUs, 3, (i) => V.years[i]), tree_depth: 3 };
+
+  const start = nak % 9;
+  const third = (i: number) => V.years[i] / 3;
+  const triBalance = (1 - fraction) * third(start);
+  const triRows = mahadashas(V, start, triBalance, third, birthUs, cyclesFor(birthUs, 40, nowUs));
+  const tribhagiDasha = {
+    system: "tribhagi",
+    nakshatra_index: nak,
+    tribhaga: Math.min(pyInt(pos / (span / 3)), 2) + 1,
+    mahadasha_lord: V.keys[start],
+    mahadasha_lord_ne: V.namesNe[start],
+    balance_years: triBalance,
+    balance_label: yearsLabel(triBalance),
+    sequence: sequenceOf(V, triRows),
+    tree: tree(V, triRows, nowUs, 3, third),
+    tree_depth: 3,
+  };
+
+  const Y = YOGINI;
+  const yStart = (nak + 3) % 8;
+  const yBalance = (1 - fraction) * Y.years[yStart];
+  const yRows = mahadashas(Y, yStart, yBalance, (i) => Y.years[i], birthUs, cyclesFor(birthUs, 36, nowUs));
+  const yoginiDasha = {
+    system: "yogini",
+    nakshatra_index: nak,
+    mahadasha_lord: Y.keys[yStart],
+    mahadasha_lord_ne: Y.namesNe[yStart],
+    balance_years: yBalance,
+    balance_label: yearsLabel(yBalance),
+    cycle_years: 36,
+    sequence: sequenceOf(Y, yRows),
+    tree: tree(Y, yRows, nowUs, 2, (i) => Y.years[i]),
+    tree_depth: 2,
+  };
+  return { dasha, tribhagiDasha, yoginiDasha, timeline };
+}

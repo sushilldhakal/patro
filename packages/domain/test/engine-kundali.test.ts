@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { Sky, type SkyIo } from "../src/astronomy/sky";
 import { dashaExpand, momentJd, planetaryPositions, shadbalaRoute, vimshottari, type KundaliPlace } from "../src/jyotish/kundali/engine";
+import { kundaliDetail } from "../src/jyotish/kundali/detail-engine";
 import { diff } from "./golden-diff";
 
 const root = new URL("../../../", import.meta.url);
@@ -69,4 +70,71 @@ test("planetary positions, vimshottari and dasha expansion made on the device ma
   console.log("checked", checked);
   assert.ok((checked["/v1/kundali/vimshottari"] ?? 0) >= 5 && (checked["/v1/planetary/positions"] ?? 0) >= 3 && (checked["/v1/kundali/dasha/expand"] ?? 0) >= 4 && (checked["/v1/shadbala"] ?? 0) >= 3);
   assert.equal(failures.length, 0, failures.slice(0, 10).join("\n"));
+});
+
+test("the kundali detail made on the device matches the server's", async () => {
+  const sky = new Sky("surya", io);
+  await sky.open();
+  // The goldens pin "now" at 2026-11-15T06:30:00.123456Z.
+  const nowJd = Date.UTC(2026, 10, 15, 6, 30, 0, 123) / 86_400_000 + 2440587.5;
+  const failures: string[] = [];
+  let checked = 0;
+  for (const c of load("kundali_detail")) {
+    if (c.status !== 200) continue;
+    const q = new URLSearchParams(c.path.split("?")[1]);
+    const r = requestOf(q);
+    if (!r) continue;
+    const got = kundaliDetail(sky, r.jd, r.place, nowJd, {
+      era: q.get("era") ?? undefined,
+      language: q.get("language") ?? undefined,
+      date: q.has("year") ? `${q.get("year")}-${String(q.get("month")).padStart(2, "0")}-${String(q.get("day")).padStart(2, "0")}` : undefined,
+    }) as Record<string, unknown> | null;
+    checked += 1;
+    if (!got) {
+      failures.push(`${c.path}: null`);
+      continue;
+    }
+    const want = JSON.parse(c.body) as Record<string, unknown>;
+    // Degree-minute-second parts drift by a few arcseconds (the lagna from the fitted sky moves 15″ a second):
+    // compare the total within 30″, then drop them.
+    const dmsDrift = (g: unknown, w: unknown, path: string): void => {
+      if (Array.isArray(w) && Array.isArray(g)) w.forEach((x, i) => dmsDrift(g[i], x, `${path}[${i}]`));
+      else if (w && g && typeof w === "object" && typeof g === "object") {
+        const wo = w as Record<string, unknown>;
+        const go = g as Record<string, unknown>;
+        if ("rashiNum" in wo && "sec" in wo) {
+          const arc = (d: Record<string, unknown>) => ((d.rashiNum as number) * 30 + (d.deg as number)) * 3600 + (d.min as number) * 60 + (d.sec as number);
+          if (Math.abs(arc(go) - arc(wo)) > 30) failures.push(`${c.path}: ${path} ${JSON.stringify(go)} vs ${JSON.stringify(wo)}`);
+          Object.assign(go, wo);
+          return;
+        }
+        for (const k of Object.keys(wo)) dmsDrift(go[k], wo[k], `${path}.${k}`);
+      }
+    };
+    dmsDrift(got, want, "");
+    for (const [k, w] of Object.entries(want)) {
+      const g = got[k];
+      if (k === "dasha" || k === "tribhagiDasha" || k === "yoginiDasha") continue; // dates move with the server's 10 s Moon steps; checked below
+      if (k === "birthMeta") {
+        // The server lays out Sunday's choghadiya for every birth (it reads a weekday key the block does not have).
+        const { choghadiyaAtBirth: _a, ...gw } = g as Record<string, unknown>;
+        const { choghadiyaAtBirth: _b, ...ww } = w as Record<string, unknown>;
+        const e = diff(`.${k}`, gw, ww);
+        if (e) failures.push(`${c.path}: ${e}`);
+        continue;
+      }
+      const e = diff(`.${k}`, g, w);
+      if (e) failures.push(`${c.path}: ${e}`);
+    }
+    for (const k of ["dasha", "tribhagiDasha", "yoginiDasha"]) {
+      const g = got[k] as { sequence: unknown[]; tree: unknown[]; mahadasha_lord: string; balance_years: number };
+      const w = want[k] as typeof g;
+      if (g.mahadasha_lord !== w.mahadasha_lord || g.sequence.length !== w.sequence.length || g.tree.length !== w.tree.length || Math.abs(g.balance_years - w.balance_years) > 1e-3 * Math.max(1, w.balance_years)) {
+        failures.push(`${c.path}: ${k} lord ${g.mahadasha_lord}/${w.mahadasha_lord} sequence ${g.sequence.length}/${w.sequence.length} tree ${g.tree.length}/${w.tree.length} balance ${g.balance_years}/${w.balance_years}`);
+      }
+    }
+  }
+  console.log("checked detail", checked);
+  assert.ok(checked >= 8);
+  assert.equal(failures.length, 0, failures.slice(0, 15).join("\n"));
 });

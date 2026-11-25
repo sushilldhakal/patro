@@ -49,8 +49,8 @@ function d30Lord(lon: number): G {
   return (bounds.find(([limit]) => within < limit) ?? bounds[4])[1];
 }
 
-const naturalRel = (p: G, o: G) => (FRIENDS[p].includes(o) ? 1 : ENEMIES[p].includes(o) ? -1 : 0);
-const temporalRel = (p: G, o: G, d1: number[]) => ([2, 3, 4, 10, 11, 12].includes(((d1[I(o)] + 12 - d1[I(p)]) % 12) + 1) ? 1 : -1);
+export const naturalRel = (p: G, o: G) => (FRIENDS[p].includes(o) ? 1 : ENEMIES[p].includes(o) ? -1 : 0);
+export const temporalRel = (p: G, o: G, d1: number[]) => ([2, 3, 4, 10, 11, 12].includes(((d1[I(o)] + 12 - d1[I(p)]) % 12) + 1) ? 1 : -1);
 const compound = (score: number) => (score === 2 ? 20 : score === 1 ? 15 : score === 0 ? 10 : score === -1 ? 4 : 2);
 
 function dignity(p: G, sign: number, d1: number[], rashi: boolean, lon: number): number {
@@ -161,6 +161,9 @@ function specialFull(planet: G, x0: number): number {
   const centres = planet === "mars" ? [90, 210] : planet === "jupiter" ? [120, 240] : planet === "saturn" ? [60, 270] : [];
   return centres.some((c) => Math.abs(pyMod(x - c + 180, 360) - 180) <= 15) ? 60 : 0;
 }
+/** `drishti(aspecting, x)`: the graduated aspect or a special full one. */
+export const drishti = (aspecting: G, x: number) => Math.max(baseDrishti(x), specialFull(aspecting, x));
+
 function drik(p: G, lons: number[]): number {
   let total = 0;
   for (const o of SEVEN) {
