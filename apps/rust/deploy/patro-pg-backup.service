@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Postgres backup of the patro database (local + R2)
+After=postgresql.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /home/ubuntu/patro/scripts/pg-backup.sh
+Nice=19
+IOSchedulingClass=idle

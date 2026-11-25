@@ -300,7 +300,7 @@ impl Accounts {
             return Err(AccountError::EmailAlreadyRegistered);
         }
         let user = self
-            .add_account(&email, &hash_password(password), Verified::No, None)
+            .add_account(&email, &hashed(password).await, Verified::No, None)
             .await?;
         let link = self.new_link(&user, "verify", VERIFY_TTL).await?;
         Ok((self.start_session(&user, None).await?, link))
@@ -313,9 +313,12 @@ impl Accounts {
     /// Unknown email or wrong password (401), a disabled account (403).
     pub async fn sign_in(&self, email: &str, password: &str) -> Result<IssuedTokens, AccountError> {
         let user = self.by_email(&email.to_lowercase()).await?;
-        let Some(user) = user.filter(|u| verify_password(password, &u.password_hash)) else {
+        let Some(user) = user else {
             return Err(AccountError::InvalidCredentials);
         };
+        if !verified(password, &user.password_hash).await {
+            return Err(AccountError::InvalidCredentials);
+        }
         let user = require_active(user)?;
         self.start_session(&user, None).await
     }
@@ -329,7 +332,7 @@ impl Accounts {
         let email = email.to_lowercase();
         let user = match self.by_email(&email).await? {
             None => {
-                self.add_account(&email, &hash_password(&opaque_token()), Verified::Yes, None)
+                self.add_account(&email, &hashed(&opaque_token()).await, Verified::Yes, None)
                     .await?
             }
             Some(mut user) => {
@@ -372,7 +375,7 @@ impl Accounts {
                 None => {
                     self.add_account(
                         email,
-                        &hash_password(&opaque_token()),
+                        &hashed(&opaque_token()).await,
                         Verified::Yes,
                         Some(subject),
                     )
@@ -571,7 +574,7 @@ impl Accounts {
     /// An unknown, used or expired link (400).
     pub async fn reset_password(&self, raw: &str, password: &str) -> Result<(), AccountError> {
         let (link_id, user) = self.redeem(raw, "reset").await?;
-        let hash = hash_password(password);
+        let hash = hashed(password).await;
         let at = sys(now());
         let mut c = self.client().await?;
         let tx = c.transaction().await?;
@@ -633,4 +636,21 @@ fn invalid_session() -> AccountError {
 
 fn invalid_link() -> AccountError {
     AccountError::InvalidLink("Invalid or expired link".to_owned())
+}
+
+/// bcrypt (cost 12, about a quarter second of CPU) on the blocking pool: on an async worker it
+/// would stall every other request on that worker, and the production box has two.
+async fn hashed(password: &str) -> String {
+    let password = password.to_owned();
+    tokio::task::spawn_blocking(move || hash_password(&password))
+        .await
+        .unwrap_or_else(|e| std::panic::resume_unwind(e.into_panic()))
+}
+
+/// [`verify_password`] on the blocking pool, for the same reason as [`hashed`].
+async fn verified(password: &str, hash: &str) -> bool {
+    let (password, hash) = (password.to_owned(), hash.to_owned());
+    tokio::task::spawn_blocking(move || verify_password(&password, &hash))
+        .await
+        .unwrap_or_else(|e| std::panic::resume_unwind(e.into_panic()))
 }

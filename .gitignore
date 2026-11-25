@@ -26,3 +26,6 @@ __pycache__/
 # Surya Siddhanta position tables (built by siddhanta-table; large, not in git)
 *.vtab
 *.cheb
+
+# graphify knowledge graph (local, rebuilt with /graphify --update)
+graphify-out/

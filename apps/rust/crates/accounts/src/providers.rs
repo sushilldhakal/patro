@@ -19,6 +19,9 @@ const APPLE_ISSUER: &str = "https://appleid.apple.com";
 const GRAPH: &str = "https://graph.facebook.com/v25.0";
 /// `PyJWKClient`'s default key-set lifespan.
 const JWKS_LIFESPAN: Duration = Duration::from_secs(300);
+/// A token naming an unknown key refetches the key set at most this often, so made-up tokens
+/// cannot turn into one Google or Apple download each.
+const JWKS_MIN_REFRESH: Duration = Duration::from_secs(60);
 
 /// Whether a key set may come from the cache.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -61,9 +64,12 @@ impl Providers {
     }
 
     async fn key_set(&self, url: &'static str, fetch: Fetch) -> Option<JwkSet> {
-        if fetch == Fetch::Cached
-            && let Some((at, set)) = self.keys.lock().ok()?.get(url)
-            && at.elapsed() < JWKS_LIFESPAN
+        let fresh_for = match fetch {
+            Fetch::Cached => JWKS_LIFESPAN,
+            Fetch::Fresh => JWKS_MIN_REFRESH,
+        };
+        if let Some((at, set)) = self.keys.lock().ok()?.get(url)
+            && at.elapsed() < fresh_for
         {
             return Some(set.clone());
         }

@@ -38,3 +38,17 @@ writes `month/{key}.json`. nginx serves the GETs straight from that folder
 (`nginx-shared-month.conf`, placed before `location /api/` in the `vedicpatro` site), so a stored
 month costs no Rust work and no proxy-cache memory, and Cloudflare keeps it (immutable). Only PUTs
 reach Rust. The folder is outside `/home/ubuntu` because nginx (www-data) cannot read there.
+
+## Real visitor address, sign-in limits, backups (2026-11-25)
+
+- `nginx-cloudflare-realip.conf` goes in `/etc/nginx/conf.d/`. nginx believes `CF-Connecting-IP`
+  only from Cloudflare's ranges, so `$remote_addr` is the real visitor. Every location that reaches
+  Rust (the `vedicpatro` `/api/` and shared-month PUT, the sslip host, `rust.vedicpatro.com`) sends
+  `CF-Connecting-IP $remote_addr`. Without this, anyone hitting the server directly could fake
+  three voters and store a month for everyone. Refresh the ranges from cloudflare.com/ips if they change.
+- The same file limits credential POSTs (`/auth/login`, `signup`, social, reset and verify links)
+  to 20 a minute per visitor, burst 20, then 429. `/auth/me` and `/auth/refresh` are not counted.
+- `patro-pg-backup.timer` runs `scripts/pg-backup.sh` nightly (03:15 Nepal): `pg_dump -Fc` of
+  `patro` to `/var/backups/patro` (7 kept) and to the private R2 bucket under
+  `backups/postgres/` (30 days). Restore with `pg_restore --clean --if-exists -d patro <file>`.
+- The server refuses to start with the account database on and no `JWT_SECRET`.

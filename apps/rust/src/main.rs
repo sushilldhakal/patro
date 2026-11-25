@@ -33,6 +33,12 @@ async fn serve() -> anyhow::Result<()> {
     let addr = config.addr().context("host/port")?;
     let mut state = AppState::new(config);
     if let Some(settings) = accounts::AccountConfig::from_env() {
+        // Without it every access token would be signed with the public fallback in
+        // AccountConfig, so anyone could sign in as anyone: refuse to start instead.
+        anyhow::ensure!(
+            std::env::var("JWT_SECRET").is_ok_and(|s| !s.trim().is_empty()),
+            "JWT_SECRET must be set when the account database is on"
+        );
         let layer = accounts::Accounts::new(settings).context("account database URL")?;
         // As Python: a failed start-up DDL is logged; the routes stay mounted.
         match layer.init().await {

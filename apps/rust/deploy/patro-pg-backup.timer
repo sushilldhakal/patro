@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the patro Postgres backup every night
+
+[Timer]
+# 21:30 UTC is 03:15 in Nepal, the quietest hour.
+OnCalendar=*-*-* 21:30:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
