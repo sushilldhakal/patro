@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { clamp, useDerivedValue, type SharedValue } from "react-native-reanimated";
 
 /**
@@ -15,5 +16,5 @@ export function useGestureProgress(source: SharedValue<number>, range: readonly 
     const span = to - from;
     if (span === 0) return 0;
     return clamp((source.get() - from) / span, 0, 1);
-  }, [from, to]);
+  }, Platform.OS === "web" ? [from, to] : undefined);
 }

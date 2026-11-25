@@ -1,4 +1,4 @@
-import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/native-tabs";
 import { DuoToolbar } from "@/components/navigation/DuoToolbar";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { planRail, useDuoRail } from "@/lib/duo-rail";

@@ -29,7 +29,7 @@ import {
 import { panchangaCardGrid, panchangaSectionNote } from "@vedic-patro/design-tokens";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
-import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
 
 const sc = panchangaPageClasses.sections;

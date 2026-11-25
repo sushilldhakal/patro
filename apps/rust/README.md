@@ -24,6 +24,20 @@ cargo bench -p calendar        # engine layer speed
 cargo bench -p panchanga       # daily panchanga speed
 ```
 
+## Weather service (development)
+
+`GET /v1/weather/forecast?lat=27.7172&lon=85.324` resolves coordinates to the nearest
+populated city and returns its 16-day Open-Meteo forecast. The payload includes a
+`display_days: 7` hint for clients. Requests for the same city share one in-process
+forecast; a miss fetches once, and after 45 minutes cached results continue to be served
+while a background refresh runs. Forecasts remain eligible for stale serving for up to
+six hours. This cache is process-local, so a future multi-instance service should use
+shared Redis storage before scaling out.
+
+By default, requests use Open-Meteo's public forecast API. Set
+`PATRO_RS_OPEN_METEO_URL` to an Open-Meteo compatible self-hosted endpoint to use it
+instead. No client calls this route yet.
+
 Regenerate the golden files after changing the Python engine:
 
 ```bash

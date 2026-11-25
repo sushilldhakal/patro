@@ -6,6 +6,7 @@ pub mod middleware;
 mod respond;
 pub mod routes;
 pub mod state;
+pub mod weather;
 
 pub use routes::router;
 pub use state::AppState;

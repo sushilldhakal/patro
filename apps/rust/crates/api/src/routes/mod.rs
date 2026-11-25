@@ -19,11 +19,17 @@ pub fn router(state: AppState) -> Router {
         .merge(graha())
         .merge(kundali())
         .merge(vastu());
+    routes = routes.merge(weather());
     if state.accounts.is_some() {
         routes = routes.merge(accounts());
     }
     let routes = routes.with_state(state);
     middleware::apply(routes, timeout)
+}
+
+/// Shared cached forecasts for nearby locations.
+fn weather() -> Router<AppState> {
+    Router::new().route("/v1/weather/forecast", get(handlers::weather::forecast))
 }
 
 /// The account layer (`app/routers/*`), mounted only with a database.

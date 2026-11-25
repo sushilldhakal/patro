@@ -22,3 +22,4 @@ pub mod share;
 pub mod shared_results;
 pub mod siddhanta;
 pub mod vastu;
+pub mod weather;

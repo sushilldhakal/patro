@@ -60,6 +60,7 @@ import type {
   ShadbalaResponse,
   SpecialMonthsResponse,
   SunYearResponse,
+  WeatherForecastResponse,
   TropicalSeasonsResponse,
   UpcomingFestivalsResponse,
   VastuSketchRequest,
@@ -562,6 +563,14 @@ export const fetchYearSunTimes = (year: number, era: Era = "bs", location?: Loca
         appendLocation(`/panchanga/year/${year}/sun?${eraQuery(era, year, language)}`, location),
       ),
   );
+
+/** The nearest city's forecast; the server shares one cached copy with everyone in that city. */
+export const fetchWeatherForecast = (location?: LocationParams) =>
+  get<WeatherForecastResponse>(appendLocation("/weather/forecast", location));
+
+export const weatherKeys = {
+  forecast: (location?: LocationParams) => ["weather", "forecast", locationCacheKey(location)] as const,
+};
 
 // ─── Cities ───────────────────────────────────────────────────────────────────
 

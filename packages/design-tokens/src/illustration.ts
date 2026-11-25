@@ -212,3 +212,21 @@ export const illustration = {
 } as const;
 
 export type IllustrationColor = keyof typeof illustration;
+
+/**
+ * Weather page inks, read by both apps: UV band dots (keys match `UvLevel` in
+ * @vedic-patro/features/weather) and the hero's sky gradient, top → bottom, per theme.
+ */
+export const weatherInk = {
+  uv: {
+    low: illustration.green45,
+    moderate: illustration.amber53,
+    high: illustration.orange61,
+    very_high: illustration.red51,
+    extreme: illustration.blue67,
+  },
+  sky: {
+    light: [illustration.sky68b, illustration.sky86] as const,
+    dark: [illustration.sky14, illustration.sky22] as const,
+  },
+} as const;

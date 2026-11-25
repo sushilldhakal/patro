@@ -16,6 +16,7 @@ const OWN_H1 = [
   "/terms",
   "/ritu",
   "/vastu",
+  "/weather",
   "/verify-email",
   "/reset-password",
 ];

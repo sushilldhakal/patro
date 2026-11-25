@@ -70,7 +70,7 @@ function renderComponent(baseComponent, state, props, possiblyAnimatedProps, var
                     console.log(`css-interop error: ${error.message}`);
                     return {};
                 }
-            }, [possiblyAnimatedProps.style]);
+            }, react_native_1.Platform.OS === "web" ? [possiblyAnimatedProps.style] : undefined);
         }
     }
     else {

@@ -9,6 +9,7 @@ const PATH_LOADERS: { match: RegExp; load: () => Promise<unknown> }[] = [
   { match: /^\/dainikkranti$/, load: () => import("../pages/DainikKranti") },
   { match: /^\/panchak-patro$/, load: () => import("../pages/PanchakPatro") },
   { match: /^\/ritu$/, load: () => import("../pages/Ritu") },
+  { match: /^\/weather$/, load: () => import("../pages/Weather") },
   { match: /^\/panchanga\/avakahada-chakra$/, load: () => import("../pages/AvakahadaChakra") },
   { match: /^\/abhijit-muhurta$/, load: () => import("../pages/AbhijitMuhurta") },
   { match: /^\/kundali$/, load: () => import("../pages/Kundali") },

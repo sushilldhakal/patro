@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { View } from "react-native";
+import { Platform, type View } from "react-native";
 import { measure, useAnimatedReaction, useAnimatedRef, useSharedValue } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { pageViewportH, usePageScrollY } from "@/lib/scroll-motion";
@@ -28,7 +28,7 @@ export function useOnScreen(margin = 200, initial = true) {
         scheduleOnRN(setOnScreen, visible);
       }
     },
-    [margin, scrollY],
+    Platform.OS === "web" ? [margin, scrollY] : undefined,
   );
 
   const onLayout = useCallback(() => laidOut.set(true), [laidOut]);

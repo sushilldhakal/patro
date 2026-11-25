@@ -34,7 +34,7 @@ import {
   panchangaSectionNote,
 } from "./PanchangaLayout";
 import { CalendarMoonPhaseIcon } from "./CalendarMoonPhaseIcon";
-import { NavataraBalamCardGrid } from "@vedic-patro/ui/kit/panchanga";
+import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 import { GrahaPlanetIcon } from "./GrahaPlanetIcon";
 import { GrahaStatusBadges } from "./GrahaStatusBadges";
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import Animated, {
   measure,
   useAnimatedReaction,
@@ -66,7 +66,8 @@ function AnimatedReveal({ children, index }: { children: ReactNode; index: numbe
         ),
       );
     },
-    [scrollY, waitsForScroll, delay, reduced],
+    // Native Reanimated tracks the closure itself and warns on a dependency list.
+    Platform.OS === "web" ? [scrollY, waitsForScroll, delay, reduced] : undefined,
   );
 
   /* One animated style and nothing plain beside it: a `style={[plain, animated]}` array drops the plain part. */

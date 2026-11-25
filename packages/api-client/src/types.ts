@@ -2770,3 +2770,61 @@ export interface Profile {
 export type ProfileInput = Partial<Omit<Profile, "id" | "created_at" | "updated_at">> & {
   full_name: string;
 };
+
+/** `GET /v1/weather/forecast`: Open-Meteo's 16-day forecast for the nearest city, shared by every user there. */
+export interface WeatherForecastResponse {
+  location: { name: string; latitude: number; longitude: number };
+  forecast: {
+    timezone?: string;
+    utc_offset_seconds?: number;
+    /** Conditions now (Open-Meteo's latest 15-minute values). */
+    current?: {
+      time: string;
+      temperature_2m: number | null;
+      apparent_temperature: number | null;
+      relative_humidity_2m: number | null;
+      is_day: number | null;
+      precipitation: number | null;
+      weather_code: number | null;
+      wind_speed_10m: number | null;
+      wind_direction_10m: number | null;
+      wind_gusts_10m: number | null;
+    };
+    /** Times are the place's local wall clock, `YYYY-MM-DDTHH:mm`. */
+    hourly?: {
+      time: string[];
+      temperature_2m: (number | null)[];
+      apparent_temperature?: (number | null)[];
+      relative_humidity_2m?: (number | null)[];
+      dew_point_2m?: (number | null)[];
+      precipitation_probability: (number | null)[];
+      precipitation?: (number | null)[];
+      weather_code: (number | null)[];
+      wind_speed_10m: (number | null)[];
+      wind_direction_10m?: (number | null)[];
+      wind_gusts_10m?: (number | null)[];
+      uv_index?: (number | null)[];
+      is_day?: (number | null)[];
+    };
+    daily?: {
+      time: string[];
+      weather_code: (number | null)[];
+      temperature_2m_max: (number | null)[];
+      temperature_2m_min: (number | null)[];
+      precipitation_sum?: (number | null)[];
+      precipitation_probability_max: (number | null)[];
+      sunrise: string[];
+      sunset: string[];
+      uv_index_max: (number | null)[];
+      wind_speed_10m_max?: (number | null)[];
+      wind_gusts_10m_max?: (number | null)[];
+      wind_direction_10m_dominant?: (number | null)[];
+    };
+  };
+  forecast_days: number;
+  display_days: number;
+  source: string;
+  /** Unix seconds of the upstream fetch. */
+  fetched_at: number;
+  cached: boolean;
+}

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Platform } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { usePageScrollY } from "@/lib/scroll-motion";
@@ -37,7 +38,7 @@ export function ScrollHero({ children }: { children: ReactNode }) {
       opacity,
       transform: [{ translateY: y > 0 ? Math.min(y, h) * PARALLAX : 0 }, { scale }],
     };
-  }, [reduced]);
+  }, Platform.OS === "web" ? [reduced] : undefined);
 
   return (
     <Animated.View style={style} onLayout={(e) => height.set(e.nativeEvent.layout.height)}>

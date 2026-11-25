@@ -15,6 +15,8 @@ pub struct AppState {
     pub cities: Cities,
     /// Documents and Veda catalog data.
     pub documents: DocumentsService,
+    /// Shared weather client and forecast cache.
+    pub weather: crate::weather::WeatherService,
     /// A fixed "now" for tests; the system clock when `None`.
     pub fixed_now: Option<timescale::UtcInstant>,
     /// The account layer (Postgres), when `PATRO_RS_DATABASE_URL` is set.
@@ -119,6 +121,7 @@ impl AppState {
             config: Arc::new(config),
             cities,
             documents,
+            weather: crate::weather::WeatherService::from_env(),
             fixed_now: None,
             accounts: None,
             vastu: Arc::new(OnceLock::new()),

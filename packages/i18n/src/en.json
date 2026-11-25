@@ -155,6 +155,11 @@
         "description": "The complete Brahma Māna hierarchy from the Surya Siddhanta: Parārdhas, Brahma years, Kalpas, Manvantaras, Mahāyugas and the four Yugas in the ratio 4 : 3 : 2 : 1, in solar years.",
         "keywords": "Brahma Mana, Kalpa, Manvantara, Mahayuga, Chaturyuga, Satya Yuga, Treta Yuga, Dvapara Yuga, Kali Yuga, Parardha, Surya Siddhanta"
       },
+      "weather": {
+        "title": "Weather Forecast | Vedic Patro",
+        "description": "Current weather, the next 24 hours and a 16-day forecast for your nearest city.",
+        "keywords": "weather, forecast, rain, temperature, Nepal weather"
+      },
       "adhik_maas": {
         "title": "Adhik Maas (Mala Maas) | Vedic Patro",
         "description": "Which month is adhik (mala / purushottam) maas in each year, its dates, and how and why it happens.",
@@ -4994,6 +4999,9 @@
       "brahma-mana": {
         "label": "Brahma Māna"
       },
+      "weather": {
+        "label": "Weather"
+      },
       "avakahada": {
         "label": "Avakahada chakra"
       },
@@ -5210,6 +5218,150 @@
       "billion": "billion",
       "trillion": "trillion",
       "quadrillion": "quadrillion"
+    }
+  },
+  "weather": {
+    "title": "Weather",
+    "back": "Back",
+    "change_place": "Change place",
+    "subtitle": "The forecast for your nearest city",
+    "show_more_today": "Show more about today",
+    "show_less_today": "Show less about today",
+    "current_title": "Current weather",
+    "sun_title": "Sun, moon and UV",
+    "moon_phase": "Moon phase",
+    "next_moon_phase": "Next moon phase",
+    "moon": {
+      "new": "New moon",
+      "waxing_crescent": "Waxing crescent",
+      "first_quarter": "First quarter",
+      "waxing_gibbous": "Waxing gibbous",
+      "full": "Full moon",
+      "waning_gibbous": "Waning gibbous",
+      "last_quarter": "Last quarter",
+      "waning_crescent": "Waning crescent"
+    },
+    "daily_title": "Daily forecast",
+    "show_all_days": "Show all {{count}} days",
+    "show_fewer_days": "Show fewer days",
+    "now": "Now",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "feels_like": "Feels like {{temp}}",
+    "today_min": "Today's min",
+    "today_max": "Today's max",
+    "overnight_min": "Overnight min",
+    "tomorrow_max": "Tomorrow's max",
+    "no_rain": "No rain.",
+    "rain_today": "{{amount}} of rain today",
+    "rain_today_label": "Rain today",
+    "rain_chance_line": "{{chance}}% ({{word}}) chance of rain",
+    "chance": {
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "very_high": "very high"
+    },
+    "rain": "Rain",
+    "wind": "Wind",
+    "gust": "Gust",
+    "humidity": "Humidity",
+    "sunrise": "Sunrise",
+    "sunset": "Sunset",
+    "uv_max": "Max UV index",
+    "sun_protection": "Sun protection recommended",
+    "uv_level": {
+      "low": "Low",
+      "moderate": "Moderate",
+      "high": "High",
+      "very_high": "Very high",
+      "extreme": "Extreme"
+    },
+    "kmh": "{{speed}} km/h",
+    "mm": "{{amount}} mm",
+    "filter": {
+      "temp_rain": "Temperature and rain",
+      "wind": "Wind",
+      "humidity_uv": "Humidity and UV",
+      "all": "Show all"
+    },
+    "row": {
+      "feels": "Feels like",
+      "rain_mm": "Rain (mm)",
+      "wind": "Wind (km/h)",
+      "gust": "Gust (km/h)",
+      "humidity": "Humidity",
+      "dew": "Dew point",
+      "uv": "UV index"
+    },
+    "info": {
+      "feels": {
+        "title": "Feels like",
+        "body": "The temperature your body feels, in degrees Celsius, once wind and humidity are taken into account. Wind makes it feel colder; humid heat makes it feel hotter."
+      },
+      "rain_mm": {
+        "title": "Rain",
+        "body": "Expected rain in that hour, in millimetres. 1 mm is one litre of water on each square metre."
+      },
+      "wind": {
+        "title": "Wind",
+        "body": "Average wind speed 10 metres above the ground, in kilometres per hour. The arrow points where the wind is blowing; the letters say where it comes from."
+      },
+      "gust": {
+        "title": "Gust",
+        "body": "The strongest short burst of wind expected, in kilometres per hour. Gusts can be much stronger than the average wind."
+      },
+      "humidity": {
+        "title": "Humidity",
+        "body": "Water vapour in the air, as a percentage of the most the air can hold at that temperature. High humidity makes heat feel more uncomfortable."
+      },
+      "dew": {
+        "title": "Dew point",
+        "body": "Temperature in degrees Celsius to which air must cool for dew to form. Dew point is an indicator of humidity — higher values mean more moisture in the air."
+      },
+      "uv": {
+        "title": "UV index",
+        "body": "Strength of the sun's ultraviolet rays. At 3 or more, protect your skin: shade, a hat and sunscreen. Above 8 is very high."
+      }
+    },
+    "about_row": "About this row",
+    "updated_title": "Last updated",
+    "updated_ago": "Forecast: {{time}} ago",
+    "location_title": "Location",
+    "location_note": "Forecast for {{place}}, the nearest city to your location. Conditions where you are may differ slightly.",
+    "current_location": "Your location",
+    "location_note_gps": "Forecast for {{place}}, the nearest city to your device's GPS position. Tap the place name above to choose another.",
+    "units_note": "Temperatures are shown in degrees Celsius (°C).",
+    "load_error": "Could not load the weather. Try again in a little while.",
+    "source": "Source: Open-Meteo",
+    "kind": {
+      "clear": "Clear",
+      "partly": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "drizzle": "Drizzle",
+      "rain": "Rain",
+      "snow": "Snow",
+      "showers": "Showers",
+      "thunder": "Thunderstorm"
+    },
+    "dir": {
+      "N": "N",
+      "NNE": "NNE",
+      "NE": "NE",
+      "ENE": "ENE",
+      "E": "E",
+      "ESE": "ESE",
+      "SE": "SE",
+      "SSE": "SSE",
+      "S": "S",
+      "SSW": "SSW",
+      "SW": "SW",
+      "WSW": "WSW",
+      "W": "W",
+      "WNW": "WNW",
+      "NW": "NW",
+      "NNW": "NNW"
     }
   },
   "gochar": {
