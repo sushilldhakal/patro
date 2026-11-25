@@ -14,6 +14,7 @@ import { suryaLongitude } from "../../astronomy/surya-formulas";
 import { localInstant } from "../../panchanga/engine/midnight";
 import { bsToJdn, civilJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import { shadbala } from "./shadbala-engine";
+import { kundaliMilan, type MilanPartner } from "./milan-engine";
 import { parseIso, usFromJd, vimshottariPayload } from "./vimshottari-engine";
 
 type Json = Record<string, unknown>;
@@ -111,6 +112,31 @@ export function vimshottari(sky: Sky, jd: number, place: KundaliPlace, cycles: n
 export function shadbalaRoute(sky: Sky, jd: number, place: KundaliPlace, q: KundaliEcho = {}): Json | null {
   const payload = shadbala(sky, jd, place);
   return payload && { ...payload, location: placeBlock(place), query_instant: wallIn(jd, place.timeZone).iso, ...echo(q) };
+}
+
+/** One milan partner: the birth moment and where it was (coordinates in Nepal's box read Nepal time). */
+export interface MilanPerson {
+  moment: KundaliMoment;
+  lat?: number;
+  lon?: number;
+  timezone?: string;
+}
+
+/** `/kundali/milan`: Ashtakoota of two births, or null for the server. */
+export function milanRoute(sky: Sky, boy: MilanPerson, girl: MilanPerson, lang = "ne"): Json | null {
+  const partner = (p: MilanPerson): MilanPartner | null => {
+    const tz = p.timezone || "Asia/Kathmandu";
+    const inNepal = p.lat !== undefined && p.lon !== undefined && p.lat >= 26.35 && p.lat <= 30.45 && p.lon >= 80.05 && p.lon <= 88.2;
+    const zone = inNepal ? "Asia/Kathmandu" : tz;
+    const jd = momentJd(p.moment, zone);
+    if (jd === null) return null;
+    const moon = sky.system === "surya" ? suryaLongitude("moon", jd) : sky.positionsAt(jd, 2, false)?.longitude[1];
+    if (moon === undefined) return null;
+    return { moonLongitude: moon, birthInstant: wallIn(jd, zone).iso, location: { lat: p.lat ?? null, lon: p.lon ?? null, timezone: tz } };
+  };
+  const b = partner(boy);
+  const g = partner(girl);
+  return b && g ? kundaliMilan(b, g, lang) : null;
 }
 
 export { dashaExpand } from "./vimshottari-engine";

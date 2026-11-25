@@ -75,7 +75,8 @@ export interface LocalJanmaQuery {
 /** A kundali route (`/kundali/vimshottari`, `/kundali/dasha/expand`, `/shadbala`, `/kundali/detail`): the moment, read at the request's place. */
 export type LocalKundaliQuery =
   | { route: "vimshottari" | "shadbala" | "detail"; moment: import("../jyotish/kundali/engine").KundaliMoment; cycles?: number; ayanamsha?: string; era?: string; language?: string }
-  | { route: "expand"; lord: string; start: string; end: string; system?: string };
+  | { route: "expand"; lord: string; start: string; end: string; system?: string }
+  | { route: "milan"; boy: import("../jyotish/kundali/engine").MilanPerson; girl: import("../jyotish/kundali/engine").MilanPerson; lang?: string; ayanamsha?: string };
 
 /** One of the gochar routes: a day (`date` or `jd`), the BS year summary (`year`), a timeline (`from`/`to`), a graha year (`graha` + `year`) or graha sthiti (`sthiti`). */
 export interface LocalGocharQuery {
@@ -653,6 +654,10 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
       try {
         const k = await import("../jyotish/kundali/engine");
         if (q.route === "expand") return options.enabled() ? k.dashaExpand(q) : null;
+        if (q.route === "milan") {
+          const sky = await surya(undefined, q.ayanamsha);
+          return sky ? k.milanRoute(sky.sky, q.boy, q.girl, q.lang) : null;
+        }
         const ctx = await surya(location, q.ayanamsha);
         if (!ctx) return null;
         const jd = k.momentJd(q.moment, ctx.place.timeZone);

@@ -500,7 +500,10 @@ export const fetchKundaliMilan = (
   if (girl.timezone) params.set("girl_timezone", girl.timezone);
   if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
   if (options?.lang) params.set("lang", options.lang);
-  return get<KundaliMilanResponse>(`/kundali/milan?${params.toString()}`);
+  const person = (p: MilanPersonQuery) => ({ moment: kundaliMoment(p.moment), lat: p.lat, lon: p.lon, timezone: p.timezone });
+  return fromLocal<KundaliMilanResponse>((l) =>
+    l.kundali({ route: "milan", boy: person(boy), girl: person(girl), lang: options?.lang, ayanamsha: options?.ayanamsha }),
+  ).then((local) => local ?? get<KundaliMilanResponse>(`/kundali/milan?${params.toString()}`));
 };
 
 // ─── Era-aware year listings ─────────────────────────────────────────────────

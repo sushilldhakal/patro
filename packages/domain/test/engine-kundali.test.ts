@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { Sky, type SkyIo } from "../src/astronomy/sky";
-import { dashaExpand, momentJd, planetaryPositions, shadbalaRoute, vimshottari, type KundaliPlace } from "../src/jyotish/kundali/engine";
+import { dashaExpand, milanRoute, momentJd, planetaryPositions, shadbalaRoute, vimshottari, type KundaliPlace } from "../src/jyotish/kundali/engine";
 import { kundaliDetail } from "../src/jyotish/kundali/detail-engine";
 import { diff } from "./golden-diff";
 
@@ -137,4 +137,28 @@ test("the kundali detail made on the device matches the server's", async () => {
   console.log("checked detail", checked);
   assert.ok(checked >= 8);
   assert.equal(failures.length, 0, failures.slice(0, 15).join("\n"));
+});
+
+test("milan made on the device matches the server's", async () => {
+  const sky = new Sky("surya", io);
+  await sky.open();
+  const failures: string[] = [];
+  let checked = 0;
+  for (const c of load("kundali_basic")) {
+    if (c.status !== 200 || !c.path.startsWith("/v1/kundali/milan")) continue;
+    const q = new URLSearchParams(c.path.split("?")[1]);
+    const person = (who: string) => {
+      const n = (k: string) => (q.has(`${who}_${k}`) ? Number(q.get(`${who}_${k}`)) : undefined);
+      return {
+        moment: { jd: n("jd"), clock: q.get(`${who}_clock`) ?? undefined, datetime: q.get(`${who}_datetime`) ?? undefined, era: q.get(`${who}_era`) ?? undefined, year: n("year"), month: n("month"), day: n("day") },
+        lat: n("lat"), lon: n("lon"), timezone: q.get(`${who}_timezone`) ?? undefined,
+      };
+    };
+    const got = milanRoute(sky, person("boy"), person("girl"), q.get("lang") ?? "ne");
+    checked += 1;
+    const e = got ? diff("", got, JSON.parse(c.body)) : "null";
+    if (e) failures.push(`${c.path}: ${e}`);
+  }
+  assert.ok(checked >= 4);
+  assert.equal(failures.length, 0, failures.join("\n"));
 });
