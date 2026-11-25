@@ -13,7 +13,7 @@ import type { CeremonyWindows } from "./festival-saits";
 
 type Rules = typeof CEREMONY_RULES;
 /** A ceremony rule: the generated lists as plain arrays. */
-type Rule = { [K in keyof Rules["vivah"]]: Rules["vivah"][K] extends readonly (infer T)[] ? readonly (T extends number ? number : string)[] : Rules["vivah"][K] extends boolean ? boolean : Rules["vivah"][K] extends number ? number : string };
+export type Rule = { [K in keyof Rules["vivah"]]: Rules["vivah"][K] extends readonly (infer T)[] ? readonly (T extends number ? number : string)[] : Rules["vivah"][K] extends boolean ? boolean : Rules["vivah"][K] extends number ? number : string };
 const STEP = (30 * 60) / 86400;
 const MIN_WINDOW = (5 * 60) / 86400;
 const REFINE_TOLERANCE = 1 / 86400;
@@ -273,7 +273,7 @@ function edgeRefine(c: Ctx, good0: number, bad0: number): [number, number] {
 }
 
 /** `muhurta_windows_for_rule` for one ceremony on the civil day `jdn`. */
-function windowsFor(sky: Sky, rule: Rule, jdn: number, place: Place): Interval[] {
+export function windowsFor(sky: Sky, rule: Rule, jdn: number, place: Place): Interval[] {
   const times = dayTimes(sky, jdn, place);
   if (!times) return [];
   const { sunrise, sunset, nextSunrise } = times;

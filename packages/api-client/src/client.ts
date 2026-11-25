@@ -293,8 +293,10 @@ export const fetchVimshottari = (
 };
 
 export const fetchSait = (year: number, category: string, location?: LocationParams) =>
-  get<SaitResponse>(
-    withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/${category}`, location)),
+  fromLocal<SaitResponse>((l) => l.sait({ year, category }, location)).then(
+    (local) =>
+      local ??
+      get<SaitResponse>(withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/${category}`, location))),
   );
 
 export const saitDetailKey = (
@@ -596,9 +598,11 @@ export const fetchSaitMonthAll = async (
   month: number,
   location?: LocationParams,
 ): Promise<SaitMonthAllResponse> => {
-  const data = await get<SaitMonthAllResponse>(
-    withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/month/${month}`, location)),
-  );
+  const data =
+    (await fromLocal<SaitMonthAllResponse>((l) => l.sait({ year, month }, location))) ??
+    (await get<SaitMonthAllResponse>(
+      withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/month/${month}`, location)),
+    ));
   if (!data?.categories || typeof data.categories !== "object") {
     throw new Error(`Invalid sait response for ${year}/${month}`);
   }

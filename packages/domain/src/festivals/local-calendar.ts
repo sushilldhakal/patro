@@ -104,6 +104,8 @@ export interface LocalCalendar {
   personalRashifal(q: LocalPersonalRashifalQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The birth Moon's nakshatra and rashi (`/panchanga/rashifal/janma`), or null for the server. */
   janma(q: LocalJanmaQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The sait listings (`/nepal/sait/{year}/{category}` and `/month/{m}`), or null for the server. */
+  sait(q: { year: number; category?: string; month?: number; era?: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The gochar routes (transit table, ingress timelines, year summary, graha asta/vakri, graha sthiti), or null for the server. */
   gochar(q: LocalGocharQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The lite grid alone (what `month` builds on). */
@@ -489,6 +491,20 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         if (jdn === null) return null;
         const { rashifalForDay } = await import("../jyotish/rashifal/engine");
         const payload = rashifalForDay(ctx.sky, jdn, ctx.place, period);
+        if (!payload) return null;
+        const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
+        return q.era ? renderForEra(payload, q.era, q.language ?? eraLanguage(q.era)) : payload;
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    sait: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const r = await import("./sait-routes");
+        const payload = q.month !== undefined ? r.saitMonthAll(ctx.sky, q.year, q.month, ctx.place) : q.category ? r.saitMonthEntries(ctx.sky, q.year, q.category, ctx.place) : null;
         if (!payload) return null;
         const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
         return q.era ? renderForEra(payload, q.era, q.language ?? eraLanguage(q.era)) : payload;
