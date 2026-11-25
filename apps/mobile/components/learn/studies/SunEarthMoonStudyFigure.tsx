@@ -19,7 +19,7 @@ import {
   rashiIndexFromLon,
   sunSiderealLonFromEarthNu,
   yearAngleFromDay,
-} from "@/components/learn/studies/sun-earth-moon-math";
+} from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 
 /** Scrub presets — catalogue keys, resolved at render rather than module load. */
 const PRESETS = [

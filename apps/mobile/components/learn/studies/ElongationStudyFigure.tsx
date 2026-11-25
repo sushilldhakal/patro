@@ -6,7 +6,7 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { ElongationDiagram, EARTH_ARC_SYNODIC, earthOrbitDegFromLunarDay } from "@/components/learn/studies/ElongationDiagramFigure";
-import { SYNODIC_MONTH } from "@/components/learn/studies/sun-earth-moon-math";
+import { SYNODIC_MONTH } from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { tFor } from "@vedic-patro/i18n/runtime";

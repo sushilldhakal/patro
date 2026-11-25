@@ -10,7 +10,7 @@ import {
   ORBIT_PRESETS,
   meanFromTrue,
   orbitFromMeanAnomaly,
-} from "@/components/learn/studies/orbit-math";
+} from "@vedic-patro/features/_learn-math/orbit-math";
 
 /** Catalogue keys for ORBIT_MARKERS / ORBIT_PRESETS, in their shared order. */
 const MARKER_KEYS = [

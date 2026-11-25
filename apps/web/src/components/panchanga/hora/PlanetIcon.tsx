@@ -1,4 +1,4 @@
-import type { HoraPlanetKey } from "@/lib/hora-data";
+import type { HoraPlanetKey } from "@vedic-patro/features/_learn-math/hora-data";
 import { HORA_TO_GRAHA } from "@/lib/graha-planet-icons";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 

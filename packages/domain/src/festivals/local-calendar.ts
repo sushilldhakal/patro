@@ -29,6 +29,10 @@ export interface LocalMonthQuery {
   era: string;
   excludeInternational?: boolean;
   language?: string;
+  /** `full=true`: every row carries the day's panchanga (Surya only; null for the server otherwise). */
+  full?: boolean;
+  /** `slim=true` with `full`: the blocks a month view does not read are left out. */
+  slim?: boolean;
 }
 
 export type LocalElementQuery =
@@ -40,6 +44,8 @@ export type LocalElementQuery =
 export interface LocalCalendar {
   /** A BS month grid (lite), or null for the server. */
   month(q: LocalMonthQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The lite grid alone (what `month` builds on). */
+  liteMonth(q: LocalMonthQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   festivals(q: LocalListingQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   holidays(q: LocalListingQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   upcoming(
@@ -181,8 +187,34 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     };
   };
 
+  const FULL_MONTHS = new Map<string, Record<string, unknown>>();
+
   const calendar: LocalCalendar = {
     month: async (q, location) => {
+      // The day engine answers for the Surya Siddhanta only; Drik months with days go to the server.
+      if (q.full && options.system()?.system !== "surya") return null;
+      const lite = await calendar.liteMonth(q, location);
+      if (!lite || !q.full) return lite;
+      try {
+        const lat = (lite.location as { lat?: number }).lat;
+        const lon = (lite.location as { lon?: number }).lon;
+        const key = `${monthKey({ system: "surya", ayanamsha: "lahiri" as DrikAyanamsha }, q, lat ?? 0, lon ?? 0)}.${q.slim ? "slim" : "full"}.${q.era}.${q.language ?? ""}.${(lite.location as { city_id?: number }).city_id ?? ""}`;
+        const memo = FULL_MONTHS.get(key);
+        if (memo) return memo;
+        const sky = await options.loadSky("surya");
+        const { fullMonth } = await import("../panchanga/engine/month-full");
+        const made = fullMonth(sky, sky, lite, { slim: q.slim, era: q.era });
+        if (!made) return null;
+        FULL_MONTHS.delete(key);
+        FULL_MONTHS.set(key, made);
+        while (FULL_MONTHS.size > 4) FULL_MONTHS.delete(FULL_MONTHS.keys().next().value as string);
+        return made;
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    liteMonth: async (q, location) => {
       if (q.era !== "bs") return null;
       const calc = options.system();
       if (calc === null) return null;

@@ -4,7 +4,7 @@ import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { edSvg } from "@/lib/learn-classes";
 import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { EarthGlobeImage, EARTH_AXIAL_TILT } from "@/components/learn/EarthGlobeImage";
-import { SYNODIC_MONTH, TROPICAL_YEAR } from "@/components/learn/sun-earth-moon-math";
+import { SYNODIC_MONTH, TROPICAL_YEAR } from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 import {
   tithiIndexFromElongation,
   tithiNum,

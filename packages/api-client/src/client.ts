@@ -931,11 +931,14 @@ export const fetchMonthCalendarRaw = async (
       : era === "bc"
         ? `/panchanga/bc/${year}/${month}`
         : `/panchanga/${year}/${month}`;
-  // The lite BS grid (home, month, Abhijit, Gochar pages) is made from the sky the app carries.
+  // The BS grid, lite or with each day's panchanga (full, slim), is made from the sky the app carries.
   const local =
-    era === "bs" && options?.full === false && !options?.clock
+    era === "bs" && !options?.clock
       ? await fromLocal<MonthCalendar & { calendar: RawMonthDay[] }>((l) =>
-          l.month({ year, month, era, language, excludeInternational: options?.excludeInternational }, location),
+          l.month(
+            { year, month, era, language, excludeInternational: options?.excludeInternational, full: options?.full !== false, slim: options?.slim === true },
+            location,
+          ),
         )
       : null;
   return (

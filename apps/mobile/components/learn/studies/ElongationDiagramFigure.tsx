@@ -7,7 +7,7 @@ import { edArc, edArcCap, edArcVal, edAxis, edBodyLabel, edCurband, edDeglabel, 
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { moonSunFacingRotation } from "@vedic-patro/domain/astronomy/moon-phase-svg";
 import { EarthGlobeImage, EARTH_AXIAL_TILT } from "@/components/learn/studies/EarthGlobeImageFigure";
-import { SYNODIC_MONTH, TROPICAL_YEAR } from "@/components/learn/studies/sun-earth-moon-math";
+import { SYNODIC_MONTH, TROPICAL_YEAR } from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 import {
   tithiIndexFromElongation,
   tithiNum,

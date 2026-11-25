@@ -23,7 +23,7 @@ import {
   sunDirFromEarth,
   sunSiderealLonFromEarthNu,
   yearAngleFromDay,
-} from "@/components/learn/sun-earth-moon-math";
+} from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 
 import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

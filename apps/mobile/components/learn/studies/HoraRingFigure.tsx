@@ -52,7 +52,7 @@ import {
   horaSegPath,
   horaTextArc,
   type HoraPlanetKey,
-} from "./hora-data";
+} from "@vedic-patro/features/_learn-math/hora-data";
 import { useForegroundInterval } from "@vedic-patro/features/common";
 
 const PROG_STEPS = 10_000;

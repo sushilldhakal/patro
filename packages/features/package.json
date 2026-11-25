@@ -6,6 +6,7 @@
   "description": "Page logic shared by the website and the mobile app: one hook per page holds the data loading, state, row building and copy; each app only draws it.",
   "type": "module",
   "exports": {
+    "./_learn-math/*": "./src/_learn-math/*.ts",
     "./*": "./src/*/index.ts"
   },
   "scripts": {

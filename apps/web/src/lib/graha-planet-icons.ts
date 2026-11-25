@@ -1,5 +1,5 @@
 import type { GrahaKey } from "@vedic-patro/domain/jyotish/graha-details";
-import type { HoraPlanetKey } from "@/lib/hora-data";
+import type { HoraPlanetKey } from "@vedic-patro/features/_learn-math/hora-data";
 import sunUrl from "@/assets/graha/sun.svg?url";
 import moonUrl from "@/assets/graha/moon.svg?url";
 import marsUrl from "@/assets/graha/mars.svg?url";

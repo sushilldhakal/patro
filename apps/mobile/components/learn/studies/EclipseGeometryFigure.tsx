@@ -20,7 +20,7 @@ import {
   planePtSun,
   realBeta,
   sunScreen,
-} from "@/components/learn/studies/eclipse-math";
+} from "@vedic-patro/features/_learn-math/eclipse-math";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";

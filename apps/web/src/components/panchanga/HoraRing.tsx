@@ -26,7 +26,7 @@ import {
   horaSegPath,
   horaTextArc,
   type HoraPlanetKey,
-} from "@/lib/hora-data";
+} from "@vedic-patro/features/_learn-math/hora-data";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { patroWheelShell } from "@/lib/patro-classes";

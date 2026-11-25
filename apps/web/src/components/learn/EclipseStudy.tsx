@@ -15,7 +15,7 @@ import {
   geoFromDay,
   isSolarAlignment,
   lunarEclipseStatus,
-} from "./eclipse-math";
+} from "@vedic-patro/features/_learn-math/eclipse-math";
 
 const RANGE = Math.round(ECL_RANGE_DAYS);
 /** Simulated days per real second for Moon / Earth animation. */

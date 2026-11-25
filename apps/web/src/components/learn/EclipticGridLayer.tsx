@@ -9,7 +9,7 @@ import {
   nakshatraIndexFromLon,
   pol,
   rashiIndexFromLon,
-} from "@/components/learn/sun-earth-moon-math";
+} from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 
 function semArc(L0: number, L1: number, r0: number, r1: number): string {
   const [x1, y1] = pol(SEM.cx, SEM.cy, r1, L0);

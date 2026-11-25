@@ -101,5 +101,12 @@ export function renderForEra(payload: Json, era: string, language: string): Json
   return out;
 }
 
+/** `render_part`: a part of a payload below its top level, with the labels and alignment but no `date_parts`, `era` or `language`. */
+export function renderPartForEra(part: Json, era: string): Json {
+  const out = render(part, era, false) as Json;
+  align(out);
+  return out;
+}
+
 /** `era_language`: Nepali for the Vikram eras, English for the Gregorian. */
 export const eraLanguage = (era: string) => (era === "bs" || era === "bbs" ? "ne" : "en");

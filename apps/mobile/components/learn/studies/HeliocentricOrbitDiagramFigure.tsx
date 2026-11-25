@@ -16,7 +16,7 @@ import {
   meanFromPointer,
   meanFromTrue,
   orbitFromMeanAnomaly,
-} from "@/components/learn/studies/orbit-math";
+} from "@vedic-patro/features/_learn-math/orbit-math";
 
 import { illustration } from "@vedic-patro/design-tokens";
 const TILT = EARTH_AXIAL_TILT;

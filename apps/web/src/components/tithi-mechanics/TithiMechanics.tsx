@@ -4,7 +4,7 @@ import { Pause, Play } from "lucide-react";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga/panchanga-format";
 import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@vedic-patro/domain/panchanga/tithi-wheel-data";
 import { ElongationDiagram, EARTH_ARC_SYNODIC, earthOrbitDegFromLunarDay } from "./ElongationDiagram";
-import { SYNODIC_MONTH } from "@/components/learn/sun-earth-moon-math";
+import { SYNODIC_MONTH } from "@vedic-patro/features/_learn-math/sun-earth-moon-math";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { edScrub } from "@/lib/diagram-classes";
 import { AdhikMassDiagram, SunriseTimeline } from "./tithi-mechanics-diagrams";
