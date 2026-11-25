@@ -53,21 +53,24 @@ function abhijit(sunrise: number, sunset: number, zone: string, vaara: number): 
 
 // ---------------------------------------------------------------- windows
 
-function fromSunriseLocal(end: number, sunrise: number, zone: string): string {
+function fromSunriseLocal(end: number, zone: string): string {
   return wallIn(end, zone).hms;
 }
 
 class DayWindows {
-  constructor(private d: Period) {}
+  private readonly d: Period;
+  constructor(d: Period) {
+    this.d = d;
+  }
 
   segment(start: number, end: number, runsOn: boolean): Json {
-    const { zone, sunrise, nextSunrise } = this.d;
+    const { zone, nextSunrise } = this.d;
     const local = wallIn(start, zone);
     const endsInside = end < nextSunrise;
     const seg: Json = { start_time: utcIso(start), end_time: utcIso(end), start_local_time: local.iso, start_local_time_short: local.hm };
     if (runsOn || end >= nextSunrise) seg.until_full_night = true;
     if (endsInside) {
-      seg.end_local_time = fromSunriseLocal(end, sunrise, zone);
+      seg.end_local_time = fromSunriseLocal(end, zone);
       seg.end_local_time_short = wallIn(end, zone).hm;
     }
     const day = (t: number) => Math.floor(t + 0.5);
