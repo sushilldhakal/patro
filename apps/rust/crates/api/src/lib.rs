@@ -3,6 +3,7 @@
 mod body;
 pub mod handlers;
 pub mod middleware;
+pub mod news;
 mod respond;
 pub mod routes;
 pub mod state;

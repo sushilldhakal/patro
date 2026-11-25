@@ -24,6 +24,7 @@ patro.workspace = true
 serde_json.workspace = true
 redis.workspace = true
 regex.workspace = true
+roxmltree.workspace = true
 reqwest.workspace = true
 sha2.workspace = true
 timescale.workspace = true

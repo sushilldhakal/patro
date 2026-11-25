@@ -43,6 +43,7 @@ jyotish = { path = "crates/jyotish" }
 vastu = { path = "crates/vastu" }
 flate2 = "1"
 regex = "1"
+roxmltree = "0.21"
 rusqlite = { version = "0.41", features = ["bundled"] }
 accounts = { path = "crates/accounts" }
 ephemeris = { path = "crates/ephemeris" }

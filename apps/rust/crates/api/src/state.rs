@@ -17,6 +17,8 @@ pub struct AppState {
     pub documents: DocumentsService,
     /// Shared weather client and forecast cache.
     pub weather: crate::weather::WeatherService,
+    /// Publisher headlines, read from RSS and kept in memory.
+    pub news: crate::news::NewsService,
     /// A fixed "now" for tests; the system clock when `None`.
     pub fixed_now: Option<timescale::UtcInstant>,
     /// The account layer (Postgres), when `PATRO_RS_DATABASE_URL` is set.
@@ -122,6 +124,7 @@ impl AppState {
             cities,
             documents,
             weather: crate::weather::WeatherService::from_env(),
+            news: crate::news::NewsService::new(),
             fixed_now: None,
             accounts: None,
             vastu: Arc::new(OnceLock::new()),

@@ -19,7 +19,7 @@ pub fn router(state: AppState) -> Router {
         .merge(graha())
         .merge(kundali())
         .merge(vastu());
-    routes = routes.merge(weather());
+    routes = routes.merge(weather()).merge(news());
     if state.accounts.is_some() {
         routes = routes.merge(accounts());
     }
@@ -30,6 +30,13 @@ pub fn router(state: AppState) -> Router {
 /// Shared cached forecasts for nearby locations.
 fn weather() -> Router<AppState> {
     Router::new().route("/v1/weather/forecast", get(handlers::weather::forecast))
+}
+
+/// Publisher headlines from RSS, grouped into stories.
+fn news() -> Router<AppState> {
+    Router::new()
+        .route("/v1/news/feed", get(handlers::news::feed))
+        .route("/v1/news/stories/{id}", get(handlers::news::story))
 }
 
 /// The account layer (`app/routers/*`), mounted only with a database.

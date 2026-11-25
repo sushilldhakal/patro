@@ -28,6 +28,7 @@ pub struct WeatherService {
 struct Inner {
     client: reqwest::Client,
     endpoint: String,
+    air_endpoint: String,
     cache: RwLock<HashMap<String, ForecastEntry>>,
     locks: Mutex<HashMap<String, Arc<Mutex<()>>>>,
 }
@@ -39,6 +40,8 @@ impl WeatherService {
     pub fn from_env() -> Self {
         let endpoint = std::env::var("PATRO_RS_OPEN_METEO_URL")
             .unwrap_or_else(|_| "https://api.open-meteo.com/v1/forecast".into());
+        let air_endpoint = std::env::var("PATRO_RS_OPEN_METEO_AIR_URL")
+            .unwrap_or_else(|_| "https://air-quality-api.open-meteo.com/v1/air-quality".into());
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(20))
             .user_agent("vedic-patro-weather/0.1")
@@ -48,6 +51,7 @@ impl WeatherService {
             inner: Arc::new(Inner {
                 client,
                 endpoint,
+                air_endpoint,
                 cache: RwLock::new(HashMap::new()),
                 locks: Mutex::new(HashMap::new()),
             }),
@@ -118,12 +122,12 @@ impl WeatherService {
                     ("timezone", "auto".to_owned()),
                     (
                         "current",
-                        "temperature_2m,apparent_temperature,relative_humidity_2m,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m"
+                        "temperature_2m,apparent_temperature,relative_humidity_2m,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,visibility"
                             .to_owned(),
                     ),
                     (
                         "hourly",
-                        "temperature_2m,apparent_temperature,relative_humidity_2m,dew_point_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,is_day"
+                        "temperature_2m,apparent_temperature,relative_humidity_2m,dew_point_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,is_day,pressure_msl,visibility"
                             .to_owned(),
                     ),
                     (
@@ -138,7 +142,7 @@ impl WeatherService {
                 .await
         }
         .await;
-        let payload = match payload_result {
+        let mut payload = match payload_result {
             Ok(payload) => payload,
             Err(error) => {
                 drop(guard);
@@ -146,6 +150,16 @@ impl WeatherService {
                 return Err(error);
             }
         };
+
+        // Air quality is extra: the forecast is served without it when that API fails.
+        match self.air_quality(lat, lon).await {
+            Ok(air) => {
+                if let Some(map) = payload.as_object_mut() {
+                    map.insert("air_quality".to_owned(), air);
+                }
+            }
+            Err(error) => tracing::warn!(%error, key, "air quality request failed"),
+        }
 
         let fetched_unix = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -170,6 +184,26 @@ impl WeatherService {
         drop(guard);
         self.remove_idle_lock(key, &key_lock).await;
         Ok(entry)
+    }
+
+    /// Open-Meteo's air quality now (US AQI, PM2.5, PM10) and the US AQI by hour for 2 days.
+    async fn air_quality(&self, lat: f64, lon: f64) -> Result<Value, reqwest::Error> {
+        self.inner
+            .client
+            .get(&self.inner.air_endpoint)
+            .query(&[
+                ("latitude", lat.to_string()),
+                ("longitude", lon.to_string()),
+                ("timezone", "auto".to_owned()),
+                ("forecast_days", "2".to_owned()),
+                ("current", "us_aqi,pm2_5,pm10".to_owned()),
+                ("hourly", "us_aqi".to_owned()),
+            ])
+            .send()
+            .await?
+            .error_for_status()?
+            .json::<Value>()
+            .await
     }
 
     async fn remove_idle_lock(&self, key: &str, key_lock: &Arc<Mutex<()>>) {

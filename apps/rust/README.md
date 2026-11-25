@@ -24,6 +24,17 @@ cargo bench -p calendar        # engine layer speed
 cargo bench -p panchanga       # daily panchanga speed
 ```
 
+## News (RSS headlines)
+
+`GET /v1/news/feed?lang=ne|en&category=…&cursor=…&limit=30` and `GET /v1/news/stories/{id}`.
+`crates/api/src/news.rs` reads 18 publisher RSS feeds (list in `FEEDS`; each allows
+general crawlers in `robots.txt`) on the first request and again in the background
+once the copy is 10 minutes old. Items live in memory for three days; a restart
+re-reads the feeds. Headlines from different outlets that share most of their words
+within 36 hours become one story with several sources. No AI, no database, and no
+publisher images: the response holds the headline, the outlet's own feed summary and
+a link to each outlet's article. Responses are `public, max-age=120`.
+
 ## Weather service (development)
 
 `GET /v1/weather/forecast?lat=27.7172&lon=85.324` resolves coordinates to the nearest
