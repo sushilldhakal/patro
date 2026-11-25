@@ -21,7 +21,22 @@ test("the sait listings made on the device match the server's", async () => {
   for (const c of cases) {
     if (c.status !== 200) continue;
     const m = /^\/v1\/nepal\/sait\/(\d+)\/(month\/(\d+)|[a-z-]+)\?(.*)$/.exec(c.path);
-    if (!m || m[2].endsWith("detail") || /personalize|about/.test(c.path)) continue;
+    const dm = /^\/v1\/nepal\/sait\/(\d+)\/([a-z-]+)\/(detail|personalize)\?(.*)$/.exec(c.path);
+    if (dm) {
+      const q = new URLSearchParams(dm[4]);
+      const city = q.get("city_id");
+      if (city && !PLACES.has(city)) continue;
+      const place = city ? { city_id: Number(city) } : undefined;
+      const num = (k: string) => (q.get(k) ? Number(q.get(k)) : undefined);
+      const personalize = dm[3] === "personalize" ? { janmaNakshatra: num("janma_nakshatra"), janmaRashi: num("janma_rashi"), gender: q.get("gender") ?? undefined, moment: q.get("birth_era") ? { era: q.get("birth_era") as string, year: Number(q.get("birth_year")), month: Number(q.get("birth_month")), day: Number(q.get("birth_day")), clock: q.get("birth_clock") ?? undefined, tz: q.get("birth_tz") ?? "Asia/Kathmandu" } : undefined } : undefined;
+      const got = await local.sait({ year: Number(dm[1]), category: dm[2], detail: dm[3] === "detail" ? { exclude: q.get("exclude")?.split(","), nakshatraMode: q.get("nakshatra_mode") ?? undefined } : undefined, personalize, era: q.get("era") ?? undefined, language: q.get("language") ?? undefined }, place);
+      if (!got) { failures.push(`${c.path}: no answer`); continue; }
+      checked += 1;
+      const err = diff("", got, JSON.parse(c.body));
+      if (err) failures.push(`${c.path}: ${err}`);
+      continue;
+    }
+    if (!m || /about/.test(c.path)) continue;
     const q = new URLSearchParams(m[4]);
     const city = q.get("city_id");
     if (city && !PLACES.has(city)) continue;
@@ -32,6 +47,6 @@ test("the sait listings made on the device match the server's", async () => {
     if (err) failures.push(`${c.path}: ${err}`);
   }
   console.log("checked", checked);
-  assert.ok(checked >= 8, `checked ${checked}`);
+  assert.ok(checked >= 20, `checked ${checked}`);
   assert.equal(failures.length, 0, `${failures.length} differ:\n${failures.slice(0, 8).join("\n")}`);
 });

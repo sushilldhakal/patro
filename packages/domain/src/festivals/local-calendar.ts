@@ -105,7 +105,20 @@ export interface LocalCalendar {
   /** The birth Moon's nakshatra and rashi (`/panchanga/rashifal/janma`), or null for the server. */
   janma(q: LocalJanmaQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The sait listings (`/nepal/sait/{year}/{category}` and `/month/{m}`), or null for the server. */
-  sait(q: { year: number; category?: string; month?: number; era?: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  sait(
+    q: {
+      year: number;
+      category?: string;
+      month?: number;
+      /** The detail route: each day's window; the rules switched off and the bratabandha nakshatra mode. */
+      detail?: { exclude?: string[]; nakshatraMode?: string };
+      /** The personalize route: the days read against one birth chart. */
+      personalize?: import("./sait-routes").SaitBirth;
+      era?: string;
+      language?: string;
+    },
+    location?: LocalPlaceQuery,
+  ): Promise<Record<string, unknown> | null>;
   /** The gochar routes (transit table, ingress timelines, year summary, graha asta/vakri, graha sthiti), or null for the server. */
   gochar(q: LocalGocharQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The lite grid alone (what `month` builds on). */
@@ -504,7 +517,16 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const ctx = await surya(location);
         if (!ctx) return null;
         const r = await import("./sait-routes");
-        const payload = q.month !== undefined ? r.saitMonthAll(ctx.sky, q.year, q.month, ctx.place) : q.category ? r.saitMonthEntries(ctx.sky, q.year, q.category, ctx.place) : null;
+        const payload =
+          q.month !== undefined
+            ? r.saitMonthAll(ctx.sky, q.year, q.month, ctx.place)
+            : !q.category
+              ? null
+              : q.personalize
+                ? r.saitPersonalize(ctx.sky, q.year, q.category, ctx.place, q.personalize)
+                : q.detail
+                  ? r.saitDetail(ctx.sky, q.year, q.category, ctx.place, q.detail)
+                  : r.saitMonthEntries(ctx.sky, q.year, q.category, ctx.place);
         if (!payload) return null;
         const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
         return q.era ? renderForEra(payload, q.era, q.language ?? eraLanguage(q.era)) : payload;

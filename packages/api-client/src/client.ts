@@ -352,7 +352,12 @@ export const fetchSaitPersonalize = (
   const params = appendBirthInstantParams(new URLSearchParams({ birth_tz: birthTz }), birth);
   if (gender) params.set("gender", gender);
   path = `${path}${path.includes("?") ? "&" : "?"}${params.toString()}`;
-  return get<SaitPersonalizeResponse>(path);
+  return fromLocal<SaitPersonalizeResponse>((l) =>
+    l.sait(
+      { year, category, personalize: { moment: { era: birth.inputEra, year: birth.year, month: birth.month, day: birth.day, clock: birth.clock, tz: birthTz }, gender: gender ?? undefined } },
+      location,
+    ),
+  ).then((local) => local ?? get<SaitPersonalizeResponse>(path));
 };
 
 export const fetchElementDay = (name: string, dateAd: string, location?: LocationParams) =>
@@ -590,7 +595,9 @@ export const fetchSaitDetail = (
   if (nakshatraMode && nakshatraMode !== "classical") params.set("nakshatra_mode", nakshatraMode);
   const qs = params.toString();
   if (qs) path = `${path}${path.includes("?") ? "&" : "?"}${qs}`;
-  return get<SaitDetailResponse>(withSaitCacheVersion(path));
+  return fromLocal<SaitDetailResponse>((l) =>
+    l.sait({ year, category, detail: { exclude: exclude ? exclude.split(",") : undefined, nakshatraMode: nakshatraMode ?? undefined } }, location),
+  ).then((local) => local ?? get<SaitDetailResponse>(withSaitCacheVersion(path)));
 };
 
 export const fetchSaitMonthAll = async (

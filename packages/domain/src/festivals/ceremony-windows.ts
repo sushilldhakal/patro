@@ -33,7 +33,7 @@ function lon(sky: Sky, body: keyof typeof BODY, jd: number): number {
   return pyMod(p.longitude[BODY[body]], 360);
 }
 
-interface DayPanchanga {
+export interface DayPanchanga {
   tithiAbsolute: number;
   tithiDisplay: number;
   paksha: string;
@@ -54,7 +54,7 @@ const sep = (a: number, b: number) => {
   return Math.min(d, 360 - d);
 };
 
-function dayPanchanga(sky: Sky, jdn: number, place: Place, sunrise: number): DayPanchanga {
+export function dayPanchanga(sky: Sky, jdn: number, place: Place, sunrise: number): DayPanchanga {
   const t = tithiInfo(sky, sunrise);
   const sun = stable(lon(sky, "sun", sunrise));
   const jupiter = stable(lon(sky, "jupiter", sunrise));
@@ -273,7 +273,11 @@ function edgeRefine(c: Ctx, good0: number, bad0: number): [number, number] {
 }
 
 /** `muhurta_windows_for_rule` for one ceremony on the civil day `jdn`. */
-export function windowsFor(sky: Sky, rule: Rule, jdn: number, place: Place): Interval[] {
+/** A muhurta window: start, end (Julian Days UT) and the lagna (1 to 12) it opens in. */
+export type Window = [number, number, number];
+
+/** `muhurta_windows_for_rule`: `refine` pulls the edges to the second (the day route), else they stay on the half-hour scan (the sait detail). */
+export function windowsFor(sky: Sky, rule: Rule, jdn: number, place: Place, refine = true): Window[] {
   const times = dayTimes(sky, jdn, place);
   if (!times) return [];
   const { sunrise, sunset, nextSunrise } = times;
@@ -293,20 +297,25 @@ export function windowsFor(sky: Sky, rule: Rule, jdn: number, place: Place): Int
       if (majorDoshaAt(sky, rule, at, gate.vaara, pierced, sunset <= at && at < sunset + (nextSunrise - sunset) / 30, inIntervals(at, dur), inIntervals(at, sankranti), true)) return [];
     }
   }
-  const windows: Interval[] = [];
+  const windows: Window[] = [];
   let runStart: number | null = null;
+  let runLagna = 0;
   let lastGood: number | null = null;
   const close = () => {
     if (runStart === null || lastGood === null) return;
     let start = runStart;
     let stop = Math.min(lastGood + STEP, end);
-    if (start > sunrise) start = edgeRefine(c, start, start - STEP)[0];
-    if (stop < end) stop = edgeRefine(c, lastGood, stop)[1];
-    if (stop - start >= MIN_WINDOW) windows.push([start, stop]);
+    if (refine && start > sunrise) start = edgeRefine(c, start, start - STEP)[0];
+    if (refine && stop < end) stop = edgeRefine(c, lastGood, stop)[1];
+    if (stop - start >= MIN_WINDOW) windows.push([start, stop, runLagna]);
   };
   for (let at = sunrise; at <= end; at += STEP) {
-    if (windowOk(c, at)[0]) {
-      if (runStart === null) runStart = at;
+    const [ok, lagna] = windowOk(c, at);
+    if (ok) {
+      if (runStart === null) {
+        runStart = at;
+        runLagna = lagna;
+      }
       lastGood = at;
     } else if (runStart !== null) {
       close();
@@ -321,7 +330,7 @@ export function windowsFor(sky: Sky, rule: Rule, jdn: number, place: Place): Int
 /** The ceremonies a day route times (`CEREMONY_SAITS`): their muhurta windows on a civil day. */
 export function ceremonyWindows(sky: Sky, jdn: number, place: Place): CeremonyWindows[] {
   return (["vivah", "bratabandha", "griha-pravesh"] as const).map((category) => {
-    let windows: Interval[] = [];
+    let windows: Window[] = [];
     try {
       windows = windowsFor(sky, CEREMONY_RULES[category] as unknown as Rule, jdn, place);
     } catch {
