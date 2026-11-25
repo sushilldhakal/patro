@@ -27,6 +27,9 @@ export function PatroCalendarHeader({
   segmentsLabel,
   prevDisabled,
   nextDisabled,
+  crossEraSubtitle,
+  bare,
+  monthOnly,
   className,
 }: PatroCalendarHeaderProps) {
   const { width: windowWidth } = useWindowDimensions();
@@ -46,8 +49,40 @@ export function PatroCalendarHeader({
      `h-*` / `size-*` and collapsed to its text (the arrows, month button and पञ्चाङ्ग swap
      drew at half height). The location chip, already wrapped, was unaffected. */
   const control = topBarControlSize(windowWidth);
+  /** Home passes the AD range ("Nov/Dec 2026"): a second, smaller line under the month.
+      Only home passes it, so every other use keeps the single-line button — and the
+      two lines use compact text so the row stays the same height. */
+  const twoLine = crossEraSubtitle != null && crossEraSubtitle !== "";
+  /** Home's second row shows the month alone — the year already sits in the first
+      row. Every other use keeps month + year. */
+  const titleText = monthOnly ? header.title.month : `${header.title.month} ${header.title.year}`;
 
-  const stepper = (
+  const stepper = bare ? (
+    <View className="min-w-0 flex-1 flex-row items-center gap-1">
+      <Pressable label={labels.prevMonth} onPress={() => { haptics.tick(); header.stepMonth(-1); }} disabled={prevDisabled} className="h-10 w-8 items-center justify-center active:opacity-60">
+        <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
+      </Pressable>
+      <Pressable
+        label={labels.picker}
+        onPress={() => header.togglePanel("month")}
+        className="min-w-0 flex-1 justify-center py-1 active:opacity-60"
+      >
+        <View className="min-w-0 flex-1">
+          <Text numberOfLines={1} className="text-sm font-semibold text-foreground">
+            {titleText}
+          </Text>
+          {twoLine ? (
+            <Text numberOfLines={1} className="text-[11px] font-medium leading-[13px] text-muted-foreground">
+              {crossEraSubtitle}
+            </Text>
+          ) : null}
+        </View>
+      </Pressable>
+      <Pressable label={labels.nextMonth} onPress={() => { haptics.tick(); header.stepMonth(1); }} disabled={nextDisabled} className="h-10 w-8 items-center justify-center active:opacity-60">
+        <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
+      </Pressable>
+    </View>
+  ) : (
     <View className="flex-row items-center gap-2">
       <View style={{ width: control, height: control }}>
         <Pressable label={labels.prevMonth} onPress={() => { haptics.tick(); header.stepMonth(-1); }} disabled={prevDisabled} className={cn(cls.iconButton, "h-full w-full")}>
@@ -60,10 +95,17 @@ export function PatroCalendarHeader({
           onPress={() => header.togglePanel("month")}
           className={cn(cls.selectButton, "h-full", monthOpen ? cls.selectButtonOpen : cls.selectButtonIdle)}
         >
-          <Text numberOfLines={1} className={cn(cls.selectLabel, dense && cls.nativeDenseText)}>
-            {header.title.month} {header.title.year}
-          </Text>
-          {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}
+          <View className="min-w-0 flex-1">
+            <Text numberOfLines={1} className={cn(twoLine ? "text-sm font-semibold text-foreground" : cls.selectLabel, dense && cls.nativeDenseText)}>
+              {titleText}
+            </Text>
+            {twoLine ? (
+              <Text numberOfLines={1} className="text-[11px] font-medium leading-[13px] text-muted-foreground">
+                {crossEraSubtitle}
+              </Text>
+            ) : null}
+          </View>
+        {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}
         </Pressable>
       </View>
       <View style={{ width: control, height: control }}>

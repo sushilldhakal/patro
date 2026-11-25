@@ -81,6 +81,9 @@ export type PatroHeaderLocationProps = {
   onOpenChange?: (open: boolean) => void;
   /** Only the sheet: the app opens it from its toolbar's location button (native only). */
   buttonless?: boolean;
+  /** Show the place's detail line under its name, the way the picker sheet shows
+      a city (name over region, country). Home uses it; other headers stay one line. */
+  showSub?: boolean;
 };
 
 export type PatroCalendarHeaderProps = {
@@ -99,6 +102,12 @@ export type PatroCalendarHeaderProps = {
   crossEraSubtitle?: string | null;
   displayLanguage?: Language;
   className?: string;
+  /** Home's header row: plain chevrons and a plain month button, no boxes — the
+      way the reference draws it. Every other use keeps the boxed stepper. */
+  bare?: boolean;
+  /** Home's second row: the year already sits in the first row, so the month
+      button shows the month alone. Every other use keeps month + year. */
+  monthOnly?: boolean;
 };
 
 export type PatroMonthYearNavProps = Omit<PatroCalendarHeaderProps, "onChange"> & {
@@ -409,6 +418,8 @@ export type PanchangaVivaranPanelProps = {
 
 export type CalendarSystemToggleProps = {
   className?: string;
+  /** Home's header row: taller with bigger labels. Other uses keep the small toggle. */
+  large?: boolean;
 };
 
 export type CalculationSystemToggleProps = {

@@ -11,7 +11,9 @@ import { KARANA_NAMES } from "../panchanga/engine/tables.generated";
 import { CEREMONY_RULES } from "./ceremony-rules.generated";
 import type { CeremonyWindows } from "./festival-saits";
 
-type Rule = (typeof CEREMONY_RULES)["vivah"];
+type Rules = typeof CEREMONY_RULES;
+/** A ceremony rule: the generated lists as plain arrays. */
+type Rule = { [K in keyof Rules["vivah"]]: Rules["vivah"][K] extends readonly (infer T)[] ? readonly (T extends number ? number : string)[] : Rules["vivah"][K] extends boolean ? boolean : Rules["vivah"][K] extends number ? number : string };
 const STEP = (30 * 60) / 86400;
 const MIN_WINDOW = (5 * 60) / 86400;
 const REFINE_TOLERANCE = 1 / 86400;
@@ -321,7 +323,7 @@ export function ceremonyWindows(sky: Sky, jdn: number, place: Place): CeremonyWi
   return (["vivah", "bratabandha", "griha-pravesh"] as const).map((category) => {
     let windows: Interval[] = [];
     try {
-      windows = windowsFor(sky, CEREMONY_RULES[category], jdn, place);
+      windows = windowsFor(sky, CEREMONY_RULES[category] as unknown as Rule, jdn, place);
     } catch {
       windows = [];
     }

@@ -9,10 +9,10 @@ import type { CalendarSystemToggleProps } from "../contract";
  * separate from the BBS/BC pair toggle inside the month picker. Options never
  * swap places: BS first, AD second. Same control as the website.
  */
-export function CalendarSystemToggle({ className }: CalendarSystemToggleProps) {
+export function CalendarSystemToggle({ className, large }: CalendarSystemToggleProps) {
   const { ariaLabel, options, select } = useCalendarSystemToggle();
   return (
-    <Box label={ariaLabel} className={cn("h-7 shrink-0 flex-row overflow-hidden rounded-md border border-border bg-card", className)}>
+    <Box label={ariaLabel} className={cn("h-7 shrink-0 flex-row overflow-hidden rounded-md border border-border bg-card", large && "h-10 rounded-xl", className)}>
       {options.map((option) => (
         <Pressable
           key={option.calendar}
@@ -24,11 +24,11 @@ export function CalendarSystemToggle({ className }: CalendarSystemToggleProps) {
             haptics.tick();
             select(option.calendar);
           }}
-          className={cn("items-center justify-center px-2.5 active:opacity-80", option.active ? "bg-secondary" : "bg-card")}
+          className={cn("items-center justify-center px-2.5 active:opacity-80", large && "px-3.5", option.active ? "bg-secondary" : "bg-card")}
         >
           <Text
             numberOfLines={1}
-            className={cn("text-diagram-xs font-semibold", option.active ? "text-secondary-foreground" : "text-muted-foreground")}
+            className={cn(large ? "text-sm font-semibold" : "text-diagram-xs font-semibold", option.active ? "text-secondary-foreground" : "text-muted-foreground")}
           >
             {option.label}
           </Text>

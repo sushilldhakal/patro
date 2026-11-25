@@ -33,12 +33,15 @@ const SCRIM_OPACITY = 0.45;
  * sheet can be dragged down by its handle or title to dismiss. The back button and a tap on the
  * backdrop close it too. With Reduce Motion it only fades.
  */
-export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, placement, children, className, nativeClassName, testID }: SheetProps) {
+export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, fullHeight, placement, children, className, nativeClassName, testID }: SheetProps) {
   /* Tablet (iPad, Android tablet): a narrow card in the middle, not a full-width sheet. */
   const tablet = useWindowDimensions().width >= breakpoints.md;
   const top = placement === "top" && !tablet;
   const center = placement === "center" || tablet;
   const reduced = useReducedMotionPref();
+  /* Full height: the panel fills the screen (a full-screen picker) instead of sizing to its
+     short content. Phone bottom sheets only — a tablet keeps its centred card. */
+  const full = fullHeight && !tablet && !center && !top;
 
   /* Stays mounted after `open` turns false, until the exit animation has finished. */
   const [mounted, setMounted] = useState(open);
@@ -109,15 +112,15 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
           </Pressable>
           {/* Tablet width on a plain view: beside an animated style in one style array, a plain
               width is dropped and the panel went full width. */}
-          <View style={tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center", maxHeight: "85%" } : { width: "100%" }}>
+          <View style={tablet ? { width: "100%", maxWidth: TABLET_PANEL_WIDTH, alignSelf: "center", maxHeight: "85%" } : full ? { width: "100%", flex: 1, paddingTop: TOP_SHEET_INSET } : { width: "100%" }}>
             <Animated.View
               accessibilityViewIsModal
               onLayout={onPanelLayout}
-              style={[{ maxHeight: `${maxHeightPercent ?? 85}%` }, panelStyle]}
+              style={[{ maxHeight: full ? "100%" : `${maxHeightPercent ?? 85}%`, flex: full ? 1 : undefined }, panelStyle]}
             >
               <View
                 className={cn(top ? sheetClass.panelTop : center ? sheetClass.panelCenter : cn("pb-10", sheetClass.panel), className, nativeClassName)}
-                style={[{ flexShrink: 1 }, top ? { paddingTop: TOP_SHEET_INSET } : null]}
+                style={[full ? { flex: 1 } : { flexShrink: 1 }, top ? { paddingTop: TOP_SHEET_INSET } : null]}
               >
                 {/* The handle and title are the drag area; the list below keeps its own scrolling. */}
                 <GestureDetector gesture={pan}>
@@ -141,7 +144,7 @@ export function Sheet({ open, onClose, title, closeLabel, maxHeightPercent, plac
                     ) : null}
                   </View>
                 </GestureDetector>
-                <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+                <ScrollView style={full ? { flex: 1 } : undefined} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
                   {children}
                 </ScrollView>
               </View>

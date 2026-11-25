@@ -248,6 +248,9 @@ export type SheetProps = StyleProps & {
   closeLabel?: string;
   /** Tallest the panel may grow, as a percentage of the screen height (default 85). */
   maxHeightPercent?: number;
+  /** The panel fills the screen height (a full-screen picker) instead of sizing to its content.
+      Phone bottom sheets only; a tablet stays a centred card. */
+  fullHeight?: boolean;
   /** Edge the panel starts from (default "bottom"). */
   placement?: "bottom" | "top" | "center";
   children?: ReactNode;

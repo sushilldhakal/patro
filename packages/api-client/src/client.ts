@@ -1159,12 +1159,16 @@ function sharedDetailKeys(day: unknown): string[] | null {
 }
 
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
-  get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&slim=true`),
-      location,
-    ),
-  ).then(relinkDayDetail);
+  fromLocal<PanchangaDay>((l) => l.day({ date, era, detail: true, slim: true, festivals: true }, location)).then((local) =>
+    local
+      ? relinkDayDetail(local)
+      : get<PanchangaDay>(
+          appendLocation(
+            withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&slim=true`),
+            location,
+          ),
+        ).then(relinkDayDetail),
+  );
 
 /**
  * The same day with its moving angas (tithi, nakshatra, yoga, karana, rashi,

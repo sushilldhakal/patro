@@ -221,6 +221,20 @@ export function useLocationSelector({
     label,
     /** City only, for compact triggers. */
     labelMain: label.split(",")[0]?.trim() ?? label,
+    /** Everything after the city — the detail line the picker sheet shows under a
+        city's name. A trailing ISO code is expanded to the country name ("NP" →
+        "Nepal"); empty when the stored label has no detail part. */
+    labelSub: (() => {
+      const rest = label
+        .split(",")
+        .slice(1)
+        .map((part) => part.trim())
+        .filter(Boolean);
+      if (rest.length === 0) return "";
+      const last = rest[rest.length - 1]!;
+      if (/^[A-Za-z]{2}$/.test(last)) rest[rest.length - 1] = countryName(last, lang);
+      return rest.join(", ");
+    })(),
     copy: {
       ...search.copy,
       choose: t("location.choose_location"),

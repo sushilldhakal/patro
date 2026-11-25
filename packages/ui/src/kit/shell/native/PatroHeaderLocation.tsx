@@ -11,7 +11,7 @@ import type { PatroHeaderLocationProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
 /** The location button and its search sheet. The app opens the picker as a sheet (the website drops a panel under the button). */
-export function PatroHeaderLocation({ location, onLocationChange, locate, className, open: openProp, onOpenChange, buttonless }: PatroHeaderLocationProps) {
+export function PatroHeaderLocation({ location, onLocationChange, locate, className, open: openProp, onOpenChange, buttonless, showSub }: PatroHeaderLocationProps) {
   const { width } = useWindowDimensions();
   const { colorScheme } = useColorScheme();
   const roles = mobileRoles(colorScheme === "dark" ? "dark" : "light");
@@ -23,6 +23,9 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
     onOpenChange?.(next);
   };
   const picker = useLocationSelector({ location, onLocationChange, locate });
+  // The detail line under the name, like a city row in the picker sheet. Falls
+  // back to one line when the stored label carries no detail part.
+  const showSubLine = showSub && picker.labelSub !== "";
 
   useEffect(() => {
     picker.setOpen(open);
@@ -36,19 +39,30 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
       <Pressable
         label={picker.copy.change}
         onPress={() => setOpen(!open)}
-        className={cn(cls.locationButton, open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
+        className={cn(cls.locationButton, open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl, showSubLine && "h-11")}
       >
         <Box className={cls.locationPin}>
           <Icon node={shellIcons.mapPin} size="sm" tone="secondary" />
         </Box>
-        <Text numberOfLines={1} className={cn(cls.locationName, dense ? "max-w-24" : "max-w-32")}>
-          {picker.labelMain}
-        </Text>
+        {showSubLine ? (
+          <View className="min-w-0 shrink">
+            <Text numberOfLines={1} className={cls.locationName}>
+              {picker.labelMain}
+            </Text>
+            <Text numberOfLines={1} className={cls.locationRowSub}>
+              {picker.labelSub}
+            </Text>
+          </View>
+        ) : (
+          <Text numberOfLines={1} className={cn(cls.locationName, dense ? "max-w-24" : "max-w-32")}>
+            {picker.labelMain}
+          </Text>
+        )}
         {dense ? null : <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />}
       </Pressable>
       )}
 
-      <Sheet open={open} onClose={() => setOpen(false)} title={picker.copy.choose} closeLabel={picker.copy.cancel}>
+      <Sheet open={open} onClose={() => setOpen(false)} title={picker.copy.choose} closeLabel={picker.copy.cancel} fullHeight>
         <View className={cls.searchBox}>
           <Icon node={shellIcons.search} size="sm" tone="muted" />
           <TextInput

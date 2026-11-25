@@ -40,6 +40,8 @@ export interface LocalCalendar {
     q: { days: number; limit: number; holidaysOnly: boolean },
     location?: LocalPlaceQuery,
   ): Promise<Record<string, unknown> | null>;
+  /** A day's panchanga (`/panchanga/{date}`, Surya Siddhanta, a known city or the default place), or null for the server. */
+  day(q: { date: string; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -205,6 +207,36 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     festivals: (q, location) => run(location, (m, skies, place) => m.festivalListingPayload(skies, place, q)),
     holidays: (q, location) => run(location, (m, skies, place) => m.holidayListingPayload(skies, place, q)),
     upcoming: (q, location) => run(location, (m, skies, place) => m.upcomingFestivalsPayload(skies, place, q)),
+    day: async (q, location) => {
+      if (!options.enabled() || options.system()?.system !== "surya") return null;
+      // A coordinate pair needs the server's city lookup (it names the place); the default and known cities do not.
+      if (location && (location.city_id == null || location.lat != null || location.lon != null)) return null;
+      try {
+        const m = await import("./festival-payloads");
+        const place = placeOf(location, m.KATHMANDU_PLACE);
+        if (!place) return null;
+        const { jdnFromIso, bsToJdn, civilFromJdn } = await import("../astronomy/lunar-month");
+        let jdn: number | null;
+        if (q.era === "ad") jdn = jdnFromIso(q.date);
+        else {
+          const [y, mo, d] = q.date.split("-").map(Number);
+          jdn = bsToJdn(y, mo, d);
+        }
+        if (jdn === null || jdn === undefined) return null;
+        const day = civilFromJdn(jdn);
+        const surya = await options.loadSky("surya");
+        const snap = (v: number) => (location ? Math.round(v * 100) / 100 : v);
+        const { dayResponse } = await import("../panchanga/engine/day-response");
+        return dayResponse(
+          surya,
+          { year: day.year, month: day.month, day: day.day, latitude: snap(place.latitude), longitude: snap(place.longitude), timeZone: place.timeZone, name: place.cityName ?? "Kathmandu", ...(place.cityId !== undefined ? { cityId: place.cityId } : {}) },
+          { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya } : undefined },
+        );
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
     eclipse: async (q, location) => {
       // The text's eclipses are the only ones there are: Drik answers 501 on the server, so it goes there.
       if (!options.enabled() || options.system()?.system !== "surya") return null;
