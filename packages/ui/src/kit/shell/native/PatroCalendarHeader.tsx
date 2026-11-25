@@ -72,7 +72,7 @@ export function PatroCalendarHeader({
             {titleText}
           </Text>
           {twoLine ? (
-            <Text numberOfLines={1} className="text-[11px] font-medium leading-[13px] text-muted-foreground">
+            <Text numberOfLines={1} className="text-xs font-medium leading-tight text-muted-foreground">
               {crossEraSubtitle}
             </Text>
           ) : null}
@@ -100,7 +100,7 @@ export function PatroCalendarHeader({
               {titleText}
             </Text>
             {twoLine ? (
-              <Text numberOfLines={1} className="text-[11px] font-medium leading-[13px] text-muted-foreground">
+              <Text numberOfLines={1} className="text-xs font-medium leading-tight text-muted-foreground">
                 {crossEraSubtitle}
               </Text>
             ) : null}
