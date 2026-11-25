@@ -910,6 +910,14 @@ export async function streamKundaliReport(
   if (options?.lang) params.set("lang", options.lang);
   if (options?.force) params.set("force", "true");
   const path = appendLocation(`/kundali/report?${params.toString()}`, location);
+  // `force` asks the server to rebuild its cached copy; the device always builds it fresh.
+  const local = await fromLocal<{ records: ReportRecord[] }>((l) =>
+    l.kundali({ route: "report", moment: kundaliMoment(moment), ayanamsha: options?.ayanamsha, language: options?.lang }, location),
+  );
+  if (local && !signal?.aborted) {
+    for (const record of local.records) onRecord(record);
+    return { fromCache: false };
+  }
 
   const res = await fetchWithTimeout(`${current().dataBaseUrl}${path}`, path, {
     signal,

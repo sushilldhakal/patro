@@ -24,7 +24,8 @@ import {
 import { drishti, naturalRel, shadbala, temporalRel } from "./shadbala-engine";
 import { grahaShanti } from "./shanti-engine";
 import { VARGA_DIVISIONS, vargaRashi } from "./vargas";
-import { dashaTrees, usFromJd, VIMSHOTTARI } from "./vimshottari-engine";
+import { dashaTrees, usFromJd, VIMSHOTTARI, vimshottariTimeline } from "./vimshottari-engine";
+import { iterReport } from "./report-engine";
 import { fullYogaCatalog, yogasApi } from "./yogas-engine";
 
 type Json = Record<string, unknown>;
@@ -412,4 +413,43 @@ export function kundaliDetail(
     birth_instant: local.iso,
     ...(q.era ? { era: q.era, language: q.language ?? eraLanguage(q.era) } : {}),
   };
+}
+
+/**
+ * `/kundali/report`'s records: the header, the meta record, every section, `done` (the server streams
+ * them as NDJSON). The chart is read at `nowJd`, over one Vimshottari cycle.
+ */
+export function kundaliReport(sky: Sky, jd: number, place: Omit<DayInput, "year" | "month" | "day">, nowJd: number, lang = "ne"): Json[] | null {
+  const zone = place.timeZone;
+  const local = wallIn(jd, zone);
+  const civil = civilFromJdn(local.jdn);
+  const panchanga = atTimeResponse(sky, { ...place, year: civil.year, month: civil.month, day: civil.day }, { clock: local.hms, surya: sky });
+  if (!panchanga) return null;
+  const detail = panchanga.detail as Json;
+  const table = detail.planets as Record<string, Json>;
+  const raw: RawPlanet[] = ALL.map((g) => ({ longitude: (table[g]?.longitude as number) ?? 0, retrograde: Boolean(table[g]?.is_retrograde ?? table[g]?.retrograde) }));
+  const sb = shadbala(sky, jd, place);
+  if (!sb) return null;
+  let times = dayTimes(sky, local.jdn, place);
+  if (times && jd < times.sunrise) times = dayTimes(sky, local.jdn - 1, place);
+  const rows = (detail.upagrahas as Json[]) ?? [];
+  const upLon = (key: string) => (rows.find((r) => r.key === key)?.longitude as number | undefined) ?? null;
+  const moon = sky.system === "surya" ? suryaLongitude("moon", jd) : raw[1].longitude;
+  const nowUs = usFromJd(nowJd);
+  const chart = buildChart(raw, {
+    lagnaLon: ((detail.instant_lagna as Json)?.longitude as number) ?? 0,
+    shadbala: shadbalaFacts(sb),
+    timeline: vimshottariTimeline(moon, usFromJd(jd), 1),
+    now: nowUs,
+    isDay: times ? times.sunrise <= jd && jd < times.sunset : null,
+    gulikaLon: upLon("gulika"),
+    mandiLon: upLon("mandi"),
+  });
+  const header = {
+    kind: "header",
+    ayanamsha: sky.system === "drik" ? "lahiri" : "surya_siddhanta",
+    location: locationBlock({ ...place, year: 0, month: 0, day: 0 } as DayInput),
+    birth_instant: local.iso,
+  };
+  return [header, ...iterReport(chart, fullYogaCatalog(chart), nowUs, lang)];
 }

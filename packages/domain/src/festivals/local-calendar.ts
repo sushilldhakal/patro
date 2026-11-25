@@ -74,7 +74,7 @@ export interface LocalJanmaQuery {
 
 /** A kundali route (`/kundali/vimshottari`, `/kundali/dasha/expand`, `/shadbala`, `/kundali/detail`): the moment, read at the request's place. */
 export type LocalKundaliQuery =
-  | { route: "vimshottari" | "shadbala" | "detail"; moment: import("../jyotish/kundali/engine").KundaliMoment; cycles?: number; ayanamsha?: string; era?: string; language?: string }
+  | { route: "vimshottari" | "shadbala" | "detail" | "report"; moment: import("../jyotish/kundali/engine").KundaliMoment; cycles?: number; ayanamsha?: string; era?: string; language?: string }
   | { route: "expand"; lord: string; start: string; end: string; system?: string }
   | { route: "milan"; boy: import("../jyotish/kundali/engine").MilanPerson; girl: import("../jyotish/kundali/engine").MilanPerson; lang?: string; ayanamsha?: string };
 
@@ -665,6 +665,11 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const echo = { era: q.era, language: q.language };
         if (q.route === "vimshottari") return k.vimshottari(ctx.sky, jd, ctx.place, q.cycles ?? 1, echo);
         if (q.route === "shadbala") return k.shadbalaRoute(ctx.sky, jd, ctx.place, echo);
+        if (q.route === "report") {
+          const { kundaliReport } = await import("../jyotish/kundali/detail-engine");
+          const records = kundaliReport(ctx.sky, jd, ctx.place, Date.now() / 86_400_000 + 2440587.5, q.language ?? "ne");
+          return records && { records };
+        }
         if (q.route === "detail") {
           const { kundaliDetail } = await import("../jyotish/kundali/detail-engine");
           const m = q.moment;

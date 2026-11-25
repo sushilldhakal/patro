@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { Sky, type SkyIo } from "../src/astronomy/sky";
 import { dashaExpand, milanRoute, momentJd, planetaryPositions, shadbalaRoute, vimshottari, type KundaliPlace } from "../src/jyotish/kundali/engine";
-import { kundaliDetail } from "../src/jyotish/kundali/detail-engine";
+import { kundaliDetail, kundaliReport } from "../src/jyotish/kundali/detail-engine";
 import { diff } from "./golden-diff";
 
 const root = new URL("../../../", import.meta.url);
@@ -161,4 +161,42 @@ test("milan made on the device matches the server's", async () => {
   }
   assert.ok(checked >= 4);
   assert.equal(failures.length, 0, failures.join("\n"));
+});
+
+test("the kundali report made on the device matches the server's", async () => {
+  const sky = new Sky("surya", io);
+  await sky.open();
+  const nowJd = Date.UTC(2026, 10, 15, 6, 30, 0, 123) / 86_400_000 + 2440587.5;
+  const failures: string[] = [];
+  let checked = 0;
+  for (const c of load("kundali_report")) {
+    if (c.status !== 200) continue;
+    const q = new URLSearchParams(c.path.split("?")[1]);
+    const r = requestOf(q);
+    if (!r) continue;
+    const got = kundaliReport(sky, r.jd, r.place, nowJd, q.get("lang") ?? "ne");
+    checked += 1;
+    const want = c.body.trim().split("\n").map((l) => JSON.parse(l) as Record<string, unknown>);
+    if (!got) {
+      failures.push(`${c.path}: null`);
+      continue;
+    }
+    // The dasha window moves hours with the server's 10 s Moon steps: within 12 h, then as usual.
+    const gm = got[1]?.mahadasha as { window: string[] } | undefined;
+    const wm = want[1]?.mahadasha as { window: string[] } | undefined;
+    if (gm && wm) {
+      wm.window.forEach((w, k) => {
+        if (!(Math.abs(Date.parse(gm.window[k]) - Date.parse(w)) <= 12 * 3.6e6)) failures.push(`${c.path}: window ${gm.window[k]} vs ${w}`);
+        gm.window[k] = w;
+      });
+    }
+    for (const [i, w] of want.entries()) {
+      const e = diff(`[${i}]`, got[i], w);
+      if (e) failures.push(`${c.path}: ${e}`);
+    }
+    if (got.length !== want.length) failures.push(`${c.path}: ${got.length} records vs ${want.length}`);
+  }
+  console.log("checked report", checked);
+  assert.ok(checked >= 8);
+  assert.equal(failures.length, 0, failures.slice(0, 15).join("\n"));
 });

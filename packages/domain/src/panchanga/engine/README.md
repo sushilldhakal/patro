@@ -43,8 +43,13 @@ Tests: `test/engine-day.test.ts`, `engine-day-response.test.ts`, `engine-at-time
 - At-time by a typed date, today or a Julian Day, and by a `datetime=` wall clock (the mobile wheel); the web's
   दिन-रात day (`reference=midnight`).
 
+- Birth charts (`jyotish/kundali/`): `/kundali/detail`, `/kundali/report`, `/kundali/vimshottari`, `/kundali/dasha/expand`,
+  `/kundali/milan`, `/shadbala` and `/planetary/positions`, checked against every recorded response in
+  `test/engine-kundali.test.ts`. Dasha dates differ from the server's by up to a few hours (the server's Surya Moon still
+  steps in 10 s); the device fixes choghadiya-at-birth, which the server reads from a missing weekday key (always Sunday).
+
 ## Still on the server
-- Birth charts: `/kundali/*` (detail, report, vimshottari, dasha expand, milan), `/shadbala`.
+- `/kundali/{date}` (no screen calls it) and the static `/kundali/yogas/reference` and `/kundali/reference/bhava` lookups.
 - `/nepal/special-months/{y}` (adhik/kshaya list) and `/seasons/tropical`.
 - The month grid with `clock=`, `/nepal/panchanga/*`, the year route's lite/full shapes: no screen calls them.
 - Days before 1582-10-15.
