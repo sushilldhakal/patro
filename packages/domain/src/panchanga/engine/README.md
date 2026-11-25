@@ -21,19 +21,24 @@ block: translate the Rust builder, add its key to `DAY_BLOCKS`, run that test.
 
 ## Done
 - All 54 blocks of the daily payload (`buildDay`, `isComplete() === true`), checked against the 113 recorded days.
-- The day route's response without festivals (`day-response.ts`: the app's day shape, `detail`/`slim`/`detail_shared`, era
-  labels and `date_parts` from `era-render.ts`), checked against the recorded day responses.
+- The day route's response (`day-response.ts`: `dayState` + `dayResponse`; the app's day shape, `detail`/`slim`/`detail_shared`,
+  festivals with details and `festival_saits`, era labels from `era-render.ts`), checked against every recorded day.
+- `reference=midnight` (`midnight.ts`) and `civil=true` (`civil-timeline.ts`) day variants, checked against the recorded ones.
+- `/panchanga/at-time` (`at-time.ts`: instant tithi/nakshatra/yoga/karana, graha latitude/RA/Dec from the text's shara in
+  `surya-formulas.ts`, instant lagna, upagrahas, `muhurta_now`).
+- `/panchanga/year/{y}/sun` and the year wheel (`year.ts`).
+- `/panchanga/elements` and `element/{name}/day|month|spans` (`element.ts`).
 - Surya eclipses (`astronomy/surya-eclipse.ts`, wired through `LocalCalendar.eclipse`).
+- All of these are reached through `LocalCalendar` (`festivals/local-calendar.ts`) and `fromLocal` in `api-client/src/client.ts`;
+  they answer for the Surya Siddhanta at the default place or a known city, and return null (the server answers) otherwise.
 
-## Why no screen reads it yet
-The apps ask for `festivals=true`. That adds, per day, the festival rows with their details (`festivals/src/details.rs`, the
-`festival_details_v1.json` rules) and `festival_saits` (`festivals/src/sait.rs`, plus the ceremony windows in
-`patro/src/sait.rs`, about 3,000 lines). Until those are ported a local answer would lack them, so the API client keeps asking
-the server for the day route.
+Tests: `test/engine-day.test.ts`, `engine-day-response.test.ts`, `engine-at-time.test.ts`, `engine-year.test.ts`,
+`engine-element.test.ts`, all against `apps/rust/tests/fixtures/http_golden_*.json` through `test/golden-diff.ts`
+(instants within 20 s, clocks within a minute, text by shape).
 
 ## Still to port
-- festival details + `festival_saits` + ceremony saits, then wire `fetchPanchanga` through `LocalCalendar`
-- `reference=midnight` (`patro/src/midnight.rs`) and `civil=true` (`civil_timeline.rs`) variants
-- `/panchanga/at-time`, `/panchanga/year/*`, `/panchanga/element/*`, rashifal (+ personal), `/nepal/patro/*`,
-  `/nepal/panchanga/*`, sait routes, graha year routes (asta, vakri, sthiti, panchak), gochar
+- rashifal (`jyotish/src/rashifal`, about 3,500 lines) and rashifal/personal
+- `/nepal/patro/{y}/{m}`, `/nepal/panchanga/*`, the year route's lite/full shapes, `/panchanga/ad/{y}/{m}` browse grids
+- sait routes (`patro/src/sait.rs`: list, month, detail, personalize), graha year routes (asta, vakri, sthiti, panchak), gochar
+- Drik for any of the above (the text's own Surya numbers only so far; Drik graha latitudes need the sky's ecliptic latitude)
 - Days before 1970 (zone clocks on local mean time to the second) are left to the server.
