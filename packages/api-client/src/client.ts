@@ -298,10 +298,13 @@ export const fetchVimshottari = (
   const params = appendInstantParams(new URLSearchParams(), moment);
   if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
   if (options?.cycles != null) params.set("cycles", String(options.cycles));
-  return get<VimshottariResponse>(
-    appendLocation(`/kundali/vimshottari?${params.toString()}`, location)
-  );
+  return fromLocal<VimshottariResponse>((l) =>
+    l.kundali({ route: "vimshottari", moment: kundaliMoment(moment), cycles: options?.cycles, ayanamsha: options?.ayanamsha, era: moment.inputEra }, location),
+  ).then((local) => local ?? get<VimshottariResponse>(appendLocation(`/kundali/vimshottari?${params.toString()}`, location)));
 };
+
+/** A moment as the device's kundali engine takes it. */
+const kundaliMoment = (m: InstantQuery) => ({ era: m.inputEra, year: m.year, month: m.month, day: m.day, clock: m.clock });
 
 export const fetchSait = (year: number, category: string, location?: LocationParams) =>
   fromLocal<SaitResponse>((l) => l.sait({ year, category }, location)).then(
@@ -400,11 +403,10 @@ export const shadbalaKeys = {
 };
 
 export const fetchShadbala = (moment: InstantQuery, location?: LocationParams) =>
-  get<ShadbalaResponse>(
-    appendLocation(
-      `/shadbala?${appendInstantParams(new URLSearchParams(), moment).toString()}`,
-      location
-    )
+  fromLocal<ShadbalaResponse>((l) => l.kundali({ route: "shadbala", moment: kundaliMoment(moment), era: moment.inputEra }, location)).then(
+    (local) =>
+      local ??
+      get<ShadbalaResponse>(appendLocation(`/shadbala?${appendInstantParams(new URLSearchParams(), moment).toString()}`, location)),
   );
 
 /** The full 300-combination reference catalog (Raman, Parts I-II). CDN-cached. */
@@ -457,8 +459,9 @@ export const fetchDashaChildren = (
   system: DashaSystem = "vimshottari",
 ) => {
   const params = new URLSearchParams({ lord, start, end, system });
-  return get<{ lord: string; system: string; children: DashaTreeNode[] }>(
-    `/kundali/dasha/expand?${params.toString()}`
+  type Expanded = { lord: string; system: string; children: DashaTreeNode[] };
+  return fromLocal<Expanded>((l) => l.kundali({ route: "expand", lord, start, end, system })).then(
+    (local) => local ?? get<Expanded>(`/kundali/dasha/expand?${params.toString()}`),
   );
 };
 

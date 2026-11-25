@@ -72,6 +72,11 @@ export interface LocalJanmaQuery {
   language?: string;
 }
 
+/** A kundali route (`/kundali/vimshottari`, `/kundali/dasha/expand`, `/shadbala`, `/kundali/detail`): the moment, read at the request's place. */
+export type LocalKundaliQuery =
+  | { route: "vimshottari" | "shadbala" | "detail"; moment: import("../jyotish/kundali/engine").KundaliMoment; cycles?: number; ayanamsha?: string; era?: string; language?: string }
+  | { route: "expand"; lord: string; start: string; end: string; system?: string };
+
 /** One of the gochar routes: a day (`date` or `jd`), the BS year summary (`year`), a timeline (`from`/`to`), a graha year (`graha` + `year`) or graha sthiti (`sthiti`). */
 export interface LocalGocharQuery {
   date?: string;
@@ -143,6 +148,8 @@ export interface LocalCalendar {
   patro(q: { year: number; month: number }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** A graha year route (`/nepal/panchak/year/{year}`), or null for the server. */
   grahaYear(q: { kind: "panchak"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** A kundali route made on the device, or null for the server. */
+  kundali(q: LocalKundaliQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -637,6 +644,23 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         }
         const jdn = q.jd !== undefined ? Math.floor(q.jd + 0.5) : q.date !== undefined ? dateKey(q.date, q.era ?? "bs") : null;
         return jdn === null ? null : render(g.gocharDay(ctx.sky, jdn, where, q.upcoming === true), q.era);
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    kundali: async (q, location) => {
+      try {
+        const k = await import("../jyotish/kundali/engine");
+        if (q.route === "expand") return options.enabled() ? k.dashaExpand(q) : null;
+        const ctx = await surya(location, q.ayanamsha);
+        if (!ctx) return null;
+        const jd = k.momentJd(q.moment, ctx.place.timeZone);
+        if (jd === null) return null;
+        const echo = { era: q.era, language: q.language };
+        if (q.route === "vimshottari") return k.vimshottari(ctx.sky, jd, ctx.place, q.cycles ?? 1, echo);
+        if (q.route === "shadbala") return k.shadbalaRoute(ctx.sky, jd, ctx.place, echo);
+        return null;
       } catch (error) {
         options.onError?.(error);
         return null;
