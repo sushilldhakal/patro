@@ -2,8 +2,8 @@
 # variable: PATRO_RS__<KEY>, e.g. PATRO_RS__PORT=8200.
 
 host = "127.0.0.1"
-# 8100, not 8000: the Python API keeps 8000, so both can run side by side.
-port = 8100
+# 8000, the same port as production (rust.env sets PATRO_RS__PORT=8000 there; the test box uses 8092).
+port = 8000
 # Reference data (cities.db, documents.db, …) shared with the Python API, opened read-only.
 data_dir = "../api/data"
 # Matches nginx's proxy_read_timeout for /api/ in front of the Python server.

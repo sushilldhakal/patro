@@ -6,7 +6,7 @@ set -u
 STATE=/var/tmp/patro-watchdog.fails
 SERVICE=patro-rust
 ok=1
-curl -fsS -m 5 -o /dev/null http://127.0.0.1:8100/health || ok=0
+curl -fsS -m 5 -o /dev/null http://127.0.0.1:8000/health || ok=0
 code=$(curl -s -m 10 -o /dev/null -w '%{http_code}' -H 'Host: www.vedicpatro.com' --resolve www.vedicpatro.com:443:127.0.0.1 -k "https://www.vedicpatro.com/api/v1/panchanga/elements") || code=000
 [[ "${code}" == "200" ]] || ok=0
 free_mb=$(awk '/MemAvailable/ {print int($2/1024)}' /proc/meminfo)

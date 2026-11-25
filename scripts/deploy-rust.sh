@@ -10,7 +10,7 @@ set -euo pipefail
 REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
 RUST_HOME="${RUST_HOME:-/home/ubuntu/patro-rust}"
 SERVICE="patro-rust"
-PORT="${PATRO_RUST_PORT:-8100}"
+PORT="${PATRO_RUST_PORT:-8000}"
 
 if [[ ! -f "${RUST_HOME}/rust.env" ]]; then
   echo "Rust API not staged on this box (${RUST_HOME}/rust.env missing) — skipping."

@@ -28,4 +28,4 @@ the owner retires it; when that happens, drop the API step from `scripts/deploy.
 
 
 ## 2026-11-25: Rust is the only API server
-nginx sends `/api` to Rust (8100). The Python service, its deploy step and `rollback.sh` are gone; nothing links to Python any more.
+nginx sends `/api` to Rust (8000, the port Python used to have; it was 8100 from the cutover until later that day). The Python service, its deploy step and `rollback.sh` are gone; nothing links to Python any more.

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Stages the Rust server on the production box BESIDE the Python server, on port 8100.
-# It changes nothing users can see: nginx still sends every request to Python on 8000.
+# Stages the Rust server on the production box on port 8000 (Python is retired; 8000 is its old port).
+# Writes the binary, data files, rust.env and the systemd unit, then checks /health.
 #
 #   apps/rust/deploy/stage.sh <binary> [data_dir_with_wide_files]
 #
@@ -28,7 +28,7 @@ redis_rust=$(echo "$redis" | sed -E 's#/[0-9]+$##')/1
 umask 077
 cat > rust.env <<EOF2
 PATRO_RS__HOST=127.0.0.1
-PATRO_RS__PORT=8100
+PATRO_RS__PORT=8000
 PATRO_RS__DATA_DIR=/home/ubuntu/patro/apps/api/data
 PATRO_RS__LOG_FILTER=info
 PATRO_RS_DATABASE_URL=$db
@@ -39,4 +39,4 @@ PATRO_RS_DRIK_CHEB=/home/ubuntu/patro-rust/data/drik/drik.cheb
 EOF2
 REMOTE
 scp -q "$HERE/patro-rust.service" "$PROD:/tmp/patro-rust.service"
-ssh "$PROD" 'sudo mv /tmp/patro-rust.service /etc/systemd/system/patro-rust.service && sudo systemctl daemon-reload && sudo systemctl enable patro-rust >/dev/null 2>&1 && sudo systemctl restart patro-rust && sleep 4 && systemctl is-active patro-rust && curl -s -o /dev/null -w "rust on 8100: %{http_code}\n" http://127.0.0.1:8100/health'
+ssh "$PROD" 'sudo mv /tmp/patro-rust.service /etc/systemd/system/patro-rust.service && sudo systemctl daemon-reload && sudo systemctl enable patro-rust >/dev/null 2>&1 && sudo systemctl restart patro-rust && sleep 4 && systemctl is-active patro-rust && curl -s -o /dev/null -w "rust on 8000: %{http_code}\n" http://127.0.0.1:8000/health'

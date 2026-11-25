@@ -15,7 +15,7 @@ If `cargo` is not on your PATH: `export PATH=/opt/homebrew/opt/rustup/bin:$PATH`
 
 ```bash
 cd apps/rust
-cargo run                      # http://127.0.0.1:8100/health
+cargo run                      # http://127.0.0.1:8000/health
 cargo test                     # every crate
 cargo clippy --all-targets -- -D warnings
 cargo fmt
@@ -48,7 +48,7 @@ cd apps/rust && PATRO_RS_TEST_DATABASE_URL=postgresql://USER@HOST:PORT/patro_rs_
 
 Without `PATRO_RS_TEST_DATABASE_URL` that test says so and passes.
 
-It listens on **8100**, so it can run beside the Python API on 8000.
+It listens on **8000**, locally and on production.
 Settings live in `config/default.toml`; any key can be overridden with
 `PATRO_RS__<KEY>` (e.g. `PATRO_RS__PORT=8200`). `RUST_LOG` overrides the log filter.
 

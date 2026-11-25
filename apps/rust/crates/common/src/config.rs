@@ -9,7 +9,7 @@ use serde::Deserialize;
 pub struct AppConfig {
     /// Address to listen on.
     pub host: String,
-    /// Port to listen on (8100 by default, beside the Python API's 8000).
+    /// Port to listen on (8000 by default, locally and on production).
     pub port: u16,
     /// Folder with the reference SQLite files shared with the Python API.
     pub data_dir: PathBuf,
@@ -28,7 +28,7 @@ impl AppConfig {
     pub fn load(config_dir: &str) -> Result<Self, config::ConfigError> {
         config::Config::builder()
             .set_default("host", "127.0.0.1")?
-            .set_default("port", 8100)?
+            .set_default("port", 8000)?
             .set_default("data_dir", "../api/data")?
             .set_default("request_timeout_secs", 15)?
             .set_default("log_filter", "info")?

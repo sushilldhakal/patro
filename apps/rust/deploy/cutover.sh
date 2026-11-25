@@ -1,5 +1,5 @@
 #!/bin/bash
-# THE SWITCH. Points nginx's `patro_api` upstream at the Rust server (8100) instead of Python (8000).
+# HISTORICAL (2026-11-25 cutover; Rust has since moved to 8000, so this no longer applies). Pointed nginx's `patro_api` upstream at the Rust server (8100) instead of Python (8000).
 # Reversible in seconds with rollback.sh. Only run after the staged server passed its checks.
 set -euo pipefail
 PROD=${PROD:-ubuntu@193.123.67.133}

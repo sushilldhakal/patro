@@ -8,13 +8,13 @@
 //
 // Environment: FB_PAGE_ID, FB_PAGE_ACCESS_TOKEN (dormant without them), FB_POST_KINDS (default main,periods,d1),
 // FRONTEND_URL, APP_LINK (off hides the app line), FB_GRAPH_API_VERSION, FB_POST_STATE_FILE, FB_POST_GAP_S,
-// INTERNAL_API_BASE (default http://127.0.0.1:8100/v1).
+// INTERNAL_API_BASE (default http://127.0.0.1:8000/v1).
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, parse, join } from "node:path";
 
 const env = (k, d = "") => (process.env[k] ?? "").trim() || d;
 const FRONTEND = env("FRONTEND_URL", "https://vedicpatro.com").replace(/\/+$/, "");
-const API = env("INTERNAL_API_BASE", "http://127.0.0.1:8100/v1").replace(/\/+$/, "");
+const API = env("INTERNAL_API_BASE", "http://127.0.0.1:8000/v1").replace(/\/+$/, "");
 const GRAPH = env("FB_GRAPH_API_VERSION", "v21.0");
 const STATE = env("FB_POST_STATE_FILE", "/var/tmp/vedicpatro-fb-last-post.txt");
 const GAP_S = Number(env("FB_POST_GAP_S", "20"));
