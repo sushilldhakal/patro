@@ -3,6 +3,8 @@
 // instant's own blocks are made here.
 import { lagnaAt, wrap360, ayanamshaAt } from "../../astronomy/siddhanta-offline";
 import { suryaLatitude, suryaLongitude } from "../../astronomy/surya-formulas";
+import { drikLatitudeAt } from "../../astronomy/drik-analytic";
+import { drikFrame } from "../../astronomy/drik-source";
 import { civilFromJdn, civilJdn } from "../../astronomy/lunar-month";
 import type { Sky } from "../../astronomy/sky";
 import { dayState, type DayOptions } from "./day-response";
@@ -18,11 +20,14 @@ const RAD = Math.PI / 180;
 /** The text's fixed obliquity of the ecliptic. */
 const OBLIQUITY = 24;
 
-/** (right ascension, declination), degrees, of a sayana longitude and latitude for the text's 24 degrees. */
-function equatorial(sayana: number, latitude: number): [number, number] {
+/** The sky's ayanamsha at an instant: the text's own for the Surya Siddhanta, the sky's for Drik. */
+const ayanamshaOf = (sky: Sky, jd: number): number => (sky.system === "drik" ? sky.positionsAt(jd, 1, false)?.ayanamsha ?? 0 : ayanamshaAt(jd));
+
+/** (right ascension, declination), degrees, of a sayana longitude and latitude: the text's 24 degrees, or Drik's mean obliquity of date. */
+function equatorial(sky: Sky, jd: number, sayana: number, latitude: number): [number, number] {
   const lam = sayana * RAD;
   const beta = latitude * RAD;
-  const eps = OBLIQUITY * RAD;
+  const eps = (sky.system === "drik" ? drikFrame.obliquityAt(jd) : OBLIQUITY) * RAD;
   const ra = Math.atan2(Math.sin(lam) * Math.cos(eps) - Math.tan(beta) * Math.sin(eps), Math.cos(lam));
   const dec = Math.asin(Math.sin(beta) * Math.cos(eps) + Math.cos(beta) * Math.sin(eps) * Math.sin(lam));
   return [wrap360(ra / RAD), dec / RAD];
@@ -33,16 +38,20 @@ const BODIES = { sun: "sun", moon: "moon", mercury: "mercury", venus: "venus", m
 /** `planets_with_extras`: the graha table with ecliptic latitude (shara), right ascension and declination. */
 function planetsWithExtras(sky: Sky, jd: number): Json {
   const table = planetTable(sky, jd) as Record<string, Json>;
-  const aya = ayanamshaAt(jd);
-  for (const [key, body] of Object.entries(BODIES)) {
+  const aya = ayanamshaOf(sky, jd);
+  const drik = sky.system === "drik";
+  const longitudeOf = (key: keyof typeof BODIES): number => (drik ? ((table[key].longitude as number) ?? 0) : suryaLongitude(BODIES[key], jd));
+  const latitudeOf = (key: keyof typeof BODIES): number => (drik ? drikLatitudeAt(BODIES[key], jd) : suryaLatitude(BODIES[key], jd));
+  for (const key of Object.keys(BODIES) as (keyof typeof BODIES)[]) {
     const row = table[key];
-    const [ra, dec] = equatorial(suryaLongitude(body, jd) + aya, suryaLatitude(body, jd));
-    row.latitude = pyRound(suryaLatitude(body, jd), 4);
+    const lat = latitudeOf(key);
+    const [ra, dec] = equatorial(sky, jd, longitudeOf(key) + aya, lat);
+    row.latitude = pyRound(lat, 4);
     row.right_ascension = pyRound(ra, 4);
     row.declination = pyRound(dec, 4);
   }
-  const rahuLat = suryaLatitude("rahu", jd);
-  const [ra, dec] = equatorial(pyMod(suryaLongitude("rahu", jd) + 180, 360) + aya, -rahuLat);
+  const rahuLat = latitudeOf("rahu");
+  const [ra, dec] = equatorial(sky, jd, pyMod(longitudeOf("rahu") + 180, 360) + aya, -rahuLat);
   table.ketu.latitude = pyRound(-rahuLat, 4);
   table.ketu.right_ascension = pyRound(ra, 4);
   table.ketu.declination = pyRound(dec, 4);
@@ -51,7 +60,7 @@ function planetsWithExtras(sky: Sky, jd: number): Json {
 
 const sayanaAscendant = (sky: Sky, jd: number, lat: number, lon: number): number | null => {
   const asc = lagnaAt(sky.source, jd, lat, lon);
-  return asc === null ? null : wrap360(asc + ayanamshaAt(jd));
+  return asc === null ? null : wrap360(asc + ayanamshaOf(sky, jd));
 };
 
 /** The lagna at an instant (`anchor: instant`) with its equatorial extras and speed. */
@@ -62,7 +71,7 @@ function instantLagna(sky: Sky, jd: number, lat: number, lon: number): Json | nu
   const ahead = sayanaAscendant(sky, jd + step, lat, lon);
   if (!block || sayana === null || ahead === null) return null;
   const speed = (pyMod(ahead - sayana + 540, 360) - 180) / step;
-  const [ra, dec] = equatorial(sayana, 0);
+  const [ra, dec] = equatorial(sky, jd, sayana, 0);
   return { ...block, anchor: "instant", latitude: 0, right_ascension: pyRound(ra, 4), declination: pyRound(dec, 4), speed: pyRound(speed, 4) };
 }
 

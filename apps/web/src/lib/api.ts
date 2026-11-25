@@ -134,6 +134,7 @@ import type {
   CalendarDay,
 } from "@vedic-patro/api-client";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { fetchPanchangaDayLocal } from "@vedic-patro/api-client";
 import { makeLocalCalendar, skyChoiceOf } from "@vedic-patro/domain/festivals/local-calendar";
 import { skyLocalEnabled } from "./sky-day";
 export type {
@@ -521,11 +522,26 @@ export const fetchTodayPanchanga = (
 
 export const PANCHANGA_TODAY_SEGMENT = "today";
 
-export function fetchPanchangaDay(
+export async function fetchPanchangaDay(
   state: import("@/lib/patro-day-url").PatroDayFetchState,
   location?: LocationParams,
   extra?: Record<string, string | number | undefined>,
 ) {
+  // The day is made from the sky the site carries; the server answers what the device cannot (other eras, far dates).
+  if (!extra) {
+    const named =
+      state.kind === "jd"
+        ? { jd: state.jd }
+        : state.kind === "today"
+          ? { today: true }
+          : state.inputEra === "bs" || state.inputEra === "ad"
+            ? { inputEra: state.inputEra, date: `${state.year}-${String(state.month).padStart(2, "0")}-${String(state.day).padStart(2, "0")}` }
+            : null;
+    if (named) {
+      const local = await fetchPanchangaDayLocal({ ...named, era: state.display.era, language: state.display.language }, location);
+      if (local) return local;
+    }
+  }
   const qs = buildPatroDayApiQuery(state, {
     festivals: "true",
     detail: "true",

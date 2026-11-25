@@ -3,6 +3,7 @@ import { civilFromJdn, utcOffsetMinutes } from "../../astronomy/lunar-month";
 import { sunriseSunset } from "../../astronomy/siddhanta-offline";
 import type { Sky } from "../../astronomy/sky";
 import { drikFrame } from "../../astronomy/drik-source";
+import { utToTt } from "../../astronomy/drik-analytic";
 import { wholeSeconds, type Json, type Place } from "./blocks";
 import { pyInt, pyRound, pyRoundInt } from "./py";
 import { wallIn } from "./instant";
@@ -41,7 +42,10 @@ function equationOfTimeDays(sky: Sky, jd: number): number {
   const eps = (sky.system === "drik" ? drikFrame.obliquityAt(jd) : 24) * RAD;
   const lam = (p.longitude[0] + p.ayanamsha) * RAD;
   const ra = (((Math.atan2(Math.sin(lam) * Math.cos(eps), Math.cos(lam)) / RAD) % 360) + 360) % 360;
-  const mean = sky.system === "drik" ? p.meanSunSayana - 0.0057183 : p.meanSunSayana;
+  // Drik: the server's mean Sun (`DrikSky::equation_of_time_days`: Meeus' mean longitude over TT, less 0.0057183 deg),
+  // not the file's fitted one, which differs by a few seconds of time.
+  const t = (utToTt(jd) - 2451545) / 36525;
+  const mean = sky.system === "drik" ? 280.46646 + t * (36000.76983 + t * 0.0003032) - 0.0057183 : p.meanSunSayana;
   const d = ((((mean - ra) % 360) + 540) % 360) - 180;
   return d / 360;
 }

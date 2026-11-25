@@ -1195,6 +1195,19 @@ function sharedDetailKeys(day: unknown): string[] | null {
   return Array.isArray(shared) ? shared.filter((k): k is string => typeof k === "string") : null;
 }
 
+/**
+ * A day the page names by its own state (today, a Julian Day, or a typed date), made from the sky the app
+ * carries; null when the device cannot answer it (the page then asks the server). `era` is the era the
+ * answer is shown in, `inputEra` the one a typed date is written in.
+ */
+export const fetchPanchangaDayLocal = (
+  q: { date?: string; inputEra?: string; jd?: number; today?: boolean; era: string; language?: string },
+  location?: LocationParams,
+) =>
+  fromLocal<PanchangaDay>((l) => l.day({ ...q, detail: true, slim: true, festivals: true }, location)).then((local) =>
+    local ? relinkDayDetail(local) : null,
+  );
+
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
   fromLocal<PanchangaDay>((l) => l.day({ date, era, detail: true, slim: true, festivals: true }, location)).then((local) =>
     local

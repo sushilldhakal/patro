@@ -137,7 +137,7 @@ const PLANETS: Elements[] = [
 
 const at = (pair: number[], t: number): number => pair[0] + pair[1] * t;
 
-function heliocentric(el: Elements, t: number): [number, number] {
+function heliocentric(el: Elements, t: number): [number, number, number] {
   const a = at(el.a, t);
   const e = at(el.e, t);
   const incl = at(el.i, t) * RAD;
@@ -150,9 +150,11 @@ function heliocentric(el: Elements, t: number): [number, number] {
   const yp = a * Math.sqrt(1 - e * e) * Math.sin(ecc);
   const w = peri * RAD - node;
   const [cw, sw, co, so, ci] = [Math.cos(w), Math.sin(w), Math.cos(node), Math.sin(node), Math.cos(incl)];
+  const si = Math.sin(incl);
   return [
     (cw * co - sw * so * ci) * xp + (-sw * co - cw * so * ci) * yp,
     (cw * so + sw * co * ci) * xp + (-sw * so + cw * co * ci) * yp,
+    sw * si * xp + cw * si * yp,
   ];
 }
 
@@ -161,6 +163,43 @@ function planetLongitudeJ2000(row: number, t: number): number {
   const [px, py] = heliocentric(PLANETS[row], t);
   const [ex, ey] = heliocentric(PLANETS[2], t);
   return wrap360(Math.atan2(py - ey, px - ex) / RAD);
+}
+
+/** Geocentric ecliptic latitude of a planet from the same elements, degrees. */
+function planetLatitudeJ2000(row: number, t: number): number {
+  const [px, py, pz] = heliocentric(PLANETS[row], t);
+  const [ex, ey, ez] = heliocentric(PLANETS[2], t);
+  const dx = px - ex;
+  const dy = py - ey;
+  return Math.atan2(pz - ez, Math.hypot(dx, dy)) / RAD;
+}
+
+/** The Moon's ecliptic latitude terms (Meeus, Astronomical Algorithms, table 47.B), in millionths of a degree: D, M, M', F, then the amplitude. */
+const MOON_LATITUDE_TERMS: readonly (readonly [number, number, number, number, number])[] = [
+  [0, 0, 0, 1, 5128122], [0, 0, 1, 1, 280602], [0, 0, 1, -1, 277693], [2, 0, 0, -1, 173237], [2, 0, -1, 1, 55413],
+  [2, 0, -1, -1, 46271], [2, 0, 0, 1, 32573], [0, 0, 2, 1, 17198], [2, 0, 1, -1, 9266], [0, 0, 2, -1, 8822],
+  [2, -1, 0, -1, 8216], [2, 0, -2, -1, 4324], [2, 0, 1, 1, 4200], [2, 1, 0, -1, -3359], [2, -1, -1, 1, 2463],
+  [2, -1, 0, 1, 2211], [2, -1, -1, -1, 2065], [0, 1, -1, -1, -1870], [4, 0, -1, -1, 1828], [0, 1, 0, 1, -1794],
+  [0, 0, 0, 3, -1749], [0, 1, -1, 1, -1565], [1, 0, 0, 1, -1491], [0, 1, 1, 1, -1475], [0, 1, 1, -1, -1410],
+  [0, 1, 0, -1, -1344], [1, 0, 0, -1, -1335], [0, 0, 3, 1, 1107], [4, 0, 0, -1, 1021], [4, 0, -1, 1, 833],
+];
+
+/**
+ * A body's ecliptic latitude of date, degrees, for the graha table at an instant: the Moon from the main
+ * terms of the lunar theory (good to a few thousandths of a degree), the planets from the elements the
+ * longitudes use (good to a few hundredths), the Sun and the true node on the ecliptic. The Drik file
+ * carries longitudes only, so this is derived here; the server's table is the exact one.
+ */
+export function drikLatitudeAt(body: "sun" | "moon" | "mars" | "mercury" | "jupiter" | "venus" | "saturn" | "rahu", jdUt: number): number {
+  if (body === "sun" || body === "rahu") return 0;
+  const t = (utToTt(jdUt) - J2000) / 36525;
+  if (body === "moon") {
+    const [d, m, mp, f] = argumentsAt(t);
+    let sum = 0;
+    for (const [kd, km, kmp, kf, amplitude] of MOON_LATITUDE_TERMS) sum += amplitude * Math.sin(kd * d + km * m + kmp * mp + kf * f);
+    return sum / 1e6;
+  }
+  return planetLatitudeJ2000(PLANET_ROW[body], t);
 }
 
 /** Rows of PLANETS and indexes of PLANET_CORRECTION for the planets, by name. */
