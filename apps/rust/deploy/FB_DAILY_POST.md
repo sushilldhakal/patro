@@ -30,7 +30,7 @@ page (phone → App Store / Google Play, computer → home). Set `APP_LINK` to u
 
 Preview a card without Facebook: open
 `/panchanga/og-preview?card=periods` (or `card=d1`, optionally `&app=text`) on the site,
-or `python scripts/post_daily_panchanga.py --dry-run` for the links and captions. Post one
+or `node scripts/post-daily-panchanga.mjs --dry-run` for the links and captions. Post one
 kind now with `--only periods --force`.
 
 Details below describe the original `main` post; the extra kinds work the same way.
@@ -121,9 +121,9 @@ Sanity-check without posting (prints the image URL + caption):
 
 ```bash
 cd /home/ubuntu/patro && . .venv/bin/activate
-python scripts/post_daily_panchanga.py --dry-run
+node scripts/post-daily-panchanga.mjs --dry-run
 # Post once, right now, ignoring the sunrise wait + the once-a-day guard:
-python scripts/post_daily_panchanga.py --force
+node scripts/post-daily-panchanga.mjs --force
 ```
 
 ## 3. Schedule it at sunrise

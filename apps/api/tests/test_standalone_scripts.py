@@ -34,16 +34,3 @@ def test_script_configures_ports(script: Path):
     # Importing app.main wires the ports as a side effect; app.wiring is the lighter explicit route.
     wired = "from app.main import" in text or ("app.wiring" in text and "configure" in text)
     assert wired, f"{script.name} uses services that need app.wiring.configure() but never wires them"
-
-
-def test_daily_facebook_post_builds_its_posts():
-    """End to end: the timer's script, minus Facebook — it must produce every post, not crash."""
-    result = subprocess.run(
-        [sys.executable, str(SCRIPTS / "post_daily_panchanga.py"), "--dry-run"],
-        cwd=API_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=300,
-    )
-    assert result.returncode == 0, result.stderr[-2000:]
-    assert "LINK:" in result.stdout and "CAPTION:" in result.stdout
