@@ -24,6 +24,8 @@ export interface DayOptions {
   midnight?: boolean;
   /** `civil=true`: attach the midnight to midnight `civil_timeline`. */
   civil?: boolean;
+  /** The plain festival rows only (at-time): no details, no `festival_saits`. */
+  plainFestivals?: boolean;
   /** The Surya sky, needed for the festival rows the midnight state keeps in its detail. */
   surya?: Sky;
 }
@@ -71,7 +73,7 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
  * The day response, or null when the engine cannot answer (a year before 1970, no sunrise). `festivals` is not
  * part of it yet: the caller must not use this for a request with `festivals=true`.
  */
-export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Json | null {
+export function dayState(sky: Sky, input: DayInput, options: DayOptions): Json | null {
   const base = buildDay(sky, input);
   if (!base) return null;
   let f = base;
@@ -125,8 +127,8 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
   out.bs_date = bs;
   out.from_cache = false;
   const surya = options.festivals?.surya ?? options.surya;
-  const bundle = surya && (options.festivals || options.midnight) ? dayFestivals(sky, surya, civilJdn(input.year, input.month, input.day), input.year, input, Boolean(options.festivals)) : null;
-  if (bundle && options.festivals) out.festivals = bundle.slim;
+  const bundle = surya && (options.festivals || options.midnight || options.plainFestivals) ? dayFestivals(sky, surya, civilJdn(input.year, input.month, input.day), input.year, input, Boolean(options.festivals)) : null;
+  if (bundle && (options.festivals || options.plainFestivals)) out.festivals = bundle.slim;
   const detailOn = options.detail !== false;
   if (detailOn) out.detail = { ...f, ...(bundle ? { festivals: bundle.detail } : {}) };
   out.hora = hora;
@@ -164,5 +166,10 @@ export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Jso
     if (!timeline) return null;
     out.civil_timeline = timeline;
   }
-  return renderForEra(out, options.era, options.language ?? eraLanguage(options.era));
+  return out;
+}
+
+export function dayResponse(sky: Sky, input: DayInput, options: DayOptions): Json | null {
+  const out = dayState(sky, input, options);
+  return out && renderForEra(out, options.era, options.language ?? eraLanguage(options.era));
 }

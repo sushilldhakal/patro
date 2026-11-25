@@ -42,6 +42,8 @@ export interface LocalCalendar {
   ): Promise<Record<string, unknown> | null>;
   /** A day's panchanga (`/panchanga/{date}`, Surya Siddhanta, a known city or the default place), or null for the server. */
   day(q: { date: string; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean; midnight?: boolean; civil?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The panchanga at a clock on a civil day (`/panchanga/at-time?jd=&clock=`, Surya Siddhanta), or null for the server. */
+  atTime(q: { jd: number; clock: string; era?: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -148,6 +150,21 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
       return null;
     }
   };
+  /** The Surya sky and the place the device can answer for (the default, or a known city), or null for the server. */
+  const surya = async (location?: LocalPlaceQuery) => {
+    if (!options.enabled() || options.system()?.system !== "surya") return null;
+    // A coordinate pair needs the server's city lookup (it names the place); the default and known cities do not.
+    if (location && (location.city_id == null || location.lat != null || location.lon != null)) return null;
+    const m = await import("./festival-payloads");
+    const found = placeOf(location, m.KATHMANDU_PLACE);
+    if (!found) return null;
+    const snap = (v: number) => (location ? Math.round(v * 100) / 100 : v);
+    return {
+      sky: await options.loadSky("surya"),
+      place: { latitude: snap(found.latitude), longitude: snap(found.longitude), timeZone: found.timeZone, name: found.cityName ?? "Kathmandu", ...(found.cityId !== undefined ? { cityId: found.cityId } : {}) },
+    };
+  };
+
   return {
     month: async (q, location) => {
       if (q.era !== "bs") return null;
@@ -208,13 +225,9 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     holidays: (q, location) => run(location, (m, skies, place) => m.holidayListingPayload(skies, place, q)),
     upcoming: (q, location) => run(location, (m, skies, place) => m.upcomingFestivalsPayload(skies, place, q)),
     day: async (q, location) => {
-      if (!options.enabled() || options.system()?.system !== "surya") return null;
-      // A coordinate pair needs the server's city lookup (it names the place); the default and known cities do not.
-      if (location && (location.city_id == null || location.lat != null || location.lon != null)) return null;
       try {
-        const m = await import("./festival-payloads");
-        const place = placeOf(location, m.KATHMANDU_PLACE);
-        if (!place) return null;
+        const ctx = await surya(location);
+        if (!ctx) return null;
         const { jdnFromIso, bsToJdn, civilFromJdn } = await import("../astronomy/lunar-month");
         let jdn: number | null;
         if (q.era === "ad") jdn = jdnFromIso(q.date);
@@ -224,14 +237,25 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         }
         if (jdn === null || jdn === undefined) return null;
         const day = civilFromJdn(jdn);
-        const surya = await options.loadSky("surya");
-        const snap = (v: number) => (location ? Math.round(v * 100) / 100 : v);
         const { dayResponse } = await import("../panchanga/engine/day-response");
         return dayResponse(
-          surya,
-          { year: day.year, month: day.month, day: day.day, latitude: snap(place.latitude), longitude: snap(place.longitude), timeZone: place.timeZone, name: place.cityName ?? "Kathmandu", ...(place.cityId !== undefined ? { cityId: place.cityId } : {}) },
-          { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya } : undefined, midnight: q.midnight, civil: q.civil, surya },
+          ctx.sky,
+          { year: day.year, month: day.month, day: day.day, ...ctx.place },
+          { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya: ctx.sky } : undefined, midnight: q.midnight, civil: q.civil, surya: ctx.sky },
         );
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    atTime: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const { civilFromJdn } = await import("../astronomy/lunar-month");
+        const day = civilFromJdn(Math.floor(q.jd + 0.5));
+        const { atTimeResponse } = await import("../panchanga/engine/at-time");
+        return atTimeResponse(ctx.sky, { year: day.year, month: day.month, day: day.day, ...ctx.place }, { clock: q.clock, era: q.era, language: q.language, surya: ctx.sky });
       } catch (error) {
         options.onError?.(error);
         return null;

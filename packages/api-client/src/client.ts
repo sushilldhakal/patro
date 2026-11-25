@@ -979,12 +979,16 @@ export const fetchPanchangaAtTimeJd = (
   params.set("jd", String(jdUt));
   params.set("clock", clock);
   if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
-  return get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
-      location,
-    ),
-  );
+  const server = () =>
+    get<PanchangaDay>(
+      appendLocation(
+        withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
+        location,
+      ),
+    );
+  // An ayanamsha is a Drik choice; the Surya Siddhanta has none, so only a plain request is the device's to answer.
+  if (options?.ayanamsha) return server();
+  return fromLocal<PanchangaDay>((l) => l.atTime({ jd: jdUt, clock }, location)).then((local) => local ?? server());
 };
 
 export const fetchCalendarHeader = (year: number, month: number) =>

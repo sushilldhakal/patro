@@ -124,8 +124,13 @@ function sighraEquation(
   return { correction: Math.atan2(across, along) * DEG, karna: Math.hypot(across, along) };
 }
 
-/** True longitude of a star-planet by the four steps of chapter II. */
-function starPlanetLongitude(planet: StarPlanet, jdUt: number): number {
+/** Revolutions per kalpa of each star-planet's node (retrograde). */
+const NODE_REVS: Record<StarPlanet, bigint> = { mars: -214n, mercury: -488n, jupiter: -174n, venus: -903n, saturn: -662n };
+/** Greatest latitudes, degrees (Burgess I.68-70). */
+const MAX_LATITUDE: Record<StarPlanet, number> = { mars: 1.5, jupiter: 1.0, mercury: 2.0, venus: 2.0, saturn: 2.0 };
+
+/** (true longitude, latitude) of a star-planet by the four steps of chapter II. */
+function starPlanet(planet: StarPlanet, jdUt: number): { longitude: number; latitude: number } {
   const sun = meanLongitude(REVS.sun, jdUt);
   let mean: number;
   let sighrocca: number;
@@ -154,7 +159,28 @@ function starPlanetLongitude(planet: StarPlanet, jdUt: number): number {
   const p1 = mean + sighraEquation(planet, mean, sighrocca).correction / 2;
   const p2 = p1 + mandaEquation(planet, p1, apsis) / 2;
   const p3 = mean + mandaEquation(planet, p2, apsis);
-  return wrap360(p3 + sighraEquation(planet, p3, sighrocca).correction);
+  const { correction, karna } = sighraEquation(planet, p3, sighrocca);
+  // Latitude: from the manda planet (superior) or the sighrocca (inferior), scaled by the karna.
+  const from = planet === "mercury" || planet === "venus" ? sighrocca : p3;
+  const argument = from - 360 * revolutionFraction(NODE_REVS[planet], KALPA_DAYS, jdUt);
+  return { longitude: wrap360(p3 + correction), latitude: (MAX_LATITUDE[planet] * Math.sin(argument * RAD)) / karna };
+}
+
+const starPlanetLongitude = (planet: StarPlanet, jdUt: number): number => starPlanet(planet, jdUt).longitude;
+
+/** A body's ecliptic latitude by the text (the shara), degrees: the Moon's and the star-planets'; the Sun and Rahu have none. */
+export function suryaLatitude(body: (typeof SIDDHANTA_BODIES)[number], jdUt: number): number {
+  switch (body) {
+    case "sun":
+    case "rahu":
+      return 0;
+    case "moon": {
+      const node = meanLongitude(REVS.moonNode, jdUt);
+      return 4.5 * Math.sin((suryaLongitude("moon", jdUt) - node) * RAD);
+    }
+    default:
+      return starPlanet(body, jdUt).latitude;
+  }
 }
 
 /** A body's true sidereal longitude by the text, degrees in [0, 360). Rahu is the mean node. */

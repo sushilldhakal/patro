@@ -74,3 +74,10 @@ export function midnightOverlay(sky: Sky, jdn: number, place: Place, lunar: Json
   };
   return onClock(overlay, zone);
 }
+
+/** The UT instant of a wall clock (`seconds` into the civil day `jdn`) in a zone, on the zone's offset at that moment. */
+export function localInstant(jdn: number, seconds: number, zone: string): number {
+  const wall = jdn - 0.5 + seconds / 86400;
+  const first = wall - utcOffsetMinutes(zone, wall) / 1440;
+  return wall - utcOffsetMinutes(zone, first) / 1440;
+}
