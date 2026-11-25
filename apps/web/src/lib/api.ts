@@ -130,11 +130,10 @@ import type {
   RawMonthDay,
   PanchangaDay,
   MonthCalendar,
-  YearCalendar,
   CalendarDay,
 } from "@vedic-patro/api-client";
 import { tFor } from "@vedic-patro/i18n/runtime";
-import { fetchPanchangaDayLocal } from "@vedic-patro/api-client";
+import { fetchPanchangaAtTimeLocal, fetchPanchangaDayLocal } from "@vedic-patro/api-client";
 import { makeLocalCalendar, skyChoiceOf } from "@vedic-patro/domain/festivals/local-calendar";
 import { skyLocalEnabled } from "./sky-day";
 export type {
@@ -471,18 +470,6 @@ export const panchangaKeys = {
     language: Language = readUiLanguage(),
   ) =>
     ["panchanga", "month", era, language, year, month, locationCacheKey(location), full ? "full" : "lite", excludeInternational ? "nointl" : "intl"] as const,
-  year: (year: number, location?: LocationParams, full = true, era: Era = "bs", language: Language = readUiLanguage()) =>
-    ["panchanga", "year", era, language, year, locationCacheKey(location), full ? "full" : "lite"] as const,
-  monthAtClock: (
-    year: number,
-    month: number,
-    clock: string,
-    location?: LocationParams,
-    excludeInternational = false,
-    era: Era = "bs",
-    language: Language = readUiLanguage(),
-  ) =>
-    ["panchanga", "month", "clock", era, language, year, month, clock, locationCacheKey(location), excludeInternational ? "nointl" : "intl"] as const,
   atTime: (jd: number, clock: string, location?: LocationParams) =>
     ["panchanga", "at-time", PANCHANGA_CACHE_VERSION, jd, clock, locationCacheKey(location)] as const,
   atTimeDay: (state: PatroDayFetchState, clock: string, location?: LocationParams) =>
@@ -528,7 +515,9 @@ export async function fetchPanchangaDay(
   extra?: Record<string, string | number | undefined>,
 ) {
   // The day is made from the sky the site carries; the server answers what the device cannot (other eras, far dates).
-  if (!extra) {
+  // Only the midnight reference has a device answer; other extras go to the server.
+  const midnight = extra?.reference === "midnight" && Object.keys(extra).length === 1;
+  if (!extra || midnight) {
     const named =
       state.kind === "jd"
         ? { jd: state.jd }
@@ -538,7 +527,7 @@ export async function fetchPanchangaDay(
             ? { inputEra: state.inputEra, date: `${state.year}-${String(state.month).padStart(2, "0")}-${String(state.day).padStart(2, "0")}` }
             : null;
     if (named) {
-      const local = await fetchPanchangaDayLocal({ ...named, era: state.display.era, language: state.display.language }, location);
+      const local = await fetchPanchangaDayLocal({ ...named, era: state.display.era, language: state.display.language, midnight }, location);
       if (local) return local;
     }
   }
@@ -624,12 +613,26 @@ export const fetchPanchangaAtTimeForDay = (
     if (jd != null) params.set("jd", String(jd));
   }
 
-  return get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
-      location,
-    ),
-  );
+  const named =
+    dayState.kind === "jd"
+      ? { jd: dayState.jd }
+      : dayState.kind === "today"
+        ? options?.resolvedJdUt != null ? { jd: options.resolvedJdUt } : { today: true }
+        : dayState.inputEra === "bs" || dayState.inputEra === "ad"
+          ? { inputEra: dayState.inputEra, date: `${dayState.year}-${String(dayState.month).padStart(2, "0")}-${String(dayState.day).padStart(2, "0")}` }
+          : null;
+  const server = () =>
+    get<PanchangaDay>(
+      appendLocation(
+        withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
+        location,
+      ),
+    );
+  if (!named) return server();
+  return fetchPanchangaAtTimeLocal(
+    { ...named, clock, era: dayState.display.era, language: dayState.display.language, ayanamsha: options?.ayanamsha },
+    location,
+  ).then((local) => local ?? server());
 };
 
 function parsePakshaName(label?: string): string | undefined {
@@ -708,43 +711,3 @@ export const fetchMonthCalendar = async (
   return { ...data, calendar: data.calendar.map(normalizeMonthDay) };
 };
 
-export const fetchYearCalendar = async (
-  year: number,
-  location?: LocationParams,
-  options?: { full?: boolean; wheel?: boolean; era?: Era; language?: Language },
-): Promise<YearCalendar> => {
-  const params = new URLSearchParams();
-  params.set("language", options?.language ?? readUiLanguage());
-  if (options?.era === "bbs" || options?.era === "bs") {
-    params.set("era", options.era);
-  }
-  if (options?.wheel) {
-    // Slim year-wheel payload: days once in `calendar` with wheel-only state,
-    // `months` metadata only (no duplicated per-day grids). ~90% smaller.
-    params.set("wheel", "true");
-  } else if (options?.full !== false) {
-    params.set("full", "true");
-  }
-  const qs = params.toString();
-  const path = appendLocation(
-    withPanchangaCacheVersion(`/panchanga/year/${year}${qs ? `?${qs}` : ""}`),
-    location,
-  );
-  const data = await get<YearCalendar & { calendar: RawMonthDay[]; months: Array<MonthCalendar & { calendar?: RawMonthDay[] }> }>(path);
-  // The wheel reads only each day's nested `panchanga` block (see seedDayRow), so
-  // normalizing — which reconstructs the ~20 flat per-day fields the server just
-  // trimmed away — would re-bloat the payload before it's parsed/persisted and
-  // burn CPU over 365 days for nothing. Skip it for the wheel; keep it for the
-  // (fuller) default shape whose consumers rely on the flat fields.
-  if (options?.wheel) {
-    return { ...data, calendar: data.calendar as CalendarDay[], months: data.months ?? [] };
-  }
-  return {
-    ...data,
-    calendar: data.calendar.map(normalizeMonthDay),
-    months: (data.months ?? []).map((month) => ({
-      ...month,
-      calendar: (month.calendar ?? []).map(normalizeMonthDay),
-    })),
-  };
-};

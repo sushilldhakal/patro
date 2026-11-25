@@ -256,11 +256,19 @@ export const fetchPanchangaAtTime = (
   const params = new URLSearchParams();
   params.set("datetime", datetime);
   if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
-  return get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
-      location,
-    ),
+  const server = () =>
+    get<PanchangaDay>(
+      appendLocation(
+        withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
+        location,
+      ),
+    );
+  // A wall clock with no offset is the same moment as `jd` (that civil day, 0h UT) + `clock` on the observer's clock.
+  const m = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}:\d{2}(?::\d{2})?)$/.exec(datetime.trim());
+  if (!m || Number(m[1]) < 1583) return server();
+  const jd = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])) / 86_400_000 + 2_440_587.5;
+  return fromLocal<PanchangaDay>((l) => l.atTime({ jd, clock: m[4], ayanamsha: options?.ayanamsha }, location)).then(
+    (local) => local ?? server(),
   );
 };
 
@@ -1289,12 +1297,18 @@ function sharedDetailKeys(day: unknown): string[] | null {
  * answer is shown in, `inputEra` the one a typed date is written in.
  */
 export const fetchPanchangaDayLocal = (
-  q: { date?: string; inputEra?: string; jd?: number; today?: boolean; era: string; language?: string },
+  q: { date?: string; inputEra?: string; jd?: number; today?: boolean; era: string; language?: string; midnight?: boolean },
   location?: LocationParams,
 ) =>
   fromLocal<PanchangaDay>((l) => l.day({ ...q, detail: true, slim: true, festivals: true }, location)).then((local) =>
     local ? relinkDayDetail(local) : null,
   );
+
+/** The at-time answer for a clock on a named civil day (as {@link fetchPanchangaDayLocal} names it), or null for the server. */
+export const fetchPanchangaAtTimeLocal = (
+  q: { date?: string; inputEra?: string; jd?: number; today?: boolean; clock: string; era?: string; language?: string; ayanamsha?: string },
+  location?: LocationParams,
+) => fromLocal<PanchangaDay>((l) => l.atTime(q, location));
 
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
   fromLocal<PanchangaDay>((l) => l.day({ date, era, detail: true, slim: true, festivals: true }, location)).then((local) =>

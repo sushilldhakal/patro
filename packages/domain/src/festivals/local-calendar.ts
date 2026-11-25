@@ -131,8 +131,8 @@ export interface LocalCalendar {
   ): Promise<Record<string, unknown> | null>;
   /** A day's panchanga (`/panchanga/{date}`, Surya Siddhanta, a known city or the default place), or null for the server. */
   day(q: { date?: string; inputEra?: string; jd?: number; today?: boolean; era: string; language?: string; detail?: boolean; slim?: boolean; festivals?: boolean; midnight?: boolean; civil?: boolean }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
-  /** The panchanga at a clock on a civil day (`/panchanga/at-time?jd=&clock=`, Surya Siddhanta), or null for the server. */
-  atTime(q: { jd: number; clock: string; era?: string; language?: string; ayanamsha?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The panchanga at a clock on a civil day (`/panchanga/at-time?clock=` with `jd`, a typed date or today), or null for the server. */
+  atTime(q: { jd?: number; date?: string; inputEra?: string; today?: boolean; clock: string; era?: string; language?: string; ayanamsha?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The sunrise / sunset / ayana grid of a BS year (`/panchanga/year/{year}/sun`), or null for the server. */
   yearSun(q: { year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The year wheel's payload (`/panchanga/year/{year}?wheel=true`, a BS year), or null for the server. */
@@ -507,7 +507,9 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const ctx = await surya(location, q.ayanamsha);
         if (!ctx) return null;
         const { civilFromJdn } = await import("../astronomy/lunar-month");
-        const day = civilFromJdn(Math.floor(q.jd + 0.5));
+        const jdn = await namedJdn(q, ctx.place.timeZone);
+        if (jdn === null) return null;
+        const day = civilFromJdn(jdn);
         const { atTimeResponse } = await import("../panchanga/engine/at-time");
         return atTimeResponse(ctx.sky, { year: day.year, month: day.month, day: day.day, ...ctx.place }, { clock: q.clock, era: q.era, language: q.language, surya: ctx.surya });
       } catch (error) {

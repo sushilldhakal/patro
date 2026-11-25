@@ -30,5 +30,10 @@ for (const system of ["surya", "drik"] as const) {
     assert.equal(today.date_ad, zoneDate);
     // A date the device cannot name (an era it does not read) is the server's.
     assert.equal(await local.day({ date: "0044-03-15", inputEra: "bc", era: "bc", detail: false }), null);
+    // at-time names its day the same ways.
+    const atJd = await local.atTime({ jd: 2461390.5, clock: "06:30", era: "ad", language: "en" });
+    const atBs = await local.atTime({ date: "2083-09-01", inputEra: "bs", clock: "06:30", era: "ad", language: "en" });
+    assert.ok(atJd);
+    assert.deepEqual(atBs, atJd);
   });
 }

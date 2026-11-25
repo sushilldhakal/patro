@@ -38,15 +38,13 @@ Tests: `test/engine-day.test.ts`, `engine-day-response.test.ts`, `engine-at-time
 `engine-element.test.ts`, all against `apps/rust/tests/fixtures/http_golden_*.json` through `test/golden-diff.ts`
 (instants within 20 s, clocks within a minute, text by shape).
 
-## Still to port
-- rashifal (`jyotish/src/rashifal`, about 3,500 lines) and rashifal/personal, `rashifal/janma`
-- gochar (`jyotish/src/gochar.rs`, 1,150 lines: planet ingress/station/udayast solvers on the text's positions) and, on top
-  of it, graha-asta, graha-vakri, graha-sthiti, gochar ingress/day/year
-- sait routes (`patro/src/sait.rs`: list, month, detail, personalize)
-- the month grid with `full=true` (the apps ask for it), `/panchanga/ad|bc/{y}/{m}`, the year route's lite/full shapes
-- `/nepal/panchanga/*` (no screen calls it)
-- Drik for any of the above (the text's own Surya numbers only so far; Drik graha latitudes need the sky's ecliptic latitude)
+- The full BS month (`month-full.ts`), AD/BC months, gochar with graha asta/vakri/sthiti (`gochar.ts`), sait
+  (list, month, detail, personalize), rashifal with personal and janma (`jyotish/rashifal/engine.ts`), Surya and Drik.
+- At-time by a typed date, today or a Julian Day, and by a `datetime=` wall clock (the mobile wheel); the web's
+  दिन-रात day (`reference=midnight`).
 
-Calls the apps still make to the server for Surya at the default place: rashifal (+personal, janma), the full month grid,
-sait, gochar and the graha year routes (asta, vakri, sthiti). Everything else under `/panchanga*`, `/nepal/festivals*` and
-`/nepal/patro*` is answered on the device first.
+## Still on the server
+- Birth charts: `/kundali/*` (detail, report, vimshottari, dasha expand, milan), `/shadbala`.
+- `/nepal/special-months/{y}` (adhik/kshaya list) and `/seasons/tropical`.
+- The month grid with `clock=`, `/nepal/panchanga/*`, the year route's lite/full shapes: no screen calls them.
+- Days before 1582-10-15.

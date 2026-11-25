@@ -95,9 +95,6 @@
  "fetchMonthCalendar-opts#0": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=ne&clock=06%3A00&exclude_international=true&cv=6506"
  ],
- "fetchYearCalendar#0": [
-  "/api/v1/panchanga/year/2083?language=ne&full=true&cv=6506"
- ],
  "fetchYearWheelCalendar#0": [
   "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=6506&language=ne"
  ],
@@ -232,9 +229,6 @@
  ],
  "fetchMonthCalendar-opts#1": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=ne&clock=06%3A00&exclude_international=true&cv=6506&city_id=1283240"
- ],
- "fetchYearCalendar#1": [
-  "/api/v1/panchanga/year/2083?language=ne&full=true&cv=6506&city_id=1283240"
  ],
  "fetchYearWheelCalendar#1": [
   "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=6506&city_id=1283240&language=ne"
@@ -371,9 +365,6 @@
  "fetchMonthCalendar-opts#2": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=ne&clock=06%3A00&exclude_international=true&cv=6506&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
- "fetchYearCalendar#2": [
-  "/api/v1/panchanga/year/2083?language=ne&full=true&cv=6506&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
- ],
  "fetchYearWheelCalendar#2": [
   "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=6506&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu&language=ne"
  ],
@@ -509,9 +500,6 @@
  "fetchMonthCalendar-opts#3": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=ne&clock=06%3A00&exclude_international=true&cv=6506&city=Pokhara"
  ],
- "fetchYearCalendar#3": [
-  "/api/v1/panchanga/year/2083?language=ne&full=true&cv=6506&city=Pokhara"
- ],
  "fetchYearWheelCalendar#3": [
   "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=6506&city=Pokhara&language=ne"
  ],
@@ -646,9 +634,6 @@
  ],
  "fetchMonthCalendar-opts#4": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=ne&clock=06%3A00&exclude_international=true&cv=6506&lat=28.2&lon=83.98"
- ],
- "fetchYearCalendar#4": [
-  "/api/v1/panchanga/year/2083?language=ne&full=true&cv=6506&lat=28.2&lon=83.98"
  ],
  "fetchYearWheelCalendar#4": [
   "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=6506&lat=28.2&lon=83.98&language=ne"

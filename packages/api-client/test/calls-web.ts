@@ -42,7 +42,6 @@ L.forEach((loc, i) => {
   add("fetchPanchakYear" + s, () => a.fetchPanchakYear(2083, loc, "bs"));
   add("fetchMonthCalendar" + s, () => a.fetchMonthCalendar(2083, 6, loc));
   add("fetchMonthCalendar-opts" + s, () => a.fetchMonthCalendar(2026, 10, loc, { era: "ad", clock: "06:00", full: false, excludeInternational: true }));
-  add("fetchYearCalendar" + s, () => a.fetchYearCalendar(2083, loc, { full: true }));
   add("fetchYearWheelCalendar" + s, () => a.fetchYearWheelCalendar(2083, loc, "bs"));
   add("fetchYearSunTimes" + s, () => a.fetchYearSunTimes(2083, "bs", loc));
   add("fetchSait" + s, () => a.fetchSait(2083, "vivah", loc));
