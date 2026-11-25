@@ -160,6 +160,11 @@
         "description": "Current weather, the next 24 hours and a 16-day forecast for your nearest city.",
         "keywords": "weather, forecast, rain, temperature, Nepal weather"
       },
+      "news": {
+        "title": "Latest News | Vedic Patro",
+        "description": "The latest headlines from Nepal's news outlets, with every outlet's report of the same event together.",
+        "keywords": "news, Nepal news, latest news, headlines"
+      },
       "adhik_maas": {
         "title": "Adhik Maas (Mala Maas) | Vedic Patro",
         "description": "Which month is adhik (mala / purushottam) maas in each year, its dates, and how and why it happens.",
@@ -3696,6 +3701,9 @@
       "weather": {
         "label": "Weather"
       },
+      "news": {
+        "label": "News"
+      },
       "avakahada": {
         "label": "Avakahada chakra"
       },
@@ -3912,6 +3920,43 @@
       "billion": "billion",
       "trillion": "trillion",
       "quadrillion": "quadrillion"
+    }
+  },
+  "news": {
+    "title": "News",
+    "subtitle": "The latest headlines from Nepal's news outlets",
+    "top_stories": "Top stories",
+    "latest": "Latest",
+    "load_more": "More news",
+    "loading": "Loading the news…",
+    "load_error": "Could not load the news. Try again in a little while.",
+    "retry": "Try again",
+    "empty": "No stories in this section right now.",
+    "source": "Source",
+    "sources_count": "In {{count}} outlets",
+    "open_source": "Read the full story on {{name}}",
+    "note": "Headlines and summaries come from each publisher's RSS feed. Tap a source to read the full story.",
+    "language": "News language",
+    "lang": {
+      "ne": "Nepali",
+      "en": "English"
+    },
+    "category": {
+      "all": "All",
+      "news": "News",
+      "politics": "Politics",
+      "economy": "Economy",
+      "world": "World",
+      "sports": "Sports",
+      "entertainment": "Entertainment",
+      "technology": "Technology",
+      "health": "Health"
+    },
+    "ago": {
+      "now": "Just now",
+      "minutes": "{{count}} min ago",
+      "hours": "{{count}} h ago",
+      "days": "{{count}} d ago"
     }
   },
   "weather": {

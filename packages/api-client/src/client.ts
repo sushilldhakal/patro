@@ -61,6 +61,8 @@ import type {
   SpecialMonthsResponse,
   SunYearResponse,
   WeatherForecastResponse,
+  NewsFeedParams,
+  NewsFeedResponse,
   TropicalSeasonsResponse,
   UpcomingFestivalsResponse,
   VastuSketchRequest,
@@ -570,6 +572,18 @@ export const fetchWeatherForecast = (location?: LocationParams) =>
 
 export const weatherKeys = {
   forecast: (location?: LocationParams) => ["weather", "forecast", locationCacheKey(location)] as const,
+};
+
+/** One page of grouped publisher headlines; `cursor` is the previous page's `next_cursor`. */
+export const fetchNewsFeed = (params: NewsFeedParams = {}) => {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) if (v != null && v !== "") q.set(k, String(v));
+  const qs = q.toString();
+  return get<NewsFeedResponse>(`/news/feed${qs ? `?${qs}` : ""}`);
+};
+
+export const newsKeys = {
+  feed: (lang?: string, category?: string) => ["news", "feed", lang ?? "", category ?? ""] as const,
 };
 
 // ─── Cities ───────────────────────────────────────────────────────────────────

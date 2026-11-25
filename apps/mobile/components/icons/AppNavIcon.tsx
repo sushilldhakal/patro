@@ -5,6 +5,7 @@ import { __iconNode as CalendarSyncNode } from "lucide-react/dist/esm/icons/cale
 import { __iconNode as ChartPieNode } from "lucide-react/dist/esm/icons/chart-pie";
 import { __iconNode as CalendarXNode } from "lucide-react/dist/esm/icons/calendar-x";
 import { __iconNode as CloudSunNode } from "lucide-react/dist/esm/icons/cloud-sun";
+import { __iconNode as NewspaperNode } from "lucide-react/dist/esm/icons/newspaper";
 import { __iconNode as CalendarPlusNode } from "lucide-react/dist/esm/icons/calendar-plus";
 import { __iconNode as LeafNode } from "lucide-react/dist/esm/icons/leaf";
 import { __iconNode as TimerNode } from "lucide-react/dist/esm/icons/timer";
@@ -85,6 +86,7 @@ const LUCIDE: Record<NavIconName, LucideIconNode> = {
   "chart-pie": ChartPieNode,
   "calendar-x": CalendarXNode,
   "cloud-sun": CloudSunNode,
+  newspaper: NewspaperNode,
   "calendar-plus": CalendarPlusNode,
   "leaf": LeafNode,
   "timer": TimerNode,

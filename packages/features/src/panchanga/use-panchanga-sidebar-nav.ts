@@ -70,6 +70,7 @@ export function getPanchangaSidebarSections(): PanchangaSidebarSection[] {
         { id: "adhik-maas", to: "/adhik-maas", labelKey: "sidebar_nav.items.adhik-maas.label" },
         { id: "ritu", to: "/ritu", labelKey: "sidebar_nav.items.ritu.label" },
         { id: "weather", to: "/weather", labelKey: "sidebar_nav.items.weather.label" },
+        { id: "news", to: "/news", labelKey: "sidebar_nav.items.news.label" },
         { id: "brahma-mana", to: "/brahma-mana", labelKey: "sidebar_nav.items.brahma-mana.label" },
       ],
     },

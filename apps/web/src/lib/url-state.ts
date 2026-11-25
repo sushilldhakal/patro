@@ -495,7 +495,7 @@ export function patroRouteLinkSearch(
 ): Record<string, unknown> {
   const normalized = route.replace(/\/$/, "");
   const dayBrowse: PatroDayLinkBrowse = { era, ...browse };
-  if (normalized === "/ritu" || normalized === "/converter" || normalized === "/weather") {
+  if (normalized === "/ritu" || normalized === "/converter" || normalized === "/weather" || normalized === "/news") {
     return currentPatroLocationLinkSearch(loc) as Record<string, unknown>;
   }
   if (normalized === "/dainikkranti" || normalized === "/abhijit-muhurta") {

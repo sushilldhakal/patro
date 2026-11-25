@@ -38,6 +38,7 @@ export const FEATURE_ICON = {
   "adhik-maas": "calendar-plus",
   ritu: "leaf",
   weather: "cloud-sun",
+  news: "newspaper",
   "brahma-mana": "hourglass",
   reminders: "bell",
   // Jyotish

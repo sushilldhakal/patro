@@ -4,6 +4,7 @@ import CalendarSync from "lucide-react/dist/esm/icons/calendar-sync";
 import ChartPie from "lucide-react/dist/esm/icons/chart-pie";
 import CalendarX from "lucide-react/dist/esm/icons/calendar-x";
 import CloudSun from "lucide-react/dist/esm/icons/cloud-sun";
+import Newspaper from "lucide-react/dist/esm/icons/newspaper";
 import CalendarPlus from "lucide-react/dist/esm/icons/calendar-plus";
 import Leaf from "lucide-react/dist/esm/icons/leaf";
 import Timer from "lucide-react/dist/esm/icons/timer";
@@ -85,6 +86,7 @@ const LUCIDE: Record<NavIconName, LucideIcon> = {
   "chart-pie": ChartPie,
   "calendar-x": CalendarX,
   "cloud-sun": CloudSun,
+  newspaper: Newspaper,
   "calendar-plus": CalendarPlus,
   "leaf": Leaf,
   "timer": Timer,

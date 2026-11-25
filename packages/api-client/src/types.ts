@@ -2771,6 +2771,57 @@ export type ProfileInput = Partial<Omit<Profile, "id" | "created_at" | "updated_
   full_name: string;
 };
 
+/** One outlet's article inside a news story. */
+export interface NewsSource {
+  name: string;
+  /** The outlet's article; opened in the browser. */
+  url: string;
+  /** Unix seconds. */
+  published_at: number;
+}
+
+/** One event and every outlet that reported it (`/v1/news/*`). */
+export interface NewsStory {
+  id: string;
+  title: string;
+  /** The outlet's own feed summary, when it gave one. */
+  summary: string | null;
+  language: "ne" | "en";
+  category: NewsCategorySlug;
+  /** Unix seconds of the first report. */
+  published_at: number;
+  /** Unix seconds of the latest report; the feed is ordered by this. */
+  updated_at: number;
+  sources: NewsSource[];
+}
+
+export type NewsCategorySlug =
+  | "news"
+  | "politics"
+  | "economy"
+  | "world"
+  | "sports"
+  | "entertainment"
+  | "technology"
+  | "health";
+
+export interface NewsFeedParams {
+  lang?: "ne" | "en";
+  category?: NewsCategorySlug;
+  cursor?: string;
+  limit?: number;
+}
+
+/** `GET /v1/news/feed`: top stories (first page only), then the latest. */
+export interface NewsFeedResponse {
+  top_stories: NewsStory[];
+  stories: NewsStory[];
+  next_cursor: string | null;
+  categories: { slug: NewsCategorySlug; count: number }[];
+  /** Unix seconds the feeds were last read. */
+  fetched_at: number;
+}
+
 /** `GET /v1/weather/forecast`: Open-Meteo's 16-day forecast for the nearest city, shared by every user there. */
 export interface WeatherForecastResponse {
   location: { name: string; latitude: number; longitude: number };
