@@ -203,10 +203,31 @@ function placeOf(location: LocalPlaceQuery | undefined, kathmandu: FestivalPlace
   if (!location) return kathmandu;
   if (location.city_id != null) return CITIES.get(Number(location.city_id)) ?? null;
   if (location.city) return null;
-  const { lat, lon, timezone } = location;
-  if (typeof lat !== "number" || typeof lon !== "number" || !timezone) return null;
+  const { lat, lon } = location;
+  if (typeof lat !== "number" || typeof lon !== "number") return null;
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  // A link with coordinates but no zone: Nepal's box is Nepal time; elsewhere the server finds the zone.
+  const inNepal = lat >= 26.3 && lat <= 30.5 && lon >= 80 && lon <= 88.3;
+  const timezone = location.timezone || (inNepal ? "Asia/Kathmandu" : null);
+  if (!timezone) return null;
   return { latitude: lat, longitude: lon, timeZone: timezone };
+}
+
+/**
+ * A coordinate place's name, as the server's nearest-town lookup gives it: the nearest city the
+ * device knows within 25 km, otherwise the coordinates themselves.
+ */
+export function coordinateName(place: { latitude: number; longitude: number }): string {
+  const rad = Math.PI / 180;
+  let best: { name: string; km: number } | null = null;
+  for (const city of CITIES.values()) {
+    if (!city.cityName) continue;
+    const dLat = (city.latitude - place.latitude) * rad;
+    const dLon = (city.longitude - place.longitude) * rad * Math.cos(place.latitude * rad);
+    const km = 6371 * Math.hypot(dLat, dLon);
+    if (km <= 25 && (!best || km < best.km)) best = { name: city.cityName, km };
+  }
+  return best?.name ?? `${place.latitude.toFixed(2)}°, ${place.longitude.toFixed(2)}°`;
 }
 
 const MONTHS = new Map<string, Record<string, unknown>>();
@@ -261,8 +282,8 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     if (ayanamsha && !named) return null;
     const calc = named ? { system: "drik" as const, ayanamsha: named } : options.system();
     if (calc === null) return null;
-    // A coordinate pair needs the server's city lookup (it names the place); the default and known cities do not.
-    if (location && (location.city_id == null || location.lat != null || location.lon != null)) return null;
+    // A known city, or any coordinate pair with its time zone: the device computes it (the server is
+    // only a lookup). Without a time zone placeOf gives null and the server answers.
     const m = await import("./festival-payloads");
     const found = placeOf(location, m.KATHMANDU_PLACE);
     if (!found) return null;
@@ -272,7 +293,7 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     return {
       sky,
       surya: suryaSky,
-      place: { latitude: snap(found.latitude), longitude: snap(found.longitude), timeZone: found.timeZone, name: found.cityName ?? "Kathmandu", ...(found.cityId !== undefined ? { cityId: found.cityId } : {}) },
+      place: { latitude: snap(found.latitude), longitude: snap(found.longitude), timeZone: found.timeZone, name: found.cityName ?? (location ? coordinateName(found) : "Kathmandu"), ...(found.cityId !== undefined ? { cityId: found.cityId } : {}) },
     };
   };
 
