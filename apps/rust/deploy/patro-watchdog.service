@@ -1,0 +1,7 @@
+[Unit]
+Description=Check the Rust API and restart it when it stops answering
+
+[Service]
+Type=oneshot
+ExecStart=/home/ubuntu/patro/scripts/patro-watchdog.sh
+SyslogIdentifier=patro-watchdog
