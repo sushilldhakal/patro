@@ -283,14 +283,14 @@ const BRATABANDHA_NAKSHATRAS_LIBERAL: [u32; 23] = [
 static SAIT_RULES_JSON: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../../api/rules/sait_dates_v1.json"
+        "/../../rules/sait_dates_v1.json"
     )))
     .expect("sait_dates_v1.json is valid JSON")
 });
 static SAIT_ABOUT_JSON: LazyLock<Value> = LazyLock::new(|| {
     serde_json::from_str(include_str!(concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../../api/rules/sait_about.json"
+        "/../../rules/sait_about.json"
     )))
     .expect("sait_about.json is valid JSON")
 });

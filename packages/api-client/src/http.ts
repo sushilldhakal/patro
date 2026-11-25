@@ -84,7 +84,7 @@ export function isNetworkError(error: unknown): boolean {
 
 /**
  * How long a request may wait for its response. Matches the API proxy's
- * `proxy_read_timeout` (apps/api/deploy/nginx-*.conf): a request the server is
+ * `proxy_read_timeout` (apps/rust/deploy/nginx/*.conf): a request the server is
  * still answering is never cut short, but a hung connection (common on mobile
  * networks, where fetch has no timeout of its own) does end.
  */

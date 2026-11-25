@@ -1,4 +1,4 @@
-//! The owner's rules for adhik and kshaya months (`apps/api/rules/month_type_rules_v1.json`),
+//! The owner's rules for adhik and kshaya months (`apps/rust/rules/month_type_rules_v1.json`),
 //! checked against the dates the owner stated for BS 2039 and BS 2085.
 
 use festivals::{compute_festival_dates, rule};

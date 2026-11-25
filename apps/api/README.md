@@ -1,6 +1,10 @@
-# Surya Panchanga API
+# Surya Panchanga API (retired Python server)
 
-> Part of the Vedic Patro monorepo — run these commands from `apps/api/`. See the root README.
+> **Not a server any more.** Since 2026-11-25 the Rust server in `apps/rust` is the only API.
+> What stays here: the Python engine the golden-recording scripts in `apps/rust/scripts` use as a
+> reference, and the content tools in `scripts/` that build `data/documents.db`. The festival
+> rules and fonts live in `apps/rust/rules` and `apps/rust/assets` (`rules` and `assets` here are
+> links). The text below describes the old server.
 
 
 **Panchanga computation engine as a service** — structured astronomical time-state JSON for any client (web, mobile, print). Not a UI or PDF generator.

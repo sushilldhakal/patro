@@ -25,9 +25,9 @@ pub const WIDTH: u32 = 1200;
 /// Height of the card.
 pub const HEIGHT: u32 = 630;
 
-static REGULAR: &[u8] = include_bytes!("../../../../api/assets/fonts/Mukta-Regular.ttf");
-static BOLD: &[u8] = include_bytes!("../../../../api/assets/fonts/Mukta-Bold.ttf");
-static EXTRA_BOLD: &[u8] = include_bytes!("../../../../api/assets/fonts/Mukta-ExtraBold.ttf");
+static REGULAR: &[u8] = include_bytes!("../../../assets/fonts/Mukta-Regular.ttf");
+static BOLD: &[u8] = include_bytes!("../../../assets/fonts/Mukta-Bold.ttf");
+static EXTRA_BOLD: &[u8] = include_bytes!("../../../assets/fonts/Mukta-ExtraBold.ttf");
 
 /// What the card shows (Python's `og_fields`).
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

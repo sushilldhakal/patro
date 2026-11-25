@@ -132,7 +132,7 @@ The account layer (Postgres; not in any golden, the account recorder never sends
 
     from rust_divergences import apply; apply()
 
-28. Kshaya and adhik months (``apps/api/rules/month_type_rules_v1.json``, owner ruling
+28. Kshaya and adhik months (``apps/rust/rules/month_type_rules_v1.json``, owner ruling
    2026-11-24), Rust only and not patched into Python: a festival of the month a kshaya
    lunation swallowed follows into the first lunation after it instead of vanishing
    (Saraswati Puja 1983 is 18 Feb; Swasthani's opening is skipped when Poush is lost, as in
@@ -485,7 +485,7 @@ def _patch_adhik_only_festivals() -> None:
     from engine.panchanga.kshaya_maas import count_sankrantis_in_period
 
     month_types = json.loads(
-        (Path(__file__).resolve().parents[2] / "api/rules/month_type_rules_v1.json").read_text()
+        (Path(__file__).resolve().parents[1] / "rules/month_type_rules_v1.json").read_text()
     )
     skip_ids = {
         fid

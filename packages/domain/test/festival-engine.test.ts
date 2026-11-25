@@ -73,8 +73,8 @@ function compare(what: string, got: Row[], want: Row[]) {
 test("the rule copies match the server's", () => {
   for (const name of ["festival_rules_v3", "public_holidays_v1", "holiday_overrides_v1", "month_type_rules_v1"]) {
     const ours = readFileSync(new URL(`packages/domain/src/festivals/rules/${name}.json`, root), "utf8");
-    const server = readFileSync(new URL(`apps/api/rules/${name}.json`, root), "utf8");
-    assert.equal(ours, server, `${name}.json drifted from apps/api/rules; copy it again`);
+    const server = readFileSync(new URL(`apps/rust/rules/${name}.json`, root), "utf8");
+    assert.equal(ours, server, `${name}.json drifted from apps/rust/rules; copy it again`);
   }
 });
 

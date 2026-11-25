@@ -3,7 +3,7 @@
 //!
 //! A port of `engine/festivals/festival_rules.py`, `occurrence.py` and the festival half
 //! of `services/festivals/holiday_generator.py`. The rule files are embedded from
-//! `apps/api/rules`, the same files the Python server reads.
+//! `apps/rust/rules` (compiled in; `apps/api/rules` links there for the Python tools).
 
 mod compute;
 pub mod details;

@@ -60,13 +60,11 @@ run `node test/url-golden.mjs --update` and say why in the commit.
 
 `test/openapi-contract.mjs` checks every recorded request against
 `contracts/openapi.json`: the route exists, accepts that method, and receives
-every query parameter it requires. After changing a route in `apps/api`:
+every query parameter it requires. The Python server that generated it is
+retired, so after adding or changing a route in `apps/rust`, edit
+`contracts/openapi.json` by hand in the same commit.
 
-```sh
-cd apps/api && python scripts/export_openapi.py   # --check in CI
-```
-
-FastAPI declares a response schema for only 21 of its 112 operations, so the
+FastAPI declared a response schema for only 21 of its 112 operations, so the
 response types are written by hand in `src/types.ts` rather than generated;
 the OpenAPI check covers paths, methods and required parameters.
 

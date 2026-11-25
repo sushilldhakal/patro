@@ -11,25 +11,25 @@ fn parse(text: &str, what: &str) -> Value {
 
 static RULE_BOOK: LazyLock<Value> = LazyLock::new(|| {
     parse(
-        include_str!("../../../../api/rules/festival_rules_v3.json"),
+        include_str!("../../../rules/festival_rules_v3.json"),
         "festival_rules_v3.json",
     )
 });
 static PUBLIC: LazyLock<Value> = LazyLock::new(|| {
     parse(
-        include_str!("../../../../api/rules/public_holidays_v1.json"),
+        include_str!("../../../rules/public_holidays_v1.json"),
         "public_holidays_v1.json",
     )
 });
 static OVERRIDES: LazyLock<Value> = LazyLock::new(|| {
     parse(
-        include_str!("../../../../api/rules/holiday_overrides_v1.json"),
+        include_str!("../../../rules/holiday_overrides_v1.json"),
         "holiday_overrides_v1.json",
     )
 });
 static MONTH_TYPES: LazyLock<Value> = LazyLock::new(|| {
     parse(
-        include_str!("../../../../api/rules/month_type_rules_v1.json"),
+        include_str!("../../../rules/month_type_rules_v1.json"),
         "month_type_rules_v1.json",
     )
 });

@@ -12,7 +12,7 @@ fn parse(text: &str, what: &str) -> Value {
 
 static DETAILS: LazyLock<Value> = LazyLock::new(|| {
     parse(
-        include_str!("../../../../api/rules/festival_details_v1.json"),
+        include_str!("../../../rules/festival_details_v1.json"),
         "festival_details_v1.json",
     )
 });

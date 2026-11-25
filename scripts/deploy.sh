@@ -49,10 +49,10 @@ else
   echo "==> Website unchanged — skipping"
 fi
 
-# The Rust API, the only API server. The festival rules in apps/api/rules are compiled into it, so a
-# change there rebuilds it too.
+# The Rust API, the only API server. Its festival rules and fonts (apps/rust/rules, apps/rust/assets)
+# are compiled into it.
 if [[ "${force}" == "all" || "${force}" == "rust" ]] \
-  || changed_since_last_deploy rust apps/rust apps/api/rules apps/api/assets; then
+  || changed_since_last_deploy rust apps/rust; then
   echo "==> Deploying Rust API"
   bash scripts/deploy-rust.sh
   echo "${HEAD_SHA}" > "${STATE_DIR}/rust.sha"

@@ -42,17 +42,12 @@ const GUIDANCE_VERSION: &str = "1";
 const MAX_DAYS: i64 = 31;
 const CHANDRA_GOOD_HOUSES: [usize; 6] = [1, 3, 6, 7, 10, 11];
 
-fn rules(state: &AppState) -> Result<Arc<Value>, Response> {
+fn rules() -> Result<Arc<Value>, Response> {
     static RULES: OnceLock<Result<Arc<Value>, String>> = OnceLock::new();
     RULES
         .get_or_init(|| {
-            let path = state
-                .config
-                .data_dir
-                .join("../rules/daily_guidance_v1.json");
-            std::fs::read_to_string(&path)
-                .map_err(|e| format!("{}: {e}", path.display()))
-                .and_then(|t| serde_json::from_str(&t).map_err(|e| e.to_string()))
+            serde_json::from_str(include_str!("../../../../rules/daily_guidance_v1.json"))
+                .map_err(|e| format!("daily_guidance_v1.json: {e}"))
                 .map(Arc::new)
         })
         .clone()
@@ -793,7 +788,7 @@ pub async fn daily_guidance(
             .get_profile(&user.id, &profile_id)
             .await
             .map_err(|e| error(&e))?;
-        let rules = rules(&state)?;
+        let rules = rules()?;
         let now = state.now();
         let first = first.unwrap_or_else(|| CivilDay::from_jd_ut(now.to_jd()));
         let natal = natal_for(location.system, &profile.birth);

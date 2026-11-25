@@ -61,20 +61,16 @@ const BS_MONTH_NAMES: [&str; 12] = [
 const NEPALI_DIGITS: [char; 10] = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
 
 static RULE_BOOK: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!("../../../../api/rules/festival_rules_v3.json"))
+    serde_json::from_str(include_str!("../../../rules/festival_rules_v3.json"))
         .unwrap_or_else(|e| panic!("festival_rules_v3.json is valid JSON: {e}"))
 });
 static PUBLIC_HOLIDAYS: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!(
-        "../../../../api/rules/public_holidays_v1.json"
-    ))
-    .unwrap_or_else(|e| panic!("public_holidays_v1.json is valid JSON: {e}"))
+    serde_json::from_str(include_str!("../../../rules/public_holidays_v1.json"))
+        .unwrap_or_else(|e| panic!("public_holidays_v1.json is valid JSON: {e}"))
 });
 static HOLIDAY_OVERRIDES: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!(
-        "../../../../api/rules/holiday_overrides_v1.json"
-    ))
-    .unwrap_or_else(|e| panic!("holiday_overrides_v1.json is valid JSON: {e}"))
+    serde_json::from_str(include_str!("../../../rules/holiday_overrides_v1.json"))
+        .unwrap_or_else(|e| panic!("holiday_overrides_v1.json is valid JSON: {e}"))
 });
 static EMPTY_MAP: LazyLock<Map<String, Value>> = LazyLock::new(Map::new);
 

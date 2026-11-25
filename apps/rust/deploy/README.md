@@ -1,13 +1,19 @@
 # Deploying the Rust API
 
 **Every push to `main`** runs `.github/workflows/deploy.yml`, which SSHes to the VM and runs
-`scripts/deploy.sh`. That script pulls `main` and, when `apps/rust`, `apps/api/rules` or
-`apps/api/assets` changed since the last good deploy, runs `scripts/deploy-rust.sh`:
+`scripts/deploy.sh`. That script pulls `main` and, when `apps/rust` (which holds the festival
+rules and fonts compiled in) changed since the last good deploy, runs `scripts/deploy-rust.sh`:
 
 1. builds `vedic-patro` in release mode on the VM, at `nice 19` so the live servers keep their CPU;
 2. swaps `~/patro-rust/bin/vedic-patro` in atomically, keeping the old one as `vedic-patro.prev`;
-3. restarts `patro-rust` and waits for `/health`;
-4. if it never answers, puts the previous binary back and fails the deploy.
+3. installs `patro-rust.service` and `patro-rust.socket` when they changed (systemd then owns
+   127.0.0.1:8000, so a restart queues requests instead of nginx answering 502);
+4. restarts `patro-rust` and waits for `/health`;
+5. if it never answers, puts the previous binary back (stopping the socket, since an older binary
+   binds the port itself) and fails the deploy.
+
+`nginx/` holds copies of the live sites (`/etc/nginx/sites-enabled/*`, 2026-11-26); nothing
+installs them. Edit the live file, reload nginx, then copy it here.
 
 **CI** (`.github/workflows/ci.yml`, job `rust`) runs `cargo fmt --check`, clippy with warnings
 denied and every crate's tests on each push and pull request. The root package's HTTP golden
