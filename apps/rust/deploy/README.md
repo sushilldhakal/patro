@@ -25,3 +25,7 @@ beside Python (8000); nginx still sends users to Python.
 `cutover.sh` changes nginx's `patro_api` upstream from 8000 to 8100; `rollback.sh` puts it back.
 Both take effect on an nginx reload. Python stays installed and running as the fallback until
 the owner retires it; when that happens, drop the API step from `scripts/deploy.sh`.
+
+
+## 2026-11-25: Rust is the only API server
+nginx sends `/api` to Rust (8100). The Python service, its deploy step and `rollback.sh` are gone; nothing links to Python any more.
