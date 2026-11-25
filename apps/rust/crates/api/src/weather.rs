@@ -10,6 +10,8 @@ use tokio::sync::{Mutex, RwLock};
 
 const REFRESH_AFTER: Duration = Duration::from_secs(20 * 60);
 const MAX_STALE: Duration = Duration::from_secs(2 * 60 * 60);
+/// When Open-Meteo is down, a forecast this old is still better than an error page.
+const SERVE_ON_ERROR: Duration = Duration::from_secs(12 * 60 * 60);
 
 #[derive(Debug, Clone)]
 struct ForecastEntry {
@@ -86,8 +88,19 @@ impl WeatherService {
                 return Ok((entry.payload, entry.fetched_unix, true));
             }
         }
-        let entry = self.refresh(&key, lat, lon).await?;
-        Ok((entry.payload, entry.fetched_unix, false))
+        match self.refresh(&key, lat, lon).await {
+            Ok(entry) => Ok((entry.payload, entry.fetched_unix, false)),
+            Err(error) => {
+                let old = self.inner.cache.read().await.get(&key).cloned();
+                match old.filter(|entry| entry.fetched_at.elapsed() < SERVE_ON_ERROR) {
+                    Some(entry) => {
+                        tracing::warn!(%error, %key, "weather fetch failed; serving the older forecast");
+                        Ok((entry.payload, entry.fetched_unix, true))
+                    }
+                    None => Err(error),
+                }
+            }
+        }
     }
 
     async fn refresh(
@@ -111,7 +124,7 @@ impl WeatherService {
             }
         }
 
-        let payload_result = async {
+        let fetch = || async {
             self.inner
                 .client
                 .get(&self.inner.endpoint)
@@ -140,8 +153,19 @@ impl WeatherService {
                 .error_for_status()?
                 .json::<Value>()
                 .await
-        }
-        .await;
+        };
+        // Open-Meteo answers a 5xx or drops a connection now and then: one more try.
+        let payload_result = match fetch().await {
+            Err(e)
+                if e.is_connect()
+                    || e.is_timeout()
+                    || e.status().is_some_and(|s| s.is_server_error()) =>
+            {
+                tokio::time::sleep(Duration::from_millis(500)).await;
+                fetch().await
+            }
+            other => other,
+        };
         let mut payload = match payload_result {
             Ok(payload) => payload,
             Err(error) => {

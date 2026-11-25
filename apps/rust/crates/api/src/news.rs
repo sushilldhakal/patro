@@ -324,17 +324,36 @@ fn date_from_link(link: &str) -> Option<i64> {
 }
 
 async fn fetch(client: &reqwest::Client, url: &str) -> Result<String, String> {
-    let response = client
-        .get(url)
-        .send()
-        .await
-        .and_then(reqwest::Response::error_for_status)
-        .map_err(|e| e.to_string())?;
+    let send = || async { client.get(url).send().await };
+    // The Nepali outlets drop a connection now and then (about one read in ten in
+    // production): one more try two seconds later.
+    let response = match send().await {
+        Err(e) if e.is_connect() || e.is_timeout() || e.is_request() => {
+            tokio::time::sleep(Duration::from_secs(2)).await;
+            send().await
+        }
+        other => other,
+    }
+    .and_then(reqwest::Response::error_for_status)
+    .map_err(|e| error_chain(&e))?;
     let bytes = response.bytes().await.map_err(|e| e.to_string())?;
     if bytes.len() > MAX_FEED_BYTES {
         return Err(format!("feed too large: {} bytes", bytes.len()));
     }
     Ok(String::from_utf8_lossy(&bytes).into_owned())
+}
+
+/// The error with its causes ("error sending request: … connection reset"), not just
+/// reqwest's top line.
+fn error_chain(error: &dyn std::error::Error) -> String {
+    let mut text = error.to_string();
+    let mut source = error.source();
+    while let Some(cause) = source {
+        text.push_str(": ");
+        text.push_str(&cause.to_string());
+        source = cause.source();
+    }
+    text
 }
 
 /// The items of one RSS 2.0 document. Items without a title or an http(s) link are
