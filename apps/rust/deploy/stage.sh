@@ -25,6 +25,7 @@ db=$(grep -E '^DATABASE_URL=' ~/patro/.env | head -1 | cut -d= -f2- | tr -d '"' 
 redis=$(grep -E '^REDIS_URL=' ~/patro/.env | head -1 | cut -d= -f2- | tr -d '"')
 # Redis database 1 for Rust, so it never reads or overwrites the Python server's cached entries.
 redis_rust=$(echo "$redis" | sed -E 's#/[0-9]+$##')/1
+sudo install -d -o ubuntu -g ubuntu -m 755 /var/lib/patro-shared /var/lib/patro-shared/month
 umask 077
 cat > rust.env <<EOF2
 PATRO_RS__HOST=127.0.0.1
@@ -36,6 +37,7 @@ PATRO_RS_REDIS_URL=$redis_rust
 PATRO_RS_EPHDATA=/home/ubuntu/patro-rust/data/drik
 PATRO_RS_SURYA_CHEB=/home/ubuntu/patro-rust/data/surya/surya.cheb
 PATRO_RS_DRIK_CHEB=/home/ubuntu/patro-rust/data/drik/drik.cheb
+PATRO_RS_SHARED_DIR=/var/lib/patro-shared
 EOF2
 REMOTE
 scp -q "$HERE/patro-rust.service" "$PROD:/tmp/patro-rust.service"

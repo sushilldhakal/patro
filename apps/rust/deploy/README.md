@@ -29,3 +29,12 @@ the owner retires it; when that happens, drop the API step from `scripts/deploy.
 
 ## 2026-11-25: Rust is the only API server
 nginx sends `/api` to Rust (8000, the port Python used to have; it was 8100 from the cutover until later that day). The Python service, its deploy step and `rollback.sh` are gone; nothing links to Python any more.
+
+## Shared month results
+
+`PATRO_RS_SHARED_DIR=/var/lib/patro-shared` (in `rust.env`) turns on `/v1/shared/month/{key}`: a
+client that computed a month grid PUTs it, and once 3 different callers send the same bytes Rust
+writes `month/{key}.json`. nginx serves the GETs straight from that folder
+(`nginx-shared-month.conf`, placed before `location /api/` in the `vedicpatro` site), so a stored
+month costs no Rust work and no proxy-cache memory, and Cloudflare keeps it (immutable). Only PUTs
+reach Rust. The folder is outside `/home/ubuntu` because nginx (www-data) cannot read there.
