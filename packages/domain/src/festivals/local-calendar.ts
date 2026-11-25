@@ -35,6 +35,23 @@ export interface LocalMonthQuery {
   slim?: boolean;
 }
 
+/** One of the gochar routes: a day (`date` or `jd`), the BS year summary (`year`), a timeline (`from`/`to`), a graha year (`graha` + `year`) or graha sthiti (`sthiti`). */
+export interface LocalGocharQuery {
+  date?: string;
+  jd?: number;
+  year?: number;
+  graha?: "asta" | "vakri";
+  from?: string;
+  to?: string;
+  level?: string;
+  grahas?: string;
+  sthiti?: string;
+  upcoming?: boolean;
+  /** Only when the request names an era is the answer rendered for it (the server's era layer). */
+  era?: string;
+  language?: string;
+}
+
 export type LocalElementQuery =
   | { route: "list" }
   | { route: "day"; name: string; date: string; era: string; language?: string }
@@ -44,6 +61,8 @@ export type LocalElementQuery =
 export interface LocalCalendar {
   /** A BS month grid (lite), or null for the server. */
   month(q: LocalMonthQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The gochar routes (transit table, ingress timelines, year summary, graha asta/vakri, graha sthiti), or null for the server. */
+  gochar(q: LocalGocharQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The lite grid alone (what `month` builds on). */
   liteMonth(q: LocalMonthQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   festivals(q: LocalListingQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
@@ -397,6 +416,51 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const day = civilFromJdn(Math.floor(q.jd + 0.5));
         const { atTimeResponse } = await import("../panchanga/engine/at-time");
         return atTimeResponse(ctx.sky, { year: day.year, month: day.month, day: day.day, ...ctx.place }, { clock: q.clock, era: q.era, language: q.language, surya: ctx.surya });
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    gochar: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const g = await import("../panchanga/engine/gochar");
+        const { jdnFromIso, bsToJdn } = await import("../astronomy/lunar-month");
+        const { renderForEra, eraLanguage } = await import("../panchanga/engine/era-render");
+        const where = ctx.place;
+        const render = (payload: Record<string, unknown> | null, era: string | undefined) => (payload && era ? renderForEra(payload, era, q.language ?? eraLanguage(era)) : payload);
+        const dateKey = (key: string, era: string): number | null => {
+          if (era === "ad") return jdnFromIso(key);
+          if (era !== "bs") return null;
+          const [y, m, d] = key.split("-").map(Number);
+          return bsToJdn(y, m, d);
+        };
+        if (q.sthiti !== undefined) {
+          const jdn = dateKey(q.sthiti, q.era ?? "ad");
+          return jdn === null ? null : render(g.grahaSthiti(ctx.sky, jdn, where), q.era);
+        }
+        if (q.graha) {
+          const { yearSpanJd, stampYear } = await import("../panchanga/engine/panchak");
+          const era = q.era ?? "bs";
+          const span = q.year === undefined ? null : yearSpanJd(era, q.year);
+          if (!span || q.year === undefined) return null;
+          if (q.graha === "vakri") return render(g.grahaVakriSpan(ctx.sky, span[0], span[1], where), q.era);
+          return stampYear(g.grahaAstaSpan(ctx.sky, span[0], span[1], where), era, q.year, span, q.language);
+        }
+        if (q.year !== undefined) return render(g.gocharYear(ctx.sky, q.year, where), q.era);
+        if (q.from !== undefined && q.to !== undefined) {
+          const era = q.era ?? "ad";
+          const a = dateKey(q.from, era);
+          const b = dateKey(q.to, era);
+          const level = (q.level ?? "pada") as import("../panchanga/engine/gochar").GocharLevel;
+          if (a === null || b === null || b < a || !["pada", "nakshatra", "rashi", "patro", "udayast"].includes(level)) return null;
+          const names = q.grahas ? q.grahas.split(",").map((n) => n.trim()).filter(Boolean) : undefined;
+          if (names && names.some((n) => !g.GRAHA_ALL.includes(n as import("../panchanga/engine/gochar").GrahaKey))) return null;
+          return render(g.gocharIngress(ctx.sky, a - 0.5, b - 0.5, where, level, names as import("../panchanga/engine/gochar").GrahaKey[] | undefined), q.era);
+        }
+        const jdn = q.jd !== undefined ? Math.floor(q.jd + 0.5) : q.date !== undefined ? dateKey(q.date, q.era ?? "bs") : null;
+        return jdn === null ? null : render(g.gocharDay(ctx.sky, jdn, where, q.upcoming === true), q.era);
       } catch (error) {
         options.onError?.(error);
         return null;

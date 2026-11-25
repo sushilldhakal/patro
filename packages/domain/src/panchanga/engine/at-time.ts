@@ -36,7 +36,7 @@ function equatorial(sky: Sky, jd: number, sayana: number, latitude: number): [nu
 const BODIES = { sun: "sun", moon: "moon", mercury: "mercury", venus: "venus", mars: "mars", jupiter: "jupiter", saturn: "saturn", rahu: "rahu" } as const;
 
 /** `planets_with_extras`: the graha table with ecliptic latitude (shara), right ascension and declination. */
-function planetsWithExtras(sky: Sky, jd: number): Json {
+export function planetsWithExtras(sky: Sky, jd: number): Json {
   const table = planetTable(sky, jd) as Record<string, Json>;
   const aya = ayanamshaOf(sky, jd);
   const drik = sky.system === "drik";
@@ -64,7 +64,7 @@ const sayanaAscendant = (sky: Sky, jd: number, lat: number, lon: number): number
 };
 
 /** The lagna at an instant (`anchor: instant`) with its equatorial extras and speed. */
-function instantLagna(sky: Sky, jd: number, lat: number, lon: number): Json | null {
+export function instantLagna(sky: Sky, jd: number, lat: number, lon: number): Json | null {
   const block = lagnaBlock(sky, jd, lat, lon);
   const sayana = sayanaAscendant(sky, jd, lat, lon);
   const step = 60 / 86400;

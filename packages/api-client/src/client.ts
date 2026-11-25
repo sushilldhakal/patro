@@ -495,19 +495,27 @@ export function eraQuery(era: Era = "bs", year?: number, language: Lang = normal
 }
 
 export const fetchGrahaAstaYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>
-  get<GrahaAstaResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${eraQuery(era, year, language)}`),
-      location,
-    ),
+  fromLocal<GrahaAstaResponse>((l) => l.gochar({ graha: "asta", year, era, language: language ?? normalizeLang() }, location)).then(
+    (local) =>
+      local ??
+      get<GrahaAstaResponse>(
+        appendLocation(
+          withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${eraQuery(era, year, language)}`),
+          location,
+        ),
+      ),
   );
 
 export const fetchGrahaVakriYear = (year: number, location?: LocationParams, era: Era = "bs", language?: Lang) =>
-  get<GrahaVakriResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${eraQuery(era, year, language)}`),
-      location,
-    ),
+  fromLocal<GrahaVakriResponse>((l) => l.gochar({ graha: "vakri", year, era, language: language ?? normalizeLang() }, location)).then(
+    (local) =>
+      local ??
+      get<GrahaVakriResponse>(
+        appendLocation(
+          withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${eraQuery(era, year, language)}`),
+          location,
+        ),
+      ),
   );
 
 export const fetchEclipseYear = (
@@ -608,8 +616,10 @@ export const fetchGocharIngress = (
   params.set("to", to);
   params.set("era", options?.era ?? "ad");
   params.set("level", options?.level ?? "pada");
-  return get<GocharIngressResponse>(
-    appendLocation(`/nepal/gochar/ingress?${params.toString()}`, location),
+  return fromLocal<GocharIngressResponse>((l) => l.gochar({ from, to, level: options?.level ?? "pada", era: options?.era ?? "ad" }, location)).then(
+    (local) =>
+      local ??
+      get<GocharIngressResponse>(appendLocation(`/nepal/gochar/ingress?${params.toString()}`, location)),
   );
 };
 
@@ -661,7 +671,9 @@ export const gocharKeys = {
 };
 
 export const fetchGochar = (date: string, era: Era = "ad", location?: LocationParams) =>
-  get<GocharResponse>(appendLocation(`/nepal/gochar/${date}?era=${era}`, location));
+  fromLocal<GocharResponse>((l) => l.gochar({ date, era }, location)).then(
+    (local) => local ?? get<GocharResponse>(appendLocation(`/nepal/gochar/${date}?era=${era}`, location)),
+  );
 
 export const grahaDetailKeys = {
   sthiti: (dateKey: string, apiEra: string, location?: LocationParams) =>
@@ -680,8 +692,12 @@ export const grahaDetailKeys = {
 };
 
 export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, apiEra: Era = "ad") =>
-  get<GrahaSthitiResponse>(
-    appendLocation(withGrahaCacheVersion(`/nepal/graha-sthiti/${dateKey}?era=${apiEra}`), location),
+  fromLocal<GrahaSthitiResponse>((l) => l.gochar({ sthiti: dateKey, era: apiEra }, location)).then(
+    (local) =>
+      local ??
+      get<GrahaSthitiResponse>(
+        appendLocation(withGrahaCacheVersion(`/nepal/graha-sthiti/${dateKey}?era=${apiEra}`), location),
+      ),
   );
 
 export const panchakKeys = {
@@ -989,7 +1005,9 @@ export const fetchNepalPanchanga = (dateAd: string, location?: LocationParams) =
   );
 
 export const fetchGocharJd = (jdUt: number, location?: LocationParams) =>
-  get<GocharResponse>(appendLocation(`/nepal/gochar/jd/${jdUt}`, location));
+  fromLocal<GocharResponse>((l) => l.gochar({ jd: jdUt }, location)).then(
+    (local) => local ?? get<GocharResponse>(appendLocation(`/nepal/gochar/jd/${jdUt}`, location)),
+  );
 
 /** Ephemeris panchanga at observer-local `clock` on civil day `jd_ut` (0h UT). */
 export const fetchPanchangaAtTimeJd = (

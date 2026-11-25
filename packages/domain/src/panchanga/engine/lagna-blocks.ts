@@ -10,7 +10,7 @@ import { RASHI_NAMES, RASHI_NAMES_NE } from "./tables.generated";
 
 const stableRound = (v: number) => pyRound(pyRound(v, 9), 6);
 
-function dms(value: number, width: number): string {
+export function dms(value: number, width: number): string {
   let d = pyInt(value);
   const mFrac = (value - d) * 60;
   let m = pyInt(mFrac);
@@ -32,12 +32,12 @@ const ORDER = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "
 /** The index of each graha in the sky's body order (sun, moon, mars, mercury, jupiter, venus, saturn, rahu). */
 const BODY_INDEX: Record<(typeof ORDER)[number], number> = { sun: 0, moon: 1, mercury: 3, venus: 5, mars: 2, jupiter: 4, saturn: 6, rahu: 7 };
 
-interface Graha {
+export interface Graha {
   key: string;
   longitude: number;
   speed: number;
 }
-function spashtaGrahas(sky: Sky, jd: number): Graha[] {
+export function spashtaGrahas(sky: Sky, jd: number): Graha[] {
   const at = sky.positionsAt(jd, 8, false);
   const ahead = sky.positionsAt(jd + 0.5, 8, false);
   const behind = sky.positionsAt(jd - 0.5, 8, false);
@@ -53,8 +53,8 @@ function spashtaGrahas(sky: Sky, jd: number): Graha[] {
   return grahas;
 }
 
-const isRetrograde = (g: Graha) => (g.key === "rahu" || g.key === "ketu" ? true : g.key === "sun" || g.key === "moon" ? false : g.speed < 0);
-function isCombust(g: Graha, sun: number): boolean {
+export const isRetrograde = (g: Graha) => (g.key === "rahu" || g.key === "ketu" ? true : g.key === "sun" || g.key === "moon" ? false : g.speed < 0);
+export function isCombust(g: Graha, sun: number): boolean {
   const diff = pyMod(g.longitude - sun, 360);
   const sep = Math.min(diff, 360 - diff);
   const retro = isRetrograde(g);
