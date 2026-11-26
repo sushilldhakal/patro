@@ -9,6 +9,7 @@
 set -euo pipefail
 
 REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
+# deploy.yml passes the commit it built, so the code matches the Rust binary built from it.
 DEPLOY_REF="${DEPLOY_REF:-main}"
 STATE_DIR="${REPO_DIR}/.deploy"
 
@@ -19,7 +20,7 @@ cd "${REPO_DIR}"
 if [[ "${DEPLOY_PULLED:-0}" != "1" ]]; then
   echo "==> Pulling latest code (${DEPLOY_REF})"
   git fetch origin "${DEPLOY_REF}"
-  git reset --hard "origin/${DEPLOY_REF}"
+  git reset --hard FETCH_HEAD
   export DEPLOY_PULLED=1
   exec bash "${REPO_DIR}/scripts/deploy.sh" "$@"
 fi
