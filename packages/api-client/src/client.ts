@@ -82,6 +82,7 @@ import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import { rememberCity, type LocalCalendar, type SharedMonthStore } from "@vedic-patro/domain/festivals/local-calendar";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
+import { staticNearestCity } from "./static-data";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────
 // Appended to cacheable URLs so a backend/engine change mints fresh CDN objects
@@ -230,7 +231,9 @@ export const excludeParam = (excludeRules?: string[]) =>
 export const fetchNearestCity = (lat: number, lon: number, country?: string) => {
   const params = new URLSearchParams({ lat: String(lat), lon: String(lon) });
   if (country) params.set("country", country);
-  return get<NearestCityResponse>(`/nepal/cities/nearest?${params.toString()}`).then((r) => {
+  return staticNearestCity(lat, lon, country)
+    .then((r) => r ?? get<NearestCityResponse>(`/nepal/cities/nearest?${params.toString()}`))
+    .then((r) => {
     rememberCity(r.city);
     return r;
   });

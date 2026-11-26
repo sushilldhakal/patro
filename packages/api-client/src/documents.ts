@@ -6,6 +6,7 @@
  */
 import { get } from "./client";
 import { ApiError } from "./http";
+import { staticVedaDaily } from "./static-data";
 import type { DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
 
 /**
@@ -317,7 +318,9 @@ export const vedaDailyKeys = {
 };
 
 export const fetchVedaDaily = (dateAd: string) =>
-  get<VedaDaily>(`/veda/daily?date=${encodeURIComponent(dateAd)}&v=${DOCUMENTS_LIST_CACHE_VERSION}`);
+  staticVedaDaily<VedaDaily>(dateAd).then(
+    (r) => r ?? get<VedaDaily>(`/veda/daily?date=${encodeURIComponent(dateAd)}&v=${DOCUMENTS_LIST_CACHE_VERSION}`),
+  );
 
 /** True when a documents request failed because the text does not exist. */
 export function isNotFound(error: unknown): boolean {

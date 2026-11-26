@@ -22,6 +22,8 @@ import {
   get,
   relinkDayDetail,
   requestJson,
+  configureStaticData,
+  staticJsonFor,
   apiBases,
   DEFAULT_API_VERSION,
   setCalculationResolver,
@@ -381,7 +383,10 @@ function withExplicitLanguage(path: string): string {
   return `${path}${path.includes("?") ? "&" : "?"}language=${readUiLanguage()}`;
 }
 
-const fetchJson = <T,>(path: string): Promise<T> => requestJson<T>(DATA_BASE, withExplicitLanguage(path));
+// Documents and popular cities from static.vedicpatro.com when VITE_STATIC_DATA_URL is set; the API answers any miss.
+configureStaticData(import.meta.env.VITE_STATIC_DATA_URL);
+const fetchJson = async <T,>(path: string): Promise<T> =>
+  (await staticJsonFor<T>(path)) ?? requestJson<T>(DATA_BASE, withExplicitLanguage(path));
 
 function webLocationKey(location?: LocationParams): string {
   if (!location) return "default";

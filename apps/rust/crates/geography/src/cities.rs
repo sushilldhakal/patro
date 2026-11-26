@@ -279,6 +279,15 @@ impl Cities {
             .next())
     }
 
+    /// Every city, by id (the static-data exporter's nearest-city tiles).
+    ///
+    /// # Errors
+    ///
+    /// When the database is missing or unreadable.
+    pub fn all(&self) -> Result<Vec<City>, CitiesError> {
+        self.query("ORDER BY id", Vec::new())
+    }
+
     /// The curated popular cities, most populous first (`get_popular_cities`).
     ///
     /// # Errors

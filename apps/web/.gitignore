@@ -28,3 +28,5 @@ dist-ssr
 *.sw?
 UI-DESIGN-INCONSISTENCIES.md
 DESIGN-FIXES-COMPLETED.md
+dist-pages
+.wrangler

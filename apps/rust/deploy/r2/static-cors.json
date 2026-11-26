@@ -1,0 +1,8 @@
+[
+  {
+    "AllowedOrigins": ["https://www.vedicpatro.com", "https://vedicpatro.pages.dev"],
+    "AllowedMethods": ["GET"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 86400
+  }
+]

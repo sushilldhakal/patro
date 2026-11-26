@@ -30,6 +30,8 @@ import {
   apiErrorFrom,
   DEFAULT_TIMEOUT_MS,
   fetchWithTimeout,
+  configureStaticData,
+  staticResponseFor,
   apiBases,
   DEFAULT_API_VERSION,
   PRODUCTION_API_BASE,
@@ -453,7 +455,8 @@ async function offlineAwareJson<T>(rawPath: string): Promise<T> {
   const path = withReaderCalculation(withUiLanguage(rawPath));
   return offlineAwareGet<T>(
     path,
-    () =>
+    async () =>
+      (await staticResponseFor(path)) ??
       fetchWithTimeout(`${DATA_BASE}${networkPath(path)}`, path, {
         timeoutMs: isCapturing() ? DEFAULT_TIMEOUT_MS : SCREEN_TIMEOUT_MS,
       }),
@@ -465,6 +468,10 @@ function locationKey(loc?: LocationParams): string {
   const l = loc ?? DEFAULT_LOCATION;
   return [l.city_id, l.lat, l.lon, l.timezone].join(":");
 }
+
+// Documents and popular cities from static.vedicpatro.com when EXPO_PUBLIC_STATIC_DATA_URL is set;
+// the API answers any miss.
+configureStaticData(process.env.EXPO_PUBLIC_STATIC_DATA_URL);
 
 // Every other request (streamed kundali reports, posts) gets it at the fetch itself.
 setCalculationResolver(() => getCalculation());

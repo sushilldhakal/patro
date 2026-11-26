@@ -2987,6 +2987,7 @@ dependencies = [
  "axum",
  "common",
  "flate2",
+ "geography",
  "patro",
  "serde_json",
  "timescale",
