@@ -65,11 +65,11 @@ jobs:
             export WEB_DIST_TGZ=/tmp/patro-web/web-dist.tgz
             bash /home/ubuntu/patro/scripts/deploy.sh
 
-      # Same build on Cloudflare Pages (vedicpatro.pages.dev), a preview copy; www stays on the VM.
-      - name: Deploy preview to Cloudflare Pages
-        if: env.CLOUDFLARE_API_TOKEN != ''
-        continue-on-error: true
+      # www.vedicpatro.com is served by the vedicpatro-web Worker (apps/web/wrangler.jsonc): every
+      # page and file from Cloudflare; /api/* and /og-image* have no-Worker routes to the VM. The VM
+      # copy published above stays as the rollback (delete the www.vedicpatro.com/* Worker route).
+      - name: Deploy website to Cloudflare (Worker static assets)
         working-directory: apps/web
         run: |
           npm run build:pages
-          npx --yes wrangler@4 pages deploy dist-pages --project-name=vedicpatro --branch=main --commit-dirty=true
+          npx --yes wrangler@4 deploy

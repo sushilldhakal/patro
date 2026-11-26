@@ -4,8 +4,8 @@
 //  - _redirects from redirects.map, _headers from the nginx cache rules (apps/rust/deploy/nginx/vedicpatro.conf)
 //  - X.html beside every X/index.html, so Pages answers /x itself instead of 308-ing to /x/
 //    (nginx serves /x and 301s /x/ → /x; Pages does the same when x.html exists).
-// /panchanga (share cards for crawlers) and /download (store redirect) run as Pages Functions
-// (apps/web/functions), limited to those two paths by _routes.json so every other request stays free.
+// /panchanga (share cards for crawlers) and /download (store redirect) run in worker/index.js
+// (wrangler.jsonc `run_worker_first`), so every other request is a free static-asset request.
 import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -63,7 +63,6 @@ writeFileSync(
 `,
 );
 
-writeFileSync(join(out, "_routes.json"), JSON.stringify({ version: 1, include: ["/panchanga", "/download"], exclude: [] }));
 
 let htmlCopies = 0;
 const walk = (dir) => {

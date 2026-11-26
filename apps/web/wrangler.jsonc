@@ -1,0 +1,17 @@
+// The website on Cloudflare Workers static assets: www.vedicpatro.com/* is routed here (route set in
+// the dashboard/API, with no-Worker routes for /api/* and /og-image* so those reach the Oracle server).
+// Deploy: npm run build && npm run build:pages && npx wrangler deploy
+{
+  "name": "vedicpatro-web",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./dist-pages",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // nginx answers /x/ with a 301 to /x; this does the same.
+    "html_handling": "drop-trailing-slash",
+    "run_worker_first": ["/panchanga", "/download"]
+  }
+}
