@@ -95,6 +95,13 @@ export function parsePatroDayUrl(
     return { kind: "input", inputEra, year, month, day, display };
   }
 
+  // `date=YYYY-MM-DD` (AD): the daily Facebook posts and their og-preview image link a day this way.
+  const iso = typeof search.date === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(search.date) : null;
+  const [isoYear, isoMonth, isoDay] = iso ? [Number(iso[1]), Number(iso[2]), Number(iso[3])] : [0, 0, 0];
+  if (year == null && iso && isoMonth >= 1 && isoMonth <= 12 && isoDay >= 1 && isoDay <= 31) {
+    return { kind: "input", inputEra: "ad", year: isoYear, month: isoMonth, day: isoDay, display };
+  }
+
   if (year != null && month != null) {
     const inputEra = isEra(search.inputEra)
       ? search.inputEra

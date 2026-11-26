@@ -114,6 +114,22 @@
         "--strictPort"
       ],
       "port": 5176
+    },
+    {
+      "name": "web-prod-api",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "VITE_DEV_API_TARGET=https://www.vedicpatro.com/api",
+        "npm",
+        "run",
+        "dev",
+        "-w",
+        "@vedic-patro/web",
+        "--",
+        "--port",
+        "5176"
+      ],
+      "port": 5176
     }
   ]
 }
