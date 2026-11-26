@@ -47,4 +47,9 @@ test("an at-time request for a GPS place is answered on the device, with the ser
   // No time zone: inside Nepal it is Nepal time; elsewhere the server finds the zone.
   assert.ok(await calendar.atTime({ jd: 2461369.5, clock: "09:00:00", era: "bs", language: "ne" }, { lat: 27.7, lon: 85.3167 }));
   assert.equal(await calendar.atTime({ jd: 2461369.5, clock: "09:00:00", era: "bs", language: "ne" }, { lat: 51.5, lon: -0.12 }), null);
+  // A saved city the device was never sent this session (an id it does not know) still has its
+  // coordinates and zone: the device answers from those, as with the server down.
+  const saved = await calendar.month({ year: 2083, month: 8, era: "bs" }, { city_id: 4188985, lat: 35.53, lon: -78.44, timezone: "America/New_York" });
+  assert.ok(saved, "an unknown city id with coordinates is answered on the device");
+  assert.equal(await calendar.atTime({ jd: 2461369.5, clock: "09:00:00" }, { city_id: 4188985 }), null, "an unknown id alone goes to the server");
 });

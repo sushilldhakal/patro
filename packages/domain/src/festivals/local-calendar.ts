@@ -210,8 +210,12 @@ export function rememberCity(city: { id?: unknown; lat?: unknown; lon?: unknown;
  */
 function placeOf(location: LocalPlaceQuery | undefined, kathmandu: FestivalPlace): FestivalPlace | null {
   if (!location) return kathmandu;
-  if (location.city_id != null) return CITIES.get(Number(location.city_id)) ?? null;
-  if (location.city) return null;
+  if (location.city_id != null) {
+    const known = CITIES.get(Number(location.city_id));
+    if (known) return known;
+    // A city the device has not been sent this session: its coordinates (the apps store them with the id).
+    if (typeof location.lat !== "number" || typeof location.lon !== "number") return null;
+  } else if (location.city) return null;
   const { lat, lon } = location;
   if (typeof lat !== "number" || typeof lon !== "number") return null;
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
@@ -219,7 +223,8 @@ function placeOf(location: LocalPlaceQuery | undefined, kathmandu: FestivalPlace
   const inNepal = lat >= 26.3 && lat <= 30.5 && lon >= 80 && lon <= 88.3;
   const timezone = location.timezone || (inNepal ? "Asia/Kathmandu" : null);
   if (!timezone) return null;
-  return { latitude: lat, longitude: lon, timeZone: timezone };
+  const cityId = location.city_id != null ? Number(location.city_id) : undefined;
+  return { latitude: lat, longitude: lon, timeZone: timezone, ...(cityId !== undefined && Number.isFinite(cityId) ? { cityId } : {}) };
 }
 
 /**
