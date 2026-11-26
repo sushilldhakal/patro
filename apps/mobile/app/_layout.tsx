@@ -12,12 +12,13 @@ import * as Sentry from "@sentry/react-native";
 import { deviceStore } from "@/lib/device-store";
 import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { StatusBar } from "expo-status-bar";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { AppState, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { setLanguage, tFor } from "@vedic-patro/i18n/runtime";
 import { useLanguage } from "@vedic-patro/i18n/react";
 import { getStoredLanguage } from "@/lib/language-storage";
 import { light, mobileTypeScale, radius, space } from "@vedic-patro/design-tokens";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, focusManager, onlineManager, useQueryClient } from "@tanstack/react-query";
+import NetInfo from "@react-native-community/netinfo";
 import { ApiError, TimeoutError } from "@vedic-patro/api-client";
 import { OfflineMissError } from "@/lib/offline/offline-http";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
@@ -153,6 +154,15 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// React Native has no window focus or online events. Without these, a query that failed while the
+// phone was offline or the API was down (the home news, festivals, forex) stayed failed and hidden
+// until the app was restarted; now it is asked again when the app comes back or the network does.
+focusManager.setEventListener((handleFocus) => {
+  const sub = AppState.addEventListener("change", (state) => handleFocus(state === "active"));
+  return () => sub.remove();
+});
+onlineManager.setEventListener((setOnline) => NetInfo.addEventListener((state) => setOnline(state.isConnected !== false)));
 
 /**
  * Queries `shouldPersistQuery` keeps out of the offline cache gain nothing from the 7-day gcTime
