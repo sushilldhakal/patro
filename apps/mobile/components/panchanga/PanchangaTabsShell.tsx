@@ -89,12 +89,15 @@ export function PanchangaTabsShell({
   /* A flat tab (gochar, holidays, …) is wrapped once per tab, so decide from the
    * tab's own route rather than the global URL: otherwise a wrapper can read the
    * previous page's path for a frame and render without the sidebar rail. */
+  const ownPath = routeName === "index" ? "/" : `/${routeName}`;
+  /* A nested stack reads the live URL only while it is the page on screen: left underneath
+   * another page (documents under gochar), the live URL flipped its host to a ScrollView,
+   * remounting the whole stack and nesting its FlatList (every verse rendered at once). */
+  const ownsLiveUrl = livePathname === ownPath || livePathname.startsWith(`${ownPath}/`);
   const pathname =
-    routeName && !NESTED_TAB_NAMES.has(routeName) && !routeName.includes("[")
-      ? routeName === "index"
-        ? "/"
-        : `/${routeName}`
-      : livePathname;
+    !routeName || routeName.includes("[") || (NESTED_TAB_NAMES.has(routeName) && ownsLiveUrl)
+      ? livePathname
+      : ownPath;
   const colors = useThemeColors();
   const { isTablet, isCompact } = useBreakpoint();
   const wideEnough = useShowPanchangaSidebar();
