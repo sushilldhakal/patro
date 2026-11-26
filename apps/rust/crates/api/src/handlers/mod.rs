@@ -14,6 +14,7 @@ pub mod graha;
 pub mod guidance;
 pub mod health;
 pub mod kundali;
+pub mod nepse;
 pub mod news;
 pub mod openapi;
 pub mod panchanga;

@@ -26,6 +26,7 @@ redis.workspace = true
 regex.workspace = true
 roxmltree.workspace = true
 reqwest.workspace = true
+rusqlite.workspace = true
 sha2.workspace = true
 timescale.workspace = true
 tokio.workspace = true

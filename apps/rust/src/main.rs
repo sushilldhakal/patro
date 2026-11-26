@@ -49,6 +49,7 @@ async fn serve() -> anyhow::Result<()> {
     } else {
         tracing::warn!("PATRO_RS_DATABASE_URL not set — auth/profile routes are disabled");
     }
+    state.nepse.spawn_recorder();
     let app = api::router(state);
     let listener = if let Some(inherited) = systemd_listener()? {
         tracing::info!(addr = ?inherited.local_addr().ok(), "listening on the systemd socket");

@@ -19,6 +19,8 @@ pub struct AppState {
     pub weather: crate::weather::WeatherService,
     /// Publisher headlines, read from RSS and kept in memory.
     pub news: crate::news::NewsService,
+    /// NEPSE share prices, recorded through the trading day.
+    pub nepse: crate::nepse::NepseService,
     /// A fixed "now" for tests; the system clock when `None`.
     pub fixed_now: Option<timescale::UtcInstant>,
     /// The account layer (Postgres), when `PATRO_RS_DATABASE_URL` is set.
@@ -125,6 +127,7 @@ impl AppState {
             documents,
             weather: crate::weather::WeatherService::from_env(),
             news: crate::news::NewsService::new(),
+            nepse: crate::nepse::NepseService::new(),
             fixed_now: None,
             accounts: None,
             vastu: Arc::new(OnceLock::new()),

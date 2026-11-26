@@ -19,7 +19,7 @@ pub fn router(state: AppState) -> Router {
         .merge(graha())
         .merge(kundali())
         .merge(vastu());
-    routes = routes.merge(weather()).merge(news());
+    routes = routes.merge(weather()).merge(news()).merge(nepse());
     if state.accounts.is_some() {
         routes = routes.merge(accounts());
     }
@@ -37,6 +37,20 @@ fn news() -> Router<AppState> {
     Router::new()
         .route("/v1/news/feed", get(handlers::news::feed))
         .route("/v1/news/stories/{id}", get(handlers::news::story))
+}
+
+/// NEPSE share prices: the live market, a day's ticks and long-term daily history.
+fn nepse() -> Router<AppState> {
+    Router::new()
+        .route("/v1/nepse/live", get(handlers::nepse::live))
+        .route(
+            "/v1/nepse/stocks/{symbol}/intraday",
+            get(handlers::nepse::intraday),
+        )
+        .route(
+            "/v1/nepse/stocks/{symbol}/daily",
+            get(handlers::nepse::daily),
+        )
 }
 
 /// The account layer (`app/routers/*`), mounted only with a database.

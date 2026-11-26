@@ -13,6 +13,9 @@ import {
   convertForex,
   lakhGrouped,
   metalCost,
+  nepseCrore,
+  nepseNumber,
+  useNepseLive,
   useForexRates,
   useMetalPrices,
   type ForexSide,
@@ -27,6 +30,8 @@ import { __iconNode as RepeatNode } from "lucide-react/dist/esm/icons/repeat";
 import { __iconNode as ArrowLeftRightNode } from "lucide-react/dist/esm/icons/arrow-left-right";
 import { __iconNode as ChevronDownNode } from "lucide-react/dist/esm/icons/chevron-down";
 import { __iconNode as ClockNode } from "lucide-react/dist/esm/icons/clock";
+import { __iconNode as TrendingUpNode } from "lucide-react/dist/esm/icons/trending-up";
+import { __iconNode as SearchNode } from "lucide-react/dist/esm/icons/search";
 import {
   LucideNative,
   type LucideIconNode,
@@ -41,7 +46,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useNavBottomPadding } from "@/lib/mobile-nav";
 import { useThemeColors } from "@/lib/theme-context";
 
-type Tab = "metals" | "forex";
+type Tab = "metals" | "forex" | "shares";
 
 /**
  * The market: gold and silver, and foreign currency, as two tabs under a sticky header (back,
@@ -55,13 +60,14 @@ export default function MarketScreen() {
   const navBottom = useNavBottomPadding(false);
   const params = useLocalSearchParams<{ tab?: string }>();
   const [tab, setTab] = useState<Tab>(
-    params.tab === "forex" ? "forex" : "metals",
+    params.tab === "forex" || params.tab === "shares" ? params.tab : "metals",
   );
   const back = () => (router.canGoBack() ? router.back() : router.replace("/"));
 
   const tabs: { id: Tab; label: string; icon: LucideIconNode }[] = [
     { id: "metals", label: t("market.tab_metals"), icon: GemNode },
     { id: "forex", label: t("market.tab_forex"), icon: RepeatNode },
+    { id: "shares", label: t("market.tab_shares"), icon: TrendingUpNode },
   ];
 
   return (
@@ -99,16 +105,19 @@ export default function MarketScreen() {
                 onPress={() => setTab(x.id)}
                 accessibilityRole="tab"
                 accessibilityState={{ selected: on }}
-                className={`flex-1 flex-row items-center justify-center gap-2 rounded-full py-2.5 ${on ? "bg-secondary" : ""}`}
+                className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full px-1 py-2.5 ${on ? "bg-secondary" : ""}`}
               >
                 <LucideNative
                   node={x.icon}
-                  size={18}
+                  size={16}
                   color={on ? brand.offWhite : colors.mutedForeground}
                   strokeWidth={2}
                 />
                 <Text
-                  className={`text-base font-semibold ${on ? "text-secondary-foreground" : "text-muted-foreground"}`}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                  className={`shrink text-sm font-semibold ${on ? "text-secondary-foreground" : "text-muted-foreground"}`}
                 >
                   {x.label}
                 </Text>
@@ -125,7 +134,13 @@ export default function MarketScreen() {
         }}
       >
         <View className="gap-4 px-4">
-          {tab === "metals" ? <MetalsTab /> : <ForexTab />}
+          {tab === "metals" ? (
+            <MetalsTab />
+          ) : tab === "forex" ? (
+            <ForexTab />
+          ) : (
+            <SharesTab />
+          )}
         </View>
       </ScrollView>
     </View>
@@ -587,5 +602,161 @@ function CurrencyButton({
         />
       </Pressable>
     </View>
+  );
+}
+
+/** Rows shown before "show all", so the first paint stays light. */
+const SHARES_FIRST = 40;
+
+/**
+ * NEPSE: every traded scrip's last price, refreshed every 30 seconds while trading is open,
+ * searchable by symbol or company. A row opens the scrip's intraday and long-term chart.
+ */
+function SharesTab() {
+  const { t, digits } = useLocale();
+  const router = useRouter();
+  const colors = useThemeColors();
+  const live = useNepseLive();
+  const [query, setQuery] = useState("");
+  const [all, setAll] = useState(false);
+  const data = live.data;
+  const q = query.trim().toLowerCase();
+  const rows = (data?.stocks ?? []).filter(
+    (s) =>
+      !q ||
+      s.symbol.toLowerCase().includes(q) ||
+      (s.name ?? "").toLowerCase().includes(q),
+  );
+  const shown = all || q ? rows : rows.slice(0, SHARES_FIRST);
+  const time = data?.as_of?.slice(11, 16) ?? "";
+  const chip = data
+    ? t(data.market_open ? "market.shares_live" : "market.shares_closed", {
+        date: digits(data.date ?? ""),
+        time: digits(time),
+      })
+    : "";
+
+  return (
+    <>
+      <Hero
+        tint={brand.blue}
+        icon={TrendingUpNode}
+        kicker={t("market.shares_kicker")}
+        title={t("market.shares_hero")}
+        body={t("market.shares_hero_body")}
+        chip={chip}
+      />
+      {live.isLoading ? (
+        <SkeletonPulse className="h-96 rounded-3xl" />
+      ) : null}
+      {live.isError && !data ? (
+        <Text className="text-base text-muted-foreground">
+          {t("market.shares_error")}
+        </Text>
+      ) : null}
+      {data ? (
+        <>
+          <View className="flex-row gap-3">
+            {[
+              [t("market.shares_turnover"), digits(nepseCrore(data.turnover))],
+              [t("market.shares_volume"), digits(nepseNumber(data.volume, 0))],
+              [t("market.shares_trades"), digits(nepseNumber(data.transactions, 0))],
+            ].map(([label, value]) => (
+              <View
+                key={label}
+                className="flex-1 rounded-2xl border border-border bg-card p-3"
+              >
+                <Text className="text-xs text-muted-foreground" numberOfLines={2}>
+                  {label}
+                </Text>
+                <Text
+                  className="text-base font-bold tabular-nums text-foreground"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {value}
+                </Text>
+              </View>
+            ))}
+          </View>
+          <Panel title={t("market.shares_list", { count: digits(data.scrips) })}>
+            <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2.5">
+              <LucideNative
+                node={SearchNode}
+                size={18}
+                color={colors.mutedForeground}
+                strokeWidth={2}
+              />
+              <TextInput
+                value={query}
+                onChangeText={setQuery}
+                placeholder={t("market.shares_search")}
+                placeholderTextColor={colors.mutedForeground}
+                autoCapitalize="characters"
+                autoCorrect={false}
+                className="flex-1 text-base text-foreground"
+              />
+            </View>
+            {shown.map((s) => {
+              const tone =
+                s.change > 0
+                  ? brand.green
+                  : s.change < 0
+                    ? brand.vermilion
+                    : colors.mutedForeground;
+              return (
+                <Pressable
+                  key={s.symbol}
+                  onPress={() => router.push(`/nepse/${s.symbol}`)}
+                  accessibilityRole="button"
+                  className="flex-row items-center gap-3 border-b border-border py-2.5 active:opacity-70"
+                >
+                  <View className="flex-1">
+                    <Text className="text-base font-bold text-foreground">
+                      {s.symbol}
+                    </Text>
+                    {s.name ? (
+                      <Text
+                        className="text-xs text-muted-foreground"
+                        numberOfLines={1}
+                      >
+                        {s.name}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <View className="items-end">
+                    <Text className="text-base font-bold tabular-nums text-foreground">
+                      {digits(nepseNumber(s.ltp))}
+                    </Text>
+                    <Text
+                      className="text-xs font-semibold tabular-nums"
+                      style={{ color: tone }}
+                    >
+                      {digits(
+                        `${s.change > 0 ? "+" : ""}${nepseNumber(s.change)} (${s.percent > 0 ? "+" : ""}${s.percent.toFixed(2)}%)`,
+                      )}
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+            {!all && !q && rows.length > SHARES_FIRST ? (
+              <Pressable
+                onPress={() => setAll(true)}
+                accessibilityRole="button"
+                className="items-center rounded-full border border-border py-2.5 active:opacity-70"
+              >
+                <Text className="text-base font-semibold text-foreground">
+                  {t("market.shares_all", { count: digits(rows.length) })}
+                </Text>
+              </Pressable>
+            ) : null}
+            <Text className="text-xs text-muted-foreground">
+              {t("market.shares_source")}
+            </Text>
+          </Panel>
+        </>
+      ) : null}
+    </>
   );
 }

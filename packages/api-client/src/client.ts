@@ -626,6 +626,53 @@ export const newsKeys = {
   feed: (lang?: string, category?: string) => ["news", "feed", lang ?? "", category ?? ""] as const,
 };
 
+/** One traded NEPSE scrip (`GET /v1/nepse/live`). */
+export type NepseQuote = {
+  symbol: string;
+  name: string | null;
+  ltp: number;
+  change: number;
+  percent: number;
+  open: number;
+  high: number;
+  low: number;
+  prev_close: number;
+  volume: number;
+  turnover: number;
+};
+
+/** The whole NEPSE market, read by the server every 30 s while trading is open. */
+export type NepseLive = {
+  as_of: string | null;
+  date: string | null;
+  fetched_at: number;
+  market_open: boolean;
+  turnover: number;
+  volume: number;
+  transactions: number;
+  scrips: number;
+  stocks: NepseQuote[];
+};
+
+/** `[unix seconds, price, cumulative volume]`. */
+export type NepseTick = [number, number, number];
+/** `[YYYY-MM-DD, open, high, low, close, volume]`. */
+export type NepseDay = [string, number, number, number, number, number];
+
+export const fetchNepseLive = () => get<NepseLive>("/nepse/live");
+export const fetchNepseIntraday = (symbol: string, date?: string) =>
+  get<{ symbol: string; date: string; points: NepseTick[] }>(
+    `/nepse/stocks/${encodeURIComponent(symbol)}/intraday${date ? `?date=${date}` : ""}`,
+  );
+export const fetchNepseDaily = (symbol: string) =>
+  get<{ symbol: string; days: NepseDay[] }>(`/nepse/stocks/${encodeURIComponent(symbol)}/daily`);
+
+export const nepseKeys = {
+  live: () => ["nepse", "live"] as const,
+  intraday: (symbol: string) => ["nepse", "intraday", symbol] as const,
+  daily: (symbol: string) => ["nepse", "daily", symbol] as const,
+};
+
 // ─── Cities ───────────────────────────────────────────────────────────────────
 
 export const cityKeys = {

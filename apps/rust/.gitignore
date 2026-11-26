@@ -8,3 +8,6 @@
 # Per-system client data (built by `siddhanta-table index`, `cheb-build`, `drik-build`, `ephdata slice`; the apps carry their own copies)
 /data/surya/
 /data/drik/
+
+# NEPSE price recorder store (PATRO_RS_NEPSE_DB)
+nepse.sqlite*
