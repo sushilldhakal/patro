@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { WeatherForecastResponse } from "@vedic-patro/api-client";
-import { buildWeatherView, compassPoint, hourlyRows, placeHourKey, uvLevel, weatherKind } from "../src/weather/model";
+import { buildWeatherView, compassPoint, daylightAt, hourlyRows, placeHourKey, uvLevel, weatherKind } from "../src/weather/model";
 
 const text = { t: (k: string, v?: Record<string, unknown>) => (v ? `${k}:${JSON.stringify(v)}` : k), digits: (s: string | number) => String(s), lang: "en" };
 
@@ -108,4 +108,30 @@ test("place ids are stable per city or ~1 km cell", async () => {
   const { placeId } = await import("../src/weather/use-weather-places");
   assert.equal(placeId({ city_id: 2172517 }), "city:2172517");
   assert.equal(placeId({ lat: -37.9167, lon: 145.1167 }), "geo:-37.92,145.12");
+});
+
+test("units: °F, mph and inches convert from the server's °C, km/h and mm", () => {
+  const nowMs = Date.UTC(2026, 10, 25, 8, 35);
+  const c = buildWeatherView(data, nowMs, text);
+  const f = buildWeatherView(data, nowMs, text, "bs", { temp: "f", wind: "mph", rain: "in" });
+  // 19.6 °C = 67.3 °F
+  assert.equal(c.now?.temperature, "19.6°");
+  assert.equal(f.now?.temperature, "67.3°");
+});
+
+test("place clock reads the place's wall time", async () => {
+  const { placeClock } = await import("../src/weather/use-weather-page");
+  const at = Date.UTC(2026, 10, 25, 9, 39); // 20:39 in Sydney (+11)
+  assert.equal(placeClock(at, 11 * 3600, "en", String), "8:39 pm");
+  assert.equal(placeClock(at, 11 * 3600, "ne", String), "20:39");
+});
+
+test("daylightAt: dark outside sunrise-sunset, brightest at midday", () => {
+  const at = (hm: string) => Date.parse(`2026-11-25T${hm}:00Z`);
+  const [rise, set] = ["2026-11-25T06:00", "2026-11-25T18:00"];
+  assert.equal(daylightAt(at("05:00"), rise, set), 0);
+  assert.equal(daylightAt(at("19:00"), rise, set), 0);
+  assert.ok(Math.abs(daylightAt(at("12:00"), rise, set) - 1) < 1e-9);
+  assert.ok(Math.abs(daylightAt(at("09:00"), rise, set) - Math.SQRT1_2) < 1e-9);
+  assert.equal(daylightAt(at("12:00"), undefined, null), 0);
 });

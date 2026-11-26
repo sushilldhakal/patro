@@ -5,10 +5,14 @@ import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { useHeaderHasBack } from "@/lib/header-back";
 
 export function DocumentBackLink({ href, label }: { href: string; label: string }) {
   const router = useRouter();
   const colors = useThemeColors();
+  const headerHasBack = useHeaderHasBack();
+  // A phone has the top bar's back key: one back key, not two.
+  if (headerHasBack) return null;
   return (
     <Pressable
       onPress={() => (router.canGoBack() ? router.back() : router.replace(href as never))}

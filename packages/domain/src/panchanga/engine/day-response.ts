@@ -24,6 +24,8 @@ export interface DayOptions {
   midnight?: boolean;
   /** `civil=true`: attach the midnight to midnight `civil_timeline`. */
   civil?: boolean;
+  /** Only the blocks the year wheel keeps (see buildDay's `lean`); needs `detail: false`. */
+  lean?: boolean;
   /** The plain festival rows only (at-time): no details, no `festival_saits`. */
   plainFestivals?: boolean;
   /** The Surya sky, needed for the festival rows the midnight state keeps in its detail. */
@@ -74,7 +76,7 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
  * part of it yet: the caller must not use this for a request with `festivals=true`.
  */
 export function dayState(sky: Sky, input: DayInput, options: DayOptions): Json | null {
-  const base = buildDay(sky, input);
+  const base = buildDay(sky, input, options.lean);
   if (!base) return null;
   let f = base;
   let overlay: Json | null = null;

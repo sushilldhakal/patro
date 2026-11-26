@@ -1,5 +1,6 @@
 export {
   FactIcon,
+  NowWeatherBadge,
   UiIcon,
   UvDot,
   WeatherGlyph,

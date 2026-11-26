@@ -5,16 +5,22 @@ import { PlannerView } from "@vedic-patro/ui/kit/events";
 import { EventEditSheet } from "@/components/events/EventEditSheet";
 import { EventDetailSheet, type CalendarDetail } from "@/components/events/EventDetailSheet";
 import { requestSignIn } from "@/lib/menu-request";
+import { setHomeStickyActive } from "@/lib/home-sticky";
 import { updateEvent, type CalendarEvent } from "@/lib/events/api";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { ScrollView, View } from "react-native";
+import { Platform, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTabletUi } from "@/lib/tablet-ui";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
 import { SPRING_SNAP, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
-import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
+import { BsMonthHeaderRow2, BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
+import { HomeAsideTabBar, type AsideTabId } from "@/components/home/HomeAsideTabs";
+import { UpcomingFestivalsSlider } from "@/components/home/UpcomingFestivalsSlider";
+import { NewsSlider } from "@/components/home/NewsSlider";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
@@ -377,11 +383,16 @@ function HomeScreen() {
      and the cards share an edge. A phone pads each block itself: the grid runs edge to edge
      there and the cards sit at their own inset (as on the website). */
   const pageInset = isPhone ? 0 : PAGE_HORIZONTAL_PADDING_WIDE;
+  // A phone has no top bar on home (AppHeader steps aside): the scroll starts below the status
+  // bar, so iOS draws the pull-to-refresh spinner where it can be seen, not behind the clock.
+  const insets = useSafeAreaInsets();
+  const tabletUi = useTabletUi();
+  const statusBarGap = Platform.OS !== "web" && !tabletUi ? insets.top : 0;
   const contentInset = isPhone ? homeContentInset(true) : 0;
   const cardInset = isPhone ? HOME_CARD_INSET : 0;
 
   const monthHeaderBlock = (
-    <View style={{ paddingHorizontal: contentInset }}>
+    <View style={{ paddingHorizontal: cardInset }}>
       <BsMonthHeaderTitle
         year={year}
         month={month}
@@ -420,10 +431,6 @@ function HomeScreen() {
 
   const calendarBlock = (
     <View className={columnClass}>
-      <Reveal index={0}>
-        <ScrollHero>{monthHeaderBlock}</ScrollHero>
-      </Reveal>
-
       {plannerKind ? (
         // Edge to edge on a phone, like the month grid: the planner pads its own toolbar.
         <View>
@@ -523,6 +530,21 @@ function HomeScreen() {
     </View>
   );
 
+  // Phone only: while this screen is mounted, the scroll handler reports the
+  // offset to lib/home-sticky.ts, which flips `homeStuck` once the first row
+  // has scrolled away. Leaving the screen turns the tracking off again.
+  // Which of the aside's three tabs (panchanga / sait / daily muhurta) is
+  // showing. The pinned tab bar shares it with the aside.
+  // These MUST sit above `asideBlock` below: the aside's JSX reads
+  // `asideTab` / `setAsideTab`, and a state declared after the JSX that uses
+  // it is captured as undefined there — which is how tapping a tab used to
+  // throw "undefined is not a function".
+  const [asideTab, setAsideTab] = useState<AsideTabId>("panchanga");
+  useEffect(() => {
+    setHomeStickyActive(true);
+    return () => setHomeStickyActive(false);
+  }, []);
+
   const asideBlock = (
     <View
       style={
@@ -537,7 +559,6 @@ function HomeScreen() {
           : {
               width: "100%",
               alignSelf: "stretch",
-              paddingHorizontal: cardInset,
             }
       }
       className="min-w-0 w-full"
@@ -555,6 +576,9 @@ function HomeScreen() {
         onRetry={aside.retry}
         location={location.params}
         browseEra={browseEra}
+        asideTab={asideTab}
+        onAsideTabChange={setAsideTab}
+        bleedInset={cardInset}
         onOpenEvent={(event) => setDetail({ kind: "event", event })}
         onOpenPersonal={(date, column) => setDetail({ kind: "personal", date, column })}
       />
@@ -585,6 +609,7 @@ function HomeScreen() {
         // The day grid is part of this scroll; a dragged event block holds it still.
         scrollEnabled={!plannerDragging}
         refreshControl={refreshControl}
+        style={{ marginTop: statusBarGap }}
         className="flex-1 bg-background"
         contentContainerClassName="mx-auto w-full max-w-page"
         contentContainerStyle={{
@@ -593,7 +618,30 @@ function HomeScreen() {
           paddingTop: pageTopPadding(isCompact),
         }}
       >
-        <>
+        <Reveal index={0}>
+          <ScrollHero>{monthHeaderBlock}</ScrollHero>
+        </Reveal>
+        {isPhone ? (
+          <BsMonthHeaderRow2
+            year={year}
+            month={month}
+            browseEra={browseEra}
+            onBrowseEraChange={setBrowseEra}
+            onMonthChange={(m) => {
+              setMonth(m);
+              selectDay(null);
+            }}
+            onYearChange={(y) => {
+              setYear(y);
+              selectDay(null);
+            }}
+            prevDisabled={homeMonth.prevDisabled}
+            nextDisabled={homeMonth.nextDisabled}
+            location={location}
+            onLocationChange={setLocation}
+            horizontalInset={cardInset}
+          />
+        ) : null}
         <View className={splitAside ? "flex-row items-start gap-4" : "gap-4"}>
           {leftColumn}
           {splitAside ? asideBlock : null}
@@ -605,19 +653,65 @@ function HomeScreen() {
           </View>
         )}
 
+        {/* Upcoming festivals, as on the web: its own section at the end of
+            the home page, OUTSIDE the aside's bordered card — not inside it.
+            Three cards in a row, swipe left and right for more. */}
+        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+          <UpcomingFestivalsSlider location={location.params} horizontalInset={cardInset} />
+        </View>
+        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+          <NewsSlider horizontalInset={cardInset} />
+        </View>
+
         {/* Below the fold: drawn after the first screen, so the calendar and
             today's panchanga appear first and their requests go out first. */}
         {belowFoldReady ? (
-          <>
-            <Reveal>
-              <SiteFooter className={homeClasses.footerNote} paddingHorizontal={cardInset} />
-            </Reveal>
-            </>
-          ) : null}
-        </>
-        </PageScrollView>
+          <Reveal>
+            <SiteFooter className={homeClasses.footerNote} paddingHorizontal={cardInset} />
+          </Reveal>
+        ) : null}
+      </PageScrollView>
 
-        <EventEditSheet editor={editor} onClose={() => setEditor(null)} />
+      {/* Phone only: the second row again, pinned at the top of the screen once
+          the page is scrolled (lib/home-sticky.ts). It stays mounted and fades
+          in and out on `homeStuck` — a plain view outside the scroll, shown by
+          a plain JS boolean, the same pattern the floating bar uses to fold.
+          The in-page row above is the same row, same month and handlers; it
+          scrolls away underneath this one. */}
+      {isPhone ? (
+        <BsMonthHeaderRow2
+          fixed
+          year={year}
+          month={month}
+          browseEra={browseEra}
+          onBrowseEraChange={setBrowseEra}
+          onMonthChange={(m) => {
+            setMonth(m);
+            selectDay(null);
+          }}
+          onYearChange={(y) => {
+            setYear(y);
+            selectDay(null);
+          }}
+          prevDisabled={homeMonth.prevDisabled}
+          nextDisabled={homeMonth.nextDisabled}
+          location={location}
+          onLocationChange={setLocation}
+          horizontalInset={cardInset}
+        />
+      ) : null}
+
+      {/* Phone only: the aside's three tabs again, pinned at the top of the
+          screen once the page is scrolled to them (lib/home-sticky.ts). It
+          stays mounted and fades in and out on `tabsStuck`. While the tabs are
+          pinned the second row steps aside, so the sticky header is the
+          section the page is in. The in-page tabs above are the same tabs,
+          same handler; they scroll away underneath this one. */}
+      {isPhone ? (
+        <HomeAsideTabBar fixed tab={asideTab} onTabChange={setAsideTab} />
+      ) : null}
+
+      <EventEditSheet editor={editor} onClose={() => setEditor(null)} />
         <EventDetailSheet
           detail={detail}
           todayAd={todayAd}

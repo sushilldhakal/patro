@@ -1,9 +1,17 @@
 import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { Platform } from "react-native";
 import { useIsFocused } from "expo-router";
+import type { HeaderDateTitleProps } from "@/components/patro-date/HeaderDateTitle";
+import type { PanchangaLocation } from "@/lib/use-panchanga-location";
+
+/** The phone header's first row (home's layout): date badge + year line, and the page's place. */
+export type TopBarHeader = HeaderDateTitleProps & {
+  location: PanchangaLocation;
+  onLocationChange: (location: PanchangaLocation) => void;
+};
 
 /** The focused page's date controls, drawn in the app's top bar (AppHeader, or DuoToolbar on the iPhone Duo) instead of the page. */
-let current: { owner: object; element: ReactNode } | null = null;
+let current: { owner: object; element: ReactNode; header?: TopBarHeader } | null = null;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((fn) => fn());
 
@@ -19,7 +27,12 @@ export function useTopBarElement(): ReactNode {
   return useSyncExternalStore(subscribe, () => current?.element ?? null);
 }
 
-function Publish({ children }: { children: ReactNode }) {
+/** The focused page's first-row title and place, or null (the bar then stays one row). */
+export function useTopBarHeader(): TopBarHeader | null {
+  return useSyncExternalStore(subscribe, () => current?.header ?? null);
+}
+
+function Publish({ children, header }: { children: ReactNode; header?: TopBarHeader }) {
   const focused = useIsFocused();
   const owner = useRef({}).current;
 
@@ -32,7 +45,7 @@ function Publish({ children }: { children: ReactNode }) {
       }
       return;
     }
-    current = { owner, element: children };
+    current = { owner, element: children, header };
     emit();
   });
 
@@ -55,7 +68,7 @@ function Publish({ children }: { children: ReactNode }) {
  * bar even when the icons go to the side rail (Apple Calendar's month title beside "Month"). The web
  * build keeps them in the page.
  */
-export function TopBarSlot({ children }: { children: ReactNode }) {
+export function TopBarSlot({ children, header }: { children: ReactNode; header?: TopBarHeader }) {
   if (Platform.OS === "web") return <>{children}</>;
-  return <Publish>{children}</Publish>;
+  return <Publish header={header}>{children}</Publish>;
 }

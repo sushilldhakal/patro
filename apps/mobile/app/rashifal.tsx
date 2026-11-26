@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, useWindowDimensions } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useRashifalPage } from "@vedic-patro/features/rashifal";
 import { RASHIFAL_PERIODS, type RashifalPeriod } from "@vedic-patro/api-client";
@@ -11,9 +11,11 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Text } from "@/components/ui/Text";
 import { AppShell } from "@/components/AppShell";
-import { RashifalSignChooser } from "@/components/rashifal/RashifalSignChooser";
+import { RashifalSignChooser, useRashifalSignChoice } from "@/components/rashifal/RashifalSignChooser";
+import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
+import { RashiWheel } from "@/components/rashifal/RashiWheel";
+import { useTabletUi } from "@/lib/tablet-ui";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
-import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
 import { RashifalProfileViewMenu } from "@/components/navigation/ProfileViewMenu";
 import { usePageViewMenu } from "@/lib/page-view-menu";
@@ -42,25 +44,40 @@ export default function RashifalScreen() {
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
   const [date, setDate] = useBrowsedDay(() => new Date(`${todayAd}T12:00:00`));
-  const [clock, setClock] = useState(() => defaultClockForTimezone(tz));
   const [methodOpen, setMethodOpen] = useState(false);
   const dateAd = toAdStr(date);
   // The app addresses a day by its AD date.
   const day = useMemo(() => ({ key: [dateAd], query: new URLSearchParams({ date: dateAd, era: "ad" }) }), [dateAd]);
   const page = useRashifalPage({ day, location: location.params, initialPeriod });
 
+  // Phone: the twelve as a wheel under the period tabs, the chosen sign's reading below it.
+  const tablet = useTabletUi();
+  const { width } = useWindowDimensions();
+  const choice = useRashifalSignChoice(page.general.status === "ready" ? page.general.signs : []);
+  const showWheel = !tablet && width < 768 && !page.profile && page.general.status === "ready" && choice.ready;
+  const WHEEL_VISIBLE = 112;
+
   const loading = page.profile ? page.personal.status === "loading" : page.general.status === "loading";
   const error = page.profile ? page.personal.status === "error" : page.general.status === "error";
 
-  // Daily | weekly | monthly | yearly, in the header's view menu (the profiles follow there too).
+  // Daily | weekly | monthly | yearly: the header's pinned tab bar, with icons. The profiles are
+  // the dropdown on the right of the header's second row (RashifalProfileViewMenu).
   usePageViewMenu([
     {
       key: "period",
-      options: page.periods.map(({ id, label, active }) => ({ key: id, label, active, onPress: () => page.setPeriod(id) })),
+      placement: "tabs",
+      options: page.periods.map(({ id, label, active }) => ({
+        key: id,
+        label,
+        active,
+        ionicon: RASHIFAL_PERIOD_ICON[id],
+        onPress: () => page.setPeriod(id),
+      })),
     },
   ]);
 
   return (
+    <View style={{ flex: 1 }}>
     <AppShell title={t("nav.jyotish_rashifal")} showHeader={false}>
       {/* The page starts at the date picker, like every dated page; the view menu holds the periods and profiles. */}
       <View className="gap-5">
@@ -69,13 +86,13 @@ export default function RashifalScreen() {
             date={date}
             onDateChange={setDate}
             todayAd={todayAd}
-            clock={clock}
-            onClockChange={setClock}
             location={location}
             onLocationChange={setLocation}
             crossEraSubtitleOverride={page.rangeLabel}
             onPrev={page.stepDate ? () => setDate(page.stepDate!(date, -1)) : undefined}
             onNext={page.stepDate ? () => setDate(page.stepDate!(date, 1)) : undefined}
+            // No time here; daily and weekly pick a day, monthly a month, yearly a year.
+            precision={page.period === "monthly" ? "month" : page.period === "yearly" ? "year" : "day"}
           />
         </View>
 
@@ -101,13 +118,22 @@ export default function RashifalScreen() {
           </View>
         ) : page.general.status === "ready" ? (
           <View className={rashifalClasses.panel}>
+            {/* Phone: the twelve as a downward arc just below the period tabs; the chosen sign sits at its foot. */}
+            {showWheel ? (
+              <RashiWheel items={choice.wheelItems} selectedIndex={choice.picker.selectedIndex} onSelect={choice.select} height={WHEEL_VISIBLE} ratio={1.1} />
+            ) : null}
             {page.copy.moon ? (
               <Text className={rashifalClasses.intro} style={nepaliTextStyle()}>
                 {page.copy.moon}
               </Text>
             ) : null}
-            {/* The twelve as a grid with the reader's own rashi open, not twelve long readings in a row. */}
-            <RashifalSignChooser signs={page.general.signs} period={page.period} />
+            {/* Phone: the chosen sign's reading (the wheel above picks it).
+                Wider screens: the grid and the reading side by side. */}
+            {showWheel ? (
+              choice.selected ? <RashifalSignCard sign={choice.selected.sign} period={page.period} taraLine={choice.selected.taraLine} /> : null
+            ) : (
+              <RashifalSignChooser signs={page.general.signs} period={page.period} />
+            )}
             {/* How the readings are worked out (gochar, ashtakavarga, sudarshana…): there for whoever asks. */}
             <Pressable onPress={() => setMethodOpen((v) => !v)} accessibilityRole="button" className={rashifalClasses.methodToggle}>
               <Text className={rashifalClasses.methodToggleText} style={nepaliTextStyle()}>
@@ -135,5 +161,6 @@ export default function RashifalScreen() {
         )}
       </View>
     </AppShell>
+    </View>
   );
 }

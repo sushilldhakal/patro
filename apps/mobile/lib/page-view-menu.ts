@@ -4,10 +4,25 @@ import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useIsFocused } from "expo-router";
 
 /** One choice in the header's view menu: the same shape as a page's header tab. */
-export type PageViewOption = { key: string; label: string; active: boolean; onPress: () => void; /** Drawn before the label in the view menu (the home calendar's views). */ icon?: IconNode };
+export type PageViewOption = {
+  key: string;
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  /** Drawn before the label in the view menu (the home calendar's views). */
+  icon?: IconNode;
+  /** Ionicons name, for a group drawn as the header's tab bar. */
+  ionicon?: string;
+};
 
 /** A group of choices; a titled group (e.g. the profiles) gets its own heading in the menu. */
-export type PageViewSection = { key: string; title?: string; options: PageViewOption[] };
+export type PageViewSection = {
+  key: string;
+  title?: string;
+  options: PageViewOption[];
+  /** "tabs": a full-width tab bar under the header that stays pinned (rashifal's दैनिक…वार्षिक). */
+  placement?: "tabs";
+};
 
 type Entry = { order: number; sections: PageViewSection[] };
 
@@ -32,7 +47,7 @@ function subscribe(fn: () => void) {
 /** What the menu shows; a change in any of it is worth a redraw of the header. */
 function signature(sections: PageViewSection[]): string {
   return sections
-    .map((s) => `${s.key}|${s.title ?? ""}|${s.options.map((o) => `${o.key}:${o.label}:${o.active ? 1 : 0}`).join(",")}`)
+    .map((s) => `${s.key}|${s.placement ?? ""}|${s.title ?? ""}|${s.options.map((o) => `${o.key}:${o.label}:${o.active ? 1 : 0}`).join(",")}`)
     .join(";");
 }
 

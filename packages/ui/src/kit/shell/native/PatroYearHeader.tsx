@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { TextInput, View, useWindowDimensions } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
@@ -9,34 +10,23 @@ import type { PatroYearHeaderProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
 /** Year-only picker: badge, title, prev/next year and a sheet with the jump box and a paged year grid. */
-export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEraChange, subtitle, navAside, className }: PatroYearHeaderProps) {
+export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEraChange, subtitle, navAside, className, open, onOpenChange, buttonless }: PatroYearHeaderProps) {
   const h = usePatroYearHeader({ era, year, onChange, onToday, todayYear, subtitleOverride: subtitle });
   const { input, page, labels } = h;
   const dense = useWindowDimensions().width < 420;
+  // Controlled open: follow `open`, and report every close (a pick or OK closes the sheet itself).
+  useEffect(() => {
+    if (open === undefined) return;
+    if (open !== h.open) (open ? h.toggle() : h.close());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  useEffect(() => {
+    if (open !== undefined && open !== h.open) onOpenChange?.(h.open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [h.open]);
 
-  return (
-    <View className={cn("w-full gap-3", className)}>
-      {/* No date badge, title or place row: the app's toolbar carries the place. */}
-      <View className="flex-row items-center justify-between gap-2">
-        <View className="min-w-0 shrink flex-row items-center gap-2">
-          <Pressable label={labels.prev} onPress={() => { haptics.tick(); h.prev(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
-            <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
-          </Pressable>
-          <Pressable
-            label={labels.picker}
-            onPress={h.toggle}
-            className={cn(pick.yearButton, "shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
-          >
-            <Text className={pick.yearButtonText}>{h.yearLabel}</Text>
-            <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />
-          </Pressable>
-          <Pressable label={labels.next} onPress={() => { haptics.tick(); h.next(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
-            <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
-          </Pressable>
-        </View>
-        {navAside ? <View className="shrink-0">{navAside}</View> : null}
-      </View>
-
+  const sheet = (
+    <>
       <Sheet open={h.open} onClose={h.close} title={labels.picker} closeLabel={labels.thisYear}>
         {onEraChange && h.eras.length > 0 ? (
           <Box className={cn(cls.segment, "mb-3")} label={h.eraAria}>
@@ -108,6 +98,34 @@ export function PatroYearHeader({ era, year, onChange, onToday, todayYear, onEra
           </Pressable>
         </Box>
       </Sheet>
+    </>
+  );
+  if (buttonless) return sheet;
+
+  return (
+    <View className={cn("w-full gap-3", className)}>
+      {/* No date badge, title or place row: the app's toolbar carries the place. */}
+      <View className="flex-row items-center justify-between gap-2">
+        <View className="min-w-0 shrink flex-row items-center gap-2">
+          <Pressable label={labels.prev} onPress={() => { haptics.tick(); h.prev(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
+            <Icon node={shellIcons.chevronLeft} size="md" tone="secondary" />
+          </Pressable>
+          <Pressable
+            label={labels.picker}
+            onPress={h.toggle}
+            className={cn(pick.yearButton, "shrink", h.open ? cls.selectButtonOpen : cls.selectButtonIdle, dense && cls.nativeDenseControl)}
+          >
+            <Text className={pick.yearButtonText}>{h.yearLabel}</Text>
+            <Icon node={shellIcons.chevronDown} size="sm" tone="secondary" />
+          </Pressable>
+          <Pressable label={labels.next} onPress={() => { haptics.tick(); h.next(); }} className={cn(cls.iconButton, dense && cls.nativeDenseIcon)}>
+            <Icon node={shellIcons.chevronRight} size="md" tone="secondary" />
+          </Pressable>
+        </View>
+        {navAside ? <View className="shrink-0">{navAside}</View> : null}
+      </View>
+
+      {sheet}
     </View>
   );
 }

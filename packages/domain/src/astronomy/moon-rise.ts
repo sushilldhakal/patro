@@ -111,7 +111,8 @@ export function moonRiseSet(
       if ((rising && rise === null) || (setting && set === null)) {
         let lo = t0;
         let hi = t1;
-        for (let k = 0; k < 32; k += 1) {
+        // 20 halvings of the 30-minute step pin the crossing to ~1.7 ms; times are shown to the minute.
+        for (let k = 0; k < 20; k += 1) {
           const mid = (lo + hi) / 2;
           const up = (altitude(source, mid, latitude, longitude) ?? -1) >= 0;
           if (up === rising) hi = mid;

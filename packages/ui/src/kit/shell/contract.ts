@@ -66,6 +66,8 @@ export type TodayHighlightCardProps = {
   className?: string;
   /** Moon artwork stays in each app (it is a panchanga drawing). */
   moon?: (info: TodayHighlightMoon) => ReactNode;
+  /** Drawn at the right of the date row (home: the weather now, on today only). */
+  aside?: ReactNode;
 };
 
 export type CalendarHeaderSegment = { key: string; label: string; active: boolean; onPress: () => void; /** Drawn beside the label in the web view dropdown. */ icon?: IconNode };
@@ -108,6 +110,11 @@ export type PatroCalendarHeaderProps = {
   /** Home's second row: the year already sits in the first row, so the month
       button shows the month alone. Every other use keeps month + year. */
   monthOnly?: boolean;
+  /** Controlled month sheet, so another button (home's date block) can open it. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Only the month sheet, no stepper rows (native only). */
+  buttonless?: boolean;
 };
 
 export type PatroMonthYearNavProps = Omit<PatroCalendarHeaderProps, "onChange"> & {
@@ -145,6 +152,11 @@ export type PatroDayTimeHeaderProps = {
   titleAside?: ReactNode;
   /** App only: right end of the date row (the tabs). */
   navAside?: ReactNode;
+  /** Controlled picker sheet (native): the app's header opens it from its year line. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Only the sheet, no stepper row (native phone header, like home). */
+  buttonless?: boolean;
   className?: string;
 };
 
@@ -160,6 +172,11 @@ export type PatroYearHeaderProps = {
   titleAside?: ReactNode;
   /** App only: right end of the date row (the tabs). */
   navAside?: ReactNode;
+  /** Controlled picker sheet (native): the app's header opens it from its year line. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Only the sheet, no stepper row (native phone header, like home). */
+  buttonless?: boolean;
   className?: string;
 };
 

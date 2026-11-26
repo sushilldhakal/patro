@@ -1,10 +1,13 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import {
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
   type PressableProps,
+  type ScrollViewInstance,
 } from "react-native";
 import Animated, {
   FadeIn,
@@ -12,12 +15,15 @@ import Animated, {
   LinearTransition,
   useAnimatedScrollHandler,
   useAnimatedStyle,
+  useAnimatedReaction,
   useSharedValue,
 } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { LinearGradient as ExpoLinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
+import { scheduleOnRN } from "react-native-worklets";
 import {
   useWeatherPage,
   type WeatherFact,
@@ -26,7 +32,7 @@ import {
   type WeatherPage,
   type WeatherPlacesStorage,
 } from "@vedic-patro/features/weather";
-import { weatherInk } from "@vedic-patro/design-tokens";
+import { weatherInk, weatherSkyAt } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { weatherClasses as wc } from "@vedic-patro/design-tokens/classes/weather-classes";
 import {
@@ -46,16 +52,15 @@ import { Sheet } from "@vedic-patro/ui";
 import { Text } from "@/components/ui/Text";
 import { locateDevice } from "@/components/panchanga/locate-device";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  Directions,
-  Gesture,
-  GestureDetector,
-} from "react-native-gesture-handler";
 import { LocationSearchSheet } from "@/components/search/LocationSearchSheet";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useTheme } from "@/lib/theme-context";
+import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
+
+/** The gap between two places' pages, seen only mid-swipe. */
+const PAGE_GAP = 16;
 
 /** One hourly column, the website's `w-16`. */
 const COLUMN = 64;
@@ -107,21 +112,20 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-function Sky() {
-  const { isDark } = useTheme();
-  const [top, bottom] = isDark ? weatherInk.sky.dark : weatherInk.sky.light;
+/** Text on the sky: white at every hour, in both themes. */
+const ON_SKY = "text-white";
+
+/** The sky follows the sun, not the theme (weatherSkyAt). */
+const skyColors = weatherSkyAt;
+
+function Sky({ daylight }: { daylight: number }) {
+  const colors = skyColors(daylight);
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Svg width="100%" height="100%" preserveAspectRatio="none">
-        <Defs>
-          <LinearGradient id="wx-sky" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor={top} />
-            <Stop offset="1" stopColor={bottom} />
-          </LinearGradient>
-        </Defs>
-        <Rect width="100%" height="100%" fill="url(#wx-sky)" />
-      </Svg>
-    </View>
+    <ExpoLinearGradient
+      colors={[colors[0], colors[1]]}
+      style={StyleSheet.absoluteFill}
+      pointerEvents="none"
+    />
   );
 }
 
@@ -169,7 +173,7 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
 
   return (
     <View style={{ paddingTop: top }}>
-      <Sky />
+      <Sky daylight={page.now?.daylight ?? 0} />
       <View className={wc.band}>
         <View className={cn("flex-row", wc.topBar)}>
           <PressScale
@@ -179,7 +183,7 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
             hitSlop={8}
             className="size-11 items-center justify-center"
           >
-            <UiIcon name="arrow-left" size={24} tone="foreground" />
+            <UiIcon name="arrow-left" size={24} tone="onBrand" />
           </PressScale>
           <PressScale
             accessibilityRole="button"
@@ -190,67 +194,70 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
             <UiIcon
               name={page.usingGps ? "arrow" : "map-pin"}
               size={20}
-              tone="foreground"
+              tone="onBrand"
             />
             <Text
-              className={cn("shrink", wc.heroPlace)}
+              className={cn("shrink", wc.heroPlace, ON_SKY)}
               numberOfLines={1}
               style={nepaliTextStyle()}
             >
               {page.placeName}
             </Text>
-            <UiIcon name="chevron-down" size={18} tone="foreground" />
+            <UiIcon name="chevron-down" size={18} tone="onBrand" />
           </PressScale>
           <PressScale
             accessibilityRole="button"
-            accessibilityLabel={page.copy.addPlace}
-            onPress={() => page.places.setAddOpen(true)}
+            accessibilityLabel={page.copy.placesTitle}
+            onPress={() => page.places.setListOpen(true)}
             hitSlop={8}
             className="size-11 items-center justify-center"
           >
-            <UiIcon name="plus" size={26} tone="foreground" />
+            <UiIcon name="menu" size={26} tone="onBrand" />
           </PressScale>
         </View>
 
         {now ? (
-          <Animated.View
-            key={page.places.index}
-            entering={FadeIn.duration(250)}
-            className={wc.heroBody}
-          >
-            <View className={cn("flex-row", wc.heroTempRow)}>
+          // Two columns, so the sky is short: the temperature, feels-like and low/high on the left;
+          // the icon, condition, rain and air quality on the right.
+          <Animated.View className={cn("flex-row", wc.heroBody)}>
+            <View className="gap-3">
               <View>
-                <Text className={wc.heroTemp}>{now.temperature}</Text>
-                <Text className={wc.heroFeels} style={nepaliTextStyle()}>
+                <Text className={cn(wc.heroTemp, ON_SKY)}>{now.temperature}</Text>
+                <Text className={cn(wc.heroFeels, ON_SKY)} style={nepaliTextStyle()}>
                   {now.feelsLike}
                 </Text>
               </View>
-              <WeatherGlyph glyph={now.glyph} size={isTablet ? 104 : 88} />
+              <View className="flex-row gap-5">
+                {now.range.map((r) => (
+                  <View key={r.key}>
+                    <Text className={cn(wc.heroRangeValue, ON_SKY)}>{r.value}</Text>
+                    <Text className={cn(wc.heroRangeLabel, ON_SKY)} style={nepaliTextStyle()}>
+                      {r.label}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
-            <View className="flex-row gap-8">
-              {now.range.map((r) => (
-                <View key={r.key}>
-                  <Text className={wc.heroRangeValue}>{r.value}</Text>
-                  <Text className={wc.heroRangeLabel} style={nepaliTextStyle()}>
-                    {r.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
-            <View className="gap-2">
-              <Text className={wc.heroLine} style={nepaliTextStyle()}>
-                {now.rainLine}
-              </Text>
-              <Text className={wc.heroLine} style={nepaliTextStyle()}>
+            <View className="min-w-0 flex-1 items-end gap-1">
+              <WeatherGlyph glyph={now.glyph} size={isTablet ? 96 : 72} onSky animated />
+              <Text className={cn("text-right", wc.heroLine, ON_SKY)} style={nepaliTextStyle()}>
                 {now.glyph.label}
               </Text>
+              <Text className={cn("text-right", wc.heroFeels, ON_SKY)} style={nepaliTextStyle()}>
+                {now.rainLine}
+              </Text>
+              {now.airLine ? (
+                <Text className={cn("text-right", wc.heroFeels, ON_SKY)} style={nepaliTextStyle()}>
+                  {now.airLine}
+                </Text>
+              ) : null}
             </View>
           </Animated.View>
         ) : (
           <View className="px-5 pb-10 pt-6">
             <Text
               className={
-                page.status === "error" ? "text-base text-danger" : wc.heroFeels
+                page.status === "error" ? "text-base text-danger" : cn(wc.heroFeels, ON_SKY)
               }
               style={nepaliTextStyle()}
             >
@@ -325,37 +332,50 @@ function Today({ page }: { page: WeatherPage }) {
 
 function Cell({
   hour,
-  starts,
   children,
   gap,
 }: {
   hour: WeatherHourView;
-  starts: Set<string>;
   children: ReactNode;
   gap?: boolean;
 }) {
+  const { isDark } = useTheme();
   return (
     <View
-      style={{ width: COLUMN }}
-      className={cn(
-        wc.cell,
-        gap && "gap-2",
-        hour.night && wc.cellNight,
-        starts.has(hour.key) && wc.dayDivider,
-      )}
+      style={{ width: COLUMN, ...(hour.night && !isDark ? { backgroundColor: weatherInk.nightCellLight } : null) }}
+      className={cn(wc.cell, gap && "gap-2", hour.night && wc.cellNight)}
     >
       {children}
     </View>
   );
 }
 
+/** Height of the tallest rain bar (the wettest hour shown). */
+const RAIN_BAR = 28;
+/** The bars are scaled to at least this many mm, so a drizzle-only day does not draw full bars. */
+const RAIN_SCALE_MIN = 2;
+
 function RowValue({
   row,
   hour,
+  maxRain,
 }: {
   row: WeatherHourlyRow;
   hour: WeatherHourView;
+  maxRain: number;
 }) {
+  if (row === "rain_mm") {
+    // The amount over a bar as tall as its share of the wettest hour, in the theme's dim accent.
+    const h = hour.rain > 0 ? Math.max(2, (hour.rain / Math.max(maxRain, RAIN_SCALE_MIN)) * RAIN_BAR) : 0;
+    return (
+      <View className="w-full gap-1">
+        <Text className={wc.cellText}>{hour.rainMm}</Text>
+        <View className="w-full justify-end" style={{ height: RAIN_BAR }}>
+          {h > 0 ? <View className="w-full rounded-sm bg-secondary/25 dark:bg-primary/30" style={{ height: h }} /> : null}
+        </View>
+      </View>
+    );
+  }
   if (row === "wind") {
     return hour.wind ? (
       <>
@@ -387,7 +407,12 @@ function RowValue({
 
 function Hourly({ page }: { page: WeatherPage }) {
   const hours = page.hourGroups.flatMap((g) => g.hours);
-  const starts = new Set(page.hourGroups.slice(1).map((g) => g.hours[0]!.key));
+  const maxRain = Math.max(0, ...hours.map((h) => h.rain));
+  let col = 0;
+  // Column index where each later day starts; drawn as one full-height line.
+  const lineOffsets = page.hourGroups
+    .map((g) => (col += g.hours.length) - g.hours.length)
+    .slice(1);
   // Captions and the first day's name follow the scroll on the UI thread, so they stay on screen.
   const scrollX = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
@@ -396,6 +421,26 @@ function Hourly({ page }: { page: WeatherPage }) {
   const pinned = useAnimatedStyle(() => ({
     transform: [{ translateX: Math.max(0, scrollX.get()) }],
   }));
+  // The day being scrolled through: the last day whose first column has reached the left edge. Its
+  // name is held at the top left (over the table) until the next day's name arrives there.
+  const dayStarts = page.hourGroups.map((g) => g.hours.length);
+  for (let k = 0, acc = 0; k < dayStarts.length; k++) {
+    const n = dayStarts[k]!;
+    dayStarts[k] = acc * COLUMN;
+    acc += n;
+  }
+  const [dayAt, setDayAt] = useState(0);
+  useAnimatedReaction(
+    () => {
+      let k = 0;
+      while (k + 1 < dayStarts.length && scrollX.get() >= dayStarts[k + 1]!) k++;
+      return k;
+    },
+    (k, prev) => {
+      if (k !== prev) scheduleOnRN(setDayAt, k);
+    },
+  );
+  const heldDay = page.hourGroups[Math.min(dayAt, page.hourGroups.length - 1)];
 
   return (
     <View className="border-b border-border bg-card">
@@ -423,6 +468,7 @@ function Hourly({ page }: { page: WeatherPage }) {
           </PressScale>
         ))}
       </ScrollView>
+      <View>
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -431,23 +477,17 @@ function Hourly({ page }: { page: WeatherPage }) {
       >
         <View>
           <View className="flex-row">
-            {page.hourGroups.map((g, i) => (
-              <View
-                key={g.key}
-                style={{ width: g.hours.length * COLUMN }}
-                className={cn(wc.dayHead, i > 0 && wc.dayDivider)}
-              >
-                <Animated.View style={i === 0 ? pinned : undefined}>
-                  <Text className={wc.dayHeadText} style={nepaliTextStyle()}>
-                    {g.label}
-                  </Text>
-                </Animated.View>
+            {page.hourGroups.map((g) => (
+              <View key={g.key} style={{ width: g.hours.length * COLUMN }} className={wc.dayHead}>
+                <Text className={wc.dayHeadText} style={nepaliTextStyle()} numberOfLines={1}>
+                  {g.label}
+                </Text>
               </View>
             ))}
           </View>
-          <View className="flex-row">
+          <View className="flex-row border-t border-border">
             {hours.map((h) => (
-              <Cell key={h.key} hour={h} starts={starts} gap>
+              <Cell key={h.key} hour={h} gap>
                 <Text className={wc.cellTime} style={nepaliTextStyle()}>
                   {h.time}
                 </Text>
@@ -457,9 +497,10 @@ function Hourly({ page }: { page: WeatherPage }) {
             ))}
           </View>
           {page.rows.map((row) => (
-            <View key={row}>
-              <View className={wc.rowCaption}>
-                <Animated.View style={pinned}>
+            <Fragment key={row}>
+              {/* Above the day line (zIndex), the label on the card colour so the line passes behind it. */}
+              <View className={wc.rowCaption} style={{ zIndex: 1 }}>
+                <Animated.View style={[{ alignSelf: "flex-start" }, pinned]}>
                   <View className={cn("flex-row", wc.rowCaptionInner)}>
                     <Text
                       className={wc.rowCaptionText}
@@ -480,21 +521,41 @@ function Hourly({ page }: { page: WeatherPage }) {
               </View>
               <View className="flex-row">
                 {hours.map((h) => (
-                  <Cell key={h.key} hour={h} starts={starts}>
-                    <RowValue row={row} hour={h} />
+                  <Cell key={h.key} hour={h}>
+                    <RowValue row={row} hour={h} maxRain={maxRain} />
                   </Cell>
                 ))}
               </View>
-            </View>
+            </Fragment>
+          ))}
+          {lineOffsets.map((n) => (
+            <View
+              key={n}
+              pointerEvents="none"
+              className={wc.dayLine}
+              style={{ left: n * COLUMN - 1 }} // over the previous column's 1px right border, not beside it
+            />
           ))}
         </View>
       </Animated.ScrollView>
+      {/* The held day name, over the day-name row at the left; scrolled past its start it stays. */}
+      {heldDay ? (
+        <View pointerEvents="none" className={cn("absolute left-0 top-0 bg-card", wc.dayHead)}>
+          <Text className={wc.dayHeadText} style={nepaliTextStyle()} numberOfLines={1}>
+            {heldDay.label}
+          </Text>
+        </View>
+      ) : null}
+      </View>
     </View>
   );
 }
 
 function Daily({ page }: { page: WeatherPage }) {
   const { isNarrow, isTablet } = useBreakpoint();
+  const { width: windowWidth } = useWindowDimensions();
+  // Under this the opened day's sections stack in one column.
+  const oneColumn = windowWidth < 360;
   const { copy } = page;
   return (
     <View className="border-b border-border bg-card">
@@ -529,7 +590,7 @@ function Daily({ page }: { page: WeatherPage }) {
                 >
                   {isNarrow ? d.weekdayShort : d.weekday}
                 </Text>
-                <WeatherGlyph glyph={d.glyph} size={isNarrow ? 32 : 40} />
+                <WeatherGlyph glyph={d.glyph} size={isNarrow ? 32 : 40} animated />
                 <Text
                   className={cn("flex-1", wc.dayLabel)}
                   numberOfLines={1}
@@ -577,21 +638,52 @@ function Daily({ page }: { page: WeatherPage }) {
                   <Text className={wc.dayPanelDate} style={nepaliTextStyle()}>
                     {d.weekday} · {d.dateLabel}
                   </Text>
+                  {/* Icon beside min/max and the condition, so the top takes one row. */}
                   <View className="flex-row items-center gap-4">
-                    <WeatherGlyph glyph={d.glyph} size={56} />
-                    <Text
-                      className={cn("flex-1", wc.dayPanelLabel)}
-                      style={nepaliTextStyle()}
-                    >
-                      {d.glyph.label} · {d.rainAmount}
-                    </Text>
+                    <WeatherGlyph glyph={d.glyph} size={56} animated />
+                    <View className="min-w-0 flex-1 gap-1">
+                      <View className="flex-row flex-wrap gap-x-5">
+                        {d.range.map((r) => (
+                          <Text key={r.key} style={nepaliTextStyle()}>
+                            <Text className={wc.dayPanelRangeValue}>{r.value}</Text>
+                            <Text className={wc.factLabel}>  {r.label}</Text>
+                          </Text>
+                        ))}
+                      </View>
+                      <Text className={wc.dayPanelLabel} style={nepaliTextStyle()}>
+                        {d.glyph.label}
+                      </Text>
+                    </View>
                   </View>
-                  {d.details.map((f) => (
-                    <Text key={f.key} style={nepaliTextStyle()}>
-                      <Text className={wc.factLabel}>{f.label} </Text>
-                      <Text className={wc.factValue}>{f.value}</Text>
-                    </Text>
-                  ))}
+                  {/* Two columns when the screen has room (rain | wind, then sun/moon/UV with its
+                      lines in two columns); one column on a narrow phone. */}
+                  <View className="flex-row flex-wrap gap-y-4">
+                    {d.sections.map((sec) => {
+                      const full = oneColumn || sec.facts.length > 2;
+                      return (
+                        <View
+                          key={sec.key}
+                          className={cn(wc.dayPanelSection, !full && "pr-3")}
+                          style={{ width: full ? "100%" : "50%" }}
+                        >
+                          <Text className={wc.dayPanelTitle} style={nepaliTextStyle()}>
+                            {sec.title}
+                          </Text>
+                          <View className="flex-row flex-wrap gap-y-3">
+                            {sec.facts.map((f) => (
+                              <View
+                                key={f.key}
+                                className="pr-2"
+                                style={{ width: full && !oneColumn ? "50%" : "100%" }}
+                              >
+                                <FactRow fact={f} />
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
                 </Animated.View>
               ) : null}
             </Animated.View>
@@ -640,11 +732,11 @@ function PlaceDots({ page, bottom }: { page: WeatherPage; bottom: number }) {
             accessibilityState={{ selected: i === places.index }}
             onPress={() => places.select(i)}
             hitSlop={6}
-            className="size-4 items-center justify-center"
+            className="size-5 items-center justify-center"
           >
             {p.here ? (
               <View style={{ opacity: i === places.index ? 1 : 0.4 }}>
-                <UiIcon name="arrow" size={10} tone="foreground" />
+                <UiIcon name="arrow" size={14} tone="foreground" />
               </View>
             ) : (
               <View className={i === places.index ? wc.dotActive : wc.dot} />
@@ -656,155 +748,11 @@ function PlaceDots({ page, bottom }: { page: WeatherPage; bottom: number }) {
   );
 }
 
-/** The weather places: open one, make it primary, remove it, or add another. */
-function PlacesSheet({ page }: { page: WeatherPage }) {
+/** "+ search": the city search, then "make it primary?". Drawn inside the places screen while it is open, so it stacks above it. */
+function AddFlow({ page }: { page: WeatherPage }) {
   const { places, copy } = page;
-  const close = () => places.setListOpen(false);
   return (
-    <Sheet
-      open={places.listOpen}
-      onClose={close}
-      title={copy.placesTitle}
-      closeLabel={copy.close}
-    >
-      {places.pages.map((p, i) => (
-        <View key={p.id} className={cn("flex-row", wc.placeRow)}>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              places.select(i);
-              close();
-            }}
-            className={cn("flex-row", wc.placeRowPress)}
-          >
-            {p.here ? (
-              <UiIcon name="arrow" size={16} />
-            ) : (
-              <UiIcon name="map-pin" size={16} />
-            )}
-            <Text
-              className={cn(
-                "shrink",
-                i === places.index ? wc.placeNameActive : wc.placeName,
-              )}
-              numberOfLines={1}
-              style={nepaliTextStyle()}
-            >
-              {p.name}
-            </Text>
-            {p.primary ? (
-              <Text className={wc.primaryBadge} style={nepaliTextStyle()}>
-                {copy.primary}
-              </Text>
-            ) : null}
-          </Pressable>
-          {p.primary ? null : (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={copy.makePrimary}
-              onPress={() => places.makePrimary(p.id)}
-              hitSlop={8}
-              className="size-11 items-center justify-center"
-            >
-              <UiIcon name="star" size={20} />
-            </Pressable>
-          )}
-          {p.here ? null : (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={copy.remove}
-              onPress={() => places.remove(p.id)}
-              hitSlop={8}
-              className="size-11 items-center justify-center"
-            >
-              <UiIcon name="x" size={20} />
-            </Pressable>
-          )}
-        </View>
-      ))}
-      <PressScale
-        accessibilityRole="button"
-        onPress={() => {
-          close();
-          places.setAddOpen(true);
-        }}
-        className={cn("flex-row self-start", wc.chipActive, "mt-4 gap-2")}
-      >
-        <UiIcon name="plus" size={18} tone="foreground" />
-        <Text className={wc.chipTextActive} style={nepaliTextStyle()}>
-          {copy.addPlace}
-        </Text>
-      </PressScale>
-    </Sheet>
-  );
-}
-
-/**
- * Weather — the app's drawing of `useWeatherPage` (@vedic-patro/features). A screen of its own:
- * no app header or floating nav (not in PAGE_CHROME_ROUTES), a back arrow in the sky instead.
- */
-export default function WeatherScreen() {
-  const insets = useSafeAreaInsets();
-  const { location } = usePanchangaLocation();
-  const page = useWeatherPage({
-    location,
-    locate: locateDevice,
-    storage: placesStorage,
-  });
-  const { copy, places } = page;
-
-  // A horizontal fling on the sky moves to the next / previous place (finger involved: no slide,
-  // the new place fades in; the dots below say where you are).
-  const { next, prev } = places;
-  const swipe = useMemo(
-    () =>
-      Gesture.Race(
-        Gesture.Fling().direction(Directions.LEFT).runOnJS(true).onEnd(next),
-        Gesture.Fling().direction(Directions.RIGHT).runOnJS(true).onEnd(prev),
-      ),
-    [next, prev],
-  );
-
-  return (
-    <View className="flex-1 bg-background">
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 72 }}>
-        <GestureDetector gesture={swipe}>
-          <View collapsable={false}>
-            <Hero page={page} top={insets.top} />
-          </View>
-        </GestureDetector>
-        {page.now ? (
-          <>
-            <Today page={page} />
-            <Hourly page={page} />
-            <Daily page={page} />
-            <View className={cn(wc.band, wc.footer, "px-4")}>
-              {[
-                [copy.updatedTitle, copy.updated],
-                [copy.locationTitle, copy.locationNote],
-              ].map(([title, body]) => (
-                <View key={title}>
-                  <Text className={wc.footerTitle} style={nepaliTextStyle()}>
-                    {title}
-                  </Text>
-                  <Text className={wc.footerText} style={nepaliTextStyle()}>
-                    {body}
-                  </Text>
-                </View>
-              ))}
-              <Text className={wc.footerText} style={nepaliTextStyle()}>
-                {copy.unitsNote}
-              </Text>
-              <Text className={wc.footerText} style={nepaliTextStyle()}>
-                {copy.source}
-              </Text>
-            </View>
-          </>
-        ) : null}
-      </ScrollView>
-      {places.pages.length > 1 ? (
-        <PlaceDots page={page} bottom={insets.bottom + 12} />
-      ) : null}
+    <>
       <LocationSearchSheet
         open={places.addOpen}
         onClose={() => places.setAddOpen(false)}
@@ -841,7 +789,445 @@ export default function WeatherScreen() {
           </PressScale>
         </View>
       </Sheet>
-      <PlacesSheet page={page} />
+    </>
+  );
+}
+
+function MenuItem({
+  label,
+  onPress,
+  checked,
+  chevron,
+}: {
+  label: string;
+  onPress: () => void;
+  checked?: boolean;
+  chevron?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={checked == null ? undefined : { checked }}
+      onPress={onPress}
+      className={wc.menuItem}
+    >
+      <Text className={wc.menuItemText} style={nepaliTextStyle()}>
+        {label}
+      </Text>
+      {checked ? <UiIcon name="check" size={18} /> : null}
+      {chevron ? <UiIcon name="chevron-right" size={18} /> : null}
+    </Pressable>
+  );
+}
+
+/** Units: temperature, wind and rain, each a list with a tick. */
+function UnitsSheet({
+  page,
+  open,
+  onClose,
+}: {
+  page: WeatherPage;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { units, copy } = page;
+  const groups = [
+    ["temp", copy.unitsTemp],
+    ["wind", copy.unitsWind],
+    ["rain", copy.unitsRain],
+  ] as const;
+  return (
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={copy.units}
+      closeLabel={copy.close}
+    >
+      {groups.map(([key, title]) => (
+        <View key={key}>
+          <Text className={wc.unitGroupTitle} style={nepaliTextStyle()}>
+            {title}
+          </Text>
+          {units.options[key].map((o) => (
+            <MenuItem
+              key={o.id}
+              label={o.label}
+              checked={units.value[key] === o.id}
+              onPress={() => units.set({ [key]: o.id })}
+            />
+          ))}
+        </View>
+      ))}
+    </Sheet>
+  );
+}
+
+/** One saved place: name, local time, temperature now, condition and today's low / high. */
+function PlaceCard({
+  page,
+  place,
+  index,
+}: {
+  page: WeatherPage;
+  place: WeatherPage["places"]["pages"][number];
+  index: number;
+}) {
+  const { places, copy } = page;
+  const p = place;
+  const s = p.summary;
+  return (
+    <Animated.View layout={LinearTransition.duration(200)}>
+      <Pressable
+        accessibilityRole="button"
+        disabled={places.editing}
+        onPress={() => {
+          places.select(index);
+          places.setListOpen(false);
+        }}
+        className={cn(
+          wc.placeCard,
+          index === places.index && wc.placeCardActive,
+          "active:opacity-80",
+        )}
+      >
+        <View className="flex-row items-start gap-3">
+          <View className="flex-1 gap-0.5">
+            <View className="flex-row items-center gap-2">
+              {p.here ? <UiIcon name="arrow" size={14} /> : null}
+              <Text
+                className={cn("shrink", wc.placeCardName)}
+                numberOfLines={1}
+                style={nepaliTextStyle()}
+              >
+                {p.name}
+              </Text>
+            </View>
+            <View className="flex-row items-center gap-2">
+              <Text className={wc.placeCardTime} style={nepaliTextStyle()}>
+                {s?.time ?? " "}
+              </Text>
+              {p.primary ? (
+                <Text className={wc.primaryBadge} style={nepaliTextStyle()}>
+                  {copy.primary}
+                </Text>
+              ) : null}
+            </View>
+          </View>
+          {places.editing ? (
+            <View className="flex-row">
+              {p.primary ? null : (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${copy.makePrimary}: ${p.name}`}
+                  onPress={() => places.makePrimary(p.id)}
+                  hitSlop={6}
+                  className="size-11 items-center justify-center"
+                >
+                  <UiIcon name="star" size={22} />
+                </Pressable>
+              )}
+              {p.here ? null : (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${copy.remove}: ${p.name}`}
+                  onPress={() => places.remove(p.id)}
+                  hitSlop={6}
+                  className="size-11 items-center justify-center"
+                >
+                  <UiIcon name="x" size={22} />
+                </Pressable>
+              )}
+            </View>
+          ) : (
+            <Text className={wc.placeCardTemp}>{s?.temperature ?? "–"}</Text>
+          )}
+        </View>
+        {s ? (
+          <View className="flex-row items-center gap-2">
+            <WeatherGlyph glyph={s.glyph} size={24} />
+            <Text
+              className={cn("flex-1", wc.placeCardMeta)}
+              numberOfLines={1}
+              style={nepaliTextStyle()}
+            >
+              {s.glyph.label}
+            </Text>
+            <Text className={wc.placeCardMeta}>
+              L:{s.low} H:{s.high}
+            </Text>
+          </View>
+        ) : null}
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+/**
+ * The places screen (the ☰ in the sky): every saved place with its temperature now, today's
+ * low / high and its local time; a search bar at the bottom adds one; ⋯ holds edit list and units.
+ */
+function PlacesScreen({ page }: { page: WeatherPage }) {
+  const insets = useSafeAreaInsets();
+  const { places, copy, units } = page;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [unitsOpen, setUnitsOpen] = useState(false);
+  const close = () => places.setListOpen(false);
+  return (
+    <Modal
+      visible={places.listOpen}
+      animationType="slide"
+      presentationStyle="fullScreen"
+      onRequestClose={close}
+    >
+      <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+        <View className={cn("flex-row", wc.topBar, "pr-3")}>
+          <PressScale
+            accessibilityRole="button"
+            accessibilityLabel={copy.back}
+            onPress={close}
+            hitSlop={8}
+            className="size-11 items-center justify-center"
+          >
+            <UiIcon name="arrow-left" size={24} tone="foreground" />
+          </PressScale>
+          <Text
+            className={wc.placesTitle}
+            numberOfLines={1}
+            style={nepaliTextStyle()}
+          >
+            {copy.placesTitle}
+          </Text>
+          {places.editing ? (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => places.setEditing(false)}
+              hitSlop={8}
+              className="min-h-11 justify-center px-2"
+            >
+              <Text className={wc.chipText} style={nepaliTextStyle()}>
+                {copy.done}
+              </Text>
+            </Pressable>
+          ) : (
+            <PressScale
+              accessibilityRole="button"
+              accessibilityLabel={copy.moreOptions}
+              onPress={() => setMenuOpen(true)}
+              hitSlop={8}
+              className={wc.roundButton}
+            >
+              <UiIcon name="ellipsis" size={22} tone="foreground" />
+            </PressScale>
+          )}
+        </View>
+
+        <ScrollView contentContainerClassName="gap-3 px-4 pb-4 pt-2">
+          {places.pages.map((p, i) => (
+            <PlaceCard key={p.id} page={page} place={p} index={i} />
+          ))}
+        </ScrollView>
+
+        <View
+          className="px-4 pt-2"
+          style={{ paddingBottom: insets.bottom + 8 }}
+        >
+          <Pressable
+            accessibilityRole="search"
+            accessibilityLabel={copy.searchPlace}
+            onPress={() => places.setAddOpen(true)}
+            className={cn(wc.searchBar, "active:opacity-80")}
+          >
+            <UiIcon name="search" size={20} />
+            <Text className={wc.searchBarText} style={nepaliTextStyle()}>
+              {copy.searchPlace}
+            </Text>
+          </Pressable>
+        </View>
+
+        {menuOpen ? (
+          <Pressable
+            accessibilityLabel={copy.close}
+            onPress={() => setMenuOpen(false)}
+            style={StyleSheet.absoluteFill}
+          >
+            <Animated.View
+              entering={FadeIn.duration(150)}
+              className={wc.menuCard}
+              style={{ top: insets.top + 52 }}
+            >
+              <MenuItem
+                label={copy.editList}
+                onPress={() => {
+                  setMenuOpen(false);
+                  places.setEditing(true);
+                }}
+              />
+              {units.options.temp.map((o) => (
+                <MenuItem
+                  key={o.id}
+                  label={o.label}
+                  checked={units.value.temp === o.id}
+                  onPress={() => {
+                    setMenuOpen(false);
+                    units.set({ temp: o.id });
+                  }}
+                />
+              ))}
+              <MenuItem
+                label={copy.units}
+                chevron
+                onPress={() => {
+                  setMenuOpen(false);
+                  setUnitsOpen(true);
+                }}
+              />
+            </Animated.View>
+          </Pressable>
+        ) : null}
+      </View>
+      <UnitsSheet
+        page={page}
+        open={unitsOpen}
+        onClose={() => setUnitsOpen(false)}
+      />
+      <AddFlow page={page} />
+    </Modal>
+  );
+}
+
+/**
+ * One place's page of the pager: its own vertical scroll with the app's pull-to-refresh (as on
+ * kundali). The scroll starts below the status bar, so iOS shows the spinner there instead of
+ * behind the clock; the strip under the status bar is painted the sky's top colour.
+ */
+function PlacePage({ page }: { page: WeatherPage }) {
+  const insets = useSafeAreaInsets();
+  const refreshControl = usePageRefreshControl();
+  const { copy } = page;
+  return (
+    <View className="flex-1">
+      {/* The clock sits on the dark sky in both themes. */}
+      <StatusBar style="light" />
+      <View
+        style={{
+          height: insets.top,
+          backgroundColor: skyColors(page.now?.daylight ?? 0)[0],
+        }}
+      />
+      <ScrollView
+        refreshControl={refreshControl}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 72 }}
+      >
+        <Hero page={page} top={0} />
+        {page.now ? (
+          <>
+            <Today page={page} />
+            <Hourly page={page} />
+            <Daily page={page} />
+            <View className={cn(wc.band, wc.footer, "px-4")}>
+              {[
+                [copy.updatedTitle, copy.updated],
+                [copy.locationTitle, copy.locationNote],
+              ].map(([title, body]) => (
+                <View key={title}>
+                  <Text className={wc.footerTitle} style={nepaliTextStyle()}>
+                    {title}
+                  </Text>
+                  <Text className={wc.footerText} style={nepaliTextStyle()}>
+                    {body}
+                  </Text>
+                </View>
+              ))}
+              <Text className={wc.footerText} style={nepaliTextStyle()}>
+                {copy.unitsNote}
+              </Text>
+              <Text className={wc.footerText} style={nepaliTextStyle()}>
+                {copy.source}
+              </Text>
+            </View>
+          </>
+        ) : null}
+      </ScrollView>
+    </View>
+  );
+}
+
+/** The page as drawn for place `i`: the shared state, with that place's own forecast. */
+function pageAt(page: WeatherPage, i: number): WeatherPage {
+  const view = page.places.pages[i]!.view;
+  return {
+    ...page,
+    ...view,
+    copy: {
+      ...page.copy,
+      updated: view.updated,
+      locationNote: view.locationNote,
+    },
+  };
+}
+
+/**
+ * Weather — the app's drawing of `useWeatherPage` (@vedic-patro/features). A screen of its own:
+ * no app header or floating nav (not in PAGE_CHROME_ROUTES), a back arrow in the sky instead.
+ * Places are pages of a native horizontal pager: the finger drags the page and the next one
+ * follows, like a weather app. The hourly table scrolls on its own inside it.
+ */
+export default function WeatherScreen() {
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const { location } = usePanchangaLocation();
+  const page = useWeatherPage({
+    location,
+    locate: locateDevice,
+    storage: placesStorage,
+  });
+  const { copy, places } = page;
+
+  // Dots, the list and adding a place move the pager; a swipe moves the index.
+  const pager = useRef<ScrollViewInstance>(null);
+  // Each page is the full screen; a gap shows between two pages only while dragging.
+  const step = width + PAGE_GAP;
+  useEffect(() => {
+    pager.current?.scrollTo({ x: places.index * step, animated: true });
+  }, [places.index, step]);
+
+  return (
+    <View className="flex-1 bg-background">
+      <ScrollView
+        ref={pager}
+        horizontal
+        snapToInterval={step}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        disableIntervalMomentum
+        showsHorizontalScrollIndicator={false}
+        directionalLockEnabled
+        contentOffset={{ x: places.index * step, y: 0 }}
+        onMomentumScrollEnd={(e) => {
+          const i = Math.round(e.nativeEvent.contentOffset.x / step);
+          if (i !== places.index) places.select(i);
+        }}
+      >
+        {places.pages.map((p, i) => (
+          <View
+            key={p.id}
+            style={{
+              width,
+              marginRight: i < places.pages.length - 1 ? PAGE_GAP : 0,
+            }}
+          >
+            {/* Only the page and its neighbours are drawn; the rest are empty until reached. */}
+            {Math.abs(i - places.index) <= 1 ? (
+              <PlacePage page={pageAt(page, i)} />
+            ) : null}
+          </View>
+        ))}
+      </ScrollView>
+      {places.pages.length > 1 ? (
+        <PlaceDots page={page} bottom={insets.bottom + 12} />
+      ) : null}
+      {places.listOpen ? null : <AddFlow page={page} />}
+      <PlacesScreen page={page} />
       <Sheet
         open={page.info != null}
         onClose={page.closeInfo}

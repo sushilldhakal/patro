@@ -123,10 +123,6 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
     () => all.find(({ sections }) => sections.some((s) => s.items.some((i) => i.active)))?.category.id ?? "calendar",
   );
   const current = all.find(({ category }) => category.id === tab) ?? all[0]!;
-  const [heights, setHeights] = useState<Partial<Record<NavCategoryId, number>>>({});
-  const onGridLayout = (id: NavCategoryId, height: number) =>
-    setHeights((prev) => (Math.abs((prev[id] ?? 0) - height) < 1 ? prev : { ...prev, [id]: height }));
-  const tallest = Math.max(0, ...Object.values(heights).map((h) => h ?? 0));
 
   return (
     <View className="gap-1">
@@ -168,15 +164,15 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
         {current.category.title}
       </Text>
       {/* All three grids stay mounted and only the shown one changes. Swapping the grid rebuilt ~20
-          SVG icons, which drew blank for a frame (a flicker), and the grids' different heights made
-          the settings below jump. The area keeps the tallest grid's height. */}
-      <View style={{ minHeight: tallest }}>
+          SVG icons, which drew blank for a frame (a flicker). The area sizes to the shown grid —
+          no reserved height: keeping the tallest grid's height left a dead gap under the shorter
+          grids before the settings below. Switching tabs moves the settings with the grid. */}
+      <View>
         {all.map(({ category, sections }) => {
           const shown = category.id === tab;
           return (
             <View
               key={category.id}
-              onLayout={(e) => onGridLayout(category.id, e.nativeEvent.layout.height)}
               pointerEvents={shown ? "auto" : "none"}
               accessibilityElementsHidden={!shown}
               importantForAccessibility={shown ? "auto" : "no-hide-descendants"}

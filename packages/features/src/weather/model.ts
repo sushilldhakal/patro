@@ -194,6 +194,10 @@ export type WeatherNowView = {
   /** "14° Overnight min · 29° Tomorrow's max" (or today's, before mid-afternoon). */
   range: WeatherFact[];
   rainLine: string;
+  /** "Air quality 42 · Good" (US AQI); empty when the server had none. */
+  airLine: string;
+  /** How light the sky is now: 0 from sunset to sunrise, rising to 1 at midday (sine of the day's arc). */
+  daylight: number;
   wind: WeatherWind | null;
   /** Current weather: wind, gust, humidity, rain today. */
   current: WeatherFact[];
@@ -212,6 +216,8 @@ export type WeatherHourView = {
   feels: string;
   rainChance: string;
   rainMm: string;
+  /** The hour's rain in millimetres, for the bar under the number. */
+  rain: number;
   wind: WeatherWind | null;
   gust: string;
   humidity: string;
@@ -239,6 +245,9 @@ export type WeatherDayView = {
   rainAmount: string;
   rainChance: string;
   details: WeatherFact[];
+  /** The opened day, as a weather app lays it out: min and max, then titled sections with icons. */
+  range: WeatherFact[];
+  sections: { key: string; title: string; facts: WeatherFact[] }[];
 };
 
 const round = (v: number | null | undefined, places = 0) =>
@@ -251,17 +260,55 @@ export function placeHourKey(nowMs: number, utcOffsetSeconds: number): string {
   return new Date(nowMs + utcOffsetSeconds * 1000).toISOString().slice(0, 13);
 }
 
+/** The reader's units. The server always sends °C, km/h and mm; the page converts. */
+export type WeatherUnits = {
+  temp: "c" | "f";
+  wind: "kmh" | "ms" | "mph" | "kn";
+  rain: "mm" | "in";
+};
+export const DEFAULT_WEATHER_UNITS: WeatherUnits = {
+  temp: "c",
+  wind: "kmh",
+  rain: "mm",
+};
+export const WEATHER_UNIT_CHOICES = {
+  temp: ["c", "f"],
+  wind: ["kmh", "ms", "mph", "kn"],
+  rain: ["mm", "in"],
+} as const satisfies { [K in keyof WeatherUnits]: readonly WeatherUnits[K][] };
+const WIND_PER_KMH = { kmh: 1, ms: 1 / 3.6, mph: 0.621371, kn: 0.539957 };
+
+/** US AQI band (EPA). */
+export function aqiLevel(
+  aqi: number,
+): "good" | "moderate" | "sensitive" | "unhealthy" | "very_unhealthy" | "hazardous" {
+  if (aqi <= 50) return "good";
+  if (aqi <= 100) return "moderate";
+  if (aqi <= 150) return "sensitive";
+  if (aqi <= 200) return "unhealthy";
+  if (aqi <= 300) return "very_unhealthy";
+  return "hazardous";
+}
+
 export function buildWeatherView(
   data: WeatherForecastResponse | undefined,
   nowMs: number,
   text: Text,
   /** The reader's calendar: dates are drawn in BS or AD, in the UI language's script. */
   era: "bs" | "ad" = "bs",
+  units: WeatherUnits = DEFAULT_WEATHER_UNITS,
 ) {
   const { t, digits, lang } = text;
   const en = lang === "en";
+  const toTemp = (v: number | null | undefined) =>
+    v == null || units.temp === "c" ? v : (v * 9) / 5 + 32;
+  const toWind = (v: number | null | undefined) =>
+    v == null ? v : v * WIND_PER_KMH[units.wind];
+  const inches = units.rain === "in";
+  const toRain = (v: number | null | undefined) =>
+    v == null || !inches ? v : v / 25.4;
   const deg = (v: number | null | undefined, places = 0) => {
-    const r = round(v, places);
+    const r = round(toTemp(v), places);
     return r == null ? "–" : `${digits(places ? r.toFixed(places) : r)}°`;
   };
   const pct = (v: number | null | undefined) =>
@@ -269,11 +316,16 @@ export function buildWeatherView(
   const num = (v: number | null | undefined, places = 0) =>
     round(v, places) == null ? "–" : digits(round(v, places)!);
   const kmh = (v: number | null | undefined) =>
-    round(v) == null ? "–" : t("weather.kmh", { speed: digits(round(v)!) });
-  const mm = (v: number | null | undefined) =>
-    round(v, 1) == null
+    round(toWind(v)) == null
       ? "–"
-      : t("weather.mm", { amount: digits(round(v, 1)!) });
+      : t(`weather.${units.wind}`, { speed: digits(round(toWind(v))!) });
+  const rainPlaces = inches ? 2 : 1;
+  const mm = (v: number | null | undefined) =>
+    round(toRain(v), rainPlaces) == null
+      ? "–"
+      : t(`weather.${units.rain}`, {
+          amount: digits(round(toRain(v), rainPlaces)!),
+        });
   const clock = (iso: string | undefined) => {
     if (!iso) return "–";
     const h = Number(iso.slice(11, 13));
@@ -305,7 +357,7 @@ export function buildWeatherView(
           direction: t(`weather.dir.${compassPoint(from)}`),
           arrowDeg: (from + 180) % 360,
           speed: kmh(speed),
-          value: num(speed),
+          value: num(toWind(speed)),
         };
   const uv = (v: number | null | undefined): WeatherUv | null => {
     const r = round(v);
@@ -417,11 +469,25 @@ export function buildWeatherView(
     cur?.wind_speed_10m ?? between(hourly.wind_speed_10m),
     cur?.wind_direction_10m ?? near(hourly.wind_direction_10m),
   );
+  const pressure = round(cur?.pressure_msl ?? between(hourly.pressure_msl));
+  const visM = cur?.visibility ?? between(hourly.visibility);
+  // Open-Meteo caps visibility near 24 km; under 10 km one decimal matters.
+  const visibilityKm =
+    visM == null ? null : round(visM / 1000, visM < 10_000 ? 1 : 0);
+  const aqi = round(data.forecast.air_quality?.current?.us_aqi);
+  const aqiLabel = aqi == null ? "" : t(`weather.aqi.${aqiLevel(aqi)}`);
 
-  // Hours of today with UV ≥ 3: when to cover up.
-  const uvHours = hourly.time
-    .map((time, i) => ({ time, uv: hourly.uv_index?.[i] ?? 0 }))
-    .filter((h) => h.time.startsWith(today) && h.uv >= 3);
+  // Hours of a day with UV ≥ 3: when to cover up.
+  const uvHoursOf = (date: string) =>
+    hourly.time
+      .map((time, i) => ({ time, uv: hourly.uv_index?.[i] ?? 0 }))
+      .filter((h) => h.time.startsWith(date) && h.uv >= 3);
+  const uvHours = uvHoursOf(today);
+  /** "09:00–17:00": first UV ≥ 3 hour to the end of the last one; empty when there is none. */
+  const protectWindow = (hours: { time: string }[]) =>
+    hours.length
+      ? `${clock(hours[0]!.time)}–${clock(`${hours.at(-1)!.time.slice(0, 11)}${String(Number(hours.at(-1)!.time.slice(11, 13)) + 1).padStart(2, "0")}:00`)}`
+      : "";
   const uvMax = uv(daily.uv_index_max[todayAt]);
   const nextMoon = nextPrincipalPhase(nowMs);
   /** The phase's date on the place's own clock, in the reader's calendar. */
@@ -433,6 +499,7 @@ export function buildWeatherView(
     );
 
   const now: WeatherNowView = {
+    daylight: daylightAt(placeNow, daily.sunrise?.[todayAt], daily.sunset?.[todayAt]),
     glyph: glyph(cur?.weather_code ?? near(hourly.weather_code), nowDay),
     temperature: deg(cur?.temperature_2m ?? between(hourly.temperature_2m), 1),
     feelsLike: t("weather.feels_like", {
@@ -446,6 +513,10 @@ export function buildWeatherView(
       rainToday != null && rainToday >= 0.2
         ? t("weather.rain_today", { amount: mm(rainToday) })
         : t("weather.no_rain"),
+    airLine:
+      aqi == null
+        ? ""
+        : t("weather.air_line", { value: digits(aqi), level: aqiLabel }),
     wind: nowWind,
     current: [
       ...(nowWind
@@ -474,6 +545,33 @@ export function buildWeatherView(
         value: mm(rainToday ?? 0),
         label: t("weather.rain_today_label"),
       },
+      ...(pressure == null
+        ? []
+        : [
+            {
+              key: "pressure",
+              value: t("weather.hpa", { value: digits(pressure) }),
+              label: t("weather.pressure"),
+            },
+          ]),
+      ...(visibilityKm == null
+        ? []
+        : [
+            {
+              key: "visibility",
+              value: t("weather.km", { value: digits(visibilityKm) }),
+              label: t("weather.visibility"),
+            },
+          ]),
+      ...(aqi == null
+        ? []
+        : [
+            {
+              key: "air",
+              value: `${digits(aqi)} · ${aqiLabel}`,
+              label: t("weather.air_quality"),
+            },
+          ]),
     ],
     rainChanceLine:
       rainChance == null
@@ -516,7 +614,7 @@ export function buildWeatherView(
         ? [
             {
               key: "protect",
-              value: `${clock(uvHours[0]!.time)}–${clock(`${uvHours.at(-1)!.time.slice(0, 11)}${String(Number(uvHours.at(-1)!.time.slice(11, 13)) + 1).padStart(2, "0")}:00`)}`,
+              value: protectWindow(uvHours),
               label: t("weather.sun_protection"),
             },
           ]
@@ -560,9 +658,12 @@ export function buildWeatherView(
   now.current = now.current.map(withIcon);
   now.sun = now.sun.map(withIcon);
 
-  // ── Hours: the next 48, grouped by day ──
+  // ── Hours: the rest of today and two whole days after it (at least 48), grouped by day ──
   const hourGroups: WeatherHourGroup[] = [];
-  for (let i = at; i < Math.min(hourly.time.length, at + 48); i++) {
+  const fourthDay = daily.time[todayAt + 3];
+  const fourthAt = fourthDay ? hourly.time.findIndex((time) => time.startsWith(fourthDay)) : -1;
+  const hoursEnd = Math.min(hourly.time.length, Math.max(at + 48, fourthAt < 0 ? hourly.time.length : fourthAt));
+  for (let i = at; i < hoursEnd; i++) {
     const time = hourly.time[i]!;
     const date = time.slice(0, 10);
     let group = hourGroups.at(-1);
@@ -582,14 +683,89 @@ export function buildWeatherView(
       temperature: deg(hourly.temperature_2m[i]),
       feels: deg(hourly.apparent_temperature?.[i]),
       rainChance: pct(hourly.precipitation_probability[i]),
-      rainMm: num(hourly.precipitation?.[i] ?? 0, 1),
+      rainMm: num(toRain(hourly.precipitation?.[i] ?? 0), rainPlaces),
+      rain: hourly.precipitation?.[i] ?? 0,
       wind: wind(hourly.wind_speed_10m[i], hourly.wind_direction_10m?.[i]),
-      gust: num(hourly.wind_gusts_10m?.[i]),
+      gust: num(toWind(hourly.wind_gusts_10m?.[i])),
       humidity: pct(hourly.relative_humidity_2m?.[i]),
       dew: deg(hourly.dew_point_2m?.[i]),
       uv: uv(hourly.uv_index?.[i]),
     });
   }
+
+  /** An opened day's sections: rain, wind, then sun, moon and UV, each fact with its icon. */
+  const daySections = (
+    i: number,
+    date: string,
+    chance: number | null,
+    sum: number | null | undefined,
+    dayWind: WeatherWind | null,
+    dayUv: WeatherUv | null,
+  ) => {
+    const offset = data.forecast.utc_offset_seconds ?? 0;
+    // The phase at the place's noon that day.
+    const phase = moonPhaseAt(Date.parse(`${date}T12:00:00Z`) - offset * 1000);
+    const protect = protectWindow(uvHoursOf(date));
+    const icon = (name: string) => ({ kind: "icon" as const, name: name as WeatherFactIconName });
+    return [
+      {
+        key: "rain",
+        title: t("weather.rain"),
+        facts: [
+          ...(chance == null
+            ? []
+            : [
+                {
+                  key: "chance",
+                  value: t("weather.rain_chance_line", { chance: digits(chance), word: chanceWord(chance) }),
+                  label: "",
+                  icon: icon("raindrop"),
+                },
+              ]),
+          { key: "amount", value: mm(sum ?? 0), label: t("weather.rain_amount"), icon: icon("raindrops") },
+        ],
+      },
+      {
+        key: "wind",
+        title: t("weather.wind"),
+        facts: [
+          ...(dayWind
+            ? [
+                {
+                  key: "wind",
+                  value: `${dayWind.direction} ${dayWind.speed}`,
+                  label: t("weather.wind"),
+                  icon: { kind: "arrow" as const, deg: dayWind.arrowDeg },
+                },
+              ]
+            : []),
+          { key: "gust", value: kmh(daily.wind_gusts_10m_max?.[i]), label: t("weather.gust"), icon: icon("wind") },
+        ],
+      },
+      {
+        key: "sun",
+        title: t("weather.sun_moon_uv"),
+        facts: [
+          { key: "sunrise", value: clock(daily.sunrise[i]), label: t("weather.sunrise"), icon: icon("sunrise") },
+          { key: "sunset", value: clock(daily.sunset[i]), label: t("weather.sunset"), icon: icon("sunset") },
+          { key: "moon", value: t(`weather.moon.${phase}`), label: t("weather.moon_phase"), icon: icon(moonIcon(phase)) },
+          ...(dayUv
+            ? [
+                {
+                  key: "uv",
+                  value: `${dayUv.value} (${dayUv.label})`,
+                  label: t("weather.uv_max"),
+                  icon: icon(`uv-index-${Math.min(11, Math.max(1, Number(round(daily.uv_index_max[i]) ?? 1)))}`),
+                },
+              ]
+            : []),
+          ...(protect
+            ? [{ key: "protect", value: protect, label: t("weather.sun_protection"), icon: icon("sun-hot") }]
+            : []),
+        ],
+      },
+    ] satisfies WeatherDayView["sections"];
+  };
 
   // ── Days from today ──
   const days: WeatherDayView[] = daily.time.slice(todayAt).map((date, j) => {
@@ -612,6 +788,11 @@ export function buildWeatherView(
       low: deg(daily.temperature_2m_min[i]),
       rainAmount: mm(sum ?? 0),
       rainChance: pct(chance),
+      range: [
+        { key: "min", value: deg(daily.temperature_2m_min[i]), label: t("weather.min") },
+        { key: "max", value: deg(daily.temperature_2m_max[i]), label: t("weather.max") },
+      ],
+      sections: daySections(i, date, chance, sum, dayWind, dayUv),
       details: [
         ...(chance == null
           ? []
@@ -663,4 +844,17 @@ export function buildWeatherView(
   });
 
   return { now, hourGroups, days };
+}
+
+/**
+ * How light the sky is at `placeNowMs` (the place's wall clock read as UTC): 0 outside sunrise–sunset,
+ * the sine of the day's arc in between, so it brightens through the morning and peaks at midday.
+ * `sunrise` / `sunset` are Open-Meteo's local "YYYY-MM-DDTHH:MM".
+ */
+export function daylightAt(placeNowMs: number, sunrise?: string | null, sunset?: string | null): number {
+  if (!sunrise || !sunset) return 0;
+  const rise = Date.parse(`${sunrise}:00Z`);
+  const set = Date.parse(`${sunset}:00Z`);
+  if (!(set > rise) || placeNowMs <= rise || placeNowMs >= set) return 0;
+  return Math.sin((Math.PI * (placeNowMs - rise)) / (set - rise));
 }

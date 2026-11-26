@@ -152,6 +152,10 @@ export interface LocalCalendar {
   grahaYear(q: { kind: "panchak"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** A kundali route made on the device, or null for the server. */
   kundali(q: LocalKundaliQuery, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The BS year's adhik and kshaya months (`/nepal/special-months/{year}`), or null for the server. */
+  specialMonths(q: { year: number }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
+  /** The current ऋतु, the next season starts and the ayanas (`/seasons/tropical`), or null for the server. */
+  seasons(location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
   /** The eclipses of a year (Surya Siddhanta only), or null for the server. */
   eclipse(q: { kind: "solar" | "lunar"; year: number; era: string; language?: string }, location?: LocalPlaceQuery): Promise<Record<string, unknown> | null>;
 }
@@ -265,6 +269,16 @@ function looksLikeMonth(v: Record<string, unknown>, q: LocalMonthQuery): boolean
 }
 
 export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar {
+  /**
+   * The sky, after one macrotask. The work after it is synchronous and can run for seconds; started
+   * from a promise chain it would run before React Native puts the page's first frame on screen
+   * (views mount only once the current task and its microtasks finish), so a page opened on the
+   * device stayed blank until the numbers were done. Yielding first lets the page frame paint.
+   */
+  const loadSky = async (system: SkySystem) => {
+    await new Promise<void>((resolve) => setTimeout(resolve, 120));
+    return options.loadSky(system);
+  };
   const run = async (
     location: LocalPlaceQuery | undefined,
     make: (m: typeof import("./festival-payloads"), skies: FestivalSkies, place: FestivalPlace) => Record<string, unknown> | null | Promise<Record<string, unknown> | null>,
@@ -276,8 +290,8 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
       if (!place) return null;
       const calc = options.system();
       if (calc === null) return null;
-      const surya = await options.loadSky("surya");
-      const sky = calc.system === "surya" ? surya : (await options.loadSky("drik")).withAyanamsha(calc.ayanamsha);
+      const surya = await loadSky("surya");
+      const sky = calc.system === "surya" ? surya : (await loadSky("drik")).withAyanamsha(calc.ayanamsha);
       return await make(m, { sky, surya }, place);
     } catch (error) {
       options.onError?.(error);
@@ -302,8 +316,8 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
     const found = placeOf(location, m.KATHMANDU_PLACE);
     if (!found) return null;
     const snap = (v: number) => (location ? Math.round(v * 100) / 100 : v);
-    const suryaSky = await options.loadSky("surya");
-    const sky = calc.system === "surya" ? suryaSky : (await options.loadSky("drik")).withAyanamsha(calc.ayanamsha);
+    const suryaSky = await loadSky("surya");
+    const sky = calc.system === "surya" ? suryaSky : (await loadSky("drik")).withAyanamsha(calc.ayanamsha);
     return {
       sky,
       surya: suryaSky,
@@ -351,8 +365,8 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
         const key = `${monthKey(calc, q, lat ?? 0, lon ?? 0)}.${q.slim ? "slim" : "full"}.${q.era}.${q.language ?? ""}.${(lite.location as { city_id?: number }).city_id ?? ""}`;
         const memo = FULL_MONTHS.get(key);
         if (memo) return memo;
-        const suryaSky = await options.loadSky("surya");
-        const sky = calc.system === "surya" ? suryaSky : (await options.loadSky("drik")).withAyanamsha(calc.ayanamsha);
+        const suryaSky = await loadSky("surya");
+        const sky = calc.system === "surya" ? suryaSky : (await loadSky("drik")).withAyanamsha(calc.ayanamsha);
         const { fullMonth } = await import("../panchanga/engine/month-full");
         const made = fullMonth(sky, suryaSky, lite, { slim: q.slim, era: q.era });
         if (!made) return null;
@@ -463,6 +477,28 @@ export function makeLocalCalendar(options: LocalCalendarOptions): LocalCalendar 
           { year: day.year, month: day.month, day: day.day, ...ctx.place },
           { era: q.era, language: q.language, detail: q.detail, slim: q.slim, festivals: q.festivals ? { surya: ctx.surya } : undefined, midnight: q.midnight, civil: q.civil, surya: ctx.surya },
         );
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    specialMonths: async (q, location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const { specialMonthsPayload } = await import("../panchanga/engine/special-months");
+        return specialMonthsPayload(ctx.sky, ctx.place, q.year);
+      } catch (error) {
+        options.onError?.(error);
+        return null;
+      }
+    },
+    seasons: async (location) => {
+      try {
+        const ctx = await surya(location);
+        if (!ctx) return null;
+        const { tropicalSeasons } = await import("../panchanga/engine/seasons");
+        return tropicalSeasons(ctx.sky, ctx.place, Date.now() / 86_400_000 + 2_440_587.5);
       } catch (error) {
         options.onError?.(error);
         return null;

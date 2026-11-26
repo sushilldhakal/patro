@@ -30,6 +30,22 @@ export const weatherIconNodes = {
     ["path", { d: "M18 6 6 18" }],
     ["path", { d: "m6 6 12 12" }],
   ] as IconNode,
+  menu: [
+    ["path", { d: "M4 6h16" }],
+    ["path", { d: "M4 12h16" }],
+    ["path", { d: "M4 18h16" }],
+  ] as IconNode,
+  ellipsis: [
+    ["circle", { cx: "12", cy: "12", r: "1" }],
+    ["circle", { cx: "19", cy: "12", r: "1" }],
+    ["circle", { cx: "5", cy: "12", r: "1" }],
+  ] as IconNode,
+  search: [
+    ["path", { d: "m21 21-4.34-4.34" }],
+    ["circle", { cx: "11", cy: "11", r: "8" }],
+  ] as IconNode,
+  check: [["path", { d: "M20 6 9 17l-5-5" }]] as IconNode,
+  "chevron-right": [["path", { d: "m9 18 6-6-6-6" }]] as IconNode,
   star: [
     [
       "path",

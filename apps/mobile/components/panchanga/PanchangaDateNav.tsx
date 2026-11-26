@@ -9,7 +9,8 @@ import {
   formatPatroCivilDayLabel,
   patroHeadlineDigits,
 } from "@vedic-patro/domain/calendar/patro-headline-subtitle";
-import { type Era } from "@vedic-patro/domain/calendar/era";
+import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
+import { formatBsDate } from "@vedic-patro/domain/calendar/bs-date-format";
 import type { PatroHeaderTab } from "@/components/patro-date/PatroHeaderTabs";
 
 function toAdStr(d: Date): string {
@@ -42,6 +43,8 @@ type Props = {
   onNext?: () => void;
   /** Replace AD subtitle (e.g. rashifal range strip). */
   crossEraSubtitleOverride?: string;
+  /** What the picker chooses: a day (default), a month, or a year (rashifal's monthly / yearly views). */
+  precision?: "day" | "month" | "year";
 };
 
 /** Panchanga day header — {@link PatroDateNav} mode `year-month-time` (web `PatroDayTimeNav`). */
@@ -63,6 +66,7 @@ export function PanchangaDateNav({
   onPrev: onPrevProp,
   onNext: onNextProp,
   crossEraSubtitleOverride,
+  precision = "day",
 }: Props) {
   const [browseEra, setBrowseEra] = useState<Era>(eraProp);
   const handleEraChange = onEraChange ?? setBrowseEra;
@@ -76,26 +80,62 @@ export function PanchangaDateNav({
   const gregorian = wheelData?.date_parts?.gregorian;
   const fallbackBs = adToBS(date);
 
-  const navYear = vikram?.year ?? fallbackBs.year;
-  const navMonth = vikram?.month ?? fallbackBs.month;
-  const navDay = vikram?.day ?? fallbackBs.day;
+  // The header follows the app's BS | AD setting: in AD the date parts, picks and month lengths
+  // are Gregorian; in BS they are Vikram.
+  const ad = isGregorianEra(browseEra);
+  const bsYear = vikram?.year ?? fallbackBs.year;
+  const bsMonth = vikram?.month ?? fallbackBs.month;
+  const bsDay = vikram?.day ?? fallbackBs.day;
+  const navYear = ad ? date.getFullYear() : bsYear;
+  const navMonth = ad ? date.getMonth() + 1 : bsMonth;
+  const navDay = ad ? date.getDate() : bsDay;
+  const monthLength = (y: number, m: number) => (ad ? new Date(y, m, 0).getDate() : getBSMonthLength(y, m));
+  const toDate = (y: number, m: number, d: number) => (ad ? new Date(y, m - 1, d, 12) : bsToAD(y, m, d));
 
   const adDateStr = adDateStrProp ?? toAdStr(date);
 
   const crossEraSubtitle = useMemo(() => {
+    if (ad) return formatBsDate({ year: bsYear, month: bsMonth, day: bsDay }, lang, digitFn);
     if (gregorian?.year && gregorian.month && gregorian.day) {
       return formatGregorianFromDateParts(gregorian, lang, digitFn);
     }
     const civil = wheelData?.date_ad ?? adDateStr;
     if (civil) return formatPatroCivilDayLabel(civil.split("T")[0]!, lang, digitFn);
     return formatPatroCivilDayLabel(toAdStr(date), lang, digitFn);
-  }, [gregorian, wheelData?.date_ad, adDateStr, date, lang, digitFn]);
+  }, [ad, bsYear, bsMonth, bsDay, gregorian, wheelData?.date_ad, adDateStr, date, lang, digitFn]);
 
   const stepDay = (delta: number) => {
     const next = new Date(date);
     next.setDate(next.getDate() + delta);
     onDateChange(next);
   };
+
+  const shared = {
+    className,
+    era: browseEra,
+    onEraChange: handleEraChange,
+    year: navYear,
+    onYearChange: (y: number) => onDateChange(toDate(y, navMonth, Math.min(navDay, monthLength(y, navMonth)))),
+    location,
+    onLocationChange,
+    onToday: () => onDateChange(new Date(`${todayAd}T12:00:00`)),
+    crossEraSubtitle: crossEraSubtitleOverride ?? crossEraSubtitle,
+    tabs,
+    tabsLabel,
+  };
+  if (precision === "year") return <PatroDateNav {...shared} mode="year" />;
+  if (precision === "month") {
+    const browse = (y: number, m: number) => onDateChange(toDate(y, m, Math.min(navDay, monthLength(y, m))));
+    return (
+      <PatroDateNav
+        {...shared}
+        mode="year-month"
+        month={navMonth}
+        onMonthChange={(m) => browse(navYear, m)}
+        onBrowse={({ year: y, month: m }) => browse(y, m)}
+      />
+    );
+  }
 
   return (
     <PatroDateNav
@@ -104,21 +144,18 @@ export function PanchangaDateNav({
       era={browseEra}
       onEraChange={handleEraChange}
       year={navYear}
-      onYearChange={(y) => {
-        const safeDay = Math.min(navDay, getBSMonthLength(y, navMonth));
-        onDateChange(bsToAD(y, navMonth, safeDay));
-      }}
+      onYearChange={shared.onYearChange}
       month={navMonth}
       onMonthChange={(m) => {
-        const safeDay = Math.min(navDay, getBSMonthLength(navYear, m));
-        onDateChange(bsToAD(navYear, m, safeDay));
+        const safeDay = Math.min(navDay, monthLength(navYear, m));
+        onDateChange(toDate(navYear, m, safeDay));
       }}
       day={navDay}
       weekday={date.getDay()}
-      onDayChange={(d) => onDateChange(bsToAD(navYear, navMonth, d))}
+      onDayChange={(d) => onDateChange(toDate(navYear, navMonth, d))}
       onSelectDate={(y, m, d) => {
-        const safeDay = Math.min(d, getBSMonthLength(y, m));
-        onDateChange(bsToAD(y, m, safeDay));
+        const safeDay = Math.min(d, monthLength(y, m));
+        onDateChange(toDate(y, m, safeDay));
       }}
       clock={clock}
       onClockChange={onClockChange}

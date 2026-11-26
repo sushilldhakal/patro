@@ -21,7 +21,7 @@ export function HomeRashifalSignPicker({ label, thumbs, onSelect, prevLabel, nex
   return (
     <View className={cn(wide ? "flex-row items-start gap-4" : "flex-col gap-3", className)}>
       <View
-        className={cn("min-w-0", wide ? "shrink-0" : "w-full max-w-88", home.pickerGrid)}
+        className={cn("min-w-0", wide ? "shrink-0" : "w-full", home.pickerGrid)}
         style={wide ? { width: THUMB_COLUMN } : undefined}
         accessibilityLabel={label}
       >
@@ -57,7 +57,12 @@ export function HomeRashifalSignPicker({ label, thumbs, onSelect, prevLabel, nex
         </Grid>
       </View>
       <View className={cn("min-w-0", wide && "flex-1")}>
-        <View className={cn(home.pickerCarousel, wide && "px-10")}>
+        {/* Phone: the card spans the width like the grid above it; the grid picks the sign, so the
+            side arrows (which floated half way down a long card) are for the wide layout only. */}
+        {!wide ? (
+          cards
+        ) : (
+        <View className={cn(home.pickerCarousel, "px-10")}>
           {cards}
           <Pressable label={prevLabel} onPress={onPrev} className={cn("absolute left-0 top-1/2 -mt-4 items-center justify-center rounded-lg", home.pickerArrow)}>
             <Icon node={shellIcons.chevronLeft} size="sm" />
@@ -66,6 +71,7 @@ export function HomeRashifalSignPicker({ label, thumbs, onSelect, prevLabel, nex
             <Icon node={shellIcons.chevronRight} size="sm" />
           </Pressable>
         </View>
+        )}
       </View>
     </View>
   );

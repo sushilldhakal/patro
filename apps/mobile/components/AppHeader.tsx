@@ -2,11 +2,12 @@ import { useCallback, useEffect, useRef, useState, type ComponentRef } from "rea
 import { Icon } from "@vedic-patro/ui";
 import { shellIcons, topBarControlSize } from "@vedic-patro/ui/kit/shell";
 import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
-import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn } from "react-native-reanimated";
+import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn, useAnimatedStyle } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DURATION, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
-import { neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { nativeShadow, neutral, radius, space, withAlpha } from "@vedic-patro/design-tokens";
 import { TABLET_SIDEBAR_WIDTH, useTabletUi } from "@/lib/tablet-ui";
+import { headerPinnedH, headerRow1H, headerShiftFor, headerShown, headerY, setOverlayHeaderHeights, useOverlayHeaderActive } from "@/lib/overlay-header";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -15,13 +16,17 @@ import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
-import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, useOpenMenuRequest } from "@/lib/menu-request";
-import { useTopBarElement } from "@/components/navigation/TopBarSlot";
+import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn, useOpenMenuRequest } from "@/lib/menu-request";
+import { useTopBarElement, useTopBarHeader } from "@/components/navigation/TopBarSlot";
+import { HeaderDateTitle } from "@/components/patro-date/HeaderDateTitle";
+import { PatroHeaderLocation } from "@/components/patro-date/PatroHeaderLocation";
 import { ThemeScope, useThemeColors } from "@/lib/theme-context";
-import { usePageViewSections, type PageViewSection } from "@/lib/page-view-menu";
+import { usePageViewSections, type PageViewOption, type PageViewSection } from "@/lib/page-view-menu";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { usePathname, useRouter } from "expo-router";
+import { HOME_CARD_INSET, normalizeMobilePathname, pageTopPadding } from "@/lib/mobile-nav";
 
 /**
  * The side menu and its open/close/navigate flow. It opens on `requestOpenMenu()`, so the header's
@@ -173,12 +178,12 @@ export function AppHeader() {
  * A top-bar key: the same size, corner and border as the page's date arrows next to it
  * (`topBarControlSize`, `calendarHeaderClasses.iconButton`), so the whole bar is one row of keys.
  */
-function HeaderButton({
+export function HeaderButton({
   icon,
   label,
   onPress,
 }: {
-  icon: "sidebar" | "list" | "add" | "search-outline" | "location-outline";
+  icon: "sidebar" | "list" | "chevron-back" | "add" | "search-outline" | "location-outline" | "calendar-outline" | "person-outline" | "person-circle-outline";
   label: string;
   onPress: () => void;
 }) {
@@ -302,12 +307,122 @@ function initialOf(label: string): string {
  * Short plain sets sit at the top as segmented switches and stay put; the rest (a long profile list)
  * scrolls beneath its own fixed heading. The card never grows past about two thirds of the screen.
  */
-export function ViewMenuButton() {
+/** A page's views as a segmented toggle, drawn exactly like BS | AD (CalendarSystemToggle large). */
+function PageViewToggle({ options }: { options: PageViewSection["options"] }) {
+  return (
+    <View accessibilityRole="tablist" className="h-10 shrink-0 flex-row overflow-hidden rounded-xl border border-border bg-card">
+      {options.map((option) => (
+        <Pressable
+          key={option.key}
+          accessibilityRole="tab"
+          accessibilityLabel={option.label}
+          accessibilityState={{ selected: option.active }}
+          onPress={() => {
+            if (option.active) return;
+            haptics.tick();
+            option.onPress();
+          }}
+          className={cn("items-center justify-center px-3.5 active:opacity-80", option.active ? "bg-secondary" : "bg-card")}
+        >
+          <Text numberOfLines={1} className={cn("text-sm font-semibold", option.active ? "text-secondary-foreground" : "text-muted-foreground")}>
+            {option.label}
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+/**
+ * A page's main views as a full-width tab bar under the header (rashifal's दैनिक | साप्ताहिक |
+ * मासिक | वार्षिक): icon over label, the chosen one in the brand colour with a bar that slides
+ * under it. It stays pinned while the header's other rows scroll away.
+ */
+function PageTabBar({ options }: { options: PageViewOption[] }) {
+  const colors = useThemeColors();
+  const [w, setW] = useState(0);
+  const n = Math.max(1, options.length);
+  const index = Math.max(0, options.findIndex((o) => o.active));
+  const PAD = 4;
+  const segW = w > 0 ? (w - PAD * 2) / n : 0;
+  // React Native's own Animated (native driver): a Reanimated view here lost its absolute position
+  // and background on iOS, so it took up room in the row and never showed.
+  const x = useRef(new RNAnimated.Value(0)).current;
+  const placed = useRef(false);
+  useEffect(() => {
+    if (segW <= 0) return;
+    const to = PAD + index * segW;
+    if (!placed.current) {
+      placed.current = true;
+      x.setValue(to);
+      return;
+    }
+    RNAnimated.spring(x, { toValue: to, useNativeDriver: true, damping: 22, stiffness: 260, mass: 0.7 }).start();
+  }, [index, segW, x]);
+  return (
+    // iOS-style segmented control, full width: a muted capsule with a raised white thumb that
+    // springs to the chosen tab. Icon beside the label, so the row stays one line tall.
+    <View
+      accessibilityRole="tablist"
+      onLayout={(e) => setW(e.nativeEvent.layout.width)}
+      style={{ flexDirection: "row", alignSelf: "stretch", width: "100%", height: 44, padding: PAD, borderRadius: radius["2xl"], borderCurve: "continuous", backgroundColor: colors.muted }}
+    >
+      {segW > 0 ? (
+        <RNAnimated.View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: PAD,
+            bottom: PAD,
+            left: 0,
+            width: segW,
+            borderRadius: radius["2xl"] - PAD,
+            borderCurve: "continuous",
+            backgroundColor: colors.card,
+            ...nativeShadow("xs"),
+            transform: [{ translateX: x }],
+          }}
+        />
+      ) : null}
+      {options.map((option) => {
+        const tint = option.active ? colors.secondary : colors.mutedForeground;
+        return (
+          <View key={option.key} style={{ flex: 1 }}>
+          <Pressable
+            accessibilityRole="tab"
+            accessibilityLabel={option.label}
+            accessibilityState={{ selected: option.active }}
+            onPress={() => {
+              if (option.active) return;
+              haptics.tick();
+              option.onPress();
+            }}
+            style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5 }}
+          >
+            {option.ionicon ? <Ionicons name={option.ionicon as never} size={16} color={tint} /> : null}
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              className={option.active ? "font-semibold" : "font-medium"}
+              style={[nepaliTextStyle(14), { color: option.active ? colors.foreground : colors.mutedForeground, flexShrink: 1 }]}
+            >
+              {option.label}
+            </Text>
+          </Pressable>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+export function ViewMenuButton({ only, dropdown }: { only?: PageViewSection[]; dropdown?: boolean } = {}) {
   const { t } = useLocale();
   const colors = useThemeColors();
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const sections = usePageViewSections();
+  const all = usePageViewSections();
+  const sections = only ?? all;
   const ref = useRef<ComponentRef<typeof View>>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
@@ -316,6 +431,9 @@ export function ViewMenuButton() {
   const close = () => setAnchor(null);
 
   if (!sections) return null;
+  // The dropdown shows the chosen option, or the first one (signed out: "sign in").
+  const flat = sections.flatMap((x) => x.options);
+  const dropdownLabel = (flat.find((o) => o.active) ?? flat[0])?.label ?? "";
 
   const choose = (onPress: () => void) => {
     haptics.tick();
@@ -344,7 +462,31 @@ export function ViewMenuButton() {
 
   return (
     <View ref={ref} collapsable={false}>
-      <HeaderButton icon="list" label={t("ui.view_menu.label")} onPress={open} />
+      {dropdown ? (
+        // A pill like the place button: the chosen option's name and a chevron (rashifal's profile).
+        <Pressable
+          onPress={() => {
+            haptics.tick();
+            open();
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={sections[0]?.title ?? t("ui.view_menu.label")}
+          className="h-10 max-w-48 flex-row items-center gap-1.5 rounded-xl border border-border bg-card pl-2 pr-2.5 active:opacity-70"
+          style={{ borderCurve: "continuous" }}
+        >
+          <View className="h-7 w-7 items-center justify-center rounded-full bg-secondary">
+            <Text className="text-caption font-semibold text-white" style={nepaliTextStyle(13)}>
+              {initialOf(dropdownLabel)}
+            </Text>
+          </View>
+          <Text numberOfLines={1} className="shrink text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+            {dropdownLabel}
+          </Text>
+          <Ionicons name="chevron-down" size={16} color={colors.mutedForeground} />
+        </Pressable>
+      ) : (
+        <HeaderButton icon="list" label={t("ui.view_menu.label")} onPress={open} />
+      )}
       <Modal visible={anchor != null} transparent animationType="none" onRequestClose={close} statusBarTranslucent>
         <ThemeScope style={{ flex: 1 }}>
         <Animated.View entering={FadeIn.duration(140)} style={[StyleSheet.absoluteFill, { backgroundColor: withAlpha(neutral.black, 0.18) }]}>
@@ -467,20 +609,115 @@ function AppHeaderView() {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
   const dateControls = useTopBarElement();
+  const dateHeader = useTopBarHeader();
+  const router = useRouter();
   // The date controls' band is exactly one key tall, so they line up with the buttons either side.
   const controlSize = topBarControlSize(useWindowDimensions().width);
   const tablet = useTabletUi();
   // Creating events, tasks and appointments is for signed-in users.
   const { isAuthenticated } = useAuth();
+  // Home on a phone draws its own two-row header in the page (BsMonthHeaderTitle),
+  // so the top bar stays out of the way there. Every other page keeps it.
+  const pathname = usePathname();
+  const allViews = usePageViewSections();
+  // A "tabs" group is the pinned tab bar under the rows; the rest go in row 2 or the menu.
+  const tabsSection = allViews?.find((v) => v.placement === "tabs") ?? null;
+  const rest = allViews?.filter((v) => v.placement !== "tabs") ?? [];
+  const pageViews = rest.length > 0 ? rest : null;
+  // One untitled group of up to three views: a toggle like BS | AD. One titled list (profiles):
+  // a dropdown pill. More than that: the menu button.
+  const viewToggle = rest.length === 1 && !rest[0]!.title && rest[0]!.options.length <= 3 ? rest[0]!.options : null;
+  const viewDropdown = rest.length === 1 && !viewToggle ? rest : null;
+  // Phone inner pages that scroll with PageScrollView: the bar floats over the page and its rows
+  // move with the scroll on the UI thread, the way home's header does (lib/overlay-header.ts).
+  // Any other page keeps it in the layout, fixed.
+  const overlayActive = useOverlayHeaderActive();
+  const row1H = useRef(0);
+  const shiftStyle = useAnimatedStyle(() => ({ transform: [{ translateY: -headerShiftFor(headerY.get(), headerShown.get()) }] }));
+  const home = Platform.OS !== "web" && !tablet && normalizeMobilePathname(pathname) === "/";
+  const overlay = overlayActive && !tablet && Platform.OS !== "web";
+  // No floating bar (home draws its own header; tablet keeps it in the layout): the page leaves no room.
+  const floating = overlay && !home;
+  useEffect(() => {
+    if (!floating) setOverlayHeaderHeights(0, 0);
+  }, [floating]);
+  // No tab bar on this page: nothing stays pinned when the rows scroll away.
+  const hasTabs = tabsSection != null;
+  useEffect(() => {
+    if (!hasTabs) headerPinnedH.value = 0;
+  }, [hasTabs]);
+  if (home) return null;
 
-  return (
-    <View style={{ paddingTop: insets.top }} className="bg-background">
-      <View className="min-h-14 w-full flex-row items-center gap-2 px-3 py-2">
+  const rows =
+    dateHeader && !tablet ? (
+      // Phone page with a date: home's header, piece for piece (BsMonthHeaderTitle + BsMonthHeaderRow2).
+      // Row 1: date badge (Today) + year line ▾ (the page's picker), view menu (only with views), profile.
+      // Row 2: place, BS | AD, search.
+      <View className="border-b border-border bg-background" style={{ paddingHorizontal: HOME_CARD_INSET }}>
+        <View
+          className="flex-row items-center gap-2 pb-2"
+          // Home's page top padding (pageTopPadding on a phone), so row 1 sits exactly where home's does.
+          style={{ paddingTop: pageTopPadding(true) }}
+          onLayout={(e) => {
+            row1H.current = e.nativeEvent.layout.height;
+            // Children can report after the rows' own onLayout, so update the shared value here too.
+            headerRow1H.value = row1H.current;
+          }}
+        >
+          <HeaderDateTitle {...dateHeader} />
+          <View className="ml-auto flex-row items-center gap-2">
+            {/* Two keys, like home's row 1: search, then profile. The page's views sit in row 2's
+                toggle; the menu only when they don't fit there. */}
+            {pageViews && !viewToggle && !viewDropdown ? <ViewMenuButton only={rest} /> : null}
+            <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
+            <HeaderButton
+              icon={isAuthenticated ? "person-circle-outline" : "person-outline"}
+              label={isAuthenticated ? t("account_page.title") : t("auth.sign_in")}
+              onPress={() => {
+                if (isAuthenticated) router.push("/account" as never);
+                else requestSignIn();
+              }}
+            />
+          </View>
+        </View>
+        <View className="flex-row items-center justify-between gap-2 pb-3 pt-1">
+          {/* The button only: the root place picker opens (AppOverlays). */}
+          <PatroHeaderLocation
+            className="min-w-0 shrink"
+            location={dateHeader.location}
+            onLocationChange={dateHeader.onLocationChange}
+            open={false}
+            onOpenChange={(next) => {
+              if (next) requestLocationPicker();
+            }}
+          />
+          {/* Right: the page's own views (अहोरात्र | दिन-रात, कृष्ण | शुक्ल…). No BS | AD here: the
+              pages follow the app's setting (home, Settings). */}
+          {viewToggle ? <PageViewToggle options={viewToggle} /> : null}
+          {viewDropdown ? <ViewMenuButton only={viewDropdown} dropdown /> : null}
+        </View>
+        {tabsSection ? (
+          <View
+            style={{ paddingBottom: space.sm + space.hair }}
+            onLayout={(e) => {
+              headerPinnedH.value = e.nativeEvent.layout.height;
+            }}
+          >
+            <PageTabBar options={tabsSection.options} />
+          </View>
+        ) : null}
+        {/* The page's picker sheet (no stepper row on a phone); the year line opens it. */}
+        {dateControls}
+      </View>
+    ) : (
+      <View className="min-h-14 w-full flex-row items-center gap-2 bg-background px-3 py-2">
         {/* Tablet, as iPad Calendar's toolbar: menu and date on the left, the Day | Week | Month switch in
             the middle of the bar, search, place and "+" on the right. The two sides share the leftover
             width equally, so the switch stays centred however wide the date controls are. */}
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
-          <HeaderButton icon="sidebar" label={t("menu_open")} onPress={requestOpenMenu} />
+          {/* A tablet keeps the menu key. A phone has no back key: edge swipe (iOS), the
+              system back (Android) and the bottom bar's गृह cover it. */}
+          {tablet ? <HeaderButton icon="sidebar" label={t("menu_open")} onPress={requestOpenMenu} /> : null}
           {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
               otherwise make the bar grow. */}
           <View className="min-w-0 flex-1 justify-start overflow-hidden" style={{ height: controlSize }}>{dateControls}</View>
@@ -495,6 +732,28 @@ function AppHeaderView() {
           {tablet && isAuthenticated ? <HeaderButton icon="add" label={t("events.create")} onPress={requestAddReminder} /> : null}
         </View>
       </View>
+    );
+
+  if (!overlay) {
+    return (
+      <View style={{ paddingTop: insets.top }} className="bg-background">
+        {rows}
+      </View>
+    );
+  }
+  return (
+    // Floats over the page (which leaves room for it). The rows slide up under the status-bar
+    // band, which stays put and covers them.
+    // The status-bar inset is padding on this plain view: a margin on the animated view was dropped
+    // on iOS, which hid the first row under the band and left a blank gap below the bar.
+    <View style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20, paddingTop: insets.top }} pointerEvents="box-none">
+      <Animated.View
+        style={shiftStyle}
+        onLayout={(e) => setOverlayHeaderHeights(dateHeader && !tablet ? row1H.current : 0, e.nativeEvent.layout.height)}
+      >
+        {rows}
+      </Animated.View>
+      <View className="bg-background" style={{ position: "absolute", top: 0, left: 0, right: 0, height: insets.top }} />
     </View>
   );
 }

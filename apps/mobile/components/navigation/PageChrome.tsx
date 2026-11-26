@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { View } from "react-native";
+import { BottomDockHost } from "@/components/navigation/BottomDock";
 import { AppHeader } from "@/components/AppHeader";
 import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
@@ -54,6 +55,7 @@ export const PAGE_CHROME_ROUTES: ReadonlySet<string> = new Set([
   "sun-times",
   "suryakranti",
   "vivah-sait",
+  "news",
   // The panchanga pages (tithi, choghadiya, graha asta, …) live here too, not in the panchanga
   // tab's own stack: opened from home they slide in over home, so a swipe back shows home.
   ...PANCHANGA_PAGE_ROUTES,
@@ -87,6 +89,8 @@ export function PageChrome({ routeName, children }: { routeName: string; childre
           </PanchangaTabsShell>
         ) : null}
       </View>
+      {/* A page's dock (rashifal's wheel): over the page, under the tab bar. */}
+      <BottomDockHost />
       <FloatingNavBar />
     </View>
   );

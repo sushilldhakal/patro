@@ -20,7 +20,8 @@ import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
+import { useKundaliSection, useResetKundaliSection } from "@/lib/kundali/use-kundali-section";
+import { useHeaderHasBack } from "@/lib/header-back";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { GUEST_PROFILE_ID, saveGuestProfile, useGuestProfile } from "@/lib/kundali/guest-profile";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -40,6 +41,8 @@ export default function KundaliDetailScreen() {
   const queryClient = useQueryClient();
   const auth = useAuth();
   const { section, setSection } = useKundaliSection();
+  useResetKundaliSection(profileId);
+  const headerHasBack = useHeaderHasBack();
   const profiles = useProfilesQuery(auth.isAuthenticated);
   // `/kundali/guest`: the kundali a signed-out reader made, kept on the phone.
   const isGuest = profileId === GUEST_PROFILE_ID;
@@ -76,12 +79,15 @@ export default function KundaliDetailScreen() {
 
   const topBar = (
     <View className={cn(kundaliClasses.topBar, "mb-4")}>
-      <Pressable onPress={() => router.back()} className={cn(kundaliClasses.backLink, "active:opacity-70")}>
-        <Ionicons name="arrow-back" size={18} color={colors.foreground} />
-        <Text className={kundaliClasses.backLinkText} style={nepaliTextStyle(14)}>
-          {copy.backAll}
-        </Text>
-      </Pressable>
+      {/* The top bar's back key does this on a phone: one back key, not two. */}
+      {headerHasBack ? <View /> : (
+        <Pressable onPress={() => router.back()} className={cn(kundaliClasses.backLink, "active:opacity-70")}>
+          <Ionicons name="arrow-back" size={18} color={colors.foreground} />
+          <Text className={kundaliClasses.backLinkText} style={nepaliTextStyle(14)}>
+            {copy.backAll}
+          </Text>
+        </Pressable>
+      )}
       <View className={kundaliClasses.topBarActions}>
         <Button
           label={copy.otherKundali}

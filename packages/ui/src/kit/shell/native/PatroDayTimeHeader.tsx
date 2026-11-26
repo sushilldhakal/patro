@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { View, useWindowDimensions } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarHeaderClasses as cls } from "@vedic-patro/design-tokens/classes/calendar-header-classes";
@@ -30,6 +31,9 @@ export function PatroDayTimeHeader({
   crossEraText,
   navAside,
   className,
+  open,
+  onOpenChange,
+  buttonless,
 }: PatroDayTimeHeaderProps) {
   const h = usePatroDayTimeHeader({ era, year, month, day, weekday, today, clock, nowClock, onSelect, onStepDay, onToday, onClockChange, subtitleOverride: subtitle, crossEraText });
   const { labels, time } = h;
@@ -37,6 +41,23 @@ export function PatroDayTimeHeader({
   const dense = width < 420;
   /** Phones: month + day (the title shows the year), and always the time. */
   const shortDate = width < 640;
+  // Controlled open: follow `open`, and report every close (a pick or OK closes the sheet itself).
+  useEffect(() => {
+    if (open === undefined) return;
+    if (open !== h.open) (open ? h.toggle() : h.close());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  useEffect(() => {
+    if (open !== undefined && open !== h.open) onOpenChange?.(h.open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [h.open]);
+
+  const sheet = (
+    <Sheet open={h.open} onClose={h.close} title={labels.picker} closeLabel={labels.ok}>
+        <PatroDayTimePanel h={h} onEraChange={onEraChange} onOk={time ? h.close : undefined} />
+      </Sheet>
+  );
+  if (buttonless) return sheet;
 
   return (
     <View className={cn("w-full gap-3", className)}>
@@ -60,9 +81,7 @@ export function PatroDayTimeHeader({
         {navAside ? <View className="shrink-0">{navAside}</View> : null}
       </View>
 
-      <Sheet open={h.open} onClose={h.close} title={labels.picker} closeLabel={labels.ok}>
-        <PatroDayTimePanel h={h} onEraChange={onEraChange} onOk={time ? h.close : undefined} />
-      </Sheet>
+      {sheet}
     </View>
   );
 }

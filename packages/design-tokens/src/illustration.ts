@@ -1,3 +1,5 @@
+import { mix } from "./color";
+
 /**
  * Illustration palette: the colours used by diagrams, wheels, the sky scene and
  * other artwork, shared by the website and the app. Generated once by
@@ -228,5 +230,24 @@ export const weatherInk = {
   sky: {
     light: [illustration.sky68b, illustration.sky86] as const,
     dark: [illustration.sky14, illustration.sky22] as const,
+    /** Midday sky (top, bottom): deep enough for white text; the app blends night → this by daylight. */
+    noon: [illustration.sky50, illustration.sky53] as const,
   },
+  /** Light theme: Meteocons' near-white clouds and fog redrawn grey (top, bottom/outline), so they show on white. */
+  cloudOnLight: [illustration.sky84, illustration.sky65] as const,
+  /** The Meteocons' own cloud colours that `cloudOnLight` replaces: the gradient top, then the edges and fog. */
+  meteoconCloud: { top: ["#f3f7fe"], edge: ["#e6effc", "#e2e8f0"] },
+  /** Light theme: night hours in the hourly table (neutral grey, not the beige muted). */
+  nightCellLight: illustration.sky91b,
 } as const;
+
+/**
+ * The weather sky (top, bottom) for how light it is (0 night … 1 midday): night blue from sunset to
+ * sunrise, a little lighter just after sunrise, brightening to the midday blue and back by sunset.
+ * White text reads on every step.
+ */
+export function weatherSkyAt(daylight: number): [string, string] {
+  const [night, noon] = [weatherInk.sky.dark, weatherInk.sky.noon];
+  const pct = daylight > 0 ? (0.2 + 0.8 * Math.min(1, daylight)) * 100 : 0;
+  return [mix(noon[0], pct, night[0]), mix(noon[1], pct, night[1])];
+}

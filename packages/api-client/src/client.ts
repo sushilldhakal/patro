@@ -278,7 +278,9 @@ export const seasonsKeys = {
 };
 
 export const fetchTropicalSeasons = (location?: LocationParams) =>
-  get<TropicalSeasonsResponse>(appendLocation("/seasons/tropical", location));
+  fromLocal<TropicalSeasonsResponse>((l) => l.seasons(location)).then(
+    (local) => local ?? get<TropicalSeasonsResponse>(appendLocation("/seasons/tropical", location)),
+  );
 
 export const vimshottariKeys = {
   atTime: (moment: InstantQuery, location?: LocationParams, ayanamsha?: string) =>
@@ -395,7 +397,9 @@ export const fetchBsToAd = (date: string) =>
 // Versioned like the other cacheable data: past BS years are served `immutable` by the
 // CDN, so without `cv` a corrected adhik/kshaya answer would never replace the old one.
 export const fetchSpecialMonths = (year: number) =>
-  get<SpecialMonthsResponse>(withPanchangaCacheVersion(`/nepal/special-months/${year}`));
+  fromLocal<SpecialMonthsResponse>((l) => l.specialMonths({ year })).then(
+    (local) => local ?? get<SpecialMonthsResponse>(withPanchangaCacheVersion(`/nepal/special-months/${year}`)),
+  );
 
 export const shadbalaKeys = {
   atTime: (moment: InstantQuery, location?: LocationParams) =>

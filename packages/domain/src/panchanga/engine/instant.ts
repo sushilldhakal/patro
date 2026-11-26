@@ -12,6 +12,9 @@ function split(jd: number): Parts {
   const shifted = jd + 0.5;
   let jdn = Math.floor(shifted);
   let micros = Math.round((shifted - jdn) * 86_400_000_000);
+  // A Julian Day double holds an instant to about 40 µs: a whole second read back that close is that second.
+  const off = micros % 1_000_000;
+  if (off < 50 || off > 999_950) micros = Math.round(micros / 1_000_000) * 1_000_000;
   if (micros >= 86_400_000_000) {
     micros -= 86_400_000_000;
     jdn += 1;

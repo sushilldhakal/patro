@@ -608,7 +608,9 @@
         "Saturday"
       ],
       "x_261cd2ac": "After {{v0}} days",
-      "x_796f4d7b": "{{v0}} days ago"
+      "x_796f4d7b": "{{v0}} days ago",
+      "upcoming_festivals": "Upcoming festivals",
+      "in_n_days": "in {{n}} days"
     },
     "settings": {
       "about": "About",
@@ -1796,6 +1798,14 @@
       "abhijit": "Abhijit",
       "panchak": "Panchak",
       "marriage_muhurta": "Marriage muhurta"
+    },
+    "floating_nav": {
+      "kundali": "Kundali",
+      "analysis": "Analysis",
+      "milan": "Milan",
+      "sky_gochar": "Sky Gochar",
+      "panchanga": "Panchanga",
+      "year_wheel": "Year Wheel"
     }
   },
   "holidays": {
@@ -5275,6 +5285,10 @@
     "current_title": "Current weather",
     "sun_title": "Sun, moon and UV",
     "moon_phase": "Moon phase",
+    "min": "Min",
+    "max": "Max",
+    "rain_amount": "Total rain",
+    "sun_moon_uv": "Sun, moon and UV",
     "next_moon_phase": "Next moon phase",
     "moon": {
       "new": "New moon",
@@ -5324,6 +5338,50 @@
     },
     "kmh": "{{speed}} km/h",
     "mm": "{{amount}} mm",
+    "ms": "{{speed}} m/s",
+    "mph": "{{speed}} mph",
+    "kn": "{{speed}} kn",
+    "in": "{{amount}} in",
+    "unit_symbol": {
+      "kmh": "km/h",
+      "ms": "m/s",
+      "mph": "mph",
+      "kn": "kn",
+      "mm": "mm",
+      "in": "in"
+    },
+    "unit_name": {
+      "c": "Celsius (°C)",
+      "f": "Fahrenheit (°F)",
+      "kmh": "Kilometres per hour",
+      "ms": "Metres per second",
+      "mph": "Miles per hour",
+      "kn": "Knots",
+      "mm": "Millimetres",
+      "in": "Inches"
+    },
+    "units": "Units",
+    "pressure": "Pressure",
+    "hpa": "{{value}} hPa",
+    "visibility": "Visibility",
+    "km": "{{value}} km",
+    "air_quality": "Air quality (AQI)",
+    "air_line": "Air quality {{value}} · {{level}}",
+    "aqi": {
+      "good": "Good",
+      "moderate": "Moderate",
+      "sensitive": "Unhealthy for sensitive groups",
+      "unhealthy": "Unhealthy",
+      "very_unhealthy": "Very unhealthy",
+      "hazardous": "Hazardous"
+    },
+    "units_temp": "Temperature",
+    "units_wind": "Wind",
+    "units_rain": "Precipitation",
+    "edit_list": "Edit list",
+    "done": "Done",
+    "more_options": "More options",
+    "search_place": "Search for a city",
     "filter": {
       "temp_rain": "Temperature and rain",
       "wind": "Wind",
@@ -5332,9 +5390,9 @@
     },
     "row": {
       "feels": "Feels like",
-      "rain_mm": "Rain (mm)",
-      "wind": "Wind (km/h)",
-      "gust": "Gust (km/h)",
+      "rain_mm": "Rain ({{unit}})",
+      "wind": "Wind ({{unit}})",
+      "gust": "Gust ({{unit}})",
       "humidity": "Humidity",
       "dew": "Dew point",
       "uv": "UV index"
@@ -5385,7 +5443,7 @@
     "primary": "Primary",
     "remove": "Remove",
     "swipe_hint": "Swipe left or right to change place",
-    "units_note": "Temperatures are shown in degrees Celsius (°C).",
+    "units_note": "Temperatures are shown in {{unit}}.",
     "load_error": "Could not load the weather. Try again in a little while.",
     "source": "Source: Open-Meteo",
     "kind": {

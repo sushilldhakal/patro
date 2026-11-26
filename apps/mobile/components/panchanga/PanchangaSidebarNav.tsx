@@ -13,7 +13,7 @@ export type KundaliSectionNavProps = {
   onNavigate: (id: KundaliSectionId) => void;
 };
 
-function sidebarHref(item: PanchangaSidebarItem): string {
+export function sidebarHref(item: PanchangaSidebarItem): string {
   if (item.to === "/panchanga/element/$name" && item.params?.name) return elementHref(item.params.name);
   if (item.to === "/sait/$category" && item.params?.category) {
     return item.params.category === "vivah" ? "/vivah-sait" : `/sait/${item.params.category}`;

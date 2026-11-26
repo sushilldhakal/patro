@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import type { CalendarMonthContext } from "@/components/CalendarView";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
@@ -10,6 +11,7 @@ type Props = {
   monthContext: CalendarMonthContext;
   p?: PanchangaDay;
   className?: string;
+  aside?: ReactNode;
 };
 
 /** Binds the website's month context and moon drawing to the shared card. */

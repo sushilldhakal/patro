@@ -513,6 +513,10 @@ function RootShell({
           {/* The tabs are the base of the stack and there is only ever one of them: a link to a
               tab page from a pushed page brings this instance back instead of stacking a copy. */}
           <Stack.Screen name="(tabs)" dangerouslySingular options={{ gestureEnabled: false }} />
+          {/* A sideways swipe on weather changes place; a full-screen swipe-back would steal it. */}
+          <Stack.Screen name="weather" options={{ gestureEnabled: false }} />
+          {/* Rashifal's wheel turns with a sideways drag: swipe-back only from the screen edge. */}
+          <Stack.Screen name="rashifal" options={{ fullScreenGestureEnabled: false }} />
           {/* aakash-gochar zooms out of its home card natively on iOS 18+ (Link.AppleZoom); elsewhere a normal push. */}
         </Stack>
       )}

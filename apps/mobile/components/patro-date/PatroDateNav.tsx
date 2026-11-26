@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { TopBarSlot } from "@/components/navigation/TopBarSlot";
 import { usePageViewMenu } from "@/lib/page-view-menu";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/calendar/era";
-import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
+import { defaultMonthBrowseParts, patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
+import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
+import { monthShortLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
+import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
+import { useLocale } from "@/lib/i18n";
+import { useTabletUi } from "@/lib/tablet-ui";
+import { useFollowCalendarSystem, usePatroYearLine } from "./HeaderDateTitle";
 import { PatroDayTimeHeader, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "./PatroCalendarHeader";
 import type { PatroDateNavProps } from "./types";
@@ -32,11 +39,35 @@ export function PatroDateNav(props: PatroDateNavProps) {
   const { era, onEraChange, year, location, onLocationChange, crossEraSubtitle, tabs, className } = props;
   // The page's view tabs live in the header's view menu, not in the date row.
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
+  const { lang, digits } = useLocale();
+  const tablet = useTabletUi();
+  const yearLine = usePatroYearLine(era, year);
+  useFollowCalendarSystem(era, onEraChange);
+  // Phone: home's header. The year line opens this page's picker (year / month / day / day+time);
+  // the picker draws only its sheet, no stepper row.
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const sheetOnly = tablet ? {} : { buttonless: true, open: pickerOpen, onOpenChange: setPickerOpen };
+  const place = { location, onLocationChange, title: yearLine, subtitle: crossEraSubtitle, onPick: tablet ? undefined : () => setPickerOpen(true) };
 
   if (props.mode === "year-month") {
+    const { month } = props;
+    const goToday =
+      props.onToday ??
+      (() => {
+        const today = defaultMonthBrowseParts(era);
+        if (props.onBrowse) props.onBrowse(today);
+        else {
+          props.onYearChange(today.year);
+          props.onMonthChange(today.month);
+        }
+      });
     return (
-      <TopBarSlot>
+      <TopBarSlot
+        header={{ ...place, badgeTop: monthShortLabel(era, month, lang), badgeBottom: `${digits(1)}–${digits(monthLengthInBrowseEra(era, year, month))}`, onToday: goToday }}
+      >
         <PatroCalendarHeader
+          {...sheetOnly}
+          monthOnly={!tablet}
           className={className}
           era={era}
           onEraChange={onEraChange}
@@ -52,7 +83,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
           }}
           location={location}
           onLocationChange={onLocationChange}
-          crossEraSubtitle={crossEraSubtitle}
+          crossEraSubtitle={tablet ? crossEraSubtitle : undefined}
           prevDisabled={props.prevDisabled}
           nextDisabled={props.nextDisabled}
         />
@@ -62,15 +93,17 @@ export function PatroDateNav(props: PatroDateNavProps) {
 
 
   if (props.mode === "year") {
+    const goThisYear = props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)));
     return (
-      <TopBarSlot>
+      <TopBarSlot header={{ ...place, badgeTop: patroEraShortLabel(era, lang), badgeBottom: digits(year), onToday: goThisYear }}>
         <PatroYearHeader
+          {...sheetOnly}
           className={className}
           era={era}
           year={year}
           onChange={props.onYearChange}
           onEraChange={onEraChange}
-          onToday={props.onToday ?? (() => props.onYearChange(patroBrowseTodayYear(era)))}
+          onToday={goThisYear}
           todayYear={patroBrowseTodayYear(era)}
           subtitle={crossEraSubtitle}
         />
@@ -79,8 +112,9 @@ export function PatroDateNav(props: PatroDateNavProps) {
   }
 
   return (
-    <TopBarSlot>
+    <TopBarSlot header={{ ...place, badgeTop: monthShortLabel(era, props.month, lang), badgeBottom: digits(props.day), onToday: props.onToday }}>
       <PatroDayTimeHeader
+        {...sheetOnly}
         className={className}
         era={era}
         year={year}

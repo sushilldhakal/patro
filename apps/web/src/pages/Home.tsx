@@ -12,6 +12,8 @@ import { CalendarView, loadHomePatroView, type CalendarMonthContext, type HomePa
 import { AakashGocharEntryCard } from "@/components/sky3d/AakashGocharEntryCard";
 import { useRouteLoading } from "@/lib/route-loading";
 import { setLocalStorageItem } from "@/lib/browser";
+import { NowWeatherBadge } from "@vedic-patro/ui/kit/weather";
+import { useNowWeather } from "@vedic-patro/features/weather";
 import { resolveLocationTimezone, usePanchangaLocation, type PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/calendar/zoned-time";
 import { adToBS, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
@@ -71,6 +73,8 @@ const PanchangaAside = forwardRef(function PanchangaAside(
   const dayEvents = useDayEvents(aside.dayAd, isAuthenticated);
   // "तपाईंको दिन · शुभ · …" for this day, as the planner's all-day row shows it.
   const personalDays = usePersonalDays([aside.dayAd], location.params, isAuthenticated);
+  // The weather now beside today's date (only when today is the day shown).
+  const nowWeather = useNowWeather(location.params, aside.dayAd === todayAd, location.label);
   const [personalDetail, setPersonalDetail] = useState<{ date: string; column: PersonalColumn } | null>(null);
   return (
     <aside ref={ref} id="home-panchanga-aside" className={cn("scroll-mt-[4.5rem] flex flex-col", homeClasses.asideShell)}>
@@ -85,7 +89,18 @@ const PanchangaAside = forwardRef(function PanchangaAside(
         </Link>
       </div>
 
-      <TodayHighlightCard selectedDay={contextDay} selectedAdDate={aside.dayAd} todayAd={todayAd} monthContext={monthContext} p={p} />
+      <TodayHighlightCard
+        selectedDay={contextDay}
+        selectedAdDate={aside.dayAd}
+        todayAd={todayAd}
+        monthContext={monthContext}
+        p={p}
+        aside={nowWeather && aside.dayAd === todayAd ? (
+            <Link to="/weather">
+              <NowWeatherBadge weather={nowWeather} />
+            </Link>
+          ) : null}
+      />
       <div className={homeClasses.asideDayList}>
         <PersonalDayChip date={aside.dayAd} column={personalDays.columns.get(aside.dayAd)} onOpen={(date, column) => setPersonalDetail({ date, column })} />
         <PersonalReadingDialog detail={personalDetail} onClose={() => setPersonalDetail(null)} />

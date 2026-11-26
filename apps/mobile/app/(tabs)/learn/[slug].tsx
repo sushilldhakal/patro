@@ -1,4 +1,5 @@
 import { useRef, type ComponentRef } from "react";
+import { useHeaderHasBack } from "@/lib/header-back";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { useLearnArticle } from "@vedic-patro/features/learn";
@@ -24,6 +25,7 @@ export default function LearnArticleScreen() {
   const params = useLocalSearchParams<{ slug: string | string[]; chapter?: string }>();
   const article = useLearnArticle(resolveSlug(params.slug));
   const { copy } = article;
+  const headerHasBack = useHeaderHasBack();
 
   if (article.redirect) {
     const { slug, anchor } = article.redirect;
@@ -32,15 +34,17 @@ export default function LearnArticleScreen() {
 
   return (
     <AppShell scroll scrollRef={scrollRef} showHeader={false} title={copy.navTitle}>
-      {/* Web's "← Learn" link above the article. */}
-      <Pressable
-        onPress={() => router.push("/learn")}
-        accessibilityRole="button"
-        className={cn(learnPageClasses.backLink, "mb-8 flex-row self-start active:opacity-70")}
-      >
-        <Ionicons name="arrow-back" size={16} color={colors.foreground} />
-        <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{copy.backToHub}</Text>
-      </Pressable>
+      {/* Web's "← Learn" link above the article; a phone has the top bar's back key instead. */}
+      {headerHasBack ? null : (
+        <Pressable
+          onPress={() => router.push("/learn")}
+          accessibilityRole="button"
+          className={cn(learnPageClasses.backLink, "mb-8 flex-row self-start active:opacity-70")}
+        >
+          <Ionicons name="arrow-back" size={16} color={colors.foreground} />
+          <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{copy.backToHub}</Text>
+        </Pressable>
+      )}
       {article.topic ? (
         <LearnArticleView article={article} scrollRef={scrollRef} initialChapter={params.chapter} />
       ) : (

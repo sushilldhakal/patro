@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { topBarControlSize } from "../top-bar";
 import { TextInput, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -30,6 +30,9 @@ export function PatroCalendarHeader({
   crossEraSubtitle,
   bare,
   monthOnly,
+  open,
+  onOpenChange,
+  buttonless,
   className,
 }: PatroCalendarHeaderProps) {
   const { width: windowWidth } = useWindowDimensions();
@@ -43,6 +46,17 @@ export function PatroCalendarHeader({
   const header = usePatroCalendarHeader({ era, year, month, onChange });
   const { panel, labels, yearInput } = header;
   const monthOpen = panel === "month";
+  // Controlled open: follow `open`, and report every close (a month pick closes the sheet itself).
+  useEffect(() => {
+    if (open === undefined) return;
+    if (open && !monthOpen) header.togglePanel("month");
+    if (!open && monthOpen) header.closePanel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  useEffect(() => {
+    if (open !== undefined && open !== monthOpen) onOpenChange?.(monthOpen);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monthOpen]);
 
   /* The header's buttons get their size from a wrapping View with an explicit style, not from
      their own height classes: on Android a Pressable sitting straight in a flex row lost
@@ -200,7 +214,7 @@ export function PatroCalendarHeader({
         setBoxWidth((prev) => (Math.abs(prev - next) < 1 ? prev : next));
       }}
     >
-      {rows}
+      {buttonless ? null : rows}
 
       <Sheet open={monthOpen} onClose={header.closePanel} title={labels.picker} closeLabel={labels.yearGo}>
         {onEraChange && header.eras.length > 0 ? (

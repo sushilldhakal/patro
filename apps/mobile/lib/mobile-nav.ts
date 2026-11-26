@@ -21,7 +21,7 @@ export const FLOATING_NAV = [
   { href: "/kundali", get ne() { return tFor("ne", "nav.jyotish_kundali"); }, get en() { return tFor("en", "nav.jyotish_kundali"); }, icon: FEATURE_ICON.kundali },
   { href: "/dainikkranti", get ne() { return tFor("ne", "ui.mobile_nav.transit"); }, get en() { return tFor("en", "ui.mobile_nav.transit"); }, icon: FEATURE_ICON.dainikkranti },
   { href: "/sait", get ne() { return tFor("ne", "panchanga.tabs.sait"); }, get en() { return tFor("en", "panchanga.tabs.sait"); }, icon: FEATURE_ICON.sait },
-  { href: "/vastu", get ne() { return tFor("ne", "nav.vastu"); }, get en() { return tFor("en", "nav.vastu"); }, icon: FEATURE_ICON.vastu },
+  { href: "/weather", get ne() { return tFor("ne", "sidebar_nav.items.weather.label"); }, get en() { return tFor("en", "sidebar_nav.items.weather.label"); }, icon: FEATURE_ICON.weather },
   { href: "/learn", get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); }, icon: FEATURE_ICON.learn },
 ] as const;
 

@@ -136,6 +136,8 @@ export function useWeatherPlaces({
     /** "Here" is waiting for GPS: no request yet, so it does not load the app's place first. */
     waiting: current.id === HERE_ID && gpsState === "trying",
     usingGps: current.id === HERE_ID && usingGps,
+    /** GPS answered: "here" is the device's position (for any page, not only the current one). */
+    gpsOn: usingGps,
     select: (i: number) => setIndex(Math.max(0, Math.min(pages.length - 1, i))),
     next: () => setIndex((i) => Math.min(pages.length - 1, i + 1)),
     prev: () => setIndex((i) => Math.max(0, i - 1)),

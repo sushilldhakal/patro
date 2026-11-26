@@ -5,7 +5,7 @@
  * holds the page's state (hourly filter, open day, today's details), so both apps
  * behave the same and only draw.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LocateDevice } from "../panchanga/use-location-selector";
 import {
   HERE_ID,
@@ -13,7 +13,7 @@ import {
   type WeatherPlace,
   type WeatherPlacesStorage,
 } from "./use-weather-places";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { fetchWeatherForecast, weatherKeys } from "@vedic-patro/api-client";
 import {
   displayLocationLabel,
@@ -24,7 +24,11 @@ import { statusOf, type PageStatus } from "../_shared";
 import { spanText, useNowMs } from "../common/now-hero";
 import {
   buildWeatherView,
+  DEFAULT_WEATHER_UNITS,
   hourlyRows,
+  WEATHER_UNIT_CHOICES,
+  type WeatherGlyph,
+  type WeatherUnits,
   WEATHER_HOURLY_FILTERS,
   type WeatherDayView,
   type WeatherHourGroup,
@@ -75,6 +79,22 @@ export type WeatherPage = {
     primary: string;
     remove: string;
     swipeHint: string;
+    editList: string;
+    done: string;
+    moreOptions: string;
+    searchPlace: string;
+    units: string;
+    unitsTemp: string;
+    unitsWind: string;
+    unitsRain: string;
+  };
+  /** The reader's units (kept on the device), and the choices for each. */
+  units: {
+    value: WeatherUnits;
+    set: (next: Partial<WeatherUnits>) => void;
+    options: {
+      [K in keyof WeatherUnits]: { id: WeatherUnits[K]; label: string }[];
+    };
   };
   /** The city the forecast is for (the server's nearest city, else the picked place). */
   placeName: string;
@@ -82,8 +102,25 @@ export type WeatherPage = {
   usingGps: boolean;
   /** The pages the reader swipes through: "here" first, then the added places. */
   places: {
-    pages: { id: string; name: string; primary: boolean; here: boolean }[];
+    pages: {
+      id: string;
+      name: string;
+      primary: boolean;
+      here: boolean;
+      /** For the places list; null until that place's forecast has loaded (only while the list is open). */
+      /** This place's own forecast, drawn on its page of the pager (merge over the page: `{ ...page, ...view }`). */
+      view: WeatherPlaceView;
+      summary: {
+        temperature: string;
+        low: string;
+        high: string;
+        time: string;
+        glyph: WeatherGlyph;
+      } | null;
+    }[];
     index: number;
+    /** The page slides in from the right (a later place) or the left (an earlier one). */
+    fromRight: boolean;
     select: (i: number) => void;
     next: () => void;
     prev: () => void;
@@ -100,8 +137,13 @@ export type WeatherPage = {
     /** The list of places (change primary, remove). */
     listOpen: boolean;
     setListOpen: (open: boolean) => void;
+    /** The list's edit mode: make primary, remove. */
+    editing: boolean;
+    setEditing: (on: boolean) => void;
   };
   status: PageStatus;
+  /** Pull-to-refresh: asks the server again for this place's forecast. */
+  refresh: () => Promise<unknown>;
   now: WeatherNowView | null;
   todayOpen: boolean;
   toggleToday: () => void;
@@ -128,6 +170,49 @@ export type WeatherPage = {
   toggleDay: (key: string) => void;
 };
 
+const UNITS_KEY = "weather.units.v1";
+
+function parseUnits(raw: string): WeatherUnits {
+  try {
+    const v = JSON.parse(raw) as Partial<Record<keyof WeatherUnits, unknown>>;
+    const pick = <K extends keyof WeatherUnits>(k: K): WeatherUnits[K] =>
+      (WEATHER_UNIT_CHOICES[k] as readonly unknown[]).includes(v[k])
+        ? (v[k] as WeatherUnits[K])
+        : DEFAULT_WEATHER_UNITS[k];
+    return { temp: pick("temp"), wind: pick("wind"), rain: pick("rain") };
+  } catch {
+    return DEFAULT_WEATHER_UNITS;
+  }
+}
+
+/** The place's wall clock now: "8:39 pm" in English, "२०:३९" in Nepali. */
+export function placeClock(
+  nowMs: number,
+  utcOffsetSeconds: number,
+  lang: string,
+  digits: (s: string | number) => string,
+): string {
+  const hhmm = new Date(nowMs + utcOffsetSeconds * 1000)
+    .toISOString()
+    .slice(11, 16);
+  if (lang !== "en") return digits(hhmm);
+  const h = Number(hhmm.slice(0, 2));
+  return `${h % 12 || 12}:${hhmm.slice(3)} ${h < 12 ? "am" : "pm"}`;
+}
+
+/** The parts of the page that belong to one place, so every pager page can draw its own. */
+export type WeatherPlaceView = Pick<
+  WeatherPage,
+  | "placeName"
+  | "usingGps"
+  | "status"
+  | "refresh"
+  | "now"
+  | "hourGroups"
+  | "days"
+  | "toggleAllDays"
+> & { updated: string; locationNote: string };
+
 export function useWeatherPage({
   location,
   locate,
@@ -141,6 +226,23 @@ export function useWeatherPage({
 }): WeatherPage {
   const { t, lang, digits } = useLocale();
   const places = useWeatherPlaces({ location, locate, storage });
+  const [units, setUnits] = useState<WeatherUnits>(DEFAULT_WEATHER_UNITS);
+  useEffect(() => {
+    if (!storage) return;
+    let live = true;
+    void Promise.resolve(storage.read(UNITS_KEY)).then((raw) => {
+      if (live && raw) setUnits(parseUnits(raw));
+    });
+    return () => {
+      live = false;
+    };
+  }, [storage]);
+  const setUnit = (next: Partial<WeatherUnits>) =>
+    setUnits((u) => {
+      const merged = { ...u, ...next };
+      storage?.write(UNITS_KEY, JSON.stringify(merged));
+      return merged;
+    });
   const { usingGps } = places;
   const params = places.current.params;
 
@@ -156,8 +258,8 @@ export function useWeatherPage({
   const era = useLiveCalendarSystem();
   const nowMs = Math.floor(useNowMs() / 60_000) * 60_000;
   const view = useMemo(
-    () => buildWeatherView(data, nowMs, { t, digits, lang }, era),
-    [data, nowMs, t, digits, lang, era],
+    () => buildWeatherView(data, nowMs, { t, digits, lang }, era, units),
+    [data, nowMs, t, digits, lang, era, units],
   );
 
   const [filter, setFilter] = useState<WeatherHourlyFilter>("temp_rain");
@@ -167,6 +269,21 @@ export function useWeatherPage({
   const [infoRow, setInfoRow] = useState<WeatherHourlyRow | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  // Remember the last index to know which way the new place slides in (adjust-state-on-change).
+  const [slide, setSlide] = useState({ index: places.index, fromRight: true });
+  if (slide.index !== places.index)
+    setSlide({ index: places.index, fromRight: places.index > slide.index });
+  // Every place's forecast (same cache key as the page's own): the pager draws its neighbours
+  // while the finger drags, and the places list shows each one's temperature.
+  const pageQueries = useQueries({
+    queries: places.pages.map((p) => ({
+      queryKey: weatherKeys.forecast(p.params),
+      queryFn: () => fetchWeatherForecast(p.params),
+      enabled: !(p.id === HERE_ID && places.waiting),
+      staleTime: 1000 * 60 * 15,
+    })),
+  });
   const [pending, setPending] = useState<PanchangaLocation | null>(null);
   const nameOf = (p: WeatherPlace) =>
     p.id === HERE_ID
@@ -179,22 +296,75 @@ export function useWeatherPage({
           .split(",")[0]!
           .trim();
 
-  // "Nearby location" is the server's name for a grid cell with no city: show the picked place then.
-  const serverName =
-    data?.location.name === "Nearby location" ? undefined : data?.location.name;
-  const placeName = usingGps
-    ? displayLocationLabel(
-        { label: serverName ?? "", params },
-        serverName,
-        lang,
-      ) || t("weather.current_location")
-    : displayLocationLabel(
-        { label: places.current.label, params },
-        serverName,
-        lang,
-      );
+  const placeNameFor = (
+    place: WeatherPlace,
+    d: typeof data,
+    gpsOn: boolean,
+  ) => {
+    // "Nearby location" is the server's name for a grid cell with no city: show the picked place then.
+    const serverName =
+      d?.location.name === "Nearby location" ? undefined : d?.location.name;
+    return gpsOn
+      ? displayLocationLabel(
+          { label: serverName ?? "", params: place.params },
+          serverName,
+          lang,
+        ) || t("weather.current_location")
+      : displayLocationLabel(
+          { label: place.label, params: place.params },
+          serverName,
+          lang,
+        );
+  };
+  const placeName = placeNameFor(places.current, data, usingGps);
   const displayDays = data?.display_days ?? 7;
-  const ago = data ? Math.max(60_000, nowMs - data.fetched_at * 1000) : 0;
+  const updatedText = (d: typeof data) =>
+    d
+      ? t("weather.updated_ago", {
+          time: spanText(Math.max(60_000, nowMs - d.fetched_at * 1000), t, digits),
+        })
+      : "";
+  const locationNoteText = (name: string, gpsOn: boolean) =>
+    t(gpsOn ? "weather.location_note_gps" : "weather.location_note", {
+      place: name,
+    });
+  const toggleAllDays = (count: number, shown: number) =>
+    count > shown ? () => setAllDays((v) => !v) : null;
+  const viewAt = (i: number): WeatherPlaceView => {
+    const q = pageQueries[i]!;
+    const place = places.pages[i]!;
+    const gpsOn = place.id === HERE_ID && places.gpsOn;
+    const v =
+      i === places.index
+        ? view
+        : buildWeatherView(q.data, nowMs, { t, digits, lang }, era, units);
+    const name = placeNameFor(place, q.data, gpsOn);
+    const shown = q.data?.display_days ?? 7;
+    return {
+      placeName: name,
+      usingGps: gpsOn,
+      status: statusOf(q),
+      refresh: () => q.refetch(),
+      now: v.now,
+      hourGroups: v.hourGroups,
+      days: allDays ? v.days : v.days.slice(0, shown),
+      toggleAllDays: toggleAllDays(v.days.length, shown),
+      updated: updatedText(q.data),
+      locationNote: locationNoteText(name, gpsOn),
+    };
+  };
+  const views = places.pages.map((_, i) => viewAt(i));
+  const summaryOf = (v: WeatherPlaceView, d: typeof data) =>
+    v.now && d
+      ? {
+          // The hourly "now" column: whole degrees, like a list should.
+          temperature: v.hourGroups[0]?.hours[0]?.temperature ?? v.now.temperature,
+          low: v.days[0]?.low ?? "–",
+          high: v.days[0]?.high ?? "–",
+          time: placeClock(nowMs, d.forecast.utc_offset_seconds ?? 0, lang, digits),
+          glyph: v.now.glyph,
+        }
+      : null;
 
   const rowCopy = Object.fromEntries(
     (
@@ -202,7 +372,11 @@ export function useWeatherPage({
     ).map((row) => [
       row,
       {
-        label: t(`weather.row.${row}`),
+        label: t(`weather.row.${row}`, {
+          unit: t(
+            `weather.unit_symbol.${row === "rain_mm" ? units.rain : units.wind}`,
+          ),
+        }),
         infoTitle: t(`weather.info.${row}.title`),
         info: t(`weather.info.${row}.body`),
       },
@@ -228,15 +402,12 @@ export function useWeatherPage({
       loading: t("common.loading"),
       loadError: t("weather.load_error"),
       updatedTitle: t("weather.updated_title"),
-      updated: data
-        ? t("weather.updated_ago", { time: spanText(ago, t, digits) })
-        : "",
+      updated: updatedText(data),
       locationTitle: t("weather.location_title"),
-      locationNote: t(
-        usingGps ? "weather.location_note_gps" : "weather.location_note",
-        { place: placeName },
-      ),
-      unitsNote: t("weather.units_note"),
+      locationNote: locationNoteText(placeName, usingGps),
+      unitsNote: t("weather.units_note", {
+        unit: t(`weather.unit_name.${units.temp}`),
+      }),
       source: t("weather.source"),
       rows: rowCopy,
       aboutRow: t("weather.about_row"),
@@ -253,18 +424,47 @@ export function useWeatherPage({
       primary: t("weather.primary"),
       remove: t("weather.remove"),
       swipeHint: t("weather.swipe_hint"),
+      editList: t("weather.edit_list"),
+      done: t("weather.done"),
+      moreOptions: t("weather.more_options"),
+      searchPlace: t("weather.search_place"),
+      units: t("weather.units"),
+      unitsTemp: t("weather.units_temp"),
+      unitsWind: t("weather.units_wind"),
+      unitsRain: t("weather.units_rain"),
       close: t("common.close"),
     },
     placeName,
     usingGps,
+    units: {
+      value: units,
+      set: setUnit,
+      options: {
+        temp: WEATHER_UNIT_CHOICES.temp.map((id) => ({
+          id,
+          label: t(`weather.unit_name.${id}`),
+        })),
+        wind: WEATHER_UNIT_CHOICES.wind.map((id) => ({
+          id,
+          label: t(`weather.unit_name.${id}`),
+        })),
+        rain: WEATHER_UNIT_CHOICES.rain.map((id) => ({
+          id,
+          label: t(`weather.unit_name.${id}`),
+        })),
+      },
+    },
     places: {
-      pages: places.pages.map((p) => ({
+      pages: places.pages.map((p, i) => ({
+        view: views[i]!,
+        summary: summaryOf(views[i]!, pageQueries[i]!.data),
         id: p.id,
         name: nameOf(p),
         primary: p.id === places.primaryId,
         here: p.id === HERE_ID,
       })),
       index: places.index,
+      fromRight: slide.fromRight,
       select: places.select,
       next: places.next,
       prev: places.prev,
@@ -291,9 +491,15 @@ export function useWeatherPage({
       },
       cancel: () => setPending(null),
       listOpen,
-      setListOpen,
+      setListOpen: (open) => {
+        setListOpen(open);
+        if (!open) setEditing(false);
+      },
+      editing,
+      setEditing,
     },
     status: statusOf(query),
+    refresh: () => query.refetch(),
     now: view.now,
     todayOpen,
     toggleToday: () => setTodayOpen((v) => !v),
@@ -307,8 +513,7 @@ export function useWeatherPage({
     hourGroups: view.hourGroups,
     days: allDays ? view.days : view.days.slice(0, displayDays),
     allDays,
-    toggleAllDays:
-      view.days.length > displayDays ? () => setAllDays((v) => !v) : null,
+    toggleAllDays: toggleAllDays(view.days.length, displayDays),
     openDay,
     toggleDay: (key) => setOpenDay((v) => (v === key ? null : key)),
     info: infoRow

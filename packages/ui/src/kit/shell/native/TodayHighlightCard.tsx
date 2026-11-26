@@ -25,7 +25,7 @@ function isHighlightFestive(day: TodayHighlightCardProps["selectedDay"], p: Toda
 const SIDE_BY_SIDE = 512;
 
 /** Selected day's date, festival (and its sait), moon and sun times. */
-export function TodayHighlightCard({ className, moon, ...props }: TodayHighlightCardProps) {
+export function TodayHighlightCard({ className, moon, aside, ...props }: TodayHighlightCardProps) {
   const h = useTodayHighlight(props);
   const [wide, setWide] = useState(false);
   const reduced = Boolean(useReducedMotionPref());
@@ -88,6 +88,7 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
           <Text className={cls.highlightCrossEra}>{h.crossEra}</Text>
           {h.nepalSambat ? <Text className={cls.highlightNs}>{h.nepalSambat}</Text> : null}
         </Box>
+        {aside ? <Box className="ml-auto shrink-0">{aside}</Box> : null}
       </Box>
       <Box className={cn(cls.highlightSpecial, wide && cls.highlightSpecialWide)}>
         <Text className={cls.highlightTitle}>{h.title}</Text>

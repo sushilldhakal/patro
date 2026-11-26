@@ -65,7 +65,12 @@ export const DAY_BLOCKS = [
 /** Whether every key of the server's payload (slim or full) is made here. */
 export const isComplete = (): boolean => PAYLOAD_KEYS.every((k) => (DAY_BLOCKS as readonly string[]).includes(k));
 
-export function buildDay(sky: Sky, input: DayInput): Json | null {
+/**
+ * `lean`: only what the year wheel keeps (year.ts WHEEL_DROP): the muhurta block without its full
+ * list (the wheel reads only abhijit's solar noon), and no lagna spans, hora, choghadiya, nivas shool,
+ * solar corrections or bala tables — over half the work of a day, done 365 times for a wheel.
+ */
+export function buildDay(sky: Sky, input: DayInput, lean = false): Json | null {
   const jdn = jdnOf(input.year, input.month, input.day);
   if (jdn < FIRST_DEVICE_JDN) return null;
   const zone = input.timeZone;
@@ -103,13 +108,15 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   b.sunrise = timeBlock(sunrise, zone, "nearest");
   b.sunset = timeBlock(sunset, zone, "nearest");
   b.day_ghati = dayGhati;
-  b.muhurta = muhurtaBlock(sky, sunrise, sunset, nextSunrise, vaara, zone, true);
-  b.nivas_shool = nivasShool(sky, sunrise, nextSunrise, (vaara + 6) % 7, zone);
+  b.muhurta = muhurtaBlock(sky, sunrise, sunset, nextSunrise, vaara, zone, !lean);
+  if (!lean) b.nivas_shool = nivasShool(sky, sunrise, nextSunrise, (vaara + 6) % 7, zone);
   b.moonrise = moonrise === null ? null : timeBlock(moonrise, zone, "truncated");
   b.moonset = moonset === null ? null : timeBlock(moonset, zone, "truncated");
-  b.choghadiya = choghadiya(dayGhati, vaara);
-  b.hora = hora(sunrise, sunset, nextSunrise, vaara, zone);
-  b.solar_corrections = solarCorrections(sky, jdn, input, sunrise);
+  if (!lean) {
+    b.choghadiya = choghadiya(dayGhati, vaara);
+    b.hora = hora(sunrise, sunset, nextSunrise, vaara, zone);
+    b.solar_corrections = solarCorrections(sky, jdn, input, sunrise);
+  }
   b.dinamaan = dayLength(sunrise, sunset);
   b.ratrimana = dayLength(sunset, nextSunrise);
   b.madhyahna = timeBlock((sunrise + sunset) / 2, zone, "truncated");
@@ -146,6 +153,13 @@ export function buildDay(sky: Sky, input: DayInput): Json | null {
   };
   b.planets = planetTable(sky, sunrise);
   b.lagna = lagnaBlock(sky, sunrise, input.latitude, input.longitude);
+  if (lean) {
+    b.markers = { is_purnima: tithi.paksha === "shukla" && tithi.display === 15, is_Aausi: tithi.paksha === "krishna" && tithi.display === 15, is_ekadashi: tithi.display === 11 };
+    b.ayanamsa = ayanamsa;
+    const leanOrdered: Json = {};
+    for (const k of PAYLOAD_KEYS) if (k in b) leanOrdered[k] = b[k];
+    return leanOrdered;
+  }
   const spans = lagnaSpans(sky, sunrise, nextSunrise, input);
   if (!spans) return null;
   b.lagna_spans = lagnaRows(spans);

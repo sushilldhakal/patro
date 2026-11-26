@@ -73,7 +73,7 @@ export function yearWheel(sky: Sky, bsYear: number, place: Omit<DayInput, "year"
     for (let offset = 0; offset < span.length; offset += 1) {
       const jdn = span.first + offset;
       const c = civilFromJdn(jdn);
-      const state = dayState(sky, { ...place, year: c.year, month: c.month, day: c.day }, { era: "ad", detail: false, plainFestivals: true, surya: sky });
+      const state = dayState(sky, { ...place, year: c.year, month: c.month, day: c.day }, { era: "ad", detail: false, lean: true, plainFestivals: true, surya: sky });
       if (!state) return null;
       const sun = state.sun as Json;
       const panchanga: Json = {};

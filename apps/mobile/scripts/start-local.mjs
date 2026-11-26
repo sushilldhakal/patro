@@ -14,6 +14,9 @@ const lan = Object.values(networkInterfaces())
   .find((a) => a && a.family === "IPv4" && !a.internal && !a.address.startsWith("169.254."));
 const host = lan?.address ?? "127.0.0.1";
 const env = { ...process.env };
+// One dev bundle, like production: lazy-loaded `import()` chunks fall out of step with the running
+// app after a Metro restart or hot reload ("Requiring unknown module", a second AuthContext → crash).
+env.EXPO_NO_METRO_LAZY ??= "1";
 if (!env.EXPO_PUBLIC_API_BASE_URL) env.EXPO_PUBLIC_API_BASE_URL = `http://${host}:${port}`;
 console.log(`API: ${env.EXPO_PUBLIC_API_BASE_URL}  (start it with apps/rust/scripts/dev-local.sh)`);
 

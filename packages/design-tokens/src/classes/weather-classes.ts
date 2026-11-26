@@ -56,19 +56,22 @@ export const weatherClasses = {
 
   dayHead: "px-2 pb-1 pt-3",
   dayHeadText: "text-sm font-semibold text-foreground",
-  dayDivider: "border-l border-foreground",
+  // Full-height day line drawn over the grid so caption rows do not break it.
+  dayLine: "absolute top-0 bottom-0 w-px bg-foreground",
   cell: "w-16 items-start border-r border-border px-2 py-2",
   cellNight: "bg-muted",
   cellTime: "text-sm text-foreground",
   cellTemp: "text-xl font-medium text-foreground",
   cellText: "text-sm text-foreground",
   cellSub: "text-xs text-muted-foreground",
-  rowCaption: "border-y border-border px-3 py-2",
+  /** No vertical padding: the label carries it, so its card background fills the row's height
+   *  and the day line passes behind it. */
+  rowCaption: "border-y border-border px-3",
   /** Website: a round icon button (add place, make primary, remove). */
   iconButton:
     "inline-flex size-10 cursor-pointer items-center justify-center rounded-full",
   /** A dot's tap target. */
-  dotButton: "inline-flex size-4 cursor-pointer items-center justify-center",
+  dotButton: "inline-flex size-5 cursor-pointer items-center justify-center",
   /** Website: the place name that opens the list; the list's row button. */
   placeTrigger:
     "flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left",
@@ -78,16 +81,32 @@ export const weatherClasses = {
   placeRowPress: "min-h-11 flex-1 items-center gap-2",
   /** The bottom-centre pill of place dots. */
   dotsPill:
-    "items-center gap-2 rounded-full border border-border bg-card px-3 py-2 shadow-sm",
-  dot: "size-2 rounded-full bg-muted-foreground opacity-40",
-  dotActive: "size-2 rounded-full bg-foreground",
+    "items-center gap-2.5 rounded-full border border-border bg-card px-4 py-2.5 shadow-sm",
+  dot: "size-2.5 rounded-full bg-muted-foreground opacity-40",
+  dotActive: "size-3 rounded-full bg-foreground",
   placeRow: "items-center gap-1 border-b border-border py-1",
   placeName: "text-base text-foreground",
   placeNameActive: "text-base font-semibold text-foreground",
   primaryBadge:
     "rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-white dark:bg-primary dark:text-primary-foreground",
   dialogActions: "mt-5 flex-wrap justify-end gap-3",
-  rowCaptionInner: "items-center gap-1.5",
+  /** App places screen: one card per place, the search bar, the ⋯ menu. */
+  placesTitle: "flex-1 text-3xl font-bold text-foreground",
+  placeCard: "gap-3 overflow-hidden rounded-2xl border border-border bg-card p-4",
+  placeCardActive: "border-2 border-secondary dark:border-primary",
+  placeCardName: "text-xl font-semibold text-foreground",
+  placeCardTime: "text-sm text-muted-foreground",
+  placeCardTemp: "text-4xl font-light text-foreground",
+  placeCardMeta: "text-sm text-muted-foreground",
+  searchBar:
+    "flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-3",
+  searchBarText: "flex-1 text-base text-muted-foreground",
+  menuCard:
+    "absolute right-3 w-64 overflow-hidden rounded-xl border border-border bg-card shadow-lg",
+  menuItem: "min-h-12 flex-row items-center gap-3 border-b border-border px-4 active:bg-muted",
+  menuItemText: "flex-1 text-base text-foreground",
+  unitGroupTitle: "mt-4 mb-1 text-sm font-semibold text-muted-foreground",
+  rowCaptionInner: "items-center gap-1.5 bg-card py-2 pr-2",
   infoBody: "text-base leading-relaxed text-foreground",
   rowCaptionText: "text-sm text-muted-foreground",
 
@@ -97,7 +116,18 @@ export const weatherClasses = {
   dayLow: "text-base text-muted-foreground",
   dayHigh: "text-base font-semibold text-foreground",
   dayRain: "text-sm text-foreground",
-  dayPanel: "gap-3 border-b border-border bg-muted px-4 py-4",
+  /** The opened day: the page colour (not beige), with accent rules above and below, as a weather app. */
+  dayPanel: "gap-4 border-y border-secondary bg-background px-4 py-5 dark:border-primary",
+  /** A titled block of the opened day (rain, wind, sun/moon/UV), ruled off from the one above. */
+  dayPanelSection: "gap-3 border-t border-border pt-4",
+  dayPanelTitle: "text-base font-semibold text-muted-foreground",
+  dayPanelRangeValue: "text-lg font-semibold text-foreground",
+  /** Home's today card: the weather now, small, at the right of the date. */
+  nowBadge: "flex flex-col items-end",
+  nowBadgeRow: "flex flex-row items-center gap-1.5",
+  nowBadgePlace: "text-xs font-semibold text-muted-foreground",
+  nowBadgeTemp: "text-2xl font-semibold text-foreground",
+  nowBadgeLabel: "text-xs text-muted-foreground",
   dayPanelDate: "text-sm text-muted-foreground",
   dayPanelLabel: "text-base text-foreground",
 
@@ -107,4 +137,17 @@ export const weatherClasses = {
   footer: "gap-4 px-1 pb-8 pt-2",
   footerTitle: "text-sm font-semibold text-muted-foreground",
   footerText: "text-sm text-muted-foreground",
+
+  /** The hero's right column (condition, feels-like). Web adds `flex flex-col`. */
+  heroSide: "min-w-0 flex-1 items-end gap-1 text-right",
+  /** A saved place's text column and its name row. */
+  placeText: "min-w-0 flex-1 gap-0.5",
+  placeNameRow: "min-w-0 items-center gap-2 text-left",
+  /** The saved-places list and its pinned footer (web drawer). */
+  placeList: "m-0 flex-1 list-none gap-3 p-0",
+  placeListFooter: "sticky bottom-0 bg-card pt-2 pb-1",
+  /** The pull-to-refresh spinner bubble (web) and the round header buttons (app). */
+  pullLayer: "pointer-events-none fixed inset-x-0 top-0 z-50 justify-center",
+  pullBubble: "size-10 items-center justify-center rounded-full border border-border bg-card shadow-md",
+  roundButton: "size-11 items-center justify-center rounded-full border border-border",
 } as const;

@@ -22,29 +22,46 @@ function useMySign() {
   return { sign, choose };
 }
 
+type Signs = { sign: RashifalSignBlock; taraLine?: string }[];
+
 /**
- * Rashifal as most patro apps show it: a 3x4 grid of the twelve signs, and the one picked below it,
- * opening on the reader's own rashi (remembered from their last pick) instead of all twelve readings
- * one after the other.
+ * The chosen rashi for the rashifal page: the reader's own (remembered on the phone) until they
+ * turn the wheel or tap a sign. The phone screen docks the wheel above the tab bar and puts the
+ * chosen sign's card in the page; wider screens draw both with `RashifalSignChooser`.
  */
-export function RashifalSignChooser({
-  signs,
-  period,
-}: {
-  signs: { sign: RashifalSignBlock; taraLine?: string }[];
-  period: RashifalPeriod;
-}) {
+export function useRashifalSignChoice(signs: Signs) {
   const my = useMySign();
   const blocks = signs.map((s) => s.sign);
   const picker = useHomeRashifalSignPicker(blocks, my.sign ?? undefined);
-  if (!blocks.length || my.sign === undefined) return null;
   const select = (i: number) => {
     picker.selectIndex(i);
     const n = blocks.length;
     const sign = blocks[((i % n) + n) % n];
     if (sign) my.choose(sign.id);
   };
-  const selected = signs[picker.selectedIndex];
+  return {
+    ready: blocks.length > 0 && my.sign !== undefined,
+    picker,
+    select,
+    selected: signs[picker.selectedIndex],
+    wheelItems: picker.thumbs.map((sign) => ({
+      id: sign.id,
+      name: sign.name,
+      percentLabel: sign.percentLabel,
+      glyph: <RashiGlyphIcon name={sign.glyphName} number={sign.id} size={34} />,
+    })),
+  };
+}
+
+/**
+ * Rashifal as most patro apps show it: a 3x4 grid of the twelve signs, and the one picked below it,
+ * opening on the reader's own rashi (remembered from their last pick) instead of all twelve readings
+ * one after the other.
+ */
+export function RashifalSignChooser({ signs, period }: { signs: Signs; period: RashifalPeriod }) {
+  const choice = useRashifalSignChoice(signs);
+  const { picker, select, selected } = choice;
+  if (!choice.ready) return null;
   return (
     <SignPickerView
       label={picker.copy.chooseRashi}

@@ -116,6 +116,17 @@ let referenceYearMs = Date.UTC(2026, 0, 15);
  */
 export function utcOffsetMinutes(timeZone: string, jd: number): number {
   const at = jd < CUTOVER_JD ? (referenceYearMs / 86_400_000 + 2440587.5) : jd;
+  // A whole UT day first: the same offset at both ends means none changed that day (a zone changes at
+  // most twice a year), so one pair of Intl reads covers every time in it. Intl is slow on Hermes.
+  const day = Math.floor(at);
+  const dayKey = `${timeZone}|d${day}`;
+  let whole = offsetCache.get(dayKey);
+  if (whole === undefined) {
+    whole = [offsetAtMs(timeZone, hourMs(day * 24)), offsetAtMs(timeZone, hourMs(day * 24 + 24) - 1000)];
+    if (offsetCache.size > 50_000) offsetCache.clear();
+    offsetCache.set(dayKey, whole);
+  }
+  if (whole[0] === whole[1]) return whole[0];
   const hour = Math.floor(at * 24);
   const key = `${timeZone}|${hour}`;
   let hit = offsetCache.get(key);

@@ -104,10 +104,9 @@ export function useTodayHighlight({
   const paksha = formatPakshaLabel(p, lang, selectedDay?.paksha_ne, selectedDay?.paksha) ?? "";
   const nakshatra = bilingualText(lang, p?.nakshatra?.name_ne ?? selectedDay?.nakshatra_ne, p?.nakshatra?.name ?? selectedDay?.nakshatra, "");
 
-  const pakshaShort = (() => {
-    const stripped = paksha.replace(PAKSHA_WORD, "").replace(/\s*paksha/gi, "").trim();
-    return monthName && stripped.toLowerCase().startsWith(monthName.toLowerCase()) ? stripped.slice(monthName.length).trim() : stripped;
-  })();
+  // The lunar month and paksha ("मार्गशीर्ष कृष्ण"), kept whole: the solar month is already in the
+  // date line above, and repeating it here read as if the two were the same month.
+  const pakshaShort = paksha.replace(PAKSHA_WORD, "").replace(/\s*paksha/gi, "").trim();
 
   const tithiIndex = p ? tithiIndexFromPanchanga(p) : selectedDay ? tithiIndexFromCalendarDay(selectedDay) : undefined;
 
@@ -144,7 +143,7 @@ export function useTodayHighlight({
     nepalSambat: p ? formatNepalSambatDisplay(p, lang) : undefined,
     kicker,
     title: festivals.length ? festivals.join(" / ") : tithi || t("ui.home.this_day_s_panchanga"),
-    subtitle: [monthName, pakshaShort, festivals.length ? tithi : nakshatra]
+    subtitle: [pakshaShort, festivals.length ? tithi : nakshatra]
       .map((part) => part.trim())
       .filter(Boolean)
       .join(" · "),

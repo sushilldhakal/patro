@@ -6,7 +6,7 @@ import type { TodayHighlightCardProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
 
 /** Selected day's date, festival (and its sait), moon and sun times. Side by side once the card is 32rem wide. */
-export function TodayHighlightCard({ className, moon, ...props }: TodayHighlightCardProps) {
+export function TodayHighlightCard({ className, moon, aside, ...props }: TodayHighlightCardProps) {
   const h = useTodayHighlight(props);
   return (
     <Box className={cn(cls.highlight, "@container", className)}>
@@ -23,6 +23,7 @@ export function TodayHighlightCard({ className, moon, ...props }: TodayHighlight
             <Text as="p" className={cls.highlightCrossEra}>{h.crossEra}</Text>
             {h.nepalSambat ? <Text as="p" className={cls.highlightNs}>{h.nepalSambat}</Text> : null}
           </Box>
+          {aside ? <Box className="ml-auto shrink-0 pl-3">{aside}</Box> : null}
         </Box>
         <Box className={cn(cls.highlightSpecial, "@[32rem]:mt-0 @[32rem]:min-w-0 @[32rem]:flex-1 @[32rem]:border-l @[32rem]:border-t-0 @[32rem]:pl-4 @[32rem]:pt-0")}>
           <Text as="p" className={cls.highlightTitle}>{h.title}</Text>

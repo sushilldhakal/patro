@@ -2840,6 +2840,10 @@ export interface WeatherForecastResponse {
       wind_speed_10m: number | null;
       wind_direction_10m: number | null;
       wind_gusts_10m: number | null;
+      /** hPa at sea level. */
+      pressure_msl?: number | null;
+      /** Metres. */
+      visibility?: number | null;
     };
     /** Times are the place's local wall clock, `YYYY-MM-DDTHH:mm`. */
     hourly?: {
@@ -2856,6 +2860,17 @@ export interface WeatherForecastResponse {
       wind_gusts_10m?: (number | null)[];
       uv_index?: (number | null)[];
       is_day?: (number | null)[];
+      pressure_msl?: (number | null)[];
+      visibility?: (number | null)[];
+    };
+    /** Open-Meteo air quality; missing when that API failed. */
+    air_quality?: {
+      current?: {
+        time: string;
+        us_aqi: number | null;
+        pm2_5: number | null;
+        pm10: number | null;
+      };
     };
     daily?: {
       time: string[];
