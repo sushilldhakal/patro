@@ -14,7 +14,7 @@ export const mobileShellClasses = {
   moreTabletCard: "min-w-[45%] flex-1",
   moreWideCard: "w-full",
   moreStack: "gap-4",
-  moreTabletStack: "flex-row flex-wrap gap-4",
+  moreTabletStack: "flex-row flex-wrap items-start gap-4",
 
   reminderChip: "rounded-full border px-3 py-1.5 active:opacity-80",
   reminderChipLabel: "text-body font-semibold",

@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { useBreakpoint } from "@/lib/responsive";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 
@@ -15,4 +16,14 @@ export const TABLET_SIDEBAR_WIDTH = 340;
 export function useTabletUi(): boolean {
   const { isTablet } = useBreakpoint();
   return isTablet && !IS_IPHONE_DUO;
+}
+
+/**
+ * The top bar and date controls. An iPad (and Android tablet) draws the iPhone's two-row header
+ * (date badge + year line, then place and the page's views); the extra width goes to the content.
+ * Owner, 2026-11-27: "design follows iPhone design". Only the wide web layout keeps the iPad
+ * Calendar toolbar (sidebar key, ‹ › stepper, segmented switch).
+ */
+export function useTabletHeader(): boolean {
+  return useTabletUi() && Platform.OS === "web";
 }

@@ -7,7 +7,7 @@ import { useFollowCalendarSystem, usePatroYearTopBarHeader } from "./HeaderDateT
 import { PatroYearNavBlock as View } from "@vedic-patro/ui/kit/shell";
 import { PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { patroBrowseTodayYear } from "@vedic-patro/domain/calendar/patro-browse-params";
-import { useTabletUi } from "@/lib/tablet-ui";
+import { useTabletHeader } from "@/lib/tablet-ui";
 import type { PatroYearBrowseNavProps } from "./PatroYearBrowseNav";
 
 type Props = PatroYearBrowseNavProps & { className?: string };
@@ -30,7 +30,7 @@ export function PatroYearNavBlock({
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   const fallback = usePanchangaLocation();
   useFollowCalendarSystem(era, onEraChange);
-  const tablet = useTabletUi();
+  const tablet = useTabletHeader();
   // Phone: home's header. The year line opens the year picker (sheet only, no stepper row).
   const [pickerOpen, setPickerOpen] = useState(false);
   const header = usePatroYearTopBarHeader({

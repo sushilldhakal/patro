@@ -11,7 +11,7 @@ import { adToBS, bsToAD } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTabletUi } from "@/lib/tablet-ui";
+import { useTabletHeader } from "@/lib/tablet-ui";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
@@ -389,8 +389,8 @@ function HomeScreen() {
   // A phone has no top bar on home (AppHeader steps aside): the scroll starts below the status
   // bar, so iOS draws the pull-to-refresh spinner where it can be seen, not behind the clock.
   const insets = useSafeAreaInsets();
-  const tabletUi = useTabletUi();
-  const statusBarGap = Platform.OS !== "web" && !tabletUi ? insets.top : 0;
+  const phoneHeader = !useTabletHeader();
+  const statusBarGap = Platform.OS !== "web" && phoneHeader ? insets.top : 0;
   const contentInset = isPhone ? homeContentInset(true) : 0;
   const cardInset = isPhone ? HOME_CARD_INSET : 0;
 
@@ -624,7 +624,7 @@ function HomeScreen() {
         <Reveal index={0}>
           <ScrollHero>{monthHeaderBlock}</ScrollHero>
         </Reveal>
-        {isPhone ? (
+        {phoneHeader ? (
           <BsMonthHeaderRow2
             year={year}
             month={month}
@@ -701,7 +701,7 @@ function HomeScreen() {
           a plain JS boolean, the same pattern the floating bar uses to fold.
           The in-page row above is the same row, same month and handlers; it
           scrolls away underneath this one. */}
-      {isPhone ? (
+      {phoneHeader ? (
         <BsMonthHeaderRow2
           fixed
           year={year}
@@ -720,7 +720,7 @@ function HomeScreen() {
           nextDisabled={homeMonth.nextDisabled}
           location={location}
           onLocationChange={setLocation}
-          horizontalInset={cardInset}
+          horizontalInset={isPhone ? cardInset : pageInset}
         />
       ) : null}
 
@@ -730,7 +730,7 @@ function HomeScreen() {
           pinned the second row steps aside, so the sticky header is the
           section the page is in. The in-page tabs above are the same tabs,
           same handler; they scroll away underneath this one. */}
-      {isPhone ? (
+      {phoneHeader ? (
         <HomeAsideTabBar fixed tab={asideTab} onTabChange={setAsideTab} />
       ) : null}
 

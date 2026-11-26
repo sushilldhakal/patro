@@ -67,6 +67,8 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       className="flex-1 px-6"
       style={{ backgroundColor: colors.background, paddingTop: insets.top + 48, paddingBottom: Math.max(insets.bottom, 16) + 16 }}
     >
+      {/* An iPad keeps the phone's column, centred, instead of stretching cards and button edge to edge. */}
+      <View className="w-full max-w-[480px] flex-1 self-center">
       <View className="flex-1 justify-center">
         <Text className="text-display text-center font-bold text-foreground">{tFor(language, "ui.onboarding.x_0822b526")}</Text>
         <Text className="text-body mt-3 text-center text-muted-foreground">{tFor(language, "ui.onboarding.language_title")}</Text>
@@ -87,6 +89,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
           {tFor(language, "ui.onboarding.x_5158dc32")}
         </Text>
       </Pressable>
+      </View>
     </View>
   );
 }

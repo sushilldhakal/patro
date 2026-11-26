@@ -8,7 +8,7 @@ import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-brows
 import { monthShortLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { patroEraShortLabel } from "@vedic-patro/domain/calendar/patro-era-label";
 import { useLocale } from "@/lib/i18n";
-import { useTabletUi } from "@/lib/tablet-ui";
+import { useTabletHeader } from "@/lib/tablet-ui";
 import { useFollowCalendarSystem, usePatroYearLine } from "./HeaderDateTitle";
 import { PatroDayTimeHeader, PatroYearHeader } from "@vedic-patro/ui/kit/shell";
 import { PatroCalendarHeader } from "./PatroCalendarHeader";
@@ -40,7 +40,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
   // The page's view tabs live in the header's view menu, not in the date row.
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   const { lang, digits } = useLocale();
-  const tablet = useTabletUi();
+  const tablet = useTabletHeader();
   const yearLine = usePatroYearLine(era, year);
   useFollowCalendarSystem(era, onEraChange);
   // Phone: home's header. The year line opens this page's picker (year / month / day / day+time);

@@ -8,7 +8,7 @@ import { defaultMonthBrowseParts } from "@vedic-patro/domain/calendar/patro-brow
 import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
 import { monthShortLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { useLocale } from "@/lib/i18n";
-import { useTabletUi } from "@/lib/tablet-ui";
+import { useTabletHeader } from "@/lib/tablet-ui";
 import { useFollowCalendarSystem, usePatroYearLine } from "./HeaderDateTitle";
 
 type MonthYearNavProps = Omit<Extract<PatroDateNavProps, { mode: "year-month" }>, "mode">;
@@ -38,7 +38,7 @@ export function PatroMonthYearNav({
   // The page's view tabs live in the header's view menu, not in the date row.
   usePageViewMenu(tabs ? [{ key: "view", options: tabs }] : null);
   const { lang, digits } = useLocale();
-  const tablet = useTabletUi();
+  const tablet = useTabletHeader();
   const yearLine = usePatroYearLine(era, year);
   useFollowCalendarSystem(era, onEraChange);
   // Phone: home's header. The year line opens the month/year picker (sheet only, no stepper row).

@@ -24,7 +24,7 @@ import { GocharPromoCard } from "@vedic-patro/ui/kit/panchanga";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { useThemeColors } from "@/lib/theme-context";
-import { useNavBottomPadding, pageTopPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
+import { useNavBottomPadding, pageTopPadding, PAGE_HORIZONTAL_PADDING, PAGE_HORIZONTAL_PADDING_WIDE, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -48,7 +48,7 @@ export default function PanchangaScreen() {
   const { width, isTablet, isCompact } = useBreakpoint();
   const navBottom = useNavBottomPadding(isTablet);
   const inShell = useInPanchangaTabsShell();
-  const pagePadH = inShell ? 0 : PAGE_HORIZONTAL_PADDING;
+  const pagePadH = inShell ? 0 : isCompact ? PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING_WIDE;
   const splitSidebar = width >= PANCHANGA_SIDEBAR_SPLIT;
   /* The wheel, the nine sections and the aside's chart are below the fold on a
      phone; drawing them with the date bar and timeline in one frame is what held

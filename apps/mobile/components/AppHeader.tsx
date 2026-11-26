@@ -6,7 +6,7 @@ import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceM
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DURATION, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { nativeShadow, neutral, radius, space, withAlpha } from "@vedic-patro/design-tokens";
-import { TABLET_SIDEBAR_WIDTH, useTabletUi } from "@/lib/tablet-ui";
+import { TABLET_SIDEBAR_WIDTH, useTabletHeader, useTabletUi } from "@/lib/tablet-ui";
 import { headerPinnedH, headerRow1H, headerShiftFor, headerShown, headerY, setOverlayHeaderHeights, useOverlayHeaderActive } from "@/lib/overlay-header";
 import { useNavPress } from "@/lib/use-nav-press";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -26,7 +26,7 @@ import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { usePathname, useRouter } from "expo-router";
-import { HOME_CARD_INSET, normalizeMobilePathname, pageTopPadding } from "@/lib/mobile-nav";
+import { HOME_CARD_INSET, normalizeMobilePathname, PAGE_HORIZONTAL_PADDING_WIDE, pageTopPadding } from "@/lib/mobile-nav";
 
 /**
  * The side menu and its open/close/navigate flow. It opens on `requestOpenMenu()`, so the header's
@@ -613,7 +613,9 @@ function AppHeaderView() {
   const router = useRouter();
   // The date controls' band is exactly one key tall, so they line up with the buttons either side.
   const controlSize = topBarControlSize(useWindowDimensions().width);
-  const tablet = useTabletUi();
+  const tablet = useTabletHeader();
+  // iPad: the phone's rows, at the tablet page inset so they line up with the cards below.
+  const wide = useTabletUi();
   // Creating events, tasks and appointments is for signed-in users.
   const { isAuthenticated } = useAuth();
   // Home on a phone draws its own two-row header in the page (BsMonthHeaderTitle),
@@ -653,7 +655,7 @@ function AppHeaderView() {
       // Phone page with a date: home's header, piece for piece (BsMonthHeaderTitle + BsMonthHeaderRow2).
       // Row 1: date badge (Today) + year line ▾ (the page's picker), view menu (only with views), profile.
       // Row 2: place, BS | AD, search.
-      <View className="border-b border-border bg-background" style={{ paddingHorizontal: HOME_CARD_INSET }}>
+      <View className="border-b border-border bg-background" style={{ paddingHorizontal: wide ? PAGE_HORIZONTAL_PADDING_WIDE : HOME_CARD_INSET }}>
         <View
           className="flex-row items-center gap-2 pb-2"
           // Home's page top padding (pageTopPadding on a phone), so row 1 sits exactly where home's does.

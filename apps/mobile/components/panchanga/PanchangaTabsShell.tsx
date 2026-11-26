@@ -8,6 +8,7 @@ import {
   pageTopPadding,
   normalizeMobilePathname,
   PAGE_HORIZONTAL_PADDING,
+  PAGE_HORIZONTAL_PADDING_WIDE,
 } from "@/lib/mobile-nav";
 import {
   routeUsesOwnPanchangaSplitShell,
@@ -104,6 +105,8 @@ export function PanchangaTabsShell({
   const shellRoute = isPanchangaShellRoute(pathname);
   const showRail = shellRoute && wideEnough;
   const scrollBottom = floatingNavBottomPadding(isTablet);
+  // Same page inset as home and AppShell from 768 up, so the header lines up with every page.
+  const pagePadH = isCompact ? PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING_WIDE;
 
   /* The panchanga tab hosts a nested Stack, so this wrapper must not change
    * element type between routes: a View↔ScrollView swap remounted the whole
@@ -122,7 +125,7 @@ export function PanchangaTabsShell({
               showRail
                 ? {
                     backgroundColor: colors.background,
-                    paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+                    paddingHorizontal: pagePadH,
                   }
                 : undefined
             }
@@ -170,7 +173,7 @@ export function PanchangaTabsShell({
         <PanchangaTabsShellScrollContext.Provider value={true}>
           <ShellMainScroll
             contentContainerStyle={{
-              paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+              paddingHorizontal: pagePadH,
               paddingTop: pageTopPadding(isCompact),
               paddingBottom: scrollBottom,
             }}
@@ -188,7 +191,7 @@ export function PanchangaTabsShell({
         <View
           className="min-h-0 flex-1 bg-background pt-4"
           style={{
-            paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+            paddingHorizontal: pagePadH,
           }}
         >
           <View className="min-h-0 flex-1 flex-row" style={{ gap: SHELL_SIDEBAR_GAP }}>

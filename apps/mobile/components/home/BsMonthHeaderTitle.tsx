@@ -17,7 +17,7 @@ import { HOME_VIEW_ICONS } from "@vedic-patro/ui/kit/events";
 import { CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
 import { requestLocationPicker, requestSearch, requestSignIn } from "@/lib/menu-request";
 import { homeHideIsInstant, useHomeStuck } from "@/lib/home-sticky";
-import { useTabletUi } from "@/lib/tablet-ui";
+import { useTabletHeader } from "@/lib/tablet-ui";
 import { monthShortLabel } from "@vedic-patro/domain/calendar/patro-month-labels";
 import { monthLengthInBrowseEra } from "@vedic-patro/domain/calendar/patro-browse-range";
 import { HeaderDateTitle, usePatroYearLine } from "@/components/patro-date/HeaderDateTitle";
@@ -71,7 +71,7 @@ export function BsMonthHeaderTitle({
   const router = useRouter();
   // Seven day columns need room: a phone gets Multi Day (two days) instead of Week.
   const { width } = useWindowDimensions();
-  const tablet = useTabletUi();
+  const tablet = useTabletHeader();
   const yearLine = usePatroYearLine(browseEra, year);
   const [pickerOpen, setPickerOpen] = useState(false);
 
