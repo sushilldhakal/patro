@@ -29,7 +29,7 @@ function StoryCard({ story, top, sourceLabel }: { story: NewsCardView; top?: boo
       <Pressable
         accessibilityRole="link"
         accessibilityLabel={first?.label}
-        onPress={() => first && open(first.url)}
+        onPress={() => first && open(first.url, first.name)}
         className="active:opacity-70"
       >
         <Text className={top ? nc.titleTop : nc.title} style={ne}>
@@ -48,7 +48,7 @@ function StoryCard({ story, top, sourceLabel }: { story: NewsCardView; top?: boo
             key={s.url}
             accessibilityRole="link"
             accessibilityLabel={s.label}
-            onPress={() => open(s.url)}
+            onPress={() => open(s.url, s.name)}
             hitSlop={6}
             className={cn("flex-row active:opacity-70", nc.sourceChip)}
           >

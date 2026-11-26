@@ -521,6 +521,8 @@ function RootShell({
           <Stack.Screen name="weather" options={{ gestureEnabled: false }} />
           {/* Rashifal's wheel turns with a sideways drag: swipe-back only from the screen edge. */}
           <Stack.Screen name="rashifal" options={{ fullScreenGestureEnabled: false }} />
+          {/* Outside pages slide up like Facebook's link view; a sideways swipe is the page's own back. */}
+          <Stack.Screen name="reader" options={{ animation: "slide_from_bottom", gestureEnabled: false }} />
           {/* aakash-gochar zooms out of its home card natively on iOS 18+ (Link.AppleZoom); elsewhere a normal push. */}
         </Stack>
       )}

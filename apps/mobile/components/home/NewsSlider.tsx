@@ -92,12 +92,13 @@ export function NewsSlider({
 function NewsCard({ story, width }: { story: NewsCardView; width: number }) {
   const ne = story.language === "ne" ? nepaliTextStyle() : undefined;
   const url = story.sources[0]?.url;
+  const source = story.sources[0]?.name;
   return (
     <TintCard
       tint={SLIDER_TINT.news}
       width={width}
       minHeight={SLIDER_CARD_HEIGHT}
-      onPress={url ? () => openInApp(url) : undefined}
+      onPress={url ? () => openInApp(url, source) : undefined}
     >
       <View className="flex-row">
         <View

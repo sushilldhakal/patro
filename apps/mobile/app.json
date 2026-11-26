@@ -2,7 +2,7 @@
   "expo": {
     "name": "Vedic Patro",
     "slug": "vedic-patro-mobile",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "scheme": [
@@ -256,6 +256,7 @@
       "./plugins/with-ios-local-build.js",
       "./plugins/with-android-widget-size.js",
       "./plugins/with-optional-hardware-features.js",
+      "./plugins/with-android-large-heap.js",
       [
         "expo-build-properties",
         {
