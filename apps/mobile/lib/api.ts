@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import * as Sentry from "@sentry/react-native";
 import { isCapturing, offlineAwareGet } from "@/lib/offline/offline-http";
 import Constants from "expo-constants";
 import {
@@ -477,6 +478,22 @@ configureStaticData(process.env.EXPO_PUBLIC_STATIC_DATA_URL ?? STATIC_DATA_BASE)
 // Every other request (streamed kundali reports, posts) gets it at the fetch itself.
 setCalculationResolver(() => getCalculation());
 
+// One in ten sessions reports why the phone's own calendar gave no answer (each method once), so
+// Sentry shows what still sends day, month and festival requests to the server.
+const reportLocalMisses = Math.random() < 0.1;
+const reportedLocalMisses = new Set<string>();
+function reportLocalMiss(method: string, error?: unknown) {
+  const key = `${method}:${error ? "error" : "null"}`;
+  if (!reportLocalMisses || reportedLocalMisses.has(key)) return;
+  reportedLocalMisses.add(key);
+  Sentry.withScope((scope) => {
+    scope.setTag("local_calendar", method);
+    scope.setTag("sky_system", skyChoiceOf(getCalculation())?.system ?? "none");
+    if (error) Sentry.captureException(error);
+    else Sentry.captureMessage(`Device calendar answered nothing: ${method}`, "warning");
+  });
+}
+
 configureApiClient({
   baseUrl: API_BASE,
   dataBaseUrl: DATA_BASE,
@@ -490,7 +507,9 @@ configureApiClient({
     loadSky: async (system) => (await import("@/lib/sky")).getSky(system),
     system: () => skyChoiceOf(getCalculation()),
     enabled: () => process.env.EXPO_PUBLIC_SKY_LOCAL !== "off",
+    onError: (error) => reportLocalMiss("engine", error),
   }),
+  onLocalMiss: ({ method, error }) => reportLocalMiss(method, error),
 });
 
 /**

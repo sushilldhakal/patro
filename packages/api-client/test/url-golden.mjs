@@ -32,6 +32,9 @@ const stubs = {
   // The app's sky reads bundled native assets; the URL test has none (and runs with it off).
   "@/lib/sky": `export const getSky = () => Promise.reject(new Error("no sky in the URL test"));`,
   // Requests still go through fetch, so the URL is recorded the same way.
+  // The apps report device-calendar misses to Sentry; the URL test sends nothing.
+  "@sentry/react-native": `export const withScope = () => {}; export const captureException = () => {}; export const captureMessage = () => {};`,
+  "@sentry/react": `export const withScope = () => {}; export const captureException = () => {}; export const captureMessage = () => {};`,
   "@/lib/offline/offline-http": `export const isCapturing = () => false; export async function offlineAwareGet(path, doFetch, errorFor) { const res = await doFetch(); if (!res.ok) throw await errorFor(res); return res.json(); }`,
 };
 

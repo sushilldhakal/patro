@@ -134,6 +134,8 @@ export interface ApiTransport {
    * that returns null, throws or is missing means the request goes to the server as before.
    */
   local?: LocalCalendar;
+  /** Told when the local calendar gave no answer (null or a throw), with the method asked, before the server is asked. */
+  onLocalMiss?: (miss: { method: string; error?: unknown }) => void;
 }
 
 let transport: ApiTransport | null = null;
@@ -194,9 +196,21 @@ export const sharedMonthStore: SharedMonthStore = {
 async function fromLocal<T>(ask: (local: LocalCalendar) => Promise<Record<string, unknown> | null>): Promise<T | null> {
   const local = transport?.local;
   if (!local) return null;
+  let method = "?";
+  // Records which method was asked, so a miss can be reported by name.
+  const spy = new Proxy(local, {
+    get(target, key, receiver) {
+      const value: unknown = Reflect.get(target, key, receiver);
+      if (typeof value === "function") method = String(key);
+      return value;
+    },
+  });
   try {
-    return ((await ask(local)) as T | null) ?? null;
-  } catch {
+    const answer = ((await ask(spy)) as T | null) ?? null;
+    if (answer === null) transport?.onLocalMiss?.({ method });
+    return answer;
+  } catch (error) {
+    transport?.onLocalMiss?.({ method, error });
     return null;
   }
 }

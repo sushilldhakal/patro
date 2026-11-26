@@ -139,6 +139,7 @@ import { tFor } from "@vedic-patro/i18n/runtime";
 import { fetchPanchangaAtTimeLocal, fetchPanchangaDayLocal } from "@vedic-patro/api-client";
 import { makeLocalCalendar, skyChoiceOf } from "@vedic-patro/domain/festivals/local-calendar";
 import { skyLocalEnabled } from "./sky-day";
+import * as Sentry from "@sentry/react";
 export type {
   LocationParams,
   JanmaRashi,
@@ -431,6 +432,22 @@ function webLocationQuery(path: string, location?: LocationParams): string {
  */
 setCalculationResolver(() => getCalculation());
 
+// One in ten visits reports why the site's own calendar gave no answer (each method once), so
+// Sentry shows what still sends day, month and festival requests to the server.
+const reportLocalMisses = Math.random() < 0.1;
+const reportedLocalMisses = new Set<string>();
+function reportLocalMiss(method: string, error?: unknown) {
+  const key = `${method}:${error ? "error" : "null"}`;
+  if (!reportLocalMisses || reportedLocalMisses.has(key)) return;
+  reportedLocalMisses.add(key);
+  Sentry.withScope((scope) => {
+    scope.setTag("local_calendar", method);
+    scope.setTag("sky_system", skyChoiceOf(getCalculation())?.system ?? "none");
+    if (error) Sentry.captureException(error);
+    else Sentry.captureMessage(`Device calendar answered nothing: ${method}`, "warning");
+  });
+}
+
 configureApiClient({
   baseUrl: BASE,
   dataBaseUrl: DATA_BASE,
@@ -443,7 +460,9 @@ configureApiClient({
     loadSky: async (system) => (await import("./sky")).getSky(system),
     system: () => skyChoiceOf(getCalculation()),
     enabled: skyLocalEnabled,
+    onError: (error) => reportLocalMiss("engine", error),
   }),
+  onLocalMiss: ({ method, error }) => reportLocalMiss(method, error),
 });
 
 // ─── Panchanga ────────────────────────────────────────────────────────────────
