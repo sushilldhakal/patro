@@ -1227,8 +1227,8 @@ export const fetchKundali = (
   era: "bs" | "ad" = "ad",
   location?: LocationParams
 ) =>
-  get<KundaliResponse>(
-    appendLocation(`/kundali/${date}?era=${era}`, location)
+  fromLocal<KundaliResponse>((l) => l.kundali({ route: "day", date, era }, location)).then(
+    (local) => local ?? get<KundaliResponse>(appendLocation(`/kundali/${date}?era=${era}`, location)),
   );
 
 // Bump when year sun-times payload logic changes (invalidates React Query + IDB).

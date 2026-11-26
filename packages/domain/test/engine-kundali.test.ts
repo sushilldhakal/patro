@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { Sky, type SkyIo } from "../src/astronomy/sky";
-import { dashaExpand, milanRoute, momentJd, planetaryPositions, shadbalaRoute, vimshottari, type KundaliPlace } from "../src/jyotish/kundali/engine";
+import { dashaExpand, kundaliDayRoute, milanRoute, momentJd, planetaryPositions, shadbalaRoute, vimshottari, type KundaliPlace } from "../src/jyotish/kundali/engine";
 import { kundaliDetail, kundaliReport } from "../src/jyotish/kundali/detail-engine";
 import { diff } from "./golden-diff";
 
@@ -199,4 +199,25 @@ test("the kundali report made on the device matches the server's", async () => {
   console.log("checked report", checked);
   assert.ok(checked >= 8);
   assert.equal(failures.length, 0, failures.slice(0, 15).join("\n"));
+});
+
+test("the sunrise snapshot (/kundali/{date}) made on the device matches the server's", async () => {
+  const sky = new Sky("surya", io);
+  await sky.open();
+  const failures: string[] = [];
+  let checked = 0;
+  for (const c of load("kundali_basic")) {
+    const m = /^\/v1\/kundali\/(\d{4}-\d\d-\d\d)(?:\?(.*))?$/.exec(c.path);
+    if (c.status !== 200 || !m) continue;
+    const q = new URLSearchParams(m[2] ?? "");
+    const place = PLACES[q.get("city_id") ?? "1283240"];
+    if (!place) continue;
+    const got = kundaliDayRoute(sky, place, m[1], q.get("era") ?? "bs", { era: q.get("era") ?? undefined, language: q.get("language") ?? undefined });
+    checked += 1;
+    const e = got ? diff("", got, JSON.parse(c.body)) : "null";
+    if (e) failures.push(`${c.path}: ${e}`);
+  }
+  console.log("checked day", checked);
+  assert.ok(checked >= 2);
+  assert.equal(failures.length, 0, failures.join("\n"));
 });

@@ -6,13 +6,13 @@
 import type { Sky } from "../../astronomy/sky";
 import { instantLagna, planetsWithExtras } from "../../panchanga/engine/at-time";
 import { moonPhase } from "../../panchanga/engine/blocks";
-import { locationBlock, type DayInput } from "../../panchanga/engine/day";
+import { buildDay, locationBlock, type DayInput } from "../../panchanga/engine/day";
 import { eraLanguage } from "../../panchanga/engine/era-render";
-import { pyRound } from "../../panchanga/engine/py";
+import { pyMod, pyRound } from "../../panchanga/engine/py";
 import { utcIso, wallIn } from "../../panchanga/engine/instant";
 import { suryaLongitude } from "../../astronomy/surya-formulas";
 import { localInstant } from "../../panchanga/engine/midnight";
-import { bsToJdn, civilJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
+import { bsToJdn, civilFromJdn, civilJdn, FIRST_DEVICE_JDN } from "../../astronomy/lunar-month";
 import { shadbala } from "./shadbala-engine";
 import { kundaliMilan, type MilanPartner } from "./milan-engine";
 import { parseIso, usFromJd, vimshottariPayload } from "./vimshottari-engine";
@@ -137,6 +137,32 @@ export function milanRoute(sky: Sky, boy: MilanPerson, girl: MilanPerson, lang =
   const b = partner(boy);
   const g = partner(girl);
   return b && g ? kundaliMilan(b, g, lang) : null;
+}
+
+/** `/kundali/{date}?era=bs|ad`: the grahas at sunrise of a civil day (from the earlier device port). */
+export function kundaliDayRoute(sky: Sky, place: KundaliPlace, dateKey: string, era: string, q: KundaliEcho = {}): Json | null {
+  const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(dateKey);
+  if (!m || (era !== "bs" && era !== "ad")) return null;
+  const jdn = era === "bs" ? bsToJdn(+m[1], +m[2], +m[3]) : civilJdn(+m[1], +m[2], +m[3]);
+  if (jdn === null) return null;
+  const c = civilFromJdn(jdn);
+  if (era === "ad" && (c.month !== +m[2] || c.day !== +m[3])) return null;
+  const day = buildDay(sky, { ...place, year: c.year, month: c.month, day: c.day });
+  if (!day) return null;
+  const rows = (day.planets ?? {}) as Record<string, Json>;
+  const planets: Json = {};
+  for (const [name, pos] of Object.entries(rows)) planets[name] = `${String(pos.rashi_name ?? "")} ${pyMod(Number(pos.longitude ?? 0), 30).toFixed(1)}°`;
+  const bs = day.bs_date as Json;
+  const pad = (n: unknown) => String(n).padStart(2, "0");
+  return {
+    date_bs: `${bs.year}-${pad(bs.month)}-${pad(bs.day)}`,
+    date_ad: `${String(c.year).padStart(4, "0")}-${pad(c.month)}-${pad(c.day)}`,
+    location: day.location,
+    planets,
+    planets_detail: day.planets,
+    lagna_note: "Lagna requires birth time; positions are at sunrise (udaya).",
+    ...echo(q),
+  };
 }
 
 export { dashaExpand } from "./vimshottari-engine";
