@@ -1,8 +1,8 @@
 name: Deploy to Oracle VM
 
 # One deploy for the whole monorepo. The website is built here (GitHub Actions), not on the VM,
-# and copied over as a tarball; scripts/deploy.sh on the VM then pulls main and deploys only what
-# changed: the API (apps/rust) and/or the website (publishes the copied build, no npm on the VM).
+# and only .well-known + redirects.map are copied over; scripts/deploy.sh on the VM then deploys what
+# changed: the API (apps/rust) and/or those website files. The site itself is served by Cloudflare.
 # The mobile app ships through EAS, so app-only pushes deploy nothing.
 on:
   workflow_dispatch:
@@ -42,7 +42,8 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           npm run build
-          tar -czf "${GITHUB_WORKSPACE}/web-dist.tgz" -C dist --exclude=./server .
+          # The VM only needs what nginx still serves for vedicpatro.com: app-link files and the 301 map.
+          tar -czf "${GITHUB_WORKSPACE}/web-dist.tgz" -C dist .well-known redirects.map
 
       - name: Copy the website build to the VM
         uses: appleboy/scp-action@v0.1.7
@@ -66,8 +67,7 @@ jobs:
             bash /home/ubuntu/patro/scripts/deploy.sh
 
       # www.vedicpatro.com is served by the vedicpatro-web Worker (apps/web/wrangler.jsonc): every
-      # page and file from Cloudflare; /api/* and /og-image* have no-Worker routes to the VM. The VM
-      # copy published above stays as the rollback (delete the www.vedicpatro.com/* Worker route).
+      # page and file from Cloudflare; /api/* and /og-image* have no-Worker routes to the VM.
       - name: Deploy website to Cloudflare (Worker static assets)
         working-directory: apps/web
         run: |

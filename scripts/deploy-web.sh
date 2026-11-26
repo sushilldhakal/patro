@@ -1,105 +1,31 @@
 #!/usr/bin/env bash
-# Website deploy — run by scripts/deploy.sh. Builds apps/web (with the shared
-# packages it uses) and publishes it to the nginx web root.
+# Website pieces the VM still serves — run by scripts/deploy.sh. The site itself is on Cloudflare
+# (deploy.yml); nginx here only answers vedicpatro.com (301s to www, /download, /.well-known).
+# GitHub Actions copies .well-known/ and redirects.map over as WEB_DIST_TGZ; nothing is built here.
 set -euo pipefail
 
-REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
-WEB_DIR="${REPO_DIR}/apps/web"
 WEB_ROOT="${WEB_ROOT:-/var/www/vedicpatro}"
-# The website's old standalone checkout, for its .env on the first deploy.
-OLD_WEB_DIR="${OLD_WEB_DIR:-/home/ubuntu/dhakal-patro}"
-
-cd "${REPO_DIR}"
-
-if [[ ! -f "${WEB_DIR}/.env" && -f "${OLD_WEB_DIR}/.env" ]]; then
-  echo "==> Copying ${OLD_WEB_DIR}/.env → apps/web/.env (one-time move to the monorepo)"
-  cp "${OLD_WEB_DIR}/.env" "${WEB_DIR}/.env"
-fi
-
-env_value() {
-  [[ -f "${WEB_DIR}/.env" ]] && grep "^$1=" "${WEB_DIR}/.env" | head -1 | cut -d= -f2- | tr -d '"' || true
-}
-
-if [[ -n "${WEB_DIST_TGZ:-}" && -f "${WEB_DIST_TGZ}" ]]; then
-  # GitHub Actions built it (deploy.yml) and copied it here: no npm ci or build on this machine.
-  echo "==> Using the build from GitHub Actions (${WEB_DIST_TGZ})"
-  rm -rf "${WEB_DIR}/dist"
-  mkdir -p "${WEB_DIR}/dist"
-  tar -xzf "${WEB_DIST_TGZ}" -C "${WEB_DIR}/dist"
-else
-  echo "==> Installing dependencies (website + shared packages only)"
-  npm ci --workspace=@vedic-patro/web --include-workspace-root --no-audit --no-fund
-
-  echo "==> Building production bundle (API base = /api, same-origin)"
-  BUILD_ENV=(VITE_API_BASE_URL=/api)
-  google_client_id="$(env_value VITE_GOOGLE_CLIENT_ID)"
-  [[ -n "${google_client_id}" ]] && BUILD_ENV+=(VITE_GOOGLE_CLIENT_ID="${google_client_id}")
-
-  ga_id="${VITE_GA_MEASUREMENT_ID:-}"
-  [[ -n "${ga_id}" ]] || ga_id="$(env_value VITE_GA_MEASUREMENT_ID)"
-  if [[ -z "${ga_id}" && -f "${WEB_ROOT}/index.html" ]]; then
-    # The measurement ID is public (it is in every page); reuse the live one.
-    ga_id="$(grep -o 'googletagmanager.com/gtag/js?id=G-[A-Z0-9]*' "${WEB_ROOT}/index.html" | head -1 | sed 's/.*id=//' || true)"
-  fi
-  [[ -n "${ga_id}" ]] && BUILD_ENV+=(VITE_GA_MEASUREMENT_ID="${ga_id}")
-
-  # Sentry: the DSN turns error reporting on in the bundle; the org, project and token let the
-  # build upload source maps (and then delete them from the output). Each is optional.
-  for key in VITE_SENTRY_DSN SENTRY_ORG SENTRY_PROJECT SENTRY_AUTH_TOKEN; do
-    value="${!key:-}"
-    [[ -n "${value}" ]] || value="$(env_value "${key}")"
-    if [[ -n "${value}" ]]; then BUILD_ENV+=("${key}=${value}"); fi
-  done
-
-  (cd "${WEB_DIR}" && env "${BUILD_ENV[@]}" npm run build)
-fi
-
-if grep -q 'googletagmanager.com/gtag/js' "${WEB_DIR}/dist/index.html" 2>/dev/null; then
-  echo "==> Google Analytics gtag snippet present in build"
-else
-  echo "WARNING: Google Analytics gtag snippet missing from dist/index.html." >&2
-  echo "         Set VITE_GA_MEASUREMENT_ID in apps/web/.env or the repo's Actions secrets." >&2
-fi
-
-echo "==> Publishing apps/web/dist/ → ${WEB_ROOT}"
-sudo mkdir -p "${WEB_ROOT}"
-# Hashed files under assets/ are never deleted at publish time. A tab that was open before this
-# deploy (or a cached page) still asks for the previous build's chunks; deleting them at once
-# turned every such visit into "Importing a module script failed". New assets go up first, then
-# everything else is synced (with --delete), then assets older than the grace period go.
-sudo mkdir -p "${WEB_ROOT}/assets"
-sudo rsync -a --ignore-existing "${WEB_DIR}/dist/assets/" "${WEB_ROOT}/assets/"
-sudo rsync -a --delete --exclude '/assets/' "${WEB_DIR}/dist/" "${WEB_ROOT}/"
-# A file this build reuses (same hash) keeps its old mtime; touch it so the prune below only
-# removes files no recent build has used.
-(cd "${WEB_DIR}/dist/assets" && find . -type f -print0) | (cd "${WEB_ROOT}/assets" && sudo xargs -0 -r touch -c --)
-ASSET_GRACE_DAYS="${ASSET_GRACE_DAYS:-14}"
-sudo find "${WEB_ROOT}/assets" -type f -mtime "+${ASSET_GRACE_DAYS}" -delete
-
-echo "==> Verifying published build"
-test -f "${WEB_ROOT}/index.html" || { echo "index.html missing after publish" >&2; exit 1; }
-test -f "${WEB_ROOT}/robots.txt" || { echo "robots.txt missing after publish" >&2; exit 1; }
-test -f "${WEB_ROOT}/llms.txt" || { echo "llms.txt missing after publish" >&2; exit 1; }
-
-# Old addresses answered with one 301 (apps/web/src/lib/app-routes.ts → dist/redirects.map), read by
-# the `map` in the live nginx site file. A map that fails `nginx -t` is put back to the previous one.
 REDIRECT_MAP="${REDIRECT_MAP:-/etc/nginx/vedicpatro-redirects.map}"
-if [[ -f "${WEB_DIR}/dist/redirects.map" ]]; then
+
+[[ -n "${WEB_DIST_TGZ:-}" && -f "${WEB_DIST_TGZ}" ]] || { echo "==> No website files from Actions — skipping"; exit 0; }
+
+tmp="$(mktemp -d)"; trap 'rm -rf "${tmp}"' EXIT
+tar -xzf "${WEB_DIST_TGZ}" -C "${tmp}"
+
+echo "==> Publishing .well-known → ${WEB_ROOT}"
+sudo mkdir -p "${WEB_ROOT}/.well-known"
+sudo rsync -a --delete "${tmp}/.well-known/" "${WEB_ROOT}/.well-known/"
+
+# Old addresses answered with one 301 (apps/web/src/lib/app-routes.ts → redirects.map), read by the
+# `map` in the live nginx site file. A map that fails `nginx -t` is put back to the previous one.
+if [[ -f "${tmp}/redirects.map" ]]; then
   echo "==> Installing redirects.map → ${REDIRECT_MAP}"
   [[ -f "${REDIRECT_MAP}" ]] && sudo cp "${REDIRECT_MAP}" "${REDIRECT_MAP}.prev"
-  sudo cp "${WEB_DIR}/dist/redirects.map" "${REDIRECT_MAP}"
-fi
-
-if systemctl is-active --quiet nginx 2>/dev/null; then
-  echo "==> Reloading nginx"
+  sudo cp "${tmp}/redirects.map" "${REDIRECT_MAP}"
   if ! sudo nginx -t; then
-    if [[ -f "${REDIRECT_MAP}.prev" ]]; then
-      echo "nginx -t failed — restoring the previous redirects.map" >&2
-      sudo cp "${REDIRECT_MAP}.prev" "${REDIRECT_MAP}"
-      sudo nginx -t
-    else
-      exit 1
-    fi
+    echo "nginx -t failed — restoring the previous redirects.map" >&2
+    sudo cp "${REDIRECT_MAP}.prev" "${REDIRECT_MAP}"
+    sudo nginx -t
   fi
   sudo systemctl reload nginx
 fi
