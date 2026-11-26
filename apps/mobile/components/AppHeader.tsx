@@ -712,7 +712,10 @@ function AppHeaderView() {
         {dateControls}
       </View>
     ) : (
-      <View className="min-h-14 w-full flex-row items-center gap-2 bg-background px-3 py-2">
+      <View
+        className="min-h-14 w-full flex-row items-center gap-2 bg-background py-2"
+        style={{ paddingHorizontal: wide ? PAGE_HORIZONTAL_PADDING_WIDE : HOME_CARD_INSET }}
+      >
         {/* Tablet, as iPad Calendar's toolbar: menu and date on the left, the Day | Week | Month switch in
             the middle of the bar, search, place and "+" on the right. The two sides share the leftover
             width equally, so the switch stays centred however wide the date controls are. */}

@@ -122,7 +122,7 @@ function Facts({
   wide: boolean;
 }) {
   return (
-    <View className={cn(wc.detailBlock, wide && "flex-1 border-b-0")}>
+    <View className={cn(wc.detailBlock, "px-2.5", wide && "flex-1 border-b-0")}>
       <Text className={wc.detailTitle} style={nepaliTextStyle()}>
         {title}
       </Text>
@@ -188,7 +188,7 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
         {now ? (
           // Two columns, so the sky is short: the temperature, feels-like and low/high on the left;
           // the icon, condition, rain and air quality on the right.
-          <Animated.View className={cn("flex-row", wc.heroBody)}>
+          <Animated.View className={cn("flex-row", wc.heroBody, "px-2.5")}>
             <View className="gap-3">
               <View>
                 <Text className={cn(wc.heroTemp, ON_SKY)}>{now.temperature}</Text>
@@ -223,7 +223,7 @@ function Hero({ page, top }: { page: WeatherPage; top: number }) {
             </View>
           </Animated.View>
         ) : (
-          <View className="px-5 pb-10 pt-6">
+          <View className="px-2.5 pb-10 pt-6">
             <Text
               className={
                 page.status === "error" ? "text-base text-danger" : cn(wc.heroFeels, ON_SKY)
@@ -255,7 +255,7 @@ function Today({ page }: { page: WeatherPage }) {
           wc.band,
           "flex-row active:bg-muted",
           wc.heroToggle,
-          "border-t-0",
+          "border-t-0 px-2.5",
         )}
       >
         <Text className={wc.heroToggleText} style={nepaliTextStyle()}>
@@ -530,7 +530,7 @@ function Daily({ page }: { page: WeatherPage }) {
     <View className="border-b border-border bg-card">
       <View className={wc.band}>
         <Text
-          className={cn("px-4 pb-2 pt-5", wc.sectionTitle)}
+          className={cn("px-2.5 pb-2 pt-5", wc.sectionTitle)}
           style={nepaliTextStyle()}
         >
           {copy.dailyTitle}
@@ -546,7 +546,7 @@ function Daily({ page }: { page: WeatherPage }) {
                 className={cn(
                   "flex-row active:bg-muted",
                   wc.dayRow,
-                  "gap-1.5 px-3",
+                  "gap-1.5 px-2.5",
                 )}
               >
                 <Text
@@ -602,7 +602,7 @@ function Daily({ page }: { page: WeatherPage }) {
                 <Animated.View
                   entering={FadeIn.duration(200)}
                   exiting={FadeOut.duration(150)}
-                  className={wc.dayPanel}
+                  className={cn(wc.dayPanel, "px-2.5")}
                 >
                   <Text className={wc.dayPanelDate} style={nepaliTextStyle()}>
                     {d.weekday} · {d.dateLabel}
@@ -742,7 +742,7 @@ function PlacePage({ page }: { page: WeatherPage }) {
             <Today page={page} />
             <Hourly page={page} />
             <Daily page={page} />
-            <View className={cn(wc.band, wc.footer, "px-4")}>
+            <View className={cn(wc.band, wc.footer, "px-2.5")}>
               {[
                 [copy.updatedTitle, copy.updated],
                 [copy.locationTitle, copy.locationNote],

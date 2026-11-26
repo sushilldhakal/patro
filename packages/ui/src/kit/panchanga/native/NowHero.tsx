@@ -11,7 +11,7 @@ const FACT_COLS = { base: 2, md: 3 } as const;
 /** The card a calendar page opens with: what is on now (or next), how far through, what follows. */
 export function NowHero({ hero, className }: { hero: NowHeroView; className?: string }) {
   return (
-    <View className={cn("rounded-2xl border border-border bg-card p-4", className)}>
+    <View className={cn("rounded-2xl border border-border bg-card p-2.5", className)}>
       <View className={cn("gap-3 rounded-xl p-4", TINT[hero.tone])}>
         <View>
           <View className="flex-row">
