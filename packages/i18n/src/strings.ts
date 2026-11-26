@@ -5951,13 +5951,13 @@ export const strings = {
   "sidebar_nav.items.news.label": { ne: "समाचार", en: "News" },
   // ─── Gold and silver (home + /metals, published daily at 10:30 NPT) ─────────
   "metals.title": { ne: "सुन चाँदी", en: "Gold and silver" },
-  "metals.subtitle": { ne: "हरेक दिन बिहान १०:३० बजेको मूल्य", en: "The price at 10:30 every morning" },
+  "metals.subtitle": { ne: "नेपाल सुनचाँदी व्यवसायी महासंघले तोकेको आजको दर", en: "Today's rate set by the Federation of Nepal Gold and Silver Dealers" },
   "metals.gold": { ne: "छापावाल सुन", en: "Hallmark gold" },
-  "metals.silver": { ne: "चाँदी", en: "Silver" },
+  "metals.silver": { ne: "असली चाँदी", en: "Silver" },
   "metals.per_tola": { ne: "तोला", en: "tola" },
   "metals.per_10g": { ne: "१० ग्राम", en: "10 g" },
   "metals.amount": { ne: "रु {{amount}}", en: "Rs {{amount}}" },
-  "metals.note": { ne: "अन्तर्राष्ट्रिय मूल्य, रुपैयाँमा", en: "International price, in rupees" },
+  "metals.note": { ne: "स्रोत: नेपाल सुनचाँदी व्यवसायी महासंघ", en: "Source: FENEGOSIDA" },
   "metals.date": { ne: "मिति", en: "Date" },
   "metals.history": { ne: "अघिल्ला दिनहरू", en: "Earlier days" },
   // ─── Forex (home, NRB rates) ──────────────────────────────────────────────

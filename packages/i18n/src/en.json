@@ -5240,13 +5240,13 @@
   },
   "metals": {
     "title": "Gold and silver",
-    "subtitle": "The price at 10:30 every morning",
+    "subtitle": "Today's rate set by the Federation of Nepal Gold and Silver Dealers",
     "gold": "Hallmark gold",
     "silver": "Silver",
     "per_tola": "tola",
     "per_10g": "10 g",
     "amount": "Rs {{amount}}",
-    "note": "International price, in rupees",
+    "note": "Source: FENEGOSIDA",
     "date": "Date",
     "history": "Earlier days"
   },

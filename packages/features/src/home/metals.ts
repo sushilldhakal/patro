@@ -1,18 +1,18 @@
 /**
- * Gold and silver for the home slider and the metals pages, from the once-a-day file on
- * Cloudflare (10:30 Nepal time). Quoted the way Nepal does: per tola and per 10 grams, with the
- * change since the previous published day.
+ * Hallmark gold and silver for the home slider and the metals pages: FENEGOSIDA's daily rate,
+ * from the once-a-day file on Cloudflare. Per tola and per 10 grams, with the change per tola
+ * since the previous published day.
  */
 import { useQuery } from "@tanstack/react-query";
-import { fetchMetalHistory, metalKeys, TOLA_GRAMS, type MetalDay } from "@vedic-patro/api-client";
+import { fetchMetalHistory, metalKeys, type MetalDay } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
 
 export type MetalId = "gold" | "silver";
 export const METAL_IDS: readonly MetalId[] = ["gold", "silver"];
 
-/** Hallmark (24 carat) gold and silver, rupees per gram, from one published day. */
-const gramOf = (day: MetalDay, metal: MetalId) => (metal === "gold" ? day.gold24k : day.silver);
+const tolaOf = (day: MetalDay, metal: MetalId) => (metal === "gold" ? day.gold_tola : day.silver_tola);
+const tenGramOf = (day: MetalDay, metal: MetalId) => (metal === "gold" ? day.gold_10g : day.silver_10g);
 
 export type MetalCardView = {
   id: MetalId;
@@ -68,22 +68,22 @@ function useMetals() {
     const today = days.at(-1);
     if (!today) return null;
     const before = days.at(-2);
-    const tola = Math.round(gramOf(today, id) * TOLA_GRAMS);
-    const diff = before ? tola - Math.round(gramOf(before, id) * TOLA_GRAMS) : null;
+    const tola = tolaOf(today, id);
+    const diff = before ? Math.round((tola - tolaOf(before, id)) * 10) / 10 : null;
     return {
       id,
       name: t(id === "gold" ? "metals.gold" : "metals.silver"),
       date: digits(today.date),
       tola: rs(tola),
-      tenGram: rs(gramOf(today, id) * 10),
-      change: diff === null ? null : digits(lakhGrouped(Math.abs(diff))),
+      tenGram: rs(tenGramOf(today, id)),
+      change: diff === null || diff === 0 ? null : digits(rupees(Math.abs(diff))),
       rising: (diff ?? 0) >= 0,
     };
   };
   const rows = (id: MetalId): MetalRowView[] =>
     [...days]
       .reverse()
-      .map((d) => ({ date: digits(d.date), tola: rs(Math.round(gramOf(d, id) * TOLA_GRAMS)), tenGram: rs(gramOf(d, id) * 10) }));
+      .map((d) => ({ date: digits(d.date), tola: rs(tolaOf(d, id)), tenGram: rs(tenGramOf(d, id)) }));
   return { copy, status, card, rows };
 }
 
