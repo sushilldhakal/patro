@@ -27,7 +27,6 @@ from fastapi.responses import Response
 from engine.astronomy.location import ObserverLocation
 from services.platform import redis_cache
 from engine.astronomy.siddhanta import namespaced_cache_key
-from services.platform.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
 RESPONSE_CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "response"
@@ -141,13 +140,10 @@ def read_cached_bytes(cache_key: str, *, persist: bool = True, redis: bool = Tru
         return hit
     if not persist:
         return None
-    if db_available():
-        data = load_blob(path.name)
-    else:
-        try:
-            data = path.read_bytes()
-        except FileNotFoundError:
-            data = None
+    try:
+        data = path.read_bytes()
+    except FileNotFoundError:
+        data = None
     if data is not None and redis:
         redis_cache.set_bytes(path.name, data)  # backfill so the next read is a Redis hit
     return data
@@ -160,10 +156,7 @@ def write_cached_bytes(cache_key: str, payload: Any, *, persist: bool = True, re
     if redis:
         redis_cache.set_bytes(path.name, compressed)
     if not persist:
-        # Redis only: short-lived payloads (expiring links) must not pile up in Postgres or on disk.
-        return compressed
-    if db_available():
-        save_blob(path.name, compressed)
+        # Redis only: short-lived payloads (expiring links) must not pile up on disk.
         return compressed
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{threading.get_ident()}.tmp")  # unique per writer

@@ -12,7 +12,6 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
-    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -215,57 +214,6 @@ class Reminder(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
     )
 
-
-
-class SaitCache(Base):
-    """Persisted computed auspicious-date (साइत) / muhūrta listings.
-
-    A whole BS year for a fixed location + category is deterministic given the
-    engine version, so the first request computes it once and every later
-    request — from any server instance — reads it back. Postgres (shared,
-    persistent, concurrent) is used in production; a serverless filesystem
-    cache would not survive cold starts or be shared across instances.
-    """
-
-    __tablename__ = "sait_cache"
-
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
-    bs_year: Mapped[int] = mapped_column(Integer, nullable=False)
-    category: Mapped[str] = mapped_column(String(48), nullable=False)
-    location_key: Mapped[str] = mapped_column(String(80), nullable=False)
-    engine_version: Mapped[str] = mapped_column(String(16), nullable=False)
-    # Serialized {"months": {...}, "source": "computed", ...} payload.
-    payload: Mapped[str] = mapped_column(Text, nullable=False)
-    computed_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
-    )
-
-    __table_args__ = (
-        UniqueConstraint(
-            "bs_year", "category", "location_key", name="uq_sait_cache_key"
-        ),
-    )
-
-
-class BlobCache(Base):
-    """Shared key→bytes cache for computed panchāṅga payloads (year / month / day).
-
-    The panchāṅga year, month grid and single-day responses are deterministic
-    gzip-JSON blobs keyed by a versioned string (year/month/location/variant).
-    On ephemeral hosts a filesystem cache does not survive a cold start, so the
-    first request after every restart pays the ~30 s year build. Persisting the
-    same blobs here (shared Postgres) lets any instance read them back instantly.
-    The versioned key embeds CACHE_PAYLOAD_VERSION, so a payload-shape bump
-    orphans stale rows automatically (they are simply never read again).
-    """
-
-    __tablename__ = "blob_cache"
-
-    cache_key: Mapped[str] = mapped_column(String(255), primary_key=True)
-    data: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
-    )
 
 
 class CalendarFeed(Base):

@@ -19,7 +19,6 @@ from typing import Any
 
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.siddhanta import namespaced_cache_key
-from services.platform.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
 YEAR_CACHE_DIR = Path(__file__).resolve().parents[2] / "cache" / "year"
@@ -37,14 +36,9 @@ def year_cache_path(bs_year: int, location: ObserverLocation, *, variant: str) -
 def read_year_cache(bs_year: int, location: ObserverLocation, *, variant: str) -> bytes | None:
     """Gzipped JSON bytes for the year, or None when not yet computed.
 
-    Shared Postgres is the primary store (survives cold starts on ephemeral
-    hosts and is shared across instances); the on-disk file is the local-dev
-    fallback when ``DATABASE_URL`` is unset. The versioned filename doubles as
-    the DB key, so a payload-shape bump misses cleanly in both stores.
+    The versioned filename means a payload-shape bump misses cleanly.
     """
     path = year_cache_path(bs_year, location, variant=variant)
-    if db_available():
-        return load_blob(path.name)
     try:
         return path.read_bytes()
     except FileNotFoundError:
@@ -58,13 +52,10 @@ def write_year_cache(
     *,
     variant: str,
 ) -> bytes:
-    """Serialize + gzip the payload, persist (DB or disk), return the bytes."""
+    """Serialize + gzip the payload, persist to disk, return the bytes."""
     path = year_cache_path(bs_year, location, variant=variant)
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     compressed = gzip.compress(raw, compresslevel=6)
-    if db_available():
-        save_blob(path.name, compressed)
-        return compressed
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_bytes(compressed)

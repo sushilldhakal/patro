@@ -110,7 +110,6 @@ def warm_holiday_cache() -> list[int]:
             end_year,
         )
     _report_provenance_drift()
-    _prune_stale_blob_cache()
     _warm_year_response_cache()
     _warm_popular_city_caches()
     _warm_sait_cache()
@@ -130,17 +129,6 @@ def _report_provenance_drift() -> None:
         report_provenance_drift()
     except Exception:  # noqa: BLE001 - never let a diagnostic break startup
         logger.exception("Provenance drift check failed (continuing)")
-
-
-def _prune_stale_blob_cache() -> None:
-    """Drop DB blob rows left over from a previous payload version (once per
-    startup, before the warm re-populates the current version)."""
-    from services.panchanga.panchanga_cache import CACHE_PAYLOAD_VERSION
-    from services.platform.blob_db_cache import prune_stale_blobs
-
-    removed = prune_stale_blobs(CACHE_PAYLOAD_VERSION)
-    if removed:
-        logger.info("Pruned %d stale blob-cache rows (old payload version)", removed)
 
 
 def _warm_sait_enabled() -> bool:

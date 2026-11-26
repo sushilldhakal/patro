@@ -82,7 +82,7 @@ class TestEveryCacheDerivesFromTheAstronomyAxis:
         assert ENGINE_VERSION.endswith(f"+a{ASTRONOMY_VERSION}")
 
     def test_the_response_layers_share_one_constant(self):
-        """response_cache / year_cache / blob_db_cache must not hold their own copy."""
+        """response_cache / year_cache must not hold their own copy."""
         from services.panchanga import panchanga_cache, year_cache
         from app import response_cache
 

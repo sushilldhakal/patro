@@ -14,7 +14,6 @@ from engine.calendar.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YE
 from engine.festivals.muhurta_engine import CEREMONY_RULES, MUHURTA_CATEGORIES, has_muhurta
 from services.platform.payload_version import stamp
 from engine.festivals.sait_rules import CATEGORY_CHECKS, build_day_panchanga
-from services.festivals.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_DIR = ROOT / "cache"
@@ -184,14 +183,8 @@ def get_generated_sait(
             f"bs_year must be between {BS_ESTIMATED_MIN_YEAR} and {BS_SUPPORTED_MAX_YEAR}"
         )
 
-    # Shared Postgres is the primary store (persists across serverless
-    # instances and users); the on-disk file cache is the local-dev fallback
-    # when DATABASE_URL is unset.
     if use_cache:
-        if db_available():
-            cached = load_sait_db(bs_year, category, location, SAIT_ENGINE_VERSION)
-        else:
-            cached = load_sait_cached(bs_year, category, location)
+        cached = load_sait_cached(bs_year, category, location)
         if cached is not None:
             return cached
 
@@ -208,10 +201,7 @@ def get_generated_sait(
         # the detail endpoint reads this so its per-day windows stay consistent.
         "nakshatra_fallback": nakshatra_fallback,
     }
-    if db_available():
-        save_sait_db(payload, location, SAIT_ENGINE_VERSION)
-    else:
-        save_sait_cache(payload, location)
+    save_sait_cache(payload, location)
     return payload
 
 
