@@ -111,3 +111,32 @@ fn upstream(error: String) -> AppError {
     tracing::warn!(%error, "NEPSE request failed");
     AppError::internal(std::io::Error::other(error))
 }
+
+/// Query of the period route.
+#[derive(Debug, Deserialize)]
+pub struct PeriodQuery {
+    /// Calendar days back: 7, 31, 366 or 1827.
+    pub days: u32,
+}
+
+/// `GET /v1/nepse/period?days=N` — every scrip's close before the window and what traded in it,
+/// for the week-to-five-year top movers and most traded (the app adds today's live price).
+///
+/// # Errors
+///
+/// A window other than a week, month, year or five years, or the store could not be read.
+pub async fn period(
+    State(state): State<AppState>,
+    Query(query): Query<PeriodQuery>,
+) -> AppResult<impl IntoResponse> {
+    if ![7, 31, 366, 1827].contains(&query.days) {
+        return Err(AppError::BadRequest(
+            "days must be 7, 31, 366 or 1827".into(),
+        ));
+    }
+    let (from, rows) = state.nepse.period(query.days).await.map_err(upstream)?;
+    Ok((
+        [(header::CACHE_CONTROL, "public, max-age=300")],
+        Json(json!({ "days": query.days, "from": from, "rows": rows })),
+    ))
+}

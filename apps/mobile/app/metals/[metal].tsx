@@ -8,6 +8,7 @@ import { useNavBottomPadding } from "@/lib/mobile-nav";
 import { MetalPriceLines } from "@/components/home/MarketCards";
 import { RateChart } from "@/components/home/RateChart";
 import { RateTable } from "@/components/home/RateTable";
+import { StarButton } from "@/components/market/MarketParts";
 import { metalTint } from "@/components/home/TintCard";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
@@ -27,7 +28,7 @@ export default function MetalScreen() {
   const title = page.card?.name ?? page.copy.title;
   return (
     <View className="flex-1 bg-background">
-      <BackHeader title={title} subtitle={page.copy.subtitle} />
+      <BackHeader title={title} subtitle={page.copy.subtitle} right={<StarButton kind="metal" id={id} />} />
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: space.lg,

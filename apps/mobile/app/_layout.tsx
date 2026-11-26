@@ -47,7 +47,8 @@ import { DocumentAudioHost } from "@/lib/documents/document-audio-session";
 import { DuoPageFrame } from "@/components/navigation/DuoPageFrame";
 import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
-import { AuthProvider } from "@/lib/auth/AuthContext";
+import { AuthProvider, useAuth } from "@/lib/auth/AuthContext";
+import { useWatchlistSync } from "@/lib/watchlist";
 import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
 import { OfflineDataProvider } from "@/lib/offline/OfflineDataContext";
 import { NotificationsRuntime } from "@/components/notifications/NotificationsRuntime";
@@ -405,6 +406,7 @@ function RootLayout() {
               <CalculationSystemQueryReset />
               <OfflineDataProvider>
                 <AuthProvider>
+                  <WatchlistSync />
                   <BiometricLockProvider>
                     <RootShell ready={ready} fontsLoaded={loaded} onboarded={onboarded} onOnboarded={() => setOnboarded(true)} />
                   </BiometricLockProvider>
@@ -580,3 +582,9 @@ const styles = StyleSheet.create({
   errorButton: { borderRadius: radius.xl, backgroundColor: light.secondary, paddingHorizontal: space.xl, paddingVertical: space.md },
   errorButtonText: { fontSize: mobileTypeScale.base.size, fontWeight: "700", color: light.secondaryForeground },
 });
+
+/** Keeps the market watchlist on the signed-in account (lib/watchlist.ts). */
+function WatchlistSync() {
+  useWatchlistSync(useAuth().isAuthenticated);
+  return null;
+}

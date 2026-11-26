@@ -13,6 +13,8 @@ import { Sheet } from "@vedic-patro/ui";
 import { LocationSearchSheet } from "@/components/search/LocationSearchSheet";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { __iconNode as Trash2Node } from "lucide-react/dist/esm/icons/trash-2";
+import { SwipeableRow } from "@/components/ui/SwipeableRow";
 
 /**
  * The weather page's places screen and its parts, shared with the app header's place picker
@@ -185,8 +187,7 @@ function PlaceCard({
   const { places, copy } = page;
   const p = place;
   const s = p.summary;
-  return (
-    <Animated.View layout={LinearTransition.duration(200)}>
+  const card = (
       <Pressable
         accessibilityRole="button"
         disabled={places.editing}
@@ -269,6 +270,17 @@ function PlaceCard({
           </View>
         ) : null}
       </Pressable>
+  );
+  return (
+    <Animated.View layout={LinearTransition.duration(200)}>
+      {/* Swipe left for the bin, or all the way across to remove; "here" can't be removed. */}
+      {p.here || places.editing ? (
+        card
+      ) : (
+        <SwipeableRow actionLabel={`${copy.remove}: ${p.name}`} icon={Trash2Node} fullSwipe onAction={() => places.remove(p.id)}>
+          {card}
+        </SwipeableRow>
+      )}
     </Animated.View>
   );
 }

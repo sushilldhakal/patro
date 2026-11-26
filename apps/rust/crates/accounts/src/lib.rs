@@ -19,6 +19,7 @@ pub mod profiles;
 pub mod providers;
 pub mod pydt;
 pub mod reminders;
+pub mod watchlist;
 
 pub use config::AccountConfig;
 

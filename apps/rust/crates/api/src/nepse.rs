@@ -30,6 +30,10 @@ const POLL_OPEN: Duration = Duration::from_secs(30);
 const POLL_CLOSED: Duration = Duration::from_secs(15 * 60);
 /// Company names are read again after this long.
 const NAMES_REFRESH_SECS: i64 = 24 * 3600;
+/// The background backfill starts this long after start-up (after the first read)…
+const BACKFILL_START: Duration = Duration::from_secs(60);
+/// …and waits this long between scrips.
+const BACKFILL_GAP: Duration = Duration::from_secs(2);
 /// Daily history is backfilled from this day (NEPSE's online records start around 2000).
 const BACKFILL_FROM: i64 = 946_684_800;
 
@@ -124,6 +128,27 @@ impl NepseService {
 
     /// Starts the background reader that records prices for the life of the server.
     pub fn spawn_recorder(&self) {
+        let backfill = self.clone();
+        tokio::spawn(async move {
+            // Every traded scrip's history, one every few seconds so merolagani is never
+            // hammered; the period rankings (a week to five years) need all of them.
+            tokio::time::sleep(BACKFILL_START).await;
+            let symbols: Vec<String> = backfill
+                .inner
+                .latest
+                .read()
+                .await
+                .stocks
+                .iter()
+                .map(|q| q.symbol.clone())
+                .collect();
+            for symbol in symbols {
+                if let Err(error) = backfill.ensure_backfilled(&symbol).await {
+                    tracing::warn!(%error, symbol, "NEPSE backfill failed");
+                }
+                tokio::time::sleep(BACKFILL_GAP).await;
+            }
+        });
         let service = self.clone();
         tokio::spawn(async move {
             loop {
@@ -226,6 +251,47 @@ impl NepseService {
     ///
     /// The store could not be read.
     pub async fn daily(&self, symbol: &str) -> Result<Vec<DailyRow>, String> {
+        self.ensure_backfilled(symbol).await?;
+        let service = self.clone();
+        let sym = symbol.to_owned();
+        tokio::task::spawn_blocking(move || {
+            service.with_db(|db| {
+                let mut stmt = db.prepare_cached(
+                    "SELECT date, open, high, low, close, volume FROM daily WHERE symbol = ?1 ORDER BY date",
+                )?;
+                let rows = stmt.query_map([&sym], |r| {
+                    Ok(DailyRow(
+                        r.get(0)?,
+                        r.get(1)?,
+                        r.get(2)?,
+                        r.get(3)?,
+                        r.get(4)?,
+                        r.get(5)?,
+                    ))
+                })?;
+                rows.collect()
+            })
+        })
+        .await
+        .map_err(|e| e.to_string())?
+    }
+
+    /// Every scrip over the last `days` calendar days: `[symbol, close before the window,
+    /// shares traded in it, rupees traded in it]`, plus the window's first day. Rupees for
+    /// backfilled days (which carry no turnover) are close × volume.
+    ///
+    /// # Errors
+    ///
+    /// The store could not be read.
+    pub async fn period(&self, days: u32) -> Result<(Option<String>, Vec<PeriodRow>), String> {
+        let service = self.clone();
+        tokio::task::spawn_blocking(move || service.with_db(|db| period_rows(db, days)))
+            .await
+            .map_err(|e| e.to_string())?
+    }
+
+    /// Reads a scrip's daily history from merolagani once; later calls return at once.
+    async fn ensure_backfilled(&self, symbol: &str) -> Result<(), String> {
         let service = self.clone();
         let sym = symbol.to_owned();
         let backfilled = tokio::task::spawn_blocking(move || {
@@ -255,21 +321,7 @@ impl NepseService {
                 Err(error) => tracing::warn!(%error, symbol, "NEPSE history backfill failed"),
             }
         }
-        let service = self.clone();
-        let sym = symbol.to_owned();
-        tokio::task::spawn_blocking(move || {
-            service.with_db(|db| {
-                let mut stmt = db.prepare_cached(
-                    "SELECT date, open, high, low, close, volume FROM daily WHERE symbol = ?1 ORDER BY date",
-                )?;
-                let rows = stmt.query_map([&sym], |r| {
-                    Ok(DailyRow(r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?, r.get(4)?, r.get(5)?))
-                })?;
-                rows.collect()
-            })
-        })
-        .await
-        .map_err(|e| e.to_string())?
+        Ok(())
     }
 
     async fn save_backfill(&self, symbol: &str, chart: Chart) -> Result<(), String> {
@@ -427,6 +479,45 @@ impl NepseService {
             .map_err(|_| "NEPSE store lock poisoned")?;
         f(&conn).map_err(|e| e.to_string())
     }
+}
+
+/// `[symbol, close before the window, shares traded, rupees traded]`.
+#[derive(Debug, Serialize)]
+pub struct PeriodRow(String, Option<f64>, f64, f64);
+
+/// The period query: see [`NepseService::period`].
+fn period_rows(db: &Connection, days: u32) -> rusqlite::Result<(Option<String>, Vec<PeriodRow>)> {
+    let last: Option<String> = db.query_row("SELECT MAX(date) FROM daily", [], |r| r.get(0))?;
+    let Some(last) = last else {
+        return Ok((None, Vec::new()));
+    };
+    let from = civil_shift(&last, -i64::from(days));
+    let mut stmt = db.prepare_cached(
+        "SELECT d.symbol,
+            (SELECT b.close FROM daily b WHERE b.symbol = d.symbol AND b.date <= ?1
+             ORDER BY b.date DESC LIMIT 1),
+            SUM(d.volume), SUM(COALESCE(d.turnover, d.close * d.volume))
+         FROM daily d WHERE d.date > ?1 GROUP BY d.symbol",
+    )?;
+    let rows = stmt
+        .query_map([&from], |r| {
+            Ok(PeriodRow(
+                r.get(0)?,
+                r.get(1)?,
+                r.get::<_, Option<f64>>(2)?.unwrap_or(0.0),
+                r.get::<_, Option<f64>>(3)?.unwrap_or(0.0),
+            ))
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    Ok((Some(from), rows))
+}
+
+/// `YYYY-MM-DD` moved by `days` (negative goes back).
+fn civil_shift(date: &str, days: i64) -> String {
+    date.parse::<civil::Date>()
+        .ok()
+        .and_then(|d| d.checked_add(jiff::Span::new().days(days)).ok())
+        .map_or_else(|| date.to_owned(), |d| d.to_string())
 }
 
 /// `[date, open, high, low, close, volume]`.

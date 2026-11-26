@@ -1,5 +1,6 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
+import { useThemeColors } from "@/lib/theme-context";
 
 /**
  * A plain rate table for the forex and metals pages: a header row, then one row per line, each
@@ -11,9 +12,11 @@ export function RateTable({
   onPressRow,
 }: {
   head: string[];
-  rows: { key: string; cells: string[]; sub?: string }[];
+  /** `change` shows under the last cell, green ▲ or red ▼. */
+  rows: { key: string; cells: string[]; sub?: string; change?: { text: string; up: boolean } | null }[];
   onPressRow?: (key: string) => void;
 }) {
+  const colors = useThemeColors();
   return (
     <View className="overflow-hidden rounded-2xl border border-border bg-card">
       <View className="flex-row border-b border-border bg-muted px-3 py-2">
@@ -48,6 +51,15 @@ export function RateTable({
                   numberOfLines={1}
                 >
                   {r.sub}
+                </Text>
+              ) : null}
+              {i === r.cells.length - 1 && r.change ? (
+                <Text
+                  className="text-right text-xs font-semibold tabular-nums"
+                  style={{ color: r.change.up ? colors.success : colors.destructive }}
+                  numberOfLines={1}
+                >
+                  {r.change.up ? "▲" : "▼"} {r.change.text}
                 </Text>
               ) : null}
             </View>

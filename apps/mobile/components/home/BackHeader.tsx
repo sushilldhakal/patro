@@ -18,11 +18,14 @@ export function BackHeader({
   title,
   subtitle,
   center,
+  right,
 }: {
   title: string;
   subtitle?: string;
   /** Drawn in the title's place (a page's date picker); the title stays the back button's label context. */
   center?: ReactNode;
+  /** A round button on the right, across from back (a watchlist star). */
+  right?: ReactNode;
 }) {
   const { t } = useLocale();
   const router = useRouter();
@@ -49,6 +52,7 @@ export function BackHeader({
             strokeWidth={2.2}
           />
         </Pressable>
+        {right ? <View className="absolute right-0">{right}</View> : null}
         {center ?? (
           <Text
             className="px-14 text-center text-xl font-bold text-foreground"

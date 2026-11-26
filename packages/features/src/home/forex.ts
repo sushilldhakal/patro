@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchForexHistory, forexKeys, type ForexRate } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
+import { useMarketDate } from "./market-date";
 
 /** The currencies most readers send or receive come first; NRB's own order follows. */
 const FIRST = ["USD", "AUD", "INR", "GBP", "EUR", "CAD", "JPY", "AED", "SAR", "QAR", "KRW", "MYR"];
@@ -21,6 +22,8 @@ export type ForexCardView = {
   spark: number[];
   /** Selling rate up (or level) since the previous published day. */
   rising: boolean;
+  /** Selling-rate change since the previous published day, "0.60 (0.41%)"; null when level or unknown. */
+  change: string | null;
   /** NRB's numbers, rupees per `unit` of the currency, for the converter. */
   rate: { unit: number; buy: number; sell: number };
 };
@@ -42,14 +45,22 @@ export function orderForex(rates: readonly ForexRate[]): ForexRate[] {
   return rates.map((r, i) => ({ r, i })).sort((a, b) => rank(a.r) - rank(b.r) || a.i - b.i).map(({ r }) => r);
 }
 
+/** The selling rate against the previous published one: "0.60 (0.41%)" (null when level or unknown) and its direction. */
+function sellChange(sell: number, prev: number | null | undefined, digits: (v: string) => string) {
+  const diff = prev ? sell - prev : 0;
+  const change = prev && Math.abs(diff) >= 0.005 ? digits(`${Math.abs(diff).toFixed(2)} (${Math.abs((diff / prev) * 100).toFixed(2)}%)`) : null;
+  return { change, rising: diff >= 0 };
+}
+
 function useForexCopy(date: string | null): ForexCopy {
-  const { t, digits } = useLocale();
+  const { t } = useLocale();
+  const day = useMarketDate();
   return {
     title: t("forex.title"),
     subtitle: t("forex.subtitle"),
     buy: t("forex.buy"),
     sell: t("forex.sell"),
-    source: date ? t("forex.source", { date: digits(date) }) : "",
+    source: date ? t("forex.source", { date: day(date) }) : "",
     date: t("forex.date"),
     history: t("forex.history"),
     currency: t("forex.currency_label"),
@@ -59,16 +70,18 @@ function useForexCopy(date: string | null): ForexCopy {
 function useCardView() {
   const { t, digits } = useLocale();
   const money = (v: number) => digits(v.toFixed(2));
-  return (r: ForexRate, spark: number[] = []): ForexCardView => ({
-    code: r.iso3,
-    name: NAMED.has(r.iso3) ? t(`forex.currency.${r.iso3}`) : r.name,
-    perUnit: t("forex.per_unit", { unit: digits(r.unit), code: r.iso3 }),
-    buy: money(r.buy),
-    sell: money(r.sell),
-    spark,
-    rising: spark.length < 2 || spark.at(-1)! >= spark.at(-2)!,
-    rate: { unit: r.unit, buy: r.buy, sell: r.sell },
-  });
+  return (r: ForexRate, spark: number[] = []): ForexCardView => {
+    return {
+      code: r.iso3,
+      name: NAMED.has(r.iso3) ? t(`forex.currency.${r.iso3}`) : r.name,
+      perUnit: t("forex.per_unit", { unit: digits(r.unit), code: r.iso3 }),
+      buy: money(r.buy),
+      sell: money(r.sell),
+      spark,
+      ...sellChange(r.sell, spark.length >= 2 ? spark.at(-2) : null, digits),
+      rate: { unit: r.unit, buy: r.buy, sell: r.sell },
+    };
+  };
 }
 
 /** Today's rates, every currency, each with its 30-day line: the home slider and the list page. */
@@ -87,7 +100,8 @@ export function useForexRates(): ForexRates {
   return { copy, status, cards: orderForex(day?.rates ?? []).map((r) => view(r, sparkOf(r.iso3))) };
 }
 
-export type ForexHistoryRow = { date: string; buy: string; sell: string };
+/** `change`: selling rate against the day before, "0.60 (0.41%)", null when level or the first day. */
+export type ForexHistoryRow = { date: string; buy: string; sell: string; change: string | null; rising: boolean };
 
 /** One currency's page: today's card and NRB's last 30 days, newest first. */
 export type RateChartData = { labels: string[]; series: { key: string; label: string; values: number[] }[]; format: (v: number) => string };
@@ -101,6 +115,7 @@ export function useForexDetail(code: string): {
   chart: RateChartData;
 } {
   const { digits } = useLocale();
+  const day = useMarketDate();
   const q = useQuery({ queryKey: forexKeys.history(), queryFn: () => fetchForexHistory(), staleTime: 60 * 60_000 });
   const days = q.data ?? [];
   const view = useCardView();
@@ -119,16 +134,17 @@ export function useForexDetail(code: string): {
     status,
     card: today ? view(today, points.map((p) => p.sell)) : null,
     chart: {
-      labels: points.map((p) => digits(p.date)),
+      labels: points.map((p) => day(p.date)),
       series: [
         { key: "buy", label: copy.buy, values: points.map((p) => p.buy) },
         { key: "sell", label: copy.sell, values: points.map((p) => p.sell) },
       ],
       format: (v) => digits(v.toFixed(2)),
     },
-    rows: days.flatMap((d) => {
+    rows: days.flatMap((d, i) => {
       const r = d.rates.find((x) => x.iso3 === code);
-      return r ? [{ date: digits(d.date), buy: digits(r.buy.toFixed(2)), sell: digits(r.sell.toFixed(2)) }] : [];
+      if (!r) return [];
+      return [{ date: day(d.date), buy: digits(r.buy.toFixed(2)), sell: digits(r.sell.toFixed(2)), ...sellChange(r.sell, rateOn(i + 1)?.sell, digits) }];
     }),
   };
 }

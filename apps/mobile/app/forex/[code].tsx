@@ -6,6 +6,7 @@ import { BackHeader } from "@/components/home/BackHeader";
 import { useNavBottomPadding } from "@/lib/mobile-nav";
 import { RateChart } from "@/components/home/RateChart";
 import { RateTable } from "@/components/home/RateTable";
+import { StarButton } from "@/components/market/MarketParts";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
@@ -23,6 +24,7 @@ export default function ForexCurrencyScreen() {
       <BackHeader
         title={title}
         subtitle={page.card?.perUnit ?? page.copy.subtitle}
+        right={<StarButton kind="forex" id={code} />}
       />
       <ScrollView
         contentContainerStyle={{
@@ -50,6 +52,14 @@ export default function ForexCurrencyScreen() {
                   <Text className="text-xl font-bold tabular-nums text-foreground">
                     {value}
                   </Text>
+                  {label === page.copy.sell && page.card?.change ? (
+                    <Text
+                      className="text-sm font-semibold tabular-nums"
+                      style={{ color: page.card.rising ? colors.success : colors.destructive }}
+                    >
+                      {page.card.rising ? "▲" : "▼"} {page.card.change}
+                    </Text>
+                  ) : null}
                 </View>
               ))}
             </View>
@@ -75,6 +85,7 @@ export default function ForexCurrencyScreen() {
               rows={page.rows.map((r) => ({
                 key: r.date,
                 cells: [r.date, r.buy, r.sell],
+                change: r.change ? { text: r.change, up: r.rising } : null,
               }))}
             />
           </View>

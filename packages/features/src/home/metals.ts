@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchMetalHistory, isMetalDay, metalKeys, type MetalDay } from "@vedic-patro/api-client";
 import { useLocale } from "@vedic-patro/i18n/react";
 import type { PageStatus } from "../_shared";
+import { useMarketDate } from "./market-date";
 
 export type MetalId = "gold" | "gold22" | "silver";
 export const METAL_IDS: readonly MetalId[] = ["gold", "gold22", "silver"];
@@ -58,6 +59,7 @@ export function rupees(v: number): string {
 
 function useMetals() {
   const { t, digits } = useLocale();
+  const day = useMarketDate();
   const q = useQuery({ queryKey: metalKeys.history(), queryFn: fetchMetalHistory, staleTime: METALS_STALE_MS });
   const days = (q.data?.days ?? []).filter(isMetalDay);
   let status: PageStatus = "ready";
@@ -87,7 +89,7 @@ function useMetals() {
     return {
       id,
       name: t(id === "gold" ? "metals.gold" : id === "gold22" ? "metals.gold22" : "metals.silver"),
-      date: digits(today.date),
+      date: day(today.date),
       tola: rs(tola),
       tenGram: rs(tenGramOf(today, id)),
       change: diff === null || diff === 0 ? null : digits(rupees(Math.abs(diff))),
@@ -100,9 +102,9 @@ function useMetals() {
     [...days]
       .slice(-30)
       .reverse()
-      .map((d) => ({ date: digits(d.date), tola: rs(tolaOf(d, id)), tenGram: rs(tenGramOf(d, id)) }));
+      .map((d) => ({ date: day(d.date), tola: rs(tolaOf(d, id)), tenGram: rs(tenGramOf(d, id)) }));
   const chart = (id: MetalId) => ({
-    labels: days.map((d) => digits(d.date)),
+    labels: days.map((d) => day(d.date)),
     values: days.map((d) => tolaOf(d, id)),
     format: (v: number) => rs(v),
   });

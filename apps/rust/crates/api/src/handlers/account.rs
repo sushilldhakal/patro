@@ -873,6 +873,59 @@ pub async fn unregister_device(
     run.await.unwrap_or_else(|r: Response| r)
 }
 
+/// `GET /watchlist` — `{"items": ["share:NABIL", …]}`, the user's starred market items.
+pub async fn get_watchlist(
+    State(state): State<AppState>,
+    AxumQuery(q): Q,
+    headers: HeaderMap,
+) -> Response {
+    let started = Instant::now();
+    let run = async {
+        let acc = layer(&state)?;
+        let user = current_user(acc, &headers).await?;
+        let items = acc.get_watchlist(&user.id).await.map_err(|e| error(&e))?;
+        Ok(json_status(
+            StatusCode::OK,
+            &serde_json::json!({ "items": items }),
+            &q,
+            &headers,
+            started,
+        ))
+    };
+    run.await.unwrap_or_else(|r: Response| r)
+}
+
+/// `PUT /watchlist` with `{"items": [...]}` — replaces the whole list (the app owns the order).
+pub async fn put_watchlist(
+    State(state): State<AppState>,
+    AxumQuery(q): Q,
+    headers: HeaderMap,
+    bytes: Bytes,
+) -> Response {
+    #[derive(serde::Deserialize)]
+    struct Body {
+        items: Vec<String>,
+    }
+    let started = Instant::now();
+    let run = async {
+        let acc = layer(&state)?;
+        let user = current_user(acc, &headers).await?;
+        let body: Body = serde_json::from_slice(&bytes)
+            .map_err(|e| error(&accounts::AccountError::Unprocessable(e.to_string())))?;
+        acc.set_watchlist(&user.id, &body.items)
+            .await
+            .map_err(|e| error(&e))?;
+        Ok(json_status(
+            StatusCode::OK,
+            &serde_json::json!({ "items": body.items }),
+            &q,
+            &headers,
+            started,
+        ))
+    };
+    run.await.unwrap_or_else(|r: Response| r)
+}
+
 /// `GET /reminders`.
 pub async fn list_reminders(
     State(state): State<AppState>,

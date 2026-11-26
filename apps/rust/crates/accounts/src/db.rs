@@ -124,6 +124,12 @@ CREATE TABLE IF NOT EXISTS reminders (
 );
 CREATE INDEX IF NOT EXISTS ix_reminders_user_id ON reminders (user_id);
 
+CREATE TABLE IF NOT EXISTS user_watchlists (
+    user_id VARCHAR(36) NOT NULL PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    items TEXT NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS calendar_feeds (
     user_id VARCHAR(36) NOT NULL PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
     token VARCHAR(64) NOT NULL,

@@ -22,6 +22,7 @@ import { HomeAsideTabBar, type AsideTabId } from "@/components/home/HomeAsideTab
 import { UpcomingFestivalsSlider } from "@/components/home/UpcomingFestivalsSlider";
 import { NewsSlider } from "@/components/home/NewsSlider";
 import { MarketSlider } from "@/components/home/MarketSlider";
+import { MostTradedCard, TopMoversCard, WatchlistCard } from "@/components/market/NepseCards";
 import { WeatherCard } from "@/components/home/WeatherCard";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
@@ -671,6 +672,19 @@ function HomeScreen() {
         <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
           <MarketSlider horizontalInset={cardInset} />
         </View>
+        {/* Signed-in readers: what they starred, or a button to start a watchlist. */}
+        {isAuthenticated ? (
+          <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+            <WatchlistCard />
+          </View>
+        ) : null}
+        {/* NEPSE after the first screen, so its request never races the calendar's. */}
+        {belowFoldReady ? (
+          <View className="mt-4 gap-4" style={{ paddingHorizontal: cardInset }}>
+            <TopMoversCard />
+            <MostTradedCard />
+          </View>
+        ) : null}
 
         {/* Below the fold: drawn after the first screen, so the calendar and
             today's panchanga appear first and their requests go out first. */}

@@ -667,7 +667,13 @@ export const fetchNepseIntraday = (symbol: string, date?: string) =>
 export const fetchNepseDaily = (symbol: string) =>
   get<{ symbol: string; days: NepseDay[] }>(`/nepse/stocks/${encodeURIComponent(symbol)}/daily`);
 
+/** `[symbol, close before the window, shares traded in it, rupees traded in it]`. */
+export type NepsePeriodRow = [string, number | null, number, number];
+export const fetchNepsePeriod = (days: number) =>
+  get<{ days: number; from: string | null; rows: NepsePeriodRow[] }>(`/nepse/period?days=${days}`);
+
 export const nepseKeys = {
+  period: (days: number) => ["nepse", "period", days] as const,
   live: () => ["nepse", "live"] as const,
   intraday: (symbol: string) => ["nepse", "intraday", symbol] as const,
   daily: (symbol: string) => ["nepse", "daily", symbol] as const,

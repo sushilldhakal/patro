@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,12 +18,14 @@ import {
   nepseCrore,
   nepseNumber,
   useNepseLive,
+  useMarketDate,
   useForexRates,
   useMetalPrices,
   type ForexSide,
   type MetalId,
   type MetalUnit,
 } from "@vedic-patro/features/home";
+import type { NepseQuote } from "@vedic-patro/api-client";
 import { brand, space, withAlpha } from "@vedic-patro/design-tokens";
 import { Sheet } from "@vedic-patro/ui";
 import { __iconNode as ChevronLeftNode } from "lucide-react/dist/esm/icons/chevron-left";
@@ -40,6 +44,9 @@ import { MetalPriceLines } from "@/components/home/MarketCards";
 import { RateTable } from "@/components/home/RateTable";
 import { SLIDER_TINT, metalTint } from "@/components/home/TintCard";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
+import { Change, MarketSection, QuoteRow, SearchField } from "@/components/market/MarketParts";
+import { MostTradedCard, TopMoversCard } from "@/components/market/NepseCards";
+import { useWatchlist, type WatchKind } from "@/lib/watchlist";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -126,8 +133,12 @@ export default function MarketScreen() {
           })}
         </View>
       </View>
+      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "android" ? "height" : undefined}>
       <ScrollView
         contentInsetAdjustmentBehavior="never"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets
         contentContainerStyle={{
           paddingTop: space.lg,
           paddingBottom: navBottom + space["2xl"],
@@ -143,6 +154,7 @@ export default function MarketScreen() {
           )}
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -366,6 +378,18 @@ function MetalsTab() {
       {metals.status === "loading" ? (
         <SkeletonPulse className="h-48 rounded-3xl" />
       ) : null}
+      <WatchlistRows
+        kind="metal"
+        rows={metals.cards.map((c) => ({
+          id: c.id,
+          avatar: c.name,
+          title: c.name,
+          subtitle: metals.copy.tola,
+          value: c.tola,
+          change: c.change ? { text: c.change, up: c.rising } : null,
+          onPress: () => router.push({ pathname: "/metals/[metal]", params: { metal: c.id } }),
+        }))}
+      />
       {metals.cards.length ? (
         <Panel title={t("market.today_rates")}>
           {metals.cards.map((c) => (
@@ -463,6 +487,18 @@ function ForexTab() {
       {forex.status === "loading" ? (
         <SkeletonPulse className="h-96 rounded-3xl" />
       ) : null}
+      <WatchlistRows
+        kind="forex"
+        rows={forex.cards.map((c) => ({
+          id: c.code,
+          avatar: c.code,
+          title: `${c.code} · ${c.name}`,
+          subtitle: c.perUnit,
+          value: c.sell,
+          change: c.change ? { text: c.change, up: c.rising } : null,
+          onPress: () => router.push({ pathname: "/forex/[code]", params: { code: c.code } }),
+        }))}
+      />
       {forex.cards.length ? (
         <Panel title={t("market.converter")}>
           <Text className="text-sm font-medium text-muted-foreground">
@@ -532,6 +568,7 @@ function ForexTab() {
               key: c.code,
               cells: [`${c.code} · ${c.name}`, c.buy, c.sell],
               sub: c.perUnit,
+              change: c.change ? { text: c.change, up: c.rising } : null,
             }))}
             onPressRow={(code) =>
               router.push({ pathname: "/forex/[code]", params: { code } })
@@ -605,156 +642,157 @@ function CurrencyButton({
   );
 }
 
+/** The starred rows of one kind, in the order they were starred; a hint when there are none. */
+function WatchlistRows({
+  kind,
+  rows,
+}: {
+  kind: WatchKind;
+  rows: { id: string; avatar: string; title: string; subtitle: string; value: string; change: { text: string; up: boolean } | null; onPress: () => void }[];
+}) {
+  const { t } = useLocale();
+  const watch = useWatchlist(kind);
+  const starred = watch.ids.flatMap((id) => rows.filter((r) => r.id === id));
+  return (
+    <MarketSection title={t("market.watchlist")}>
+      {starred.length ? (
+        starred.map((r) => (
+          <QuoteRow
+            key={r.id}
+            avatar={r.avatar}
+            title={r.title}
+            subtitle={r.subtitle}
+            value={r.value}
+            change={r.change ? <Change up={r.change.up} text={r.change.text} /> : <Change up={null} text="" />}
+            onPress={r.onPress}
+          />
+        ))
+      ) : (
+        <Text className="py-2 text-sm text-muted-foreground">{t("market.watch_empty")}</Text>
+      )}
+    </MarketSection>
+  );
+}
+
 /** Rows shown before "show all", so the first paint stays light. */
-const SHARES_FIRST = 40;
+const SHARES_FIRST = 30;
 
 /**
- * NEPSE: every traded scrip's last price, refreshed every 30 seconds while trading is open,
- * searchable by symbol or company. A row opens the scrip's intraday and long-term chart.
+ * NEPSE, laid out like a trading app's market page: the day's totals, the reader's starred scrips,
+ * today's top gainers and losers, the most traded, then every traded scrip with search. Prices refresh
+ * every 30 seconds while trading is open; a scrip opens its own chart page.
  */
 function SharesTab() {
   const { t, digits } = useLocale();
   const router = useRouter();
   const colors = useThemeColors();
   const live = useNepseLive();
+  const day = useMarketDate();
+  const watch = useWatchlist("share");
   const [query, setQuery] = useState("");
   const [all, setAll] = useState(false);
   const data = live.data;
+  const stocks = data?.stocks ?? [];
+  const open = (symbol: string) => router.push(`/nepse/${symbol}`);
   const q = query.trim().toLowerCase();
-  const rows = (data?.stocks ?? []).filter(
-    (s) =>
-      !q ||
-      s.symbol.toLowerCase().includes(q) ||
-      (s.name ?? "").toLowerCase().includes(q),
+  const rows = stocks.filter(
+    (s) => !q || s.symbol.toLowerCase().includes(q) || (s.name ?? "").toLowerCase().includes(q),
   );
   const shown = all || q ? rows : rows.slice(0, SHARES_FIRST);
+  const watched = watch.ids.flatMap((id) => stocks.filter((s) => s.symbol === id));
   const time = data?.as_of?.slice(11, 16) ?? "";
   const chip = data
     ? t(data.market_open ? "market.shares_live" : "market.shares_closed", {
-        date: digits(data.date ?? ""),
+        date: data.date ? day(data.date) : "",
         time: digits(time),
       })
     : "";
+  const quoteRow = (s: NepseQuote) => (
+    <QuoteRow
+      key={s.symbol}
+      avatar={s.symbol}
+      title={s.symbol}
+      subtitle={s.name}
+      value={digits(nepseNumber(s.ltp))}
+      change={<Change up={s.change === 0 ? null : s.change > 0} value={s.percent} />}
+      onPress={() => open(s.symbol)}
+    />
+  );
 
   return (
     <>
-      <Hero
-        tint={brand.blue}
-        icon={TrendingUpNode}
-        kicker={t("market.shares_kicker")}
-        title={t("market.shares_hero")}
-        body={t("market.shares_hero_body")}
-        chip={chip}
-      />
-      {live.isLoading ? (
-        <SkeletonPulse className="h-96 rounded-3xl" />
-      ) : null}
+      {q ? null : (
+        <Hero
+          tint={brand.blue}
+          icon={TrendingUpNode}
+          kicker={t("market.shares_kicker")}
+          title={t("market.shares_hero")}
+          body={t("market.shares_hero_body")}
+          chip={chip}
+        />
+      )}
+      {live.isLoading ? <SkeletonPulse className="h-96 rounded-3xl" /> : null}
       {live.isError && !data ? (
-        <Text className="text-base text-muted-foreground">
-          {t("market.shares_error")}
-        </Text>
+        <Text className="text-base text-muted-foreground">{t("market.shares_error")}</Text>
       ) : null}
       {data ? (
         <>
-          <View className="flex-row gap-3">
-            {[
-              [t("market.shares_turnover"), digits(nepseCrore(data.turnover))],
-              [t("market.shares_volume"), digits(nepseNumber(data.volume, 0))],
-              [t("market.shares_trades"), digits(nepseNumber(data.transactions, 0))],
-            ].map(([label, value]) => (
-              <View
-                key={label}
-                className="flex-1 rounded-2xl border border-border bg-card p-3"
-              >
-                <Text className="text-xs text-muted-foreground" numberOfLines={2}>
-                  {label}
-                </Text>
-                <Text
-                  className="text-base font-bold tabular-nums text-foreground"
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                >
-                  {value}
-                </Text>
-              </View>
-            ))}
+          {/* Near the top, and the only thing left while typing: matches stay above the keyboard. */}
+          <View className="flex-row">
+            <SearchField value={query} onChange={setQuery} placeholder={t("market.shares_search")} />
           </View>
-          <Panel title={t("market.shares_list", { count: digits(data.scrips) })}>
-            <View className="flex-row items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2.5">
-              <LucideNative
-                node={SearchNode}
-                size={18}
-                color={colors.mutedForeground}
-                strokeWidth={2}
-              />
-              <TextInput
-                value={query}
-                onChangeText={setQuery}
-                placeholder={t("market.shares_search")}
-                placeholderTextColor={colors.mutedForeground}
-                autoCapitalize="characters"
-                autoCorrect={false}
-                className="flex-1 text-base text-foreground"
-              />
-            </View>
-            {shown.map((s) => {
-              const tone =
-                s.change > 0
-                  ? brand.green
-                  : s.change < 0
-                    ? brand.vermilion
-                    : colors.mutedForeground;
-              return (
-                <Pressable
-                  key={s.symbol}
-                  onPress={() => router.push(`/nepse/${s.symbol}`)}
-                  accessibilityRole="button"
-                  className="flex-row items-center gap-3 border-b border-border py-2.5 active:opacity-70"
-                >
-                  <View className="flex-1">
-                    <Text className="text-base font-bold text-foreground">
-                      {s.symbol}
+          {q ? (
+            <MarketSection title={t("market.search_results", { count: digits(rows.length) })}>
+              {rows.length ? rows.slice(0, 50).map(quoteRow) : (
+                <Text className="py-2 text-sm text-muted-foreground">{t("market.search_none")}</Text>
+              )}
+            </MarketSection>
+          ) : (
+            <>
+              <View className="flex-row gap-3">
+                {[
+                  [t("market.shares_turnover"), digits(nepseCrore(data.turnover))],
+                  [t("market.shares_volume"), digits(nepseNumber(data.volume, 0))],
+                  [t("market.shares_trades"), digits(nepseNumber(data.transactions, 0))],
+                ].map(([label, value]) => (
+                  <View key={label} className="flex-1 rounded-2xl border border-border bg-card p-3">
+                    <Text className="text-xs text-muted-foreground" numberOfLines={2}>
+                      {label}
                     </Text>
-                    {s.name ? (
-                      <Text
-                        className="text-xs text-muted-foreground"
-                        numberOfLines={1}
-                      >
-                        {s.name}
-                      </Text>
-                    ) : null}
-                  </View>
-                  <View className="items-end">
-                    <Text className="text-base font-bold tabular-nums text-foreground">
-                      {digits(nepseNumber(s.ltp))}
-                    </Text>
-                    <Text
-                      className="text-xs font-semibold tabular-nums"
-                      style={{ color: tone }}
-                    >
-                      {digits(
-                        `${s.change > 0 ? "+" : ""}${nepseNumber(s.change)} (${s.percent > 0 ? "+" : ""}${s.percent.toFixed(2)}%)`,
-                      )}
+                    <Text className="text-base font-bold tabular-nums text-foreground" numberOfLines={1} adjustsFontSizeToFit>
+                      {value}
                     </Text>
                   </View>
-                </Pressable>
-              );
-            })}
-            {!all && !q && rows.length > SHARES_FIRST ? (
-              <Pressable
-                onPress={() => setAll(true)}
-                accessibilityRole="button"
-                className="items-center rounded-full border border-border py-2.5 active:opacity-70"
-              >
-                <Text className="text-base font-semibold text-foreground">
-                  {t("market.shares_all", { count: digits(rows.length) })}
-                </Text>
-              </Pressable>
-            ) : null}
-            <Text className="text-xs text-muted-foreground">
-              {t("market.shares_source")}
-            </Text>
-          </Panel>
+                ))}
+              </View>
+
+              <MarketSection title={t("market.watchlist")} onPress={() => router.push("/watchlist")}>
+                {watched.length ? watched.slice(0, 5).map(quoteRow) : (
+                  <Text className="py-2 text-sm text-muted-foreground">{t("market.watch_empty")}</Text>
+                )}
+              </MarketSection>
+
+              <TopMoversCard />
+
+              <MostTradedCard />
+
+              <MarketSection title={t("market.shares_list", { count: digits(data.scrips) })}>
+                {shown.map(quoteRow)}
+                {!all && rows.length > SHARES_FIRST ? (
+                  <Pressable
+                    onPress={() => setAll(true)}
+                    accessibilityRole="button"
+                    className="items-center rounded-full border border-border py-2.5 active:opacity-70"
+                  >
+                    <Text className="text-base font-semibold text-foreground">
+                      {t("market.shares_all", { count: digits(rows.length) })}
+                    </Text>
+                  </Pressable>
+                ) : null}
+              </MarketSection>
+            </>
+          )}
+          <Text className="text-xs text-muted-foreground">{t("market.shares_source")}</Text>
         </>
       ) : null}
     </>

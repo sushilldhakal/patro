@@ -43,6 +43,7 @@ fn news() -> Router<AppState> {
 fn nepse() -> Router<AppState> {
     Router::new()
         .route("/v1/nepse/live", get(handlers::nepse::live))
+        .route("/v1/nepse/period", get(handlers::nepse::period))
         .route(
             "/v1/nepse/stocks/{symbol}/intraday",
             get(handlers::nepse::intraday),
@@ -71,6 +72,7 @@ fn accounts() -> Router<AppState> {
         .route("/auth/forgot-password", post(a::forgot_password))
         .route("/auth/reset-password", post(a::reset_password))
         .route("/profiles", get(a::list_profiles).post(a::create_profile))
+        .route("/watchlist", get(a::get_watchlist).put(a::put_watchlist))
         .route(
             "/profiles/{profile_id}",
             get(a::get_profile)
