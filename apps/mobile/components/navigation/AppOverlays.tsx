@@ -3,7 +3,7 @@ import { NavDrawerHost } from "@/components/AppHeader";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { QuickReminderSheet } from "@/components/reminders/QuickReminderSheet";
 import { FestivalSearchSheet } from "@/components/search/FestivalSearchSheet";
-import { LocationSearchSheet } from "@/components/search/LocationSearchSheet";
+import { LocationPlacesScreen } from "@/components/search/LocationPlacesScreen";
 import { useAddReminderRequest, useLocationPickerRequest, useSearchRequest, useSignInRequest } from "@/lib/menu-request";
 
 /**
@@ -35,8 +35,8 @@ export function AppOverlays() {
       <NavDrawerHost />
       <FestivalSearchSheet open={searchOpen} onClose={closeSearch} />
       <QuickReminderSheet open={reminderOpen} date={reminderDate} onClose={closeReminder} />
-      {/* The place picker, drawn like search; every screen's usePanchangaLocation follows what is picked here. */}
-      <LocationSearchSheet open={placeOpen} onClose={closePlace} />
+      {/* The place picker, drawn like the weather places screen; every screen's usePanchangaLocation follows it. */}
+      <LocationPlacesScreen open={placeOpen} onClose={closePlace} />
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
     </>
   );
