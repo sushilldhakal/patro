@@ -20,31 +20,39 @@ env_value() {
   [[ -f "${WEB_DIR}/.env" ]] && grep "^$1=" "${WEB_DIR}/.env" | head -1 | cut -d= -f2- | tr -d '"' || true
 }
 
-echo "==> Installing dependencies (website + shared packages only)"
-npm ci --workspace=@vedic-patro/web --include-workspace-root --no-audit --no-fund
+if [[ -n "${WEB_DIST_TGZ:-}" && -f "${WEB_DIST_TGZ}" ]]; then
+  # GitHub Actions built it (deploy.yml) and copied it here: no npm ci or build on this machine.
+  echo "==> Using the build from GitHub Actions (${WEB_DIST_TGZ})"
+  rm -rf "${WEB_DIR}/dist"
+  mkdir -p "${WEB_DIR}/dist"
+  tar -xzf "${WEB_DIST_TGZ}" -C "${WEB_DIR}/dist"
+else
+  echo "==> Installing dependencies (website + shared packages only)"
+  npm ci --workspace=@vedic-patro/web --include-workspace-root --no-audit --no-fund
 
-echo "==> Building production bundle (API base = /api, same-origin)"
-BUILD_ENV=(VITE_API_BASE_URL=/api)
-google_client_id="$(env_value VITE_GOOGLE_CLIENT_ID)"
-[[ -n "${google_client_id}" ]] && BUILD_ENV+=(VITE_GOOGLE_CLIENT_ID="${google_client_id}")
+  echo "==> Building production bundle (API base = /api, same-origin)"
+  BUILD_ENV=(VITE_API_BASE_URL=/api)
+  google_client_id="$(env_value VITE_GOOGLE_CLIENT_ID)"
+  [[ -n "${google_client_id}" ]] && BUILD_ENV+=(VITE_GOOGLE_CLIENT_ID="${google_client_id}")
 
-ga_id="${VITE_GA_MEASUREMENT_ID:-}"
-[[ -n "${ga_id}" ]] || ga_id="$(env_value VITE_GA_MEASUREMENT_ID)"
-if [[ -z "${ga_id}" && -f "${WEB_ROOT}/index.html" ]]; then
-  # The measurement ID is public (it is in every page); reuse the live one.
-  ga_id="$(grep -o 'googletagmanager.com/gtag/js?id=G-[A-Z0-9]*' "${WEB_ROOT}/index.html" | head -1 | sed 's/.*id=//' || true)"
+  ga_id="${VITE_GA_MEASUREMENT_ID:-}"
+  [[ -n "${ga_id}" ]] || ga_id="$(env_value VITE_GA_MEASUREMENT_ID)"
+  if [[ -z "${ga_id}" && -f "${WEB_ROOT}/index.html" ]]; then
+    # The measurement ID is public (it is in every page); reuse the live one.
+    ga_id="$(grep -o 'googletagmanager.com/gtag/js?id=G-[A-Z0-9]*' "${WEB_ROOT}/index.html" | head -1 | sed 's/.*id=//' || true)"
+  fi
+  [[ -n "${ga_id}" ]] && BUILD_ENV+=(VITE_GA_MEASUREMENT_ID="${ga_id}")
+
+  # Sentry: the DSN turns error reporting on in the bundle; the org, project and token let the
+  # build upload source maps (and then delete them from the output). Each is optional.
+  for key in VITE_SENTRY_DSN SENTRY_ORG SENTRY_PROJECT SENTRY_AUTH_TOKEN; do
+    value="${!key:-}"
+    [[ -n "${value}" ]] || value="$(env_value "${key}")"
+    if [[ -n "${value}" ]]; then BUILD_ENV+=("${key}=${value}"); fi
+  done
+
+  (cd "${WEB_DIR}" && env "${BUILD_ENV[@]}" npm run build)
 fi
-[[ -n "${ga_id}" ]] && BUILD_ENV+=(VITE_GA_MEASUREMENT_ID="${ga_id}")
-
-# Sentry: the DSN turns error reporting on in the bundle; the org, project and token let the
-# build upload source maps (and then delete them from the output). Each is optional.
-for key in VITE_SENTRY_DSN SENTRY_ORG SENTRY_PROJECT SENTRY_AUTH_TOKEN; do
-  value="${!key:-}"
-  [[ -n "${value}" ]] || value="$(env_value "${key}")"
-  if [[ -n "${value}" ]]; then BUILD_ENV+=("${key}=${value}"); fi
-done
-
-(cd "${WEB_DIR}" && env "${BUILD_ENV[@]}" npm run build)
 
 if grep -q 'googletagmanager.com/gtag/js' "${WEB_DIR}/dist/index.html" 2>/dev/null; then
   echo "==> Google Analytics gtag snippet present in build"

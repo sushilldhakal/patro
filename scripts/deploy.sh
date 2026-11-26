@@ -2,7 +2,7 @@
 # Monorepo deploy — GitHub Actions runs this on the VM over SSH on every push
 # to main. Pulls once, then deploys whichever apps changed since their last
 # successful deploy (recorded in .deploy/<app>.sha):
-#   apps/web, packages/*, locks   → scripts/deploy-web.sh        (static site)
+#   apps/web, packages/*, locks   → scripts/deploy-web.sh        (static site; built in Actions)
 #   apps/rust, festival rules     → scripts/deploy-rust.sh       (Rust API: build, swap, health check)
 # The mobile app ships through EAS, not this script.
 # FORCE_DEPLOY=all|web|rust deploys regardless of changes.
