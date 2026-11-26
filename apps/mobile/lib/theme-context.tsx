@@ -60,7 +60,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [preference, resolvedTheme]);
 
   useEffect(() => {
-    void SystemUI.setBackgroundColorAsync(colors.background);
+    // Rejects when Android has no activity yet or any more (app backgrounded): nothing to paint then (Sentry PATRO-J).
+    SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
   }, [colors.background]);
 
   const setPreference = (next: ThemePreference) => {
