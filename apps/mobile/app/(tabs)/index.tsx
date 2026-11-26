@@ -21,6 +21,8 @@ import { BsMonthHeaderRow2, BsMonthHeaderTitle } from "@/components/home/BsMonth
 import { HomeAsideTabBar, type AsideTabId } from "@/components/home/HomeAsideTabs";
 import { UpcomingFestivalsSlider } from "@/components/home/UpcomingFestivalsSlider";
 import { NewsSlider } from "@/components/home/NewsSlider";
+import { MarketSlider } from "@/components/home/MarketSlider";
+import { WeatherCard } from "@/components/home/WeatherCard";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { BsCalendarGrid } from "@vedic-patro/ui/kit/shell";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
@@ -661,6 +663,13 @@ function HomeScreen() {
         </View>
         <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
           <NewsSlider horizontalInset={cardInset} />
+        </View>
+        {/* A card, not a slider: the panchanga card's edges (the card inset, no slider padding). */}
+        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+          <WeatherCard location={location.params} label={location.label} />
+        </View>
+        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+          <MarketSlider horizontalInset={cardInset} />
         </View>
 
         {/* Below the fold: drawn after the first screen, so the calendar and

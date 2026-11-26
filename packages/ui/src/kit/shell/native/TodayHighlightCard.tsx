@@ -8,6 +8,7 @@ import { Box, Icon, Text } from "@vedic-patro/ui";
 import { EASE_OUT, SHIFT, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import type { TodayHighlightCardProps } from "../contract";
 import { shellIcons } from "../icon-nodes";
+import { FactIcon } from "../../weather/native/WeatherGlyph";
 
 const FESTIVAL_ENTER_MS = 240;
 
@@ -107,13 +108,13 @@ export function TodayHighlightCard({ className, moon, aside, ...props }: TodayHi
             ) : null}
             {h.sunrise ? (
               <Box className={cls.highlightSunItem}>
-                <Icon node={shellIcons.sunrise} size="sm" tone="warning" />
+                <FactIcon icon={{ kind: "icon", name: "sunrise" }} size={30} />
                 <Text className={cls.highlightSunText}>{h.sunrise}</Text>
               </Box>
             ) : null}
             {h.sunset ? (
               <Box className={cls.highlightSunItem}>
-                <Icon node={shellIcons.sunset} size="sm" tone="warning" />
+                <FactIcon icon={{ kind: "icon", name: "sunset" }} size={30} />
                 <Text className={cls.highlightSunText}>{h.sunset}</Text>
               </Box>
             ) : null}

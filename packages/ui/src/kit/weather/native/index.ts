@@ -1,5 +1,7 @@
 export {
   FactIcon,
+  MoonPhaseIcon,
+  moonPhaseIconName,
   NowWeatherBadge,
   UiIcon,
   UvDot,

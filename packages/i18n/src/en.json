@@ -762,7 +762,32 @@
       "the_planets_rashi_positions_at_the": "The planets' rashi positions at the moment of sunrise, and the daily time-difference."
     },
     "day": {
-      "day_detail": "Day detail"
+      "day_detail": "Day detail",
+      "days_ago": "{{n}} days ago",
+      "until": "until {{time}}",
+      "until_next_day": "until {{time}} next day",
+      "sunrise": "Sunrise",
+      "sunset": "Sunset",
+      "moonrise": "Moonrise",
+      "no_festival": "No festival today",
+      "previous": "Previous day",
+      "panchanga": "The day's panchanga",
+      "el": {
+        "tithi": "Tithi",
+        "nakshatra": "Nakshatra",
+        "yoga": "Yoga",
+        "karana": "Karana",
+        "chandra_rashi": "Moon sign",
+        "surya_rashi": "Sun sign",
+        "ritu": "Season",
+        "ayan": "Ayana"
+      },
+      "then": "then {{next}}",
+      "times": "Good and bad times",
+      "abhijit": "Abhijit muhurta",
+      "rahu": "Rahu kaal",
+      "full": "Full panchanga",
+      "next": "Next day"
     },
     "gochar": {
       "current_position_windows_retrograde": "Current position, windows & retrograde",
@@ -5238,17 +5263,64 @@
       "quadrillion": "quadrillion"
     }
   },
+  "weather_card": {
+    "rain": "{{pct}} rain",
+    "aqi": "AQI {{n}}",
+    "humidity": "Humidity",
+    "rain_today": "Rain",
+    "uv": "UV",
+    "moon": "Moon"
+  },
+  "market": {
+    "title": "Market",
+    "back": "Back",
+    "tab_metals": "Gold and silver",
+    "tab_forex": "Foreign currency",
+    "forex_kicker": "Foreign exchange",
+    "forex_hero": "Live exchange rates and converter",
+    "forex_hero_body": "Nepal Rastra Bank's reference rates, with buying, selling and middle. Convert any amount at once.",
+    "metal_kicker": "Gold and silver",
+    "metal_hero": "Today's gold and silver rates and calculator",
+    "metal_hero_body": "Hallmark gold and silver as the Federation of Nepal Gold and Silver Dealers sets them. Enter a weight to price it.",
+    "date_chip": "Date {{date}} · {{source}}",
+    "converter": "Currency converter",
+    "calculator": "Gold and silver calculator",
+    "amount": "Amount",
+    "weight": "Weight",
+    "from": "From",
+    "to": "To",
+    "swap": "Swap",
+    "mid": "Middle",
+    "result": "Result",
+    "rate_line": "{{amount}} {{from}} = {{value}} {{to}} · {{date}}",
+    "rate_table": "NRB reference rates",
+    "choose_currency": "Choose a currency",
+    "npr": "Nepalese Rupee",
+    "unit": {
+      "tola": "Tola",
+      "aana": "Aana",
+      "gram": "Gram"
+    },
+    "today_rates": "Today's rates"
+  },
   "metals": {
     "title": "Gold and silver",
     "subtitle": "Today's rate set by the Federation of Nepal Gold and Silver Dealers",
     "gold": "Hallmark gold",
     "silver": "Silver",
+    "gold22": "Gold 22K",
+    "gold22_note": "FENEGOSIDA publishes no 22-carat rate: worked out as 22/24 of the hallmark gold rate.",
     "per_tola": "tola",
     "per_10g": "10 g",
     "amount": "Rs {{amount}}",
     "note": "Source: FENEGOSIDA",
     "date": "Date",
-    "history": "Earlier days"
+    "history": "Earlier days",
+    "range": {
+      "month": "1 month",
+      "quarter": "3 months",
+      "year": "1 year"
+    }
   },
   "forex": {
     "title": "Exchange rates",

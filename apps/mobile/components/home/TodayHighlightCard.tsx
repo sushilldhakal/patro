@@ -1,6 +1,9 @@
-import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
+import { MoonPhaseIcon } from "@vedic-patro/ui/kit/weather";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
-import { TodayHighlightCard as TodayHighlightCardView, type TodayHighlightCardProps } from "@vedic-patro/ui/kit/shell";
+import {
+  TodayHighlightCard as TodayHighlightCardView,
+  type TodayHighlightCardProps,
+} from "@vedic-patro/ui/kit/shell";
 
 type Props = Omit<TodayHighlightCardProps, "moon" | "className"> & {
   selectedDay: CalendarDay | null;
@@ -12,7 +15,7 @@ export function TodayHighlightCard(props: Props) {
   return (
     <TodayHighlightCardView
       {...props}
-      moon={({ tithiIndex, title }) => <CalendarMoonPhaseIcon tithiIndex={tithiIndex} size={24} title={title} />}
+      moon={({ tithiIndex }) => <MoonPhaseIcon tithiIndex={tithiIndex} size={32} />}
     />
   );
 }

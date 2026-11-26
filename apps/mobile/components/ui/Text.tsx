@@ -122,8 +122,9 @@ const TIGHT_LEADING = /\bleading-(?:none|tight)\b/g;
 
 /* The large steps carry their own tight line (3xl 36/30, 4xl 40/36, 5xl 48/48),
    which crops a Devanagari heading's matras just the same ("नेपाली पात्रो र
-   पञ्चाङ्ग" on the Learn hero). With no `leading-*` of its own it gets the
-   same normal line. */
+   पञ्चाङ्ग" on the Learn hero), and the top of Devanagari digits too (the home
+   weather card's "१५.२°", which the letter test above does not see). With no
+   `leading-*` of its own, any large text gets the normal line, whatever script. */
 const LARGE_TYPE = /\btext-(?:3xl|4xl|5xl)\b/;
 const ANY_LEADING = /\bleading-/;
 
@@ -134,7 +135,7 @@ export function Text({ className, style, variant, ...props }: Props) {
   const devanagari = hasDevanagari(props.children);
   const tinted = hasTextColor(sized) ? sized : cn("text-foreground", sized);
   const relaxed = devanagari ? tinted.replace(TIGHT_LEADING, "leading-normal") : tinted;
-  const colored = devanagari && LARGE_TYPE.test(relaxed) && !ANY_LEADING.test(relaxed) ? cn(relaxed, "leading-normal") : relaxed;
+  const colored = LARGE_TYPE.test(relaxed) && !ANY_LEADING.test(relaxed) ? cn(relaxed, "leading-normal") : relaxed;
   const typeStyle = withoutInlineType(style);
   const flat = StyleSheet.flatten(typeStyle) as { fontFamily?: string; fontWeight?: string | number } | undefined;
   const family = !flat?.fontFamily || NOTO_FAMILIES.has(flat.fontFamily)

@@ -1,3 +1,4 @@
+import type { WeatherFactIconName } from "@vedic-patro/features/weather";
 import { memo, useEffect, type ReactNode } from "react";
 import { View } from "react-native";
 import { SvgXml } from "react-native-svg";
@@ -176,4 +177,23 @@ export function NowWeatherBadge({ weather }: { weather: NowWeather }) {
       <Text className={wc.nowBadgeLabel}>{weather.feelsLike}</Text>
     </Box>
   );
+}
+
+
+/** The Meteocon moon for a tithi (0-based: पूर्णिमा 14, औंसी 29). */
+export function moonPhaseIconName(tithiIndex: number): WeatherFactIconName {
+  const t = ((Math.round(tithiIndex) % 30) + 30) % 30;
+  if (t === 29) return "moon-new";
+  if (t <= 5) return "moon-waxing-crescent";
+  if (t <= 7) return "moon-first-quarter";
+  if (t <= 13) return "moon-waxing-gibbous";
+  if (t === 14) return "moon-full";
+  if (t <= 20) return "moon-waning-gibbous";
+  if (t <= 22) return "moon-last-quarter";
+  return "moon-waning-crescent";
+}
+
+/** The day's moon as its Meteocon, from the tithi. */
+export function MoonPhaseIcon({ tithiIndex, size = 28 }: { tithiIndex: number; size?: number }) {
+  return <FactIcon icon={{ kind: "icon", name: moonPhaseIconName(tithiIndex) }} size={size} />;
 }
