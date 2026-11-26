@@ -125,9 +125,10 @@ timescale.workspace = true
 
 [profile.release]
 lto = "thin"
-# Default codegen-units (16): codegen-units = 1 made every release build optimise each crate on
-# one core, the bulk of a 2-vCPU CI build. Thin LTO still optimises across crates.
-strip = "debuginfo"
+# codegen-units = 16 built only 17 s faster (3m11 vs 3m28) but made the binary 6 MB bigger.
+codegen-units = 1
+# Symbol names were 8 MB of the binary; panics still log their message and location.
+strip = "symbols"
 
 # The ephemeris crate evaluates millions of Chebyshev series when it builds the event
 # index; a debug build of it would take hours. Optimised in the dev profile only (no
