@@ -490,21 +490,154 @@ pub async fn share_panchanga(
 
 const PNG_CACHE_CONTROL: &str = "public, max-age=86400, s-maxage=604800, immutable";
 
-/// `GET /og-image`: the share card as a 1200×630 PNG. Python screenshots the web app's
-/// chart in headless Chromium and falls back to a Pillow-drawn card; the Rust server
-/// has no browser and always draws the card (the `og` crate, with the same Mukta fonts).
+/// The web app's `/panchanga/og-preview` page (the `card=` query picks the day chart, the
+/// periods list or the D1 chart) screenshotted by a headless Chromium, as Python did.
+/// On only when `PATRO_RS_OG_BROWSER` names the browser; renders are cached on disk for a day.
+mod screenshot {
+    use std::{
+        fs,
+        path::{Path, PathBuf},
+        process::{Command, Stdio},
+        sync::{Mutex, PoisonError},
+        thread,
+        time::{Duration, Instant, SystemTime},
+    };
+
+    use sha2::{Digest, Sha256};
+
+    /// One browser at a time: a render is ~115 MB and a few seconds.
+    static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
+    const TTL: Duration = Duration::from_secs(86_400);
+    const TIMEOUT: Duration = Duration::from_secs(40);
+    /// Query keys the preview page reads; anything else is dropped from the URL and cache key.
+    const KEYS: [&str; 9] = [
+        "card", "date", "time", "lat", "lon", "tz", "city", "place", "app",
+    ];
+    const KATHMANDU_OFFSET_S: u64 = 20_700;
+
+    fn fresh(path: &Path) -> bool {
+        fs::metadata(path)
+            .and_then(|m| m.modified())
+            .ok()
+            .and_then(|t| t.elapsed().ok())
+            .is_some_and(|age| age < TTL)
+    }
+
+    fn cached(path: &Path) -> Option<Vec<u8>> {
+        if fresh(path) {
+            fs::read(path).ok()
+        } else {
+            None
+        }
+    }
+
+    pub(super) fn png(query: &str) -> Option<Vec<u8>> {
+        let browser = std::env::var("PATRO_RS_OG_BROWSER")
+            .ok()
+            .filter(|b| !b.is_empty())?;
+        let query = query
+            .split('&')
+            .filter(|p| KEYS.contains(&p.split('=').next().unwrap_or("")))
+            .collect::<Vec<_>>()
+            .join("&");
+        // A query without a date draws today, so today's Kathmandu day is part of its key.
+        let day = if query.contains("date=") {
+            0
+        } else {
+            let now = SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .ok()?;
+            (now.as_secs() + KATHMANDU_OFFSET_S) / 86_400
+        };
+        let digest = format!("{:x}", Sha256::digest(format!("{day}:{query}")));
+        let dir = PathBuf::from(
+            std::env::var("PATRO_RS_OG_CACHE")
+                .unwrap_or_else(|_| "/tmp/vedicpatro-og-cache".into()),
+        );
+        let path = dir.join(format!("{digest}.png"));
+        if let Some(png) = cached(&path) {
+            return Some(png);
+        }
+        let _one = ONE_AT_A_TIME.lock().unwrap_or_else(PoisonError::into_inner);
+        if let Some(png) = cached(&path) {
+            return Some(png); // drawn by the request this one waited for
+        }
+        fs::create_dir_all(&dir).ok()?;
+        for entry in fs::read_dir(&dir).ok()?.flatten() {
+            if !fresh(&entry.path()) {
+                let _ = fs::remove_file(entry.path());
+            }
+        }
+        let tmp = dir.join(format!("{digest}.part.png"));
+        let url = format!("{}/panchanga/og-preview?{query}", super::frontend_url());
+        let mut child = Command::new(browser)
+            .args([
+                "--headless",
+                "--no-sandbox",
+                "--hide-scrollbars",
+                "--window-size=1200,630",
+                "--force-device-scale-factor=2",
+                // Virtual time only runs while the network is idle, so the day's data is in.
+                "--virtual-time-budget=15000",
+            ])
+            .arg(format!("--screenshot={}", tmp.display()))
+            .arg(&url)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .ok()?;
+        let started = Instant::now();
+        loop {
+            match child.try_wait() {
+                Ok(Some(status)) if status.success() => break,
+                Ok(None) if started.elapsed() < TIMEOUT => {
+                    thread::sleep(Duration::from_millis(100));
+                }
+                _ => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    return None;
+                }
+            }
+        }
+        let png = fs::read(&tmp).ok().filter(|b| b.starts_with(b"\x89PNG"))?;
+        let _ = fs::rename(&tmp, &path);
+        Some(png)
+    }
+}
+
+/// `GET /og-image`: the share card PNG (1.91:1). With `PATRO_RS_OG_BROWSER` set it is a
+/// screenshot of the web app's og-preview page (`card=` main / periods / d1); otherwise, or
+/// when that fails, the drawn card (the `og` crate, with the same Mukta fonts).
 pub async fn og_image(
     State(state): State<AppState>,
     AxumQuery(q): AxumQuery<Query>,
     headers: HeaderMap,
+    uri: Uri,
 ) -> Response {
     let started = Instant::now();
     let (city, lat, lon) = match parse_query(&q) {
         Ok(v) => v,
         Err(e) => return e,
     };
-    if let Err(e) = crate::respond::flag(&q, "full") {
-        return e;
+    let full = match crate::respond::flag(&q, "full") {
+        Ok(v) => v,
+        Err(e) => return e,
+    };
+    // The three daily cards (day chart, periods, D1) are the web page itself; the drawn
+    // card below is the fallback when no browser is configured or the screenshot fails.
+    if !full && let Some(png) = screenshot::png(uri.query().unwrap_or("")) {
+        return crate::respond::raw_bytes_payload(
+            png,
+            "image/png",
+            &[
+                ("cache-control", PNG_CACHE_CONTROL),
+                ("cdn-cache-control", PNG_CACHE_CONTROL),
+            ],
+            &headers,
+            1024,
+            started,
+        );
     }
     let greg = q
         .get("date")
