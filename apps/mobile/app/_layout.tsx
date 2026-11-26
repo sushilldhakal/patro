@@ -279,6 +279,12 @@ const RUNTIME_NOTO_FONTS = {
   "NotoSansDevanagariSemiCondensed-Bold": require("../assets/fonts/NotoSansDevanagariSemiCondensed-Bold.ttf"),
 };
 
+/* Expo Go and web load the Noto weights while the app runs. The screens mount under the splash before
+   that finishes, and iOS keeps the fallback face on text laid out then: home's text stayed light until
+   it remounted. Remount the stack once those fonts are in (still under the splash). Builds register
+   the fonts at launch, so there the stack mounts once. */
+const NOTO_LOADS_AT_RUNTIME = Platform.OS === "web" || Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
 function RootLayout() {
   useTrackPathname();
   // Store and TestFlight builds: the splash stays up while a newer update is checked for, and a
@@ -294,7 +300,7 @@ function RootLayout() {
        weights could drop back to regular after the app reloaded into an update. Web loads them, and so
        does Expo Go, which has none of the build's fonts: there every Noto name was unknown and iOS drew
        the system font at one weight, so no text looked bold. */
-    ...(Platform.OS === "web" || Constants.executionEnvironment === ExecutionEnvironment.StoreClient ? RUNTIME_NOTO_FONTS : {}),
+    ...(NOTO_LOADS_AT_RUNTIME ? RUNTIME_NOTO_FONTS : {}),
     [ADISHILA_VEDIC]: require("../assets/fonts/AdishilaVedic-Regular.ttf"),
     FiraCode_400Regular,
     FiraCode_700Bold,
@@ -396,7 +402,7 @@ function RootLayout() {
               <OfflineDataProvider>
                 <AuthProvider>
                   <BiometricLockProvider>
-                    <RootShell ready={ready} onboarded={onboarded} onOnboarded={() => setOnboarded(true)} />
+                    <RootShell ready={ready} fontsLoaded={loaded} onboarded={onboarded} onOnboarded={() => setOnboarded(true)} />
                   </BiometricLockProvider>
                 </AuthProvider>
               </OfflineDataProvider>
@@ -411,10 +417,12 @@ function RootLayout() {
 
 function RootShell({
   ready,
+  fontsLoaded,
   onboarded,
   onOnboarded,
 }: {
   ready: boolean;
+  fontsLoaded: boolean;
   onboarded: boolean | null;
   onOnboarded: () => void;
 }) {
@@ -462,6 +470,7 @@ function RootShell({
         <OnboardingScreen onComplete={onOnboarded} />
       ) : (
         <Stack
+          key={NOTO_LOADS_AT_RUNTIME && !fontsLoaded ? "fonts-loading" : "fonts-ready"}
           screenOptions={{
             // iPhone Duo: native headers, so iOS puts back and the toolbar items in its vertical
             // rail (components/navigation/DuoNativeTabs.tsx). Everywhere else the pages draw their own.
