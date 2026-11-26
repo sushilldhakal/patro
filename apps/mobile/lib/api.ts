@@ -31,6 +31,7 @@ import {
   DEFAULT_TIMEOUT_MS,
   fetchWithTimeout,
   configureStaticData,
+  STATIC_DATA_BASE,
   staticResponseFor,
   apiBases,
   DEFAULT_API_VERSION,
@@ -469,9 +470,9 @@ function locationKey(loc?: LocationParams): string {
   return [l.city_id, l.lat, l.lon, l.timezone].join(":");
 }
 
-// Documents and popular cities from static.vedicpatro.com when EXPO_PUBLIC_STATIC_DATA_URL is set;
-// the API answers any miss.
-configureStaticData(process.env.EXPO_PUBLIC_STATIC_DATA_URL);
+// Read-only data (documents, cities) from static.vedicpatro.com; an update can turn it off with
+// EXPO_PUBLIC_STATIC_DATA_URL=off. The API answers any miss.
+configureStaticData(process.env.EXPO_PUBLIC_STATIC_DATA_URL ?? STATIC_DATA_BASE);
 
 // Every other request (streamed kundali reports, posts) gets it at the fetch itself.
 setCalculationResolver(() => getCalculation());

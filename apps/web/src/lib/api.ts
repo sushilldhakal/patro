@@ -23,6 +23,7 @@ import {
   relinkDayDetail,
   requestJson,
   configureStaticData,
+  STATIC_DATA_BASE,
   staticJsonFor,
   apiBases,
   DEFAULT_API_VERSION,
@@ -383,8 +384,9 @@ function withExplicitLanguage(path: string): string {
   return `${path}${path.includes("?") ? "&" : "?"}language=${readUiLanguage()}`;
 }
 
-// Documents and popular cities from static.vedicpatro.com when VITE_STATIC_DATA_URL is set; the API answers any miss.
-configureStaticData(import.meta.env.VITE_STATIC_DATA_URL);
+// Read-only data (documents, cities) from static.vedicpatro.com; VITE_STATIC_DATA_URL=off turns it off.
+// The API answers any miss.
+configureStaticData(import.meta.env.VITE_STATIC_DATA_URL ?? STATIC_DATA_BASE);
 const fetchJson = async <T,>(path: string): Promise<T> =>
   (await staticJsonFor<T>(path)) ?? requestJson<T>(DATA_BASE, withExplicitLanguage(path));
 

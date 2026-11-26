@@ -19,9 +19,12 @@ let base: string | null = null;
 let manifest: Promise<StaticManifest | null> | null = null;
 let manifestFailedAt = 0;
 
-/** Turn static reads on (`https://static.vedicpatro.com`) or off (null / ""). */
+/** Where the static data lives in production (an R2 bucket behind Cloudflare). */
+export const STATIC_DATA_BASE = "https://static.vedicpatro.com";
+
+/** Turn static reads on (a base URL) or off (null, "" or "off"). */
 export function configureStaticData(url: string | null | undefined): void {
-  base = url ? url.replace(/\/+$/, "") : null;
+  base = url && url !== "off" ? url.replace(/\/+$/, "") : null;
   manifest = null;
   manifestFailedAt = 0;
 }
@@ -60,9 +63,15 @@ const SEGMENT = /^[A-Za-z0-9_.-]+$/;
 /** The static file that answers a data-API path (`/documents/rigveda?v=3`), or null. */
 export function staticFileFor(path: string): string | null {
   const [pathname = "", query = ""] = path.split("?", 2);
-  const params = new URLSearchParams(query);
-  const slug = params.get("slug");
-  for (const key of params.keys()) if (!NEUTRAL_PARAMS.has(key) && key !== "slug") return null;
+  // Parsed by hand: React Native's URLSearchParams has no keys().
+  let slug: string | null = null;
+  for (const pair of query.split("&")) {
+    if (!pair) continue;
+    const eq = pair.indexOf("=");
+    const key = decodeURIComponent(eq < 0 ? pair : pair.slice(0, eq));
+    if (key === "slug") slug = decodeURIComponent((eq < 0 ? "" : pair.slice(eq + 1)).replace(/\+/g, " "));
+    else if (!NEUTRAL_PARAMS.has(key)) return null;
+  }
   const parts = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (!parts.every((p) => SEGMENT.test(p) && p !== "." && p !== "..")) return null;
   if (slug != null && !(SEGMENT.test(slug) && parts[0] === "veda")) return null;
@@ -92,7 +101,12 @@ async function staticFile(file: string): Promise<Response | null> {
 
 /** The static file's response for an API path, or null (not static, or not there): then call the API. */
 export async function staticResponseFor(path: string): Promise<Response | null> {
-  const file = staticFileFor(path);
+  let file: string | null;
+  try {
+    file = staticFileFor(path);
+  } catch {
+    return null; // a malformed %-escape: let the API answer
+  }
   return file ? staticFile(file) : null;
 }
 

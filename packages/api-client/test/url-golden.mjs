@@ -88,11 +88,12 @@ console.log(JSON.stringify(out, null, 1));
     write: false,
     plugins: [plugin],
     logLevel: "error",
-    define: { "import.meta.env": "{}" },
+    // Static data (static.vedicpatro.com) off: this test pins the API URLs.
+    define: { "import.meta.env": '{"VITE_STATIC_DATA_URL":"off"}' },
     // The URLs are the server fallback's contract, so both apps run with their local sky off
     // (festival lists and holidays would otherwise be answered without a request).
     banner: {
-      js: `globalThis.localStorage = { getItem: (k) => (k === "sky_local" ? "off" : null), setItem() {}, removeItem() {} }; process.env.EXPO_PUBLIC_SKY_LOCAL = "off";`,
+      js: `globalThis.localStorage = { getItem: (k) => (k === "sky_local" ? "off" : null), setItem() {}, removeItem() {} }; process.env.EXPO_PUBLIC_SKY_LOCAL = "off"; process.env.EXPO_PUBLIC_STATIC_DATA_URL = "off";`,
     },
     jsx: "automatic",
     loader: { ".svg": "empty", ".png": "empty", ".jpg": "empty", ".bin": "empty" },
