@@ -35,7 +35,7 @@ function register(): Promise<void> {
 }
 
 /**
- * Settles once the Android aliases are in place (or failed, or took too long). The root layout
- * holds the splash on it, so SVG text is drawn with the aliases from the first frame.
+ * Settles once the Android aliases are in place (or failed, or took too long). Started at import;
+ * the splash does not wait for it (SVG labels pick the aliases up on their next draw).
  */
 export const svgFontsSettled: Promise<void> = register();

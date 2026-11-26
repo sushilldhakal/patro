@@ -9,10 +9,13 @@ import { RELOADED_INTO_UPDATE } from "@/lib/splash-handoff";
 /** Same as the native splash's `backgroundColor` in app.json (#084548), so the hand-off is invisible. */
 const SPLASH_BG = brand.bluePressed;
 const MARK_SIZE = 220;
-const MEET_MS = 1_300;
-/** The mark keeps turning at least this long in total, so a fast start still shows the turn. */
-const MIN_SHOW_MS = 2_300;
-const FADE_MS = 400;
+const MEET_MS = 650;
+/**
+ * The splash stays at least this long, just past the entrance (meet, glow, pop ≈ 0.97 s). It was
+ * 2.3 s, and with the fade every cold launch sat on the splash 2.7 s however soon the app was ready.
+ */
+const MIN_SHOW_MS = 1_000;
+const FADE_MS = 250;
 const SPIN_MS = 9_000;
 /** Don't wait longer than this for the reduce-motion setting / an active app before starting. */
 const START_WAIT_MS = 600;
@@ -113,12 +116,12 @@ export function SplashIntro({ ready }: { ready: boolean }) {
       Animated.timing(sunY, { toValue: 0, duration: MEET_MS, easing: rise, useNativeDriver: true }),
       Animated.sequence([
         Animated.delay(MEET_MS * 0.55),
-        Animated.timing(glow, { toValue: 0.85, duration: 600, useNativeDriver: true }),
+        Animated.timing(glow, { toValue: 0.85, duration: 400, useNativeDriver: true }),
       ]),
       Animated.sequence([
         Animated.delay(MEET_MS * 0.85),
-        Animated.timing(pop, { toValue: 1.1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-        Animated.timing(pop, { toValue: 1, duration: 380, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.timing(pop, { toValue: 1.1, duration: 160, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.timing(pop, { toValue: 1, duration: 260, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       ]),
     ]);
     entrance.start();

@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
+import { File } from "expo-file-system";
 import { Platform } from "react-native";
 import type { PersistedClient } from "@tanstack/react-query-persist-client";
 import { relinkDayDetail, unlinkDayDetail } from "@vedic-patro/api-client";
@@ -58,10 +59,21 @@ const fileStorage: PersistStorage = {
     const uri = cacheUri(key);
     const started = Date.now();
     try {
-      const info = await FileSystem.getInfoAsync(uri);
-      if (!info.exists) return await takeLegacyValue(key);
-      const text = await FileSystem.readAsStringAsync(uri);
-      queryCacheRestoreStats.bytes = info.size ?? text.length;
+      // A synchronous read, at once: the legacy async read resumed only when the busy launch JS
+      // thread got round to it (over a second for a 2 MB cache), and every query waits on this.
+      let text: string;
+      try {
+        // shortcut: typed by hand; the package's File type loses its native members under this tsconfig.
+        const file = new File(uri) as unknown as { exists: boolean; textSync(): string };
+        if (!file.exists) return await takeLegacyValue(key);
+        text = file.textSync();
+      } catch {
+        // A binary without the new file API: the legacy async read.
+        const info = await FileSystem.getInfoAsync(uri);
+        if (!info.exists) return await takeLegacyValue(key);
+        text = await FileSystem.readAsStringAsync(uri);
+      }
+      queryCacheRestoreStats.bytes = text.length;
       queryCacheRestoreStats.readMs = Date.now() - started;
       return text;
     } catch {

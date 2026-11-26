@@ -66,7 +66,8 @@ import { Observe, ObserveRoot } from "@/lib/observe";
 import { PAGE_CHROME_ROUTES, PageChrome } from "@/components/navigation/PageChrome";
 import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell";
 import { useDropPagesBehindTabs } from "@/lib/root-stack";
-import { svgFontsSettled } from "@/lib/svg-fonts";
+// Starts registering Android's SVG font aliases at launch (not waited for).
+import "@/lib/svg-fonts";
 
 /** Deep links to a page (`/holidays`) still open over the tabs, so back always has somewhere to go. */
 export const unstable_settings = { anchor: "(tabs)" };
@@ -357,17 +358,10 @@ function RootLayout() {
     };
   }, []);
 
-  // Android: SVG text needs its font aliases before the first chart draws (lib/svg-fonts.ts).
-  const [svgFontsReady, setSvgFontsReady] = useState(Platform.OS !== "android");
-  useEffect(() => {
-    let active = true;
-    void svgFontsSettled.then(() => active && setSvgFontsReady(true));
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const ready = loaded && onboarded !== null && webFontReady && updateSettled && svgFontsReady;
+  // Android's SVG font aliases (lib/svg-fonts.ts) load in the background: the splash no longer
+  // waits for them (up to 2.5 s). SVG labels read the alias at render time, so a chart drawn before
+  // they land uses the real font names for those first draws and the aliases from the next one.
+  const ready = loaded && onboarded !== null && webFontReady && updateSettled;
 
   useEffect(() => {
     if (!ready) return;
