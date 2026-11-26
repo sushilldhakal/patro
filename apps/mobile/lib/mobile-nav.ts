@@ -64,8 +64,9 @@ export function useNavBottomPadding(isTablet: boolean): number {
   return pushed ? bottom + PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING;
 }
 
-/** Page inset. Matches the website: `px-4` (16) and `sm:px-6` (24). */
-export const PAGE_HORIZONTAL_PADDING = 16;
+/** Page inset on a phone: the home cards' thin 10 (owner 2026-11-27: as much room as possible on
+ *  small phones). From 768 up: 24. */
+export const PAGE_HORIZONTAL_PADDING = 10;
 export const PAGE_HORIZONTAL_PADDING_WIDE = 24;
 /** Website `PageShell` / page top: `py-8`. */
 export const PAGE_PADDING_Y = 32;

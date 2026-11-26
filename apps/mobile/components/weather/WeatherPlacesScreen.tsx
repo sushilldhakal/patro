@@ -354,7 +354,7 @@ export function PlacesScreen({
           )}
         </View>
 
-        <ScrollView contentContainerClassName="gap-3 px-4 pb-4 pt-2">
+        <ScrollView contentContainerClassName="gap-3 px-2.5 pb-4 pt-2">
           {places.pages.map((p, i) => (
             <PlaceCard key={p.id} page={page} place={p} index={i} onChoose={onChoose} />
           ))}

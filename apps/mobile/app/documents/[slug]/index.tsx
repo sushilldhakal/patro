@@ -159,7 +159,7 @@ export default function DocumentDetailScreen() {
           key={`cols-${chapterCols}`}
           numColumns={chapterCols}
           columnWrapperClassName={chapterCols > 1 ? "gap-3" : undefined}
-          contentContainerClassName="mx-auto w-full max-w-page gap-3 px-4 pb-48 pt-3 sm:px-6 md:pt-4"
+          contentContainerClassName="mx-auto w-full max-w-page gap-3 px-2.5 pb-48 pt-3 sm:px-6 md:pt-4"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         />

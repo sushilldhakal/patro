@@ -417,7 +417,7 @@ function Hourly({ page }: { page: WeatherPage }) {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2 px-4 py-4"
+        contentContainerClassName="gap-2 px-2.5 py-4"
         accessibilityRole="tablist"
       >
         {page.filters.map((f) => (

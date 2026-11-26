@@ -38,7 +38,7 @@ export default function VerseDetailScreen() {
         data={list.rows}
         keyExtractor={(row) => row.key}
         ListHeaderComponent={header}
-        contentContainerClassName="mx-auto w-full max-w-page px-4 pt-3 sm:px-6 md:pt-4"
+        contentContainerClassName="mx-auto w-full max-w-page px-2.5 pt-3 sm:px-6 md:pt-4"
         contentContainerStyle={{ paddingBottom: bottom + 24 }}
         onScroll={(e) => reportNavScrollJS(e.nativeEvent.contentOffset.y)}
         scrollEventThrottle={32}

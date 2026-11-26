@@ -241,7 +241,7 @@ export function DocumentReader({
           }}
           onStartReachedThreshold={0.6}
           maintainVisibleContentPosition={onStartReached ? { minIndexForVisible: 1 } : undefined}
-          contentContainerClassName="mx-auto w-full max-w-page px-4 pt-3 sm:px-6 md:pt-4"
+          contentContainerClassName="mx-auto w-full max-w-page px-2.5 pt-3 sm:px-6 md:pt-4"
           contentContainerStyle={{ paddingBottom: LIST_BOTTOM_INSET }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
