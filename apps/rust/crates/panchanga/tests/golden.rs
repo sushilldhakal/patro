@@ -30,11 +30,12 @@ fn f(v: &Value) -> f64 {
 fn n(v: &Value) -> u32 {
     u32::try_from(v.as_i64().unwrap_or_else(|| panic!("not an integer: {v}"))).expect("fits u32")
 }
+/// Equal to the last few bits: the platform libm (macOS vs Linux CI) moves the last ulps.
 fn same(got: f64, want: &Value, what: &str) {
-    assert_eq!(
-        got.to_bits(),
-        f(want).to_bits(),
-        "{what}: rust {got:?} vs python {want}"
+    let want = f(want);
+    assert!(
+        (got - want).abs() <= 1e-12 * want.abs().max(1.0),
+        "{what}: rust {got:?} vs python {want:?}"
     );
 }
 
