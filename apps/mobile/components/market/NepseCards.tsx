@@ -130,23 +130,26 @@ export function TopMoversCard() {
         ]}
         onChange={setDirection}
       />
-      <View className="flex-row flex-wrap">
-        {movers.list.slice(0, 8).map(({ quote: s, percent }) => (
-          <Pressable
-            key={s.symbol}
-            onPress={() => router.push(`/nepse/${s.symbol}`)}
-            accessibilityRole="button"
-            accessibilityLabel={`${s.symbol} ${percent.toFixed(2)}%`}
-            className="w-1/4 items-center gap-0.5 py-1 active:opacity-70"
-          >
-            <SymbolAvatar label={s.symbol} size={44} />
-            <Text className="text-sm font-semibold text-foreground" numberOfLines={1}>
-              {s.symbol}
-            </Text>
-            <Change up={percent > 0} value={percent} size="xs" />
-          </Pressable>
-        ))}
-      </View>
+      {/* Two rows of four narrow columns spread edge to edge, so the badges span the switch's width. */}
+      {[0, 4].map((from) => (
+        <View key={from} className="flex-row justify-between">
+          {movers.list.slice(from, from + 4).map(({ quote: s, percent }) => (
+            <Pressable
+              key={s.symbol}
+              onPress={() => router.push(`/nepse/${s.symbol}`)}
+              accessibilityRole="button"
+              accessibilityLabel={`${s.symbol} ${percent.toFixed(2)}%`}
+              className="w-16 items-center gap-0.5 py-1 active:opacity-70"
+            >
+              <SymbolAvatar label={s.symbol} size={44} />
+              <Text className="text-sm font-semibold text-foreground" numberOfLines={1}>
+                {s.symbol}
+              </Text>
+              <Change up={percent > 0} value={percent} size="xs" />
+            </Pressable>
+          ))}
+        </View>
+      ))}
     </MarketSection>
   );
 }
