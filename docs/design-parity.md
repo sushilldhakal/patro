@@ -15,7 +15,7 @@ Where it started and where it is (hand-typed values outside the token tables):
 
 Hand-typed values outside the token tables are at zero. Three lines keep a `design-ok` comment because they are not design: the wheel glyph regex that strips black fills out of authored SVGs, `elevation: 0` that hides the stock tab bar, and `elevation` used as a stacking order on the biometric lock. The CI check cannot let the counts grow.
 
-How the tokens got there (`scripts/monorepo-tools/`): `palette.mts` clustered the 332 distinct hex colours both apps had typed in (colours within 14 RGB steps merged) into `packages/design-tokens/src/illustration.ts`; `rgba.mts` turned `"rgba(r,g,b,a)"` strings into `withAlpha(token, a)`. Both are one-off tools and are kept as a record.
+How the tokens got there (one-off `scripts/monorepo-tools/`, since removed): `palette.mts` clustered the 332 distinct hex colours both apps had typed in (colours within 14 RGB steps merged) into `packages/design-tokens/src/illustration.ts`; `rgba.mts` turned `"rgba(r,g,b,a)"` strings into `withAlpha(token, a)`. Both are one-off tools and are kept as a record.
 
 CI also runs `npx turbo run lint` for both apps (the website's ESLint, the app's typecheck). `@expo/vector-icons` stays: unmapped icon names and the font load still use it, and everything mapped goes through `@vedic-patro/icons`. Visual parity between the website and the app is checked by eye; there is no automated screenshot comparison.
 

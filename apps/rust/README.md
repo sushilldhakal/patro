@@ -49,25 +49,11 @@ By default, requests use Open-Meteo's public forecast API. Set
 `PATRO_RS_OPEN_METEO_URL` to an Open-Meteo compatible self-hosted endpoint to use it
 instead. No client calls this route yet.
 
-Regenerate the golden files after changing the Python engine:
+The golden files in `tests/fixtures` and `crates/*/tests/fixtures` were recorded from the
+retired Python server; its generator scripts were removed with it (2026-11-26), so the
+fixtures are frozen. The account test needs a scratch Postgres (its name must end in `_test`):
 
 ```bash
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_surya_siddhanta_golden.py
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_engine_golden.py
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_daily_golden.py
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_festival_golden.py
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_geography_golden.py
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_date_key_golden.py
-cd apps/api && REDIS_URL= ../../.venv/bin/python ../rust/scripts/gen_http_golden.py   # end-to-end responses
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_text_tables.py   # Nepali/English text tables
-cd apps/api && ../../.venv/bin/python ../rust/scripts/gen_rashifal_tables.py   # rashifal strings + weights
-```
-
-The account goldens need a scratch Postgres (the database is wiped; its name must end in `_test`):
-
-```bash
-cd apps/api && PATRO_GOLDEN_DATABASE_URL=postgresql+psycopg://USER@HOST:PORT/patro_py_test REDIS_URL= ../../.venv/bin/python ../rust/scripts/gen_http_golden_accounts.py
-cd apps/api && PATRO_GOLDEN_SCENARIO=guidance PATRO_GOLDEN_DATABASE_URL=… ../../.venv/bin/python ../rust/scripts/gen_http_golden_accounts.py
 cd apps/rust && PATRO_RS_TEST_DATABASE_URL=postgresql://USER@HOST:PORT/patro_rs_test cargo test --test http_golden_accounts
 ```
 
@@ -97,7 +83,7 @@ apps/rust/
 │   ├── vastu/          zone uses + room index, the plot sketch, the house-plan engine (ring, layout, building, validate)
 │   └── patro/          API use cases (month grid) and the era response layer
 ├── docs/               porting notes (engine layer); maths notes in crates/astronomy/PORTING.md
-├── scripts/            golden-file generator and Python benchmark (run from apps/api)
+├── scripts/            parity and divergence tools, dev-local.sh, ephdata builders
 └── tests/              HTTP-level tests against the router
 ```
 

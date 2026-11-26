@@ -50,7 +50,7 @@ TypeScript source; there is no build step.
 - **Domain code** must stay plain TypeScript with no React, React Native or
   browser APIs, and no API response types — `npm run lint -w @vedic-patro/domain`
   checks it. Code that reads a response goes in `packages/read-models`; class
-  names go in `packages/design-tokens`. See [docs/DDD-PLAN.md](docs/DDD-PLAN.md).
+  names go in `packages/design-tokens`.
 
 ## Deploying
 
