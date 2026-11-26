@@ -14,7 +14,7 @@ import { __iconNode as ChevronLeftNode } from "lucide-react/dist/esm/icons/chevr
 import { LucideNative } from "@/components/icons/LucideNative";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
-import { useNavBottomPadding } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -59,7 +59,7 @@ export function LargeTitlePage({
 
   return (
     <View className="flex-1 bg-background">
-      <View className="bg-background px-4 pb-2" style={{ paddingTop: insets.top + 4 }}>
+      <View className="bg-background px-2.5 pb-2" style={{ paddingTop: insets.top + 4 }}>
         <View className="min-h-11 flex-row items-center justify-center">
           <Pressable
             onPress={back}
@@ -88,7 +88,7 @@ export function LargeTitlePage({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         automaticallyAdjustKeyboardInsets
-        contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: navBottom + space["2xl"], gap: space.lg }}
+        contentContainerStyle={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingBottom: navBottom + space["2xl"], gap: space.lg }}
       >
         <View className="gap-1">
           <Text className="text-4xl font-extrabold text-foreground" style={ne}>

@@ -68,7 +68,7 @@ export function StarButton({ kind, id }: { kind: WatchKind; id: string }) {
 export function MarketSection({ title, children, onPress }: { title: string; children: ReactNode; onPress?: () => void }) {
   const colors = useThemeColors();
   return (
-    <View className="gap-2 rounded-3xl border border-border bg-card p-4">
+    <View className="gap-2 rounded-3xl border border-border bg-card p-3">
       <Pressable
         onPress={onPress}
         disabled={!onPress}

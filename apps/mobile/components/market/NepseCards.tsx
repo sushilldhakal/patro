@@ -1,7 +1,9 @@
 import { useState, type ReactNode } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
-import { space, withAlpha } from "@vedic-patro/design-tokens";
+import { withAlpha } from "@vedic-patro/design-tokens";
+import { SLIDER_TINT, TintCard } from "@/components/home/TintCard";
+import { SLIDER_CARD_HEIGHT, SLIDER_GAP, sliderCardWidth } from "@/components/home/UpcomingFestivalsSlider";
 import {
   nepseCrore,
   nepseNumber,
@@ -17,78 +19,167 @@ import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { useWatchlistAll } from "@/lib/watchlist";
 
-/** Today's top gainers or losers as a 4 × 2 grid of badges; the title opens the full ranking. */
-export function TopMoversCard() {
+/**
+ * A home-style row, like the market slider: the title and "सबै हेर्नुहोस् ›" on one line, then cards
+ * to swipe that start on the page's card line and scroll out to the screen edge.
+ */
+function NepseSlider({
+  title,
+  onViewAll,
+  horizontalInset,
+  above,
+  children,
+}: {
+  title: string;
+  onViewAll: () => void;
+  horizontalInset: number;
+  above?: ReactNode;
+  children: ReactNode;
+}) {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  return (
+    <View>
+      <View className="mb-2 flex-row items-center justify-between">
+        <Text className="text-lg font-bold text-foreground">{title}</Text>
+        <Pressable onPress={onViewAll} accessibilityRole="button" hitSlop={8}>
+          <Text className="text-base font-semibold" style={{ color: colors.secondary }}>
+            {t("common.view_all")} ›
+          </Text>
+        </Pressable>
+      </View>
+      {above}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ marginHorizontal: -horizontalInset }}
+        contentContainerStyle={{ paddingHorizontal: horizontalInset, gap: SLIDER_GAP }}
+      >
+        {children}
+      </ScrollView>
+    </View>
+  );
+}
+
+/** One scrip on a slider card: badge, symbol, price, change, and an optional last line. */
+function ScripCard({
+  symbol,
+  name,
+  ltp,
+  change,
+  foot,
+  rank,
+  tint,
+  width,
+}: {
+  symbol: string;
+  name?: string | null;
+  ltp: number;
+  change: ReactNode;
+  foot?: string;
+  rank?: string;
+  tint: string;
+  width: number;
+}) {
+  const router = useRouter();
+  const colors = useThemeColors();
+  const { digits } = useLocale();
+  return (
+    <TintCard tint={tint} width={width} minHeight={SLIDER_CARD_HEIGHT} onPress={() => router.push(`/nepse/${symbol}`)} accessibilityLabel={name ?? symbol}>
+      {rank ? (
+        <Text className="absolute -top-1 right-2 text-5xl font-extrabold" style={{ color: withAlpha(colors.foreground, 0.08) }}>
+          {rank}
+        </Text>
+      ) : null}
+      <SymbolAvatar label={symbol} size={36} />
+      <Text className="mt-2 text-base font-extrabold text-foreground" numberOfLines={1}>
+        {symbol}
+      </Text>
+      {name ? (
+        <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+          {name}
+        </Text>
+      ) : null}
+      <View className="mt-auto">
+        <Text className="text-base font-bold tabular-nums text-foreground">{digits(nepseNumber(ltp))}</Text>
+        {change}
+        {foot ? (
+          <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+            {foot}
+          </Text>
+        ) : null}
+      </View>
+    </TintCard>
+  );
+}
+
+/** Today's top gainers or losers as cards to swipe; "view all" opens the full ranking. */
+export function TopMoversCard({ horizontalInset = 0 }: { horizontalInset?: number }) {
   const { t } = useLocale();
   const router = useRouter();
+  const colors = useThemeColors();
+  const { width: windowWidth } = useWindowDimensions();
+  const cardWidth = sliderCardWidth(windowWidth, horizontalInset);
   const [direction, setDirection] = useState<"up" | "down">("up");
   const movers = useNepseMovers(direction, "1D");
   if (!movers.live.data) return null;
   return (
-    <MarketSection title={t("market.top_movers")} onPress={() => router.push(`/nepse/movers?direction=${direction}`)}>
-      <PillSwitch
-        value={direction}
-        options={[
-          { id: "up", label: t("market.top_gainers") },
-          { id: "down", label: t("market.top_losers") },
-        ]}
-        onChange={setDirection}
-      />
-      <View className="flex-row flex-wrap pt-2">
-        {movers.list.slice(0, 8).map(({ quote: s, percent }) => (
-          <Pressable
-            key={s.symbol}
-            onPress={() => router.push(`/nepse/${s.symbol}`)}
-            accessibilityRole="button"
-            accessibilityLabel={`${s.symbol} ${percent.toFixed(2)}%`}
-            className="w-1/4 items-center gap-1 py-2 active:opacity-70"
-          >
-            <SymbolAvatar label={s.symbol} size={56} />
-            <Text className="text-sm font-semibold text-foreground" numberOfLines={1}>
-              {s.symbol}
-            </Text>
-            <Change up={percent > 0} value={percent} size="xs" />
-          </Pressable>
-        ))}
-      </View>
-    </MarketSection>
+    <NepseSlider
+      title={t("market.top_movers")}
+      onViewAll={() => router.push(`/nepse/movers?direction=${direction}`)}
+      horizontalInset={horizontalInset}
+      above={
+        <View className="mb-2 w-60">
+          <PillSwitch
+            value={direction}
+            options={[
+              { id: "up", label: t("market.top_gainers") },
+              { id: "down", label: t("market.top_losers") },
+            ]}
+            onChange={setDirection}
+          />
+        </View>
+      }
+    >
+      {movers.list.slice(0, 10).map(({ quote: s, percent }) => (
+        <ScripCard
+          key={s.symbol}
+          symbol={s.symbol}
+          name={s.name}
+          ltp={s.ltp}
+          change={<Change up={percent > 0} value={percent} />}
+          tint={direction === "up" ? colors.success : colors.destructive}
+          width={cardWidth}
+        />
+      ))}
+    </NepseSlider>
   );
 }
 
-/** The day's ten most traded scrips by rupees, as cards to swipe; the title opens the full ranking. */
-export function MostTradedCard() {
+/** The day's ten most traded scrips by rupees, as cards to swipe; "view all" opens the full ranking. */
+export function MostTradedCard({ horizontalInset = 0 }: { horizontalInset?: number }) {
   const { t, digits } = useLocale();
   const router = useRouter();
-  const colors = useThemeColors();
+  const { width: windowWidth } = useWindowDimensions();
+  const cardWidth = sliderCardWidth(windowWidth, horizontalInset);
   const most = useNepseMostTraded("turnover", "1D");
   if (!most.live.data) return null;
   return (
-    <MarketSection title={t("market.most_traded")} onPress={() => router.push("/nepse/most-traded")}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.md }}>
-        {most.list.slice(0, 10).map(({ quote: s, turnover }, i) => (
-          <Pressable
-            key={s.symbol}
-            onPress={() => router.push(`/nepse/${s.symbol}`)}
-            accessibilityRole="button"
-            className="w-44 overflow-hidden rounded-3xl border border-border bg-background p-4 active:opacity-70"
-          >
-            <Text className="absolute -top-2 right-2 text-7xl font-extrabold" style={{ color: withAlpha(colors.foreground, 0.08) }}>
-              {digits(i + 1)}
-            </Text>
-            <SymbolAvatar label={s.symbol} />
-            <Text className="mt-6 text-base font-bold text-foreground" numberOfLines={1}>
-              {s.name ?? s.symbol}
-            </Text>
-            <Text className="text-sm text-muted-foreground">{s.symbol}</Text>
-            <Text className="mt-1 text-base font-semibold tabular-nums text-foreground">{digits(nepseNumber(s.ltp))}</Text>
-            <Change up={s.change === 0 ? null : s.change > 0} value={s.percent} />
-            <Text className="mt-1 text-xs text-muted-foreground" numberOfLines={1}>
-              {t("market.shares_turnover_short", { value: digits(nepseCrore(turnover)) })}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </MarketSection>
+    <NepseSlider title={t("market.most_traded")} onViewAll={() => router.push("/nepse/most-traded")} horizontalInset={horizontalInset}>
+      {most.list.slice(0, 10).map(({ quote: s, turnover }, i) => (
+        <ScripCard
+          key={s.symbol}
+          symbol={s.symbol}
+          name={s.name}
+          ltp={s.ltp}
+          rank={digits(i + 1)}
+          change={<Change up={s.change === 0 ? null : s.change > 0} value={s.percent} />}
+          foot={t("market.shares_turnover_short", { value: digits(nepseCrore(turnover)) })}
+          tint={SLIDER_TINT.news}
+          width={cardWidth}
+        />
+      ))}
+    </NepseSlider>
   );
 }
 
@@ -217,7 +308,7 @@ export function RankingPage({
   return (
     <>
       <View className="flex-row flex-wrap gap-2">{chips}</View>
-      <View className="rounded-3xl border border-border bg-card px-4 py-1">
+      <View className="rounded-3xl border border-border bg-card px-3 py-1">
         {loading ? (
           <Text className="py-10 text-center text-sm text-muted-foreground">{t("market.loading")}</Text>
         ) : empty ? (

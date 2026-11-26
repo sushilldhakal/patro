@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { space } from "@vedic-patro/design-tokens";
 import { useMetalDetail, type MetalId } from "@vedic-patro/features/home";
 import { BackHeader } from "@/components/home/BackHeader";
-import { useNavBottomPadding } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { MetalPriceLines } from "@/components/home/MarketCards";
 import { RateChart } from "@/components/home/RateChart";
 import { RateTable } from "@/components/home/RateTable";
@@ -31,7 +31,7 @@ export default function MetalScreen() {
       <BackHeader title={title} subtitle={page.copy.subtitle} right={<StarButton kind="metal" id={id} />} />
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: space.lg,
+          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
           paddingTop: space.sm,
           paddingBottom: navBottom + space["2xl"],
           gap: space.lg,

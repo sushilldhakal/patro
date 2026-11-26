@@ -15,7 +15,7 @@ import { Change, MarketSection, StarButton, SymbolAvatar } from "@/components/ma
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
-import { useNavBottomPadding } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useThemeColors } from "@/lib/theme-context";
 
 /**
@@ -62,7 +62,7 @@ export default function NepseStockScreen() {
       <BackHeader title={symbol} right={<StarButton kind="share" id={symbol} />} />
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: space.lg,
+          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
           paddingTop: space.sm,
           paddingBottom: navBottom + space["2xl"],
           gap: space.lg,

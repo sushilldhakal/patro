@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import { space } from "@vedic-patro/design-tokens";
 import { useForexDetail } from "@vedic-patro/features/home";
 import { BackHeader } from "@/components/home/BackHeader";
-import { useNavBottomPadding } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { RateChart } from "@/components/home/RateChart";
 import { RateTable } from "@/components/home/RateTable";
 import { StarButton } from "@/components/market/MarketParts";
@@ -28,7 +28,7 @@ export default function ForexCurrencyScreen() {
       />
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: space.lg,
+          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
           paddingTop: space.sm,
           paddingBottom: navBottom + space["2xl"],
           gap: space.lg,

@@ -50,7 +50,7 @@ import { useWatchlist, type WatchKind } from "@/lib/watchlist";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useNavBottomPadding } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useThemeColors } from "@/lib/theme-context";
 
 type Tab = "metals" | "forex" | "shares";
@@ -81,7 +81,7 @@ export default function MarketScreen() {
     <View className="flex-1 bg-background">
       {/* Outside the scroll, so the page never scrolls behind the status bar or the tabs. */}
       <View
-        className="gap-3 border-b border-border bg-background px-4 pb-3"
+        className="gap-3 border-b border-border bg-background px-2.5 pb-3"
         style={{ paddingTop: insets.top + 4 }}
       >
         <View className="h-11 flex-row items-center justify-center">
@@ -144,7 +144,7 @@ export default function MarketScreen() {
           paddingBottom: navBottom + space["2xl"],
         }}
       >
-        <View className="gap-4 px-4">
+        <View className="gap-4 px-2.5">
           {tab === "metals" ? (
             <MetalsTab />
           ) : tab === "forex" ? (
@@ -772,9 +772,9 @@ function SharesTab() {
                 )}
               </MarketSection>
 
-              <TopMoversCard />
+              <TopMoversCard horizontalInset={PAGE_HORIZONTAL_PADDING} />
 
-              <MostTradedCard />
+              <MostTradedCard horizontalInset={PAGE_HORIZONTAL_PADDING} />
 
               <MarketSection title={t("market.shares_list", { count: digits(data.scrips) })}>
                 {shown.map(quoteRow)}
