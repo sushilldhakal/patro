@@ -1,0 +1,33 @@
+# Gold and silver once a day at 10:30 Nepal time (04:45 UTC), from GoldAPI to R2
+# (static.vedicpatro.com/metals/history.json). The apps and the site read that file all day:
+# GoldAPI's free quota is spent once a day, and neither the phones nor the Oracle server call it.
+name: Metals daily
+
+on:
+  schedule:
+    - cron: "45 4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: metals-daily
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GOLDAPI_KEY: ${{ secrets.GOLDAPI_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch today's prices and add them to the history
+        run: node scripts/metals-daily.mjs out
+      - name: Upload to R2
+        run: |
+          npx --yes wrangler@4 r2 object put vedicpatro-static/metals/history.json --remote \
+            --file out/history.json --content-type "application/json; charset=utf-8" \
+            --cache-control "public, max-age=1800"

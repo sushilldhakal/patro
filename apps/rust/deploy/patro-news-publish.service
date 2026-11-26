@@ -1,0 +1,11 @@
+[Unit]
+Description=Publish the news feed's first page to static.vedicpatro.com (R2)
+After=network-online.target patro-rust.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+ExecStart=/bin/bash /home/ubuntu/patro/scripts/publish-news.sh
+TimeoutStartSec=5min
+SyslogIdentifier=patro-news-publish

@@ -5,3 +5,5 @@ export * from "./auth";
 export * from "./documents";
 export * from "./events";
 export * from "./static-data";
+export * from "./forex";
+export * from "./metals";

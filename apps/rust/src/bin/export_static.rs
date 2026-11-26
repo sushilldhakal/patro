@@ -125,12 +125,14 @@ async fn main() -> anyhow::Result<()> {
     export_documents(&mut ex, &documents).await?;
     export_verse_details(&mut ex).await?;
     export_veda_daily(&mut ex, first_year, last_year).await?;
+    export_festival_years(&mut ex, first_year, last_year).await?;
 
     let manifest = json!({
         "version": version,
         "tile_deg": TILE_DEG,
         "chunk": CHUNK,
         "veda_daily_years": [first_year, last_year],
+        "festival_years": { "ad": [first_year, last_year], "bs": [first_year + 56, last_year + 57] },
     });
     std::fs::write(root.join("manifest.json"), manifest.to_string())?;
     println!("exported {} files to {}", ex.files, ex.dir.display());
@@ -390,6 +392,23 @@ async fn export_veda_daily(ex: &mut Export, first: i32, last: i32) -> anyhow::Re
                 &format!("veda/daily/{year:04}-{month:02}.json"),
                 Value::Object(days).to_string().as_bytes(),
             )?;
+        }
+    }
+    Ok(())
+}
+
+/// `{festivals,holidays}/{era}/{year}-{lang}.json`: the national (Kathmandu) year listings, which
+/// the apps read when the device cannot make them, before asking the server.
+async fn export_festival_years(ex: &mut Export, first: i32, last: i32) -> anyhow::Result<()> {
+    for (era, years) in [("ad", first..=last), ("bs", first + 56..=last + 57)] {
+        for year in years {
+            for lang in ["ne", "en"] {
+                for kind in ["festivals", "holidays"] {
+                    let uri = format!("/v1/nepal/{kind}?year={year}&era={era}&language={lang}");
+                    ex.copy(&uri, &format!("{kind}/{era}/{year}-{lang}.json"))
+                        .await?;
+                }
+            }
         }
     }
     Ok(())

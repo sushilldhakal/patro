@@ -5238,6 +5238,53 @@
       "quadrillion": "quadrillion"
     }
   },
+  "metals": {
+    "title": "Gold and silver",
+    "subtitle": "The price at 10:30 every morning",
+    "gold": "Hallmark gold",
+    "silver": "Silver",
+    "per_tola": "tola",
+    "per_10g": "10 g",
+    "amount": "Rs {{amount}}",
+    "note": "International price, in rupees",
+    "date": "Date",
+    "history": "Earlier days"
+  },
+  "forex": {
+    "title": "Exchange rates",
+    "buy": "Buy",
+    "sell": "Sell",
+    "per_unit": "per {{unit}} {{code}}",
+    "subtitle": "Today's rates set by Nepal Rastra Bank",
+    "date": "Date",
+    "history": "Last 30 days",
+    "currency_label": "Currency",
+    "source": "Nepal Rastra Bank · {{date}}",
+    "currency": {
+      "INR": "Indian Rupee",
+      "USD": "US Dollar",
+      "EUR": "Euro",
+      "GBP": "UK Pound",
+      "CHF": "Swiss Franc",
+      "AUD": "Australian Dollar",
+      "CAD": "Canadian Dollar",
+      "SGD": "Singapore Dollar",
+      "JPY": "Japanese Yen",
+      "CNY": "Chinese Yuan",
+      "SAR": "Saudi Riyal",
+      "QAR": "Qatari Riyal",
+      "THB": "Thai Baht",
+      "AED": "UAE Dirham",
+      "MYR": "Malaysian Ringgit",
+      "KRW": "South Korean Won",
+      "SEK": "Swedish Krona",
+      "DKK": "Danish Krone",
+      "HKD": "Hong Kong Dollar",
+      "KWD": "Kuwaiti Dinar",
+      "BHD": "Bahraini Dinar",
+      "OMR": "Omani Rial"
+    }
+  },
   "news": {
     "title": "News",
     "subtitle": "The latest headlines from Nepal's news outlets",

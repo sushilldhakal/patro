@@ -120,6 +120,35 @@ export async function staticJsonFor<T>(path: string): Promise<T | null> {
   }
 }
 
+/**
+ * A file the server republishes in place on a timer (`news/feed-ne.json`), outside the versioned
+ * export: parsed, or null (static off, missing, offline) so the API answers.
+ */
+export async function staticLiveJson<T>(file: string): Promise<T | null> {
+  if (!base) return null;
+  try {
+    const res = await fetchQuick(`${base}/${file}`);
+    return res.ok ? ((await res.json()) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The national (Kathmandu) festival or holiday list of a year, exported by export_static. */
+export function staticFestivalYear<T>(kind: "festivals" | "holidays", era: string, year: number, language: string): Promise<T | null> {
+  if ((era !== "bs" && era !== "ad") || (language !== "ne" && language !== "en") || !Number.isInteger(year)) return Promise.resolve(null);
+  return staticResponseForFile<T>(`${kind}/${era}/${year}-${language}.json`);
+}
+
+async function staticResponseForFile<T>(file: string): Promise<T | null> {
+  const res = await staticFile(file);
+  try {
+    return res ? ((await res.json()) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
 /** `/veda/daily` for one day, from that month's file (`veda/daily/2026-11.json`). */
 export async function staticVedaDaily<T>(dateAd: string): Promise<T | null> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateAd)) return null;

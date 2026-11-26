@@ -82,7 +82,7 @@ import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 import type { InstantQuery } from "@vedic-patro/domain/calendar/instant";
 import { rememberCity, type LocalCalendar, type SharedMonthStore } from "@vedic-patro/domain/festivals/local-calendar";
 import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
-import { staticCitySearch, staticNearestCity } from "./static-data";
+import { staticCitySearch, staticFestivalYear, staticLiveJson, staticNearestCity } from "./static-data";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────
 // Appended to cacheable URLs so a backend/engine change mints fresh CDN objects
@@ -610,7 +610,12 @@ export const weatherKeys = {
 };
 
 /** One page of grouped publisher headlines; `cursor` is the previous page's `next_cursor`. */
-export const fetchNewsFeed = (params: NewsFeedParams = {}) => {
+export const fetchNewsFeed = async (params: NewsFeedParams = {}) => {
+  // The first page of each language is republished to Cloudflare every 10 minutes
+  // (scripts/publish-news.sh); categories and later pages still ask the server.
+  const firstPage = !params.cursor && !params.category && (params.limit ?? 30) === 30 && (params.lang === "ne" || params.lang === "en");
+  const published = firstPage ? await staticLiveJson<NewsFeedResponse>(`news/feed-${params.lang}.json`) : null;
+  if (published) return published;
   const q = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v != null && v !== "") q.set(k, String(v));
   const qs = q.toString();
@@ -796,6 +801,9 @@ export const saitKeys = {
 const withFestivalLocation = (path: string, location?: LocationParams) =>
   location ? appendLocation(path, location) : path;
 
+/** Kathmandu (the national listing): no place, or the default city's id. */
+const isNationalPlace = (location?: LocationParams) => !location || Number(location.city_id) === 1283240;
+
 export const fetchHolidays = async (
   year: number,
   era: Era = "bs",
@@ -803,6 +811,7 @@ export const fetchHolidays = async (
   language: Lang = normalizeLang(),
 ): Promise<HolidaysResponse> =>
   (await fromLocal<HolidaysResponse>((l) => l.holidays({ year, era, language }, location))) ??
+  (isNationalPlace(location) ? await staticFestivalYear<HolidaysResponse>("holidays", era, year, language) : null) ??
   get<HolidaysResponse>(
     withPanchangaCacheVersion(
       withFestivalLocation(`/nepal/holidays?year=${year}&era=${era}&language=${language}`, location),
@@ -819,7 +828,12 @@ export const fetchFestivals = (
   if (options.month != null) path += `&month=${options.month}`;
   const month = options.month ?? undefined;
   return fromLocal<FestivalsResponse>((l) => l.festivals({ year, era, month, language }, options.location)).then(
-    (local) => local ?? get<FestivalsResponse>(withPanchangaCacheVersion(withFestivalLocation(path, options.location))),
+    async (local) =>
+      local ??
+      (month === undefined && isNationalPlace(options.location)
+        ? await staticFestivalYear<FestivalsResponse>("festivals", era, year, language)
+        : null) ??
+      get<FestivalsResponse>(withPanchangaCacheVersion(withFestivalLocation(path, options.location))),
   );
 };
 
