@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rust API deploy — run by the repo-root scripts/deploy.sh (GitHub Actions over SSH).
-# Builds apps/rust on this box, swaps the binary in atomically, restarts the service and
+# Installs the binary GitHub Actions built, swaps it in atomically, restarts the service and
 # checks it answers; if it does not, puts the previous binary back and fails the deploy.
 #
 # One-time setup is apps/rust/deploy/stage.sh (data files, rust.env, systemd unit). On a box
@@ -18,23 +18,11 @@ if [[ ! -f "${RUST_HOME}/rust.env" ]]; then
   exit 0
 fi
 
-# The toolchain is installed once, minimal profile, for this user only.
-export PATH="${HOME}/.cargo/bin:${PATH}"
-if ! command -v cargo >/dev/null 2>&1; then
-  echo "==> Installing the Rust toolchain (first deploy only)"
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh
-  sh /tmp/rustup-init.sh -y --profile minimal --default-toolchain stable
-  export PATH="${HOME}/.cargo/bin:${PATH}"
-fi
-
-echo "==> Building the Rust API (release, low priority so the live servers keep their CPU)"
-cd "${REPO_DIR}/apps/rust"
-# Only the server binary: the other workspace members (the Swiss Ephemeris oracle) are not needed.
-nice -n 19 cargo build --release -j 2 -p vedic-patro --locked
-
-NEW="${REPO_DIR}/apps/rust/target/release/vedic-patro"
+# GitHub Actions builds the binary (deploy.yml, ARM runner) and copies it here as RUST_BIN:
+# nothing is compiled on this box.
+NEW="${RUST_BIN:-}"
+[[ -n "${NEW}" && -f "${NEW}" ]] || { echo "RUST_BIN not set or missing — deploy through GitHub Actions (deploy.yml)" >&2; exit 1; }
 BIN="${RUST_HOME}/bin/vedic-patro"
-[[ -x "${NEW}" ]] || { echo "build produced no binary" >&2; exit 1; }
 
 mkdir -p "${RUST_HOME}/bin"
 [[ -f "${BIN}" ]] && cp -f "${BIN}" "${BIN}.prev"

@@ -3,7 +3,7 @@
 # to main. Pulls once, then deploys whichever apps changed since their last
 # successful deploy (recorded in .deploy/<app>.sha):
 #   apps/web, packages/*, locks   → scripts/deploy-web.sh        (.well-known + redirects.map only; site is on Cloudflare)
-#   apps/rust, festival rules     → scripts/deploy-rust.sh       (Rust API: build, swap, health check)
+#   apps/rust, festival rules     → scripts/deploy-rust.sh       (Rust API: install Actions build, swap, health check)
 # The mobile app ships through EAS, not this script.
 # FORCE_DEPLOY=all|web|rust deploys regardless of changes.
 set -euo pipefail
