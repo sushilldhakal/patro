@@ -424,3 +424,27 @@ pub async fn veda_daily(
         Err(error) => handle(error),
     }
 }
+
+/// `GET /v1/asset/{key}`: a 302 to the asset's current link (signed when the bucket is private).
+///
+/// The static data files (static.vedicpatro.com) link recordings and images here, because a
+/// signed link written into a file would expire long before the file does.
+pub async fn asset_redirect(State(state): State<AppState>, Path(key): Path<String>) -> Response {
+    let safe = !key.is_empty()
+        && key
+            .split('/')
+            .all(|s| !s.is_empty() && s != "." && s != "..")
+        && key
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '/' | '-'));
+    let Some(location) = safe.then(|| state.documents.asset_location(&key)).flatten() else {
+        return detail(StatusCode::NOT_FOUND, "No such asset");
+    };
+    Response::builder()
+        .status(StatusCode::FOUND)
+        .header(axum::http::header::LOCATION, location)
+        // Well inside a signed link's life (at least ttl - window, 6 h by default).
+        .header(axum::http::header::CACHE_CONTROL, "public, max-age=600")
+        .body(axum::body::Body::empty())
+        .unwrap_or_else(|_| detail(StatusCode::INTERNAL_SERVER_ERROR, "internal error"))
+}

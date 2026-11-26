@@ -19,8 +19,12 @@ use axum::{
 };
 use common::AppConfig;
 use geography::Cities;
+use patro::catalog::DocumentsService;
 use serde_json::{Value, json};
 use tower::ServiceExt;
+
+/// Verses per chunk file of a chapter or a verse-detail list (the client reads it from the index).
+const CHUNK: usize = 200;
 
 /// Tile edge in degrees for the nearest-city files (the client reads it from `manifest.json`).
 const TILE_DEG: f64 = 0.5;
@@ -100,8 +104,15 @@ async fn main() -> anyhow::Result<()> {
     let config = AppConfig::load("config").context("loading configuration")?;
     let cities = Cities::new(config.cities_db());
     let root = PathBuf::from(out);
+    // Recordings and images link through the API's /v1/asset redirect, which signs them when
+    // asked: a signed link in a file would expire long before the file.
+    let asset_base = std::env::var("STATIC_ASSET_BASE")
+        .unwrap_or_else(|_| "https://www.vedicpatro.com/api/v1/asset".to_owned());
+    let mut state = AppState::new(config);
+    state.documents = state.documents.clone().with_asset_link_base(&asset_base);
+    let documents = state.documents.clone();
     let mut ex = Export {
-        app: api::router(AppState::new(config)),
+        app: api::router(state),
         dir: root.join(format!("v{version}")),
         files: 0,
     };
@@ -111,12 +122,14 @@ async fn main() -> anyhow::Result<()> {
     ex.copy("/v1/nepal/cities/popular", "cities/popular.json")
         .await?;
     export_city_tiles(&mut ex, &cities)?;
-    export_documents(&mut ex).await?;
+    export_documents(&mut ex, &documents).await?;
+    export_verse_details(&mut ex).await?;
     export_veda_daily(&mut ex, first_year, last_year).await?;
 
     let manifest = json!({
         "version": version,
         "tile_deg": TILE_DEG,
+        "chunk": CHUNK,
         "veda_daily_years": [first_year, last_year],
     });
     std::fs::write(root.join("manifest.json"), manifest.to_string())?;
@@ -124,27 +137,33 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-/// `cities/tile/{a}_{b}.json`: every city in a 0.5° cell, as rows in `City::to_json` field order.
+/// `cities/all.json` (every city, by id, for the search on the device) and
+/// `cities/tile/{a}_{b}.json` (every city in a 0.5° cell, for the nearest city), as rows in
+/// `City::to_json` field order.
 fn export_city_tiles(ex: &mut Export, cities: &Cities) -> anyhow::Result<()> {
     let mut tiles: BTreeMap<String, Vec<Value>> = BTreeMap::new();
+    let mut all = Vec::new();
     for c in cities.all()? {
+        let row = json!([
+            c.id,
+            c.name,
+            c.ascii_name,
+            c.lat,
+            c.lon,
+            c.country,
+            c.population,
+            c.timezone,
+            c.admin1,
+            c.admin1_name
+        ]);
         tiles
             .entry(tile_key(c.lat, c.lon))
             .or_default()
-            .push(json!([
-                c.id,
-                c.name,
-                c.ascii_name,
-                c.lat,
-                c.lon,
-                c.country,
-                c.population,
-                c.timezone,
-                c.admin1,
-                c.admin1_name
-            ]));
+            .push(row.clone());
+        all.push(row);
     }
     ensure!(!tiles.is_empty(), "cities.db has no cities");
+    ex.write("cities/all.json", Value::Array(all).to_string().as_bytes())?;
     for (key, rows) in tiles {
         ex.write(
             &format!("cities/tile/{key}.json"),
@@ -155,7 +174,7 @@ fn export_city_tiles(ex: &mut Export, cities: &Cities) -> anyhow::Result<()> {
 }
 
 /// The document list, every document, every whole chapter, and the verse-detail value lists.
-async fn export_documents(ex: &mut Export) -> anyhow::Result<()> {
+async fn export_documents(ex: &mut Export, documents: &DocumentsService) -> anyhow::Result<()> {
     let list = ex.copy("/v1/documents", "documents/index.json").await?;
     let slugs: Vec<String> = list["documents"]
         .as_array()
@@ -182,6 +201,7 @@ async fn export_documents(ex: &mut Export) -> anyhow::Result<()> {
                 &format!("documents/{slug}/{number}.json"),
             )
             .await?;
+            export_chapter_pages(ex, documents, slug, number).await?;
         }
     }
     for kind in ["devata", "rishi", "chhanda", "svara"] {
@@ -200,6 +220,154 @@ async fn export_documents(ex: &mut Export) -> anyhow::Result<()> {
         }
     }
     Ok(())
+}
+
+/// `documents/{slug}/{n}/index.json` plus `c{k}.json` chunks: what the paged chapter route
+/// (`?cursor&direction&limit&verse`) needs to answer on the device. The index holds the page
+/// header, every verse's `global_order` and `verse_label` (the reader's verses drop both), and
+/// the chunks the reader verses themselves, `CHUNK` to a file.
+async fn export_chapter_pages(
+    ex: &mut Export,
+    documents: &DocumentsService,
+    slug: &str,
+    number: i64,
+) -> anyhow::Result<()> {
+    let index = documents
+        .chapter_verse_index(slug, number)
+        .map_err(|e| anyhow::anyhow!("{slug} {number}: {e:?}"))?;
+    if index.is_empty() {
+        return Ok(());
+    }
+    let mut verses = Vec::new();
+    let mut header = None;
+    let mut cursor: Option<i64> = None;
+    loop {
+        let uri = cursor.map_or_else(
+            || format!("/v1/documents/{slug}/chapters/{number}?limit=100"),
+            |c| format!("/v1/documents/{slug}/chapters/{number}?limit=100&cursor={c}"),
+        );
+        let Some(bytes) = ex.get(&uri).await? else {
+            bail!("{uri}: not found");
+        };
+        let mut page: serde_json::Map<String, Value> = serde_json::from_slice(&bytes)?;
+        let next = page.get("next_cursor").and_then(Value::as_i64);
+        if let Some(Value::Array(list)) = page.shift_remove("verses") {
+            verses.extend(list);
+        }
+        for key in ["next_cursor", "prev_cursor", "total"] {
+            page.shift_remove(key);
+        }
+        header.get_or_insert(page);
+        match next {
+            Some(c) => cursor = Some(c),
+            None => break,
+        }
+    }
+    ensure!(
+        verses.len() == index.len(),
+        "{slug} {number}: {} verses paged, {} in the index",
+        verses.len(),
+        index.len()
+    );
+    let (orders, labels): (Vec<i64>, Vec<Option<String>>) = index.into_iter().unzip();
+    ex.write(
+        &format!("documents/{slug}/{number}/index.json"),
+        json!({ "header": header, "total": orders.len(), "orders": orders, "labels": labels, "chunk": CHUNK })
+            .to_string()
+            .as_bytes(),
+    )?;
+    for (k, chunk) in verses.chunks(CHUNK).enumerate() {
+        ex.write(
+            &format!("documents/{slug}/{number}/c{k}.json"),
+            Value::Array(chunk.to_vec()).to_string().as_bytes(),
+        )?;
+    }
+    Ok(())
+}
+
+/// `veda/details/{kind}/{hex of value}/index.json` plus `c{k}.json` chunks: every verse sharing a
+/// देवता / ऋषि / छन्द / स्वर across all documents, in the route's order (document, then verse).
+/// The index carries each position's document slug, so the device pages within one Veda too.
+async fn export_verse_details(ex: &mut Export) -> anyhow::Result<()> {
+    for kind in ["devata", "rishi", "chhanda", "svara"] {
+        let Some(bytes) = ex.get(&format!("/v1/veda/details/{kind}/values")).await? else {
+            bail!("{kind} values: not found");
+        };
+        let values: Value = serde_json::from_slice(&bytes)?;
+        let mut seen = std::collections::HashSet::new();
+        for value in values["values"]
+            .as_array()
+            .context("values")?
+            .iter()
+            .filter_map(|v| v["value"].as_str())
+        {
+            // A value the route would trim cannot be asked for as itself; the API answers it.
+            if value.trim() != value {
+                continue;
+            }
+            let mut verses = Vec::new();
+            loop {
+                let uri = format!(
+                    "/v1/veda/details/{kind}?value={}&offset={}&limit=200",
+                    percent_encode(value),
+                    verses.len()
+                );
+                let Some(bytes) = ex.get(&uri).await? else {
+                    bail!("{uri}: not found");
+                };
+                let mut page: Value = serde_json::from_slice(&bytes)?;
+                let total = page["total"].as_u64().context("total")?;
+                let list = page["verses"].take();
+                let list = list.as_array().context("verses")?;
+                verses.extend(list.iter().cloned());
+                if list.is_empty() || verses.len() as u64 >= total {
+                    break;
+                }
+            }
+            let slugs: Vec<&str> = verses
+                .iter()
+                .map(|v| v["document_slug"].as_str().unwrap_or(""))
+                .collect();
+            let key = value_key(value);
+            ensure!(seen.insert(key.clone()), "{kind}: two values hash to {key}");
+            let dir = format!("veda/details/{kind}/{key}");
+            ex.write(
+                &format!("{dir}/index.json"),
+                json!({ "value": value, "total": verses.len(), "slugs": slugs, "chunk": CHUNK })
+                    .to_string()
+                    .as_bytes(),
+            )?;
+            for (k, chunk) in verses.chunks(CHUNK).enumerate() {
+                ex.write(
+                    &format!("{dir}/c{k}.json"),
+                    Value::Array(chunk.to_vec()).to_string().as_bytes(),
+                )?;
+            }
+        }
+    }
+    Ok(())
+}
+
+/// 64-bit FNV-1a of the UTF-8 bytes, as 16 hex digits: a short file name for any value
+/// (`valueKey` in static-data.ts). The export fails on a collision.
+fn value_key(s: &str) -> String {
+    let hash = s.bytes().fold(0xcbf2_9ce4_8422_2325_u64, |h, b| {
+        (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
+    });
+    format!("{hash:016x}")
+}
+
+/// A query-string value with every byte but `[A-Za-z0-9_.~-]` percent-encoded.
+fn percent_encode(s: &str) -> String {
+    s.bytes()
+        .map(|b| {
+            if b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.' | b'~') {
+                char::from(b).to_string()
+            } else {
+                format!("%{b:02X}")
+            }
+        })
+        .collect()
 }
 
 /// `veda/daily/{yyyy}-{mm}.json`: `{ "yyyy-mm-dd": <the /veda/daily answer> }` for each day.
@@ -252,5 +420,12 @@ mod tests {
         assert!(is_safe_segment("rig-veda"));
         assert!(!is_safe_segment("../x"));
         assert!(!is_safe_segment(".."));
+    }
+
+    #[test]
+    fn values_become_hex_names_and_query_strings() {
+        assert_eq!(value_key(""), "cbf29ce484222325");
+        assert_eq!(value_key("a"), "af63dc4c8601ec8c");
+        assert_eq!(percent_encode("अ b"), "%E0%A4%85%20b");
     }
 }

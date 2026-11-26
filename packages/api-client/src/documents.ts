@@ -6,7 +6,7 @@
  */
 import { get } from "./client";
 import { ApiError } from "./http";
-import { staticVedaDaily } from "./static-data";
+import { staticChapterPage, staticVedaDaily, staticVerseDetailPage } from "./static-data";
 import type { DocumentCategoryId } from "@vedic-patro/domain/learn/document-categories";
 
 /**
@@ -235,8 +235,8 @@ export const fetchDocumentChapterPage = (
   params.set("limit", String(limit));
   if (verse) params.set("verse", verse);
   params.set("v", DOCUMENTS_LIST_CACHE_VERSION);
-  return get<DocumentChapterPage>(
-    `/documents/${encodeURIComponent(slug)}/chapters/${chapterNumber}?${params}`,
+  return staticChapterPage<DocumentChapterPage>(slug, chapterNumber, { cursor, direction, limit, verse }).then(
+    (r) => r ?? get<DocumentChapterPage>(`/documents/${encodeURIComponent(slug)}/chapters/${chapterNumber}?${params}`),
   );
 };
 
@@ -293,8 +293,12 @@ export const fetchVerseDetailPage = (
   value: string,
   { slug, offset = 0, limit = 50 }: { slug?: string; offset?: number; limit?: number } = {},
 ) =>
-  get<VerseDetailPage>(
-    `/veda/details/${kind}?value=${encodeURIComponent(value)}${slug ? `&slug=${encodeURIComponent(slug)}` : ""}&offset=${offset}&limit=${limit}&v=${DOCUMENTS_LIST_CACHE_VERSION}`,
+  staticVerseDetailPage<VerseDetailPage>(kind, value, { slug, offset, limit }).then(
+    (r) =>
+      r ??
+      get<VerseDetailPage>(
+        `/veda/details/${kind}?value=${encodeURIComponent(value)}${slug ? `&slug=${encodeURIComponent(slug)}` : ""}&offset=${offset}&limit=${limit}&v=${DOCUMENTS_LIST_CACHE_VERSION}`,
+      ),
   );
 
 export interface VerseDetailValue {

@@ -295,6 +295,7 @@ fn catalog() -> Router<AppState> {
             get(handlers::catalog::veda_detail_values),
         )
         .route("/v1/veda/daily", get(handlers::catalog::veda_daily))
+        .route("/v1/asset/{*key}", get(handlers::catalog::asset_redirect))
 }
 
 /// Nepal sait (auspicious dates) routes.

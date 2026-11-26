@@ -55,6 +55,9 @@ pub struct DocumentsService {
     r2_signing: Option<R2Signing>,
     /// Cache-Control for document payloads; bounded by the signed links' life when signing is on.
     document_cache: &'static str,
+    /// When set, asset links are `{base}/{key}` (the `/v1/asset/{key}` redirect) instead of signed
+    /// ones: for the static export, whose files outlive any signature.
+    asset_link_base: Option<String>,
 }
 
 impl DocumentsService {
@@ -71,7 +74,53 @@ impl DocumentsService {
             r2_public_base_url: discover_r2_public_base_url(data_dir),
             r2_signing,
             document_cache,
+            asset_link_base: None,
         }
+    }
+
+    /// The same service, linking assets through `{base}/{key}` (see `asset_link_base`).
+    #[must_use]
+    pub fn with_asset_link_base(mut self, base: &str) -> Self {
+        self.asset_link_base = Some(base.trim_end_matches('/').to_owned());
+        self
+    }
+
+    /// Where an asset key can be fetched right now: a fresh signed link, or the public bucket URL.
+    #[must_use]
+    pub fn asset_location(&self, key: &str) -> Option<String> {
+        // The bucket is private: a recording is only reachable through a signed, expiring link.
+        if let Some(signing) = &self.r2_signing {
+            let now = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map_or(0, |d| d.as_secs());
+            return Some(signing.signed_url(key, now));
+        }
+        self.r2_public_base_url
+            .as_ref()
+            .map(|base| format!("{base}/{key}"))
+    }
+
+    /// `(global_order, verse_label)` of every verse in a chapter, in reading order (static export).
+    ///
+    /// # Errors
+    ///
+    /// SQLite failures as 503.
+    pub fn chapter_verse_index(
+        &self,
+        slug: &str,
+        chapter_number: i64,
+    ) -> Result<Vec<(i64, Option<String>)>, CatalogError> {
+        let conn = self.connect()?;
+        let mut stmt = conn
+            .prepare(
+                "SELECT global_order, verse_label FROM shlokas WHERE document_slug = ? AND chapter_number = ? ORDER BY global_order ASC",
+            )
+            .map_err(CatalogError::from)?;
+        stmt.query_map(params![slug, chapter_number], |r| {
+            Ok((r.get(0)?, r.get(1)?))
+        })?
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(CatalogError::from)
     }
 
     fn connect(&self) -> Result<Connection, CatalogError> {
@@ -355,16 +404,10 @@ impl DocumentsService {
         if raw.starts_with("http://") || raw.starts_with("https://") {
             return Value::String(raw.to_owned());
         }
-        // The bucket is private: a recording is only reachable through a signed, expiring link.
-        if let Some(signing) = &self.r2_signing {
-            let now = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .map_or(0, |d| d.as_secs());
-            return Value::String(signing.signed_url(raw, now));
+        if let Some(base) = &self.asset_link_base {
+            return Value::String(format!("{base}/{raw}"));
         }
-        self.r2_public_base_url
-            .as_ref()
-            .map_or(Value::Null, |base| Value::String(format!("{base}/{raw}")))
+        self.asset_location(raw).map_or(Value::Null, Value::String)
     }
 }
 

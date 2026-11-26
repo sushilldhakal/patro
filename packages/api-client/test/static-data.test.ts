@@ -1,6 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { haversineKm, nearestInRows, staticFileFor } from "../src/static-data";
+import {
+  buildCityTable,
+  chapterPageRange,
+  haversineKm,
+  nearestInRows,
+  searchCityRows,
+  sqlLike,
+  staticFileFor,
+  valueKey,
+  verseLabelForms,
+} from "../src/static-data";
 
 test("API paths map to their static files, and only static ones do", () => {
   assert.equal(staticFileFor("/nepal/cities/popular"), "cities/popular.json");
@@ -30,4 +40,37 @@ test("nearest city follows the server's box, population and tie rules", () => {
   assert.equal(nearestInRows([row(9, 30, 85.3)] as never, 27.7, 85.3), null);
   assert.equal(nearestInRows(rows as never, 27.7, 85.3, "IN"), null);
   assert.ok(Math.abs(haversineKm(27.7, 85.3, 28.2, 83.98) - 141.5) < 1);
+});
+
+test("chapter pages pick the route's verses", () => {
+  const orders = [10, 20, 30, 40, 50];
+  const labels = ["1", "2", "3", "4", "5"];
+  assert.deepEqual(chapterPageRange(orders, labels, { limit: 2 }), [0, 2]);
+  assert.deepEqual(chapterPageRange(orders, labels, { cursor: 20, limit: 2 }), [2, 4]);
+  assert.deepEqual(chapterPageRange(orders, labels, { cursor: 50, limit: 2 }), [5, 5]);
+  assert.deepEqual(chapterPageRange(orders, labels, { cursor: 40, direction: "prev", limit: 2 }), [1, 3]);
+  assert.deepEqual(chapterPageRange(orders, labels, { direction: "prev", limit: 2 }), [3, 5]);
+  // centred on the verse, shifted when it is near an end; Devanagari digits find Latin labels
+  assert.deepEqual(chapterPageRange(orders, labels, { verse: "३", limit: 3 }), [1, 4]);
+  assert.deepEqual(chapterPageRange(orders, labels, { verse: "5", limit: 3 }), [2, 5]);
+  assert.equal(chapterPageRange(orders, labels, { verse: "9" }), null);
+  assert.deepEqual(verseLabelForms(" १.२ "), ["१.२", "1.2"]);
+});
+
+test("detail values hash like the exporter, LIKE folds ASCII only", () => {
+  assert.equal(valueKey(""), "cbf29ce484222325");
+  assert.equal(valueKey("a"), "af63dc4c8601ec8c");
+  assert.ok(sqlLike("Kathmandu", "%MAN%"));
+  assert.ok(sqlLike("Kathmandu", "k_th%"));
+  assert.ok(!sqlLike("Ñepal", "ñ%"));
+});
+
+test("city search groups duplicates and ranks exact, prefix, then population", () => {
+  const r = (id: number, name: string, country: string, population: number, admin1: string | null = "3") =>
+    [id, name, name, 0, 0, country, population, "UTC", admin1, null] as never;
+  const table = buildCityTable([r(1, "Pokhara", "NP", 100), r(2, "Pokhara", "NP", 500), r(3, "Old Pokhara", "IN", 900), r(4, "Pokhara Bazar", "IN", 50)]);
+  assert.deepEqual(
+    searchCityRows(table, "pokhara", 10).map((c) => c.id),
+    [2, 4, 3],
+  );
 });

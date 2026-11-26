@@ -108,6 +108,7 @@ api.workspace = true
 axum.workspace = true
 common.workspace = true
 geography.workspace = true
+patro.workspace = true
 serde_json.workspace = true
 tokio.workspace = true
 tower.workspace = true
@@ -120,7 +121,6 @@ workspace = true
 [dev-dependencies]
 flate2.workspace = true
 tokio-postgres.workspace = true
-patro.workspace = true
 timescale.workspace = true
 
 [profile.release]
