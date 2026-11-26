@@ -772,7 +772,7 @@ function SharesTab() {
                 )}
               </MarketSection>
 
-              <TopMoversCard horizontalInset={PAGE_HORIZONTAL_PADDING} />
+              <TopMoversCard />
 
               <MostTradedCard horizontalInset={PAGE_HORIZONTAL_PADDING} />
 

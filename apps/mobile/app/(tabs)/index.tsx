@@ -681,7 +681,7 @@ function HomeScreen() {
         {/* NEPSE after the first screen, so its request never races the calendar's. */}
         {belowFoldReady ? (
           <View className="mt-4 gap-4" style={{ paddingHorizontal: cardInset }}>
-            <TopMoversCard horizontalInset={cardInset} />
+            <TopMoversCard />
             <MostTradedCard horizontalInset={cardInset} />
           </View>
         ) : null}

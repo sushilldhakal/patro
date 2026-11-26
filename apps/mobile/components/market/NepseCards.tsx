@@ -113,46 +113,41 @@ function ScripCard({
   );
 }
 
-/** Today's top gainers or losers as cards to swipe; "view all" opens the full ranking. */
-export function TopMoversCard({ horizontalInset = 0 }: { horizontalInset?: number }) {
+/** Today's top gainers or losers as a 4 × 2 grid of badges; the title opens the full ranking. */
+export function TopMoversCard() {
   const { t } = useLocale();
   const router = useRouter();
-  const colors = useThemeColors();
-  const { width: windowWidth } = useWindowDimensions();
-  const cardWidth = sliderCardWidth(windowWidth, horizontalInset);
   const [direction, setDirection] = useState<"up" | "down">("up");
   const movers = useNepseMovers(direction, "1D");
   if (!movers.live.data) return null;
   return (
-    <NepseSlider
-      title={t("market.top_movers")}
-      onViewAll={() => router.push(`/nepse/movers?direction=${direction}`)}
-      horizontalInset={horizontalInset}
-      above={
-        <View className="mb-2 w-60">
-          <PillSwitch
-            value={direction}
-            options={[
-              { id: "up", label: t("market.top_gainers") },
-              { id: "down", label: t("market.top_losers") },
-            ]}
-            onChange={setDirection}
-          />
-        </View>
-      }
-    >
-      {movers.list.slice(0, 10).map(({ quote: s, percent }) => (
-        <ScripCard
-          key={s.symbol}
-          symbol={s.symbol}
-          name={s.name}
-          ltp={s.ltp}
-          change={<Change up={percent > 0} value={percent} />}
-          tint={direction === "up" ? colors.success : colors.destructive}
-          width={cardWidth}
-        />
-      ))}
-    </NepseSlider>
+    <MarketSection title={t("market.top_movers")} onPress={() => router.push(`/nepse/movers?direction=${direction}`)}>
+      <PillSwitch
+        value={direction}
+        options={[
+          { id: "up", label: t("market.top_gainers") },
+          { id: "down", label: t("market.top_losers") },
+        ]}
+        onChange={setDirection}
+      />
+      <View className="flex-row flex-wrap">
+        {movers.list.slice(0, 8).map(({ quote: s, percent }) => (
+          <Pressable
+            key={s.symbol}
+            onPress={() => router.push(`/nepse/${s.symbol}`)}
+            accessibilityRole="button"
+            accessibilityLabel={`${s.symbol} ${percent.toFixed(2)}%`}
+            className="w-1/4 items-center gap-0.5 py-1 active:opacity-70"
+          >
+            <SymbolAvatar label={s.symbol} size={44} />
+            <Text className="text-sm font-semibold text-foreground" numberOfLines={1}>
+              {s.symbol}
+            </Text>
+            <Change up={percent > 0} value={percent} size="xs" />
+          </Pressable>
+        ))}
+      </View>
+    </MarketSection>
   );
 }
 
