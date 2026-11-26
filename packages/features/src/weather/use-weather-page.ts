@@ -107,6 +107,8 @@ export type WeatherPage = {
       name: string;
       primary: boolean;
       here: boolean;
+      /** The place as the app's location (label + params), for a list that picks the app's place. */
+      location: PanchangaLocation;
       /** For the places list; null until that place's forecast has loaded (only while the list is open). */
       /** This place's own forecast, drawn on its page of the pager (merge over the page: `{ ...page, ...view }`). */
       view: WeatherPlaceView;
@@ -462,6 +464,11 @@ export function useWeatherPage({
         name: nameOf(p),
         primary: p.id === places.primaryId,
         here: p.id === HERE_ID,
+        location: {
+          // GPS "here" has no label of its own: the server's nearest city names it.
+          label: p.label || (pageQueries[i]!.data?.location.name ?? ""),
+          params: p.params,
+        },
       })),
       index: places.index,
       fromRight: slide.fromRight,
