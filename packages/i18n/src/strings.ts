@@ -66,8 +66,11 @@ export const strings = {
     ne: "हरेक दिनको पञ्चाङ्ग, मुहूर्त, गोचर र राशिफल (धेरै ठूलो हुन सक्छ)",
     en: "Every day's panchanga, muhurta, gochar and rashifal (can be very large)",
   },
-  "offline.group.documents.name": { ne: "स्तोत्र र शास्त्र पाठ", en: "Scripture texts" },
-  "offline.group.documents.hint": { ne: "सबै पाठ (अडियो समावेश छैन)", en: "All texts (audio is not included)" },
+  "offline.group.documents.name": { ne: "स्तोत्र, शास्त्र र सन्दर्भ पाठ", en: "Scripture & reference texts" },
+  "offline.group.documents.hint": {
+    ne: "सबै पाठ, साइतको परिचय, कुण्डलीका योग र भाव विवरण, प्रमुख शहर (अडियो समावेश छैन)",
+    en: "All texts, sait guides, kundali yoga and bhava reference, main cities (audio is not included)",
+  },
   "offline.range_unavailable": {
     ne: "वि.सं. {{start}} देखि {{end}} सम्म मात्र उपलब्ध छ।",
     en: "Only BS {{start}}–{{end}} is available.",

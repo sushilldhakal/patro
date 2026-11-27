@@ -926,6 +926,49 @@ pub async fn put_watchlist(
     run.await.unwrap_or_else(|r: Response| r)
 }
 
+/// `GET /places` — `{"places": [...], "primaryId": "..."}`, or `null` when never saved.
+pub async fn get_places(
+    State(state): State<AppState>,
+    AxumQuery(q): Q,
+    headers: HeaderMap,
+) -> Response {
+    let started = Instant::now();
+    let run = async {
+        let acc = layer(&state)?;
+        let user = current_user(acc, &headers).await?;
+        let data = acc.get_places(&user.id).await.map_err(|e| error(&e))?;
+        Ok(json_status(
+            StatusCode::OK,
+            &data.unwrap_or_default(),
+            &q,
+            &headers,
+            started,
+        ))
+    };
+    run.await.unwrap_or_else(|r: Response| r)
+}
+
+/// `PUT /places` with the whole saved list — replaces it (the app owns the order and primary).
+pub async fn put_places(
+    State(state): State<AppState>,
+    AxumQuery(q): Q,
+    headers: HeaderMap,
+    bytes: Bytes,
+) -> Response {
+    let started = Instant::now();
+    let run = async {
+        let acc = layer(&state)?;
+        let user = current_user(acc, &headers).await?;
+        let body: serde_json::Value = serde_json::from_slice(&bytes)
+            .map_err(|e| error(&accounts::AccountError::Unprocessable(e.to_string())))?;
+        acc.set_places(&user.id, &body)
+            .await
+            .map_err(|e| error(&e))?;
+        Ok(json_status(StatusCode::OK, &body, &q, &headers, started))
+    };
+    run.await.unwrap_or_else(|r: Response| r)
+}
+
 /// `GET /reminders`.
 pub async fn list_reminders(
     State(state): State<AppState>,

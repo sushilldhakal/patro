@@ -3,8 +3,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, View, type PressableProps } f
 import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { WeatherPage, WeatherPlacesStorage } from "@vedic-patro/features/weather";
+import type { WeatherPage } from "@vedic-patro/features/weather";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { weatherClasses as wc } from "@vedic-patro/design-tokens/classes/weather-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
@@ -52,11 +51,8 @@ export function PressScale({
   );
 }
 
-/** Saved weather places: plain AsyncStorage (not secret). A module constant, so the hook reads it once. */
-export const placesStorage: WeatherPlacesStorage = {
-  read: (key) => AsyncStorage.getItem(key),
-  write: (key, value) => void AsyncStorage.setItem(key, value),
-};
+/** Saved places: on the device, and on the account when signed in (lib/places-sync). */
+export { placesStorage } from "@/lib/places-sync";
 
 /** "+ search": the city search, then "make it primary?". Drawn inside the places screen while it is open, so it stacks above it. */
 export function AddFlow({ page }: { page: WeatherPage }) {

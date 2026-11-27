@@ -73,6 +73,7 @@ fn accounts() -> Router<AppState> {
         .route("/auth/reset-password", post(a::reset_password))
         .route("/profiles", get(a::list_profiles).post(a::create_profile))
         .route("/watchlist", get(a::get_watchlist).put(a::put_watchlist))
+        .route("/places", get(a::get_places).put(a::put_places))
         .route(
             "/profiles/{profile_id}",
             get(a::get_profile)

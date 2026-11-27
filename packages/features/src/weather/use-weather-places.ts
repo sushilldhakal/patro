@@ -23,7 +23,9 @@ type Saved = { places: WeatherPlace[]; primaryId: string };
 
 /** The first page: GPS, or the app's place when GPS is refused. */
 export const HERE_ID = "here";
-const STORAGE_KEY = "weather.places.v1";
+/** Where the list is kept; the app also syncs it with the account under this key. */
+export const PLACES_STORAGE_KEY = "weather.places.v1";
+const STORAGE_KEY = PLACES_STORAGE_KEY;
 /** Give up on GPS after this long (a permission prompt left open, no fix indoors). */
 const GPS_WAIT_MS = 12_000;
 

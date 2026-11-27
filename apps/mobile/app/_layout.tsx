@@ -49,6 +49,7 @@ import { LocaleProvider, useCalculationSystem } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthContext";
 import { useWatchlistSync } from "@/lib/watchlist";
+import { usePlacesSync } from "@/lib/places-sync";
 import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
 import { OfflineDataProvider } from "@/lib/offline/OfflineDataContext";
 import { NotificationsRuntime } from "@/components/notifications/NotificationsRuntime";
@@ -583,8 +584,10 @@ const styles = StyleSheet.create({
   errorButtonText: { fontSize: mobileTypeScale.base.size, fontWeight: "700", color: light.secondaryForeground },
 });
 
-/** Keeps the market watchlist on the signed-in account (lib/watchlist.ts). */
+/** Keeps the market watchlist and the saved places on the signed-in account (lib/watchlist.ts, lib/places-sync.ts). */
 function WatchlistSync() {
-  useWatchlistSync(useAuth().isAuthenticated);
+  const { isAuthenticated } = useAuth();
+  useWatchlistSync(isAuthenticated);
+  usePlacesSync(isAuthenticated);
   return null;
 }

@@ -15,6 +15,7 @@ pub mod db;
 pub mod email;
 pub mod emailer;
 pub mod events;
+pub mod places;
 pub mod profiles;
 pub mod providers;
 pub mod pydt;

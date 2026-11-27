@@ -80,7 +80,8 @@ export function useNewsPage(): NewsPage {
       note: t("news.note"),
       language: t("news.language"),
     },
-    status: first ? "ready" : q.isError ? "error" : "loading",
+    // Offline with nothing cached the query pauses rather than fails: treat it as failed, so the home row hides.
+    status: first ? "ready" : q.isError || q.fetchStatus === "paused" ? "error" : "loading",
     languages: (["ne", "en"] as const).map((id) => ({ id, label: t(`news.lang.${id}`), active: id === language })),
     setLanguage,
     categories: [

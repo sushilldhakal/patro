@@ -261,6 +261,9 @@ export function WatchlistCard() {
   const { t } = useLocale();
   const router = useRouter();
   const rows = useWatchRows();
+  const starred = useWatchlistAll().length;
+  // Starred but no prices (offline with nothing cached, or still loading): no card, not the "start a watchlist" offer.
+  if (starred && !rows.length) return null;
   return (
     <MarketSection title={t("market.watchlist")} onPress={() => router.push("/watchlist" as never)}>
       {rows.length ? (

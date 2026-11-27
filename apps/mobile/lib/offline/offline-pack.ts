@@ -14,6 +14,12 @@ import {
   fetchSait,
   fetchSaitDetail,
   fetchSaitMonthAll,
+  fetchSaitYears,
+  fetchSaitAbout,
+  fetchSaitAboutCategory,
+  fetchYogaReference,
+  fetchBhavaReference,
+  fetchPopularCities,
   fetchSpecialMonths,
   fetchTropicalSeasons,
   fetchYearSunTimes,
@@ -291,7 +297,16 @@ async function dailyTasks(
 
 async function documentsTasks(): Promise<Task[]> {
   const list = await fetchDocuments();
-  const tasks: Task[] = [];
+  // Reference text that only the server has (sait, festivals and the panchanga are computed on the
+  // phone): the sait guides, the kundali yoga and bhava reference, and the popular cities for the place list.
+  const tasks: Task[] = [
+    () => fetchSaitYears(),
+    () => fetchSaitAbout(),
+    ...SITEMAP_SAIT_CATEGORIES.map((category) => () => fetchSaitAboutCategory(category)),
+    () => fetchYogaReference(),
+    () => fetchBhavaReference(),
+    () => fetchPopularCities(),
+  ];
   for (const summary of list.documents) {
     tasks.push(async () => {
       const detail = await fetchDocumentDetail(summary.slug);

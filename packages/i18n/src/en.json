@@ -36,8 +36,8 @@
         "hint": "Every day's panchanga, muhurta, gochar and rashifal (can be very large)"
       },
       "documents": {
-        "name": "Scripture texts",
-        "hint": "All texts (audio is not included)"
+        "name": "Scripture & reference texts",
+        "hint": "All texts, sait guides, kundali yoga and bhava reference, main cities (audio is not included)"
       }
     },
     "range_unavailable": "Only BS {{start}}–{{end}} is available.",
