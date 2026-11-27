@@ -1,3 +1,4 @@
+import { formatClock12, getClockStyle } from "@vedic-patro/domain/calendar/clock-style";
 /**
  * Weather page rows, built from the server's Open-Meteo forecast. Pure: no React,
  * no clock (the caller passes `nowMs`), so both apps and the tests get the same rows.
@@ -265,16 +266,22 @@ export type WeatherUnits = {
   temp: "c" | "f";
   wind: "kmh" | "ms" | "mph" | "kn";
   rain: "mm" | "in";
+  dist: "km" | "mi";
+  pressure: "hpa" | "inhg" | "mmhg";
 };
 export const DEFAULT_WEATHER_UNITS: WeatherUnits = {
   temp: "c",
   wind: "kmh",
   rain: "mm",
+  dist: "km",
+  pressure: "hpa",
 };
 export const WEATHER_UNIT_CHOICES = {
   temp: ["c", "f"],
   wind: ["kmh", "ms", "mph", "kn"],
   rain: ["mm", "in"],
+  dist: ["km", "mi"],
+  pressure: ["hpa", "inhg", "mmhg"],
 } as const satisfies { [K in keyof WeatherUnits]: readonly WeatherUnits[K][] };
 const WIND_PER_KMH = { kmh: 1, ms: 1 / 3.6, mph: 0.621371, kn: 0.539957 };
 
@@ -326,17 +333,15 @@ export function buildWeatherView(
       : t(`weather.${units.rain}`, {
           amount: digits(round(toRain(v), rainPlaces)!),
         });
+  // The reader's clock (Preferences → General); before they choose, English 12-hour and Nepali 24-hour.
+  const twelve = (getClockStyle() ?? (en ? "12" : "24")) === "12";
   const clock = (iso: string | undefined) => {
     if (!iso) return "–";
-    const h = Number(iso.slice(11, 13));
-    const m = iso.slice(14, 16);
-    if (!en) return digits(iso.slice(11, 16));
-    const h12 = h % 12 || 12;
-    return `${h12}:${m} ${h < 12 ? "am" : "pm"}`;
+    return digits(twelve ? formatClock12(iso.slice(11, 16), lang) : iso.slice(11, 16));
   };
   const hourLabel = (iso: string) => {
     const h = Number(iso.slice(11, 13));
-    return en
+    return en && twelve
       ? `${h % 12 || 12} ${h < 12 ? "am" : "pm"}`
       : digits(iso.slice(11, 16));
   };
@@ -469,11 +474,13 @@ export function buildWeatherView(
     cur?.wind_speed_10m ?? between(hourly.wind_speed_10m),
     cur?.wind_direction_10m ?? near(hourly.wind_direction_10m),
   );
-  const pressure = round(cur?.pressure_msl ?? between(hourly.pressure_msl));
+  const pressureHpa = cur?.pressure_msl ?? between(hourly.pressure_msl);
+  const pressure =
+    pressureHpa == null ? null : units.pressure === "inhg" ? round(pressureHpa * 0.02953, 2) : units.pressure === "mmhg" ? round(pressureHpa * 0.750062) : round(pressureHpa);
   const visM = cur?.visibility ?? between(hourly.visibility);
   // Open-Meteo caps visibility near 24 km; under 10 km one decimal matters.
-  const visibilityKm =
-    visM == null ? null : round(visM / 1000, visM < 10_000 ? 1 : 0);
+  const visKm = visM == null ? null : (visM / 1000) * (units.dist === "mi" ? 0.621371 : 1);
+  const visibilityKm = visKm == null ? null : round(visKm, visKm < 10 ? 1 : 0);
   const aqi = round(data.forecast.air_quality?.current?.us_aqi);
   const aqiLabel = aqi == null ? "" : t(`weather.aqi.${aqiLevel(aqi)}`);
 
@@ -550,7 +557,7 @@ export function buildWeatherView(
         : [
             {
               key: "pressure",
-              value: t("weather.hpa", { value: digits(pressure) }),
+              value: t(`weather.${units.pressure}`, { value: digits(pressure) }),
               label: t("weather.pressure"),
             },
           ]),
@@ -559,7 +566,7 @@ export function buildWeatherView(
         : [
             {
               key: "visibility",
-              value: t("weather.km", { value: digits(visibilityKm) }),
+              value: t(`weather.${units.dist}`, { value: digits(visibilityKm) }),
               label: t("weather.visibility"),
             },
           ]),

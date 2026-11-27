@@ -321,6 +321,9 @@ export type ProfileFormProps = {
     onSelect: (place: ProfilePlace) => void;
     onSelectLabel: (label: string, lat: number | undefined, lon: number | undefined, timezone?: string) => void;
   }) => ReactNode;
+  /** The app's own pickers for the birth date (in the chosen era) and time; plain inputs without them. */
+  renderDate?: (args: { value: string; era: string; onChange: (v: string) => void; placeholder: string }) => ReactNode;
+  renderTime?: (args: { value: string; onChange: (v: string) => void; placeholder: string }) => ReactNode;
 };
 
 export type HouseSelectArgs = {

@@ -1,13 +1,6 @@
-import { InnerPage } from "@/components/account/AccountList";
-import { AppearanceSettings } from "@/components/account/SettingsPanel";
-import { useLocale } from "@/lib/i18n";
+import { Redirect } from "expo-router";
 
-/** Profile → Appearance. */
-export default function AppearanceSettingsScreen() {
-  const { t } = useLocale();
-  return (
-    <InnerPage title={t("ui.settings.appearance")}>
-      <AppearanceSettings />
-    </InnerPage>
-  );
+/** Old link: the theme now lives on Preferences → Appearance. */
+export default function AppearanceRedirect() {
+  return <Redirect href={"/account/preferences?tab=appearance" as never} />;
 }

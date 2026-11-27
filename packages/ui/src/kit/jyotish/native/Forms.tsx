@@ -63,39 +63,63 @@ export function AyanamshaSelector(props: AyanamshaSelectorProps) {
   );
 }
 
-export function ProfileForm({ initial, existing, onCancel, onSaved, afterSave, store, minimal, renderPlace }: ProfileFormProps) {
+export function ProfileForm({ initial, existing, onCancel, onSaved, afterSave, store, minimal, renderPlace, renderDate, renderTime }: ProfileFormProps) {
   const f = useProfileForm({ initial, existing, onSaved, afterSave, store });
   const { form, copy } = f;
+  // In cards, as the reference edit-profile screen: who, birth details, contact; then a full-width save.
   return (
     <Box className={accountClasses.profileForm}>
-      <Box className={cn("sm:flex-row", accountClasses.fieldRow)}>
+      <FormSection icon={iconStar} title={copy.sectionBasic}>
         <Field label={copy.fullName}><Input value={form.full_name} onChange={f.setName} className={accountClasses.input} /></Field>
-        {minimal ? null : <Field label={copy.phone}><Input value={form.phone ?? ""} onChange={f.setPhone} placeholder={copy.phonePlaceholder} className={accountClasses.input} /></Field>}
-      </Box>
-      <Box className={cn("sm:flex-row", accountClasses.fieldRow)}>
-        {minimal ? null : <Field label={copy.email}><Input type="email" value={form.email ?? ""} onChange={f.setEmail} className={accountClasses.input} /></Field>}
         <Field label={copy.gender}><Chips options={f.genders} /></Field>
-      </Box>
-      <Field label={copy.birthPlace}>
-        {renderPlace({ value: f.placeValue, onSelect: f.selectPlace, onSelectLabel: f.selectPlaceByLabel })}
-        {f.placeHint ? <Text className={accountClasses.hint}>{f.placeHint}</Text> : null}
-      </Field>
-      <Box className={cn("sm:flex-row", accountClasses.fieldRow)}>
-        <Field label={copy.birthDate}><Input value={form.birth_date ?? ""} onChange={f.setBirthDate} placeholder={copy.birthDatePlaceholder} className={accountClasses.input} /></Field>
-        <Field label={copy.birthTime}><Input value={form.birth_time ?? ""} onChange={f.setBirthTime} placeholder={copy.birthTimePlaceholder} className={accountClasses.input} /></Field>
+      </FormSection>
+      <FormSection icon={iconCalendarClock} title={copy.sectionBirth}>
         <Field label={copy.calendar}><Chips options={f.eras} /></Field>
-      </Box>
+        <Field label={copy.birthDate}>
+          {renderDate ? (
+            renderDate({ value: form.birth_date ?? "", era: form.birth_era ?? "bs", onChange: f.setBirthDate, placeholder: copy.birthDatePlaceholder })
+          ) : (
+            <Input value={form.birth_date ?? ""} onChange={f.setBirthDate} placeholder={copy.birthDatePlaceholder} className={accountClasses.input} />
+          )}
+        </Field>
+        <Field label={copy.birthTime}>
+          {renderTime ? (
+            renderTime({ value: form.birth_time ?? "", onChange: f.setBirthTime, placeholder: copy.birthTimePlaceholder })
+          ) : (
+            <Input value={form.birth_time ?? ""} onChange={f.setBirthTime} placeholder={copy.birthTimePlaceholder} className={accountClasses.input} />
+          )}
+        </Field>
+        <Field label={copy.birthPlace}>
+          {renderPlace({ value: f.placeValue, onSelect: f.selectPlace, onSelectLabel: f.selectPlaceByLabel })}
+          {f.placeHint ? <Text className={accountClasses.hint}>{f.placeHint}</Text> : null}
+        </Field>
+      </FormSection>
       {minimal ? null : (
-        <Box className={accountClasses.checkRow} nativeClassName="flex-row">
-          <Switch value={!!form.is_default} onValueChange={f.setDefault} />
-          <Text className={accountClasses.checkText}>{copy.setDefault}</Text>
-        </Box>
+        <FormSection icon={iconGlobe} title={copy.sectionContact}>
+          <Field label={copy.phone}><Input value={form.phone ?? ""} onChange={f.setPhone} placeholder={copy.phonePlaceholder} className={accountClasses.input} /></Field>
+          <Field label={copy.email}><Input type="email" value={form.email ?? ""} onChange={f.setEmail} className={accountClasses.input} /></Field>
+          <Box className={accountClasses.checkRow} nativeClassName="flex-row">
+            <Switch value={!!form.is_default} onValueChange={f.setDefault} />
+            <Text className={accountClasses.checkText}>{copy.setDefault}</Text>
+          </Box>
+        </FormSection>
       )}
       {f.error ? <Text className={accountClasses.formError}>{f.error}</Text> : null}
-      <Box className={accountClasses.formActions} nativeClassName="flex-row">
-        <Button variant="ghost" label={copy.cancel} onPress={onCancel} disabled={f.busy} />
-        <Button label={copy.submit} onPress={() => void f.submit()} disabled={f.busy} />
+      <Button label={copy.submit} onPress={() => void f.submit()} disabled={f.busy} />
+      <Button variant="ghost" label={copy.cancel} onPress={onCancel} disabled={f.busy} />
+    </Box>
+  );
+}
+
+/** One card of the profile form: a tinted icon and title, then its fields. */
+function FormSection({ icon, title, children }: { icon: typeof iconStar; title: string; children: React.ReactNode }) {
+  return (
+    <Box className={accountClasses.sectionCard}>
+      <Box nativeClassName="flex-row" className="items-center gap-2">
+        <Icon node={icon} size={18} tone="secondary" />
+        <Text className="text-lg font-bold text-foreground">{title}</Text>
       </Box>
+      {children}
     </Box>
   );
 }

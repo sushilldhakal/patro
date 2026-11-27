@@ -35,6 +35,7 @@ const IDLE_PROGRESS: PackProgress = {
   bytes: 0,
   skippedRequests: 0,
   error: null,
+  fraction: 0,
 };
 
 export interface OfflineSummary {

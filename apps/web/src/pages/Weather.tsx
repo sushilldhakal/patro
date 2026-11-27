@@ -627,6 +627,8 @@ function UnitsSheet({
     ["temp", copy.unitsTemp],
     ["wind", copy.unitsWind],
     ["rain", copy.unitsRain],
+    ["dist", copy.unitsDist],
+    ["pressure", copy.unitsPressure],
   ] as const;
   return (
     <Sheet

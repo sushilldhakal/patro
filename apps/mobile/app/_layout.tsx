@@ -71,6 +71,8 @@ import { useRailPageAnimation } from "@/components/panchanga/PanchangaSplitShell
 import { useDropPagesBehindTabs } from "@/lib/root-stack";
 // Starts registering Android's SVG font aliases at launch (not waited for).
 import "@/lib/svg-fonts";
+// Loads the reader's 12 / 24-hour clock before the first times are drawn.
+import "@/lib/clock-pref";
 
 /** Deep links to a page (`/holidays`) still open over the tabs, so back always has somewhere to go. */
 export const unstable_settings = { anchor: "(tabs)" };

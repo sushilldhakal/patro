@@ -14,6 +14,7 @@ import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { __iconNode as Trash2Node } from "lucide-react/dist/esm/icons/trash-2";
 import { SwipeableRow } from "@/components/ui/SwipeableRow";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 
 /**
  * The weather page's places screen and its parts, shared with the app header's place picker
@@ -141,6 +142,8 @@ function UnitsSheet({
     ["temp", copy.unitsTemp],
     ["wind", copy.unitsWind],
     ["rain", copy.unitsRain],
+    ["dist", copy.unitsDist],
+    ["pressure", copy.unitsPressure],
   ] as const;
   return (
     <Sheet
@@ -301,6 +304,14 @@ export function PlacesScreen({
   const [menuOpen, setMenuOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
   const close = () => places.setListOpen(false);
+  // Right-swipe from anywhere (vertical scrolls win): back, as on any pushed page.
+  const swipeBack = Gesture.Pan()
+    .runOnJS(true)
+    .activeOffsetX(24)
+    .failOffsetY([-14, 14])
+    .onEnd((e) => {
+      if (e.translationX > 80 || e.velocityX > 600) close();
+    });
   return (
     <Modal
       visible={places.listOpen}
@@ -308,6 +319,10 @@ export function PlacesScreen({
       presentationStyle="fullScreen"
       onRequestClose={close}
     >
+      {/* A Modal is its own root: gestures need their own root view inside it. A swipe to the right
+          goes back, like a pushed page's edge swipe. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureDetector gesture={swipeBack}>
       <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className={cn("flex-row", wc.topBar, "pr-3")}>
           <PressScale
@@ -414,6 +429,8 @@ export function PlacesScreen({
           </Pressable>
         ) : null}
       </View>
+      </GestureDetector>
+      </GestureHandlerRootView>
       <UnitsSheet
         page={page}
         open={unitsOpen}

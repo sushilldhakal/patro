@@ -4,7 +4,7 @@ import { AuthDialog } from "@/components/auth/AuthDialog";
 import { QuickReminderSheet } from "@/components/reminders/QuickReminderSheet";
 import { FestivalSearchSheet } from "@/components/search/FestivalSearchSheet";
 import { LocationPlacesScreen } from "@/components/search/LocationPlacesScreen";
-import { useAddReminderRequest, useLocationPickerRequest, useSearchRequest, useSignInRequest } from "@/lib/menu-request";
+import { useAddReminderRequest, useLocationPickerRequest, useSearchRequest, useSignInRequest, type PlacePick } from "@/lib/menu-request";
 
 /**
  * The side menu, festival search, new-reminder sheet, place picker and sign-in dialog, once, at the root, above every
@@ -17,7 +17,13 @@ export function AppOverlays() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [placeOpen, setPlaceOpen] = useState(false);
-  useLocationPickerRequest(useCallback(() => setPlaceOpen(true), []));
+  const [placePick, setPlacePick] = useState<{ fn: PlacePick } | null>(null);
+  useLocationPickerRequest(
+    useCallback((onPick?: PlacePick) => {
+      setPlacePick(onPick ? { fn: onPick } : null);
+      setPlaceOpen(true);
+    }, []),
+  );
   useSignInRequest(useCallback(() => setAuthOpen(true), []));
   useSearchRequest(useCallback(() => setSearchOpen(true), []));
   const [reminderDate, setReminderDate] = useState<string | undefined>(undefined);
@@ -36,7 +42,7 @@ export function AppOverlays() {
       <FestivalSearchSheet open={searchOpen} onClose={closeSearch} />
       <QuickReminderSheet open={reminderOpen} date={reminderDate} onClose={closeReminder} />
       {/* The place picker, drawn like the weather places screen; every screen's usePanchangaLocation follows it. */}
-      <LocationPlacesScreen open={placeOpen} onClose={closePlace} />
+      <LocationPlacesScreen open={placeOpen} onClose={closePlace} onPick={placePick?.fn} />
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
     </>
   );

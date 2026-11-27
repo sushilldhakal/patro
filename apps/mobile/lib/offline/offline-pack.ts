@@ -36,6 +36,7 @@ import { beginCapture, captureTotals, clearOfflineHttp, OfflineMissError, resetC
 import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";
 import { clearLegacyYears } from "@/lib/offline/offline-store";
 import { isCurrentlyOnline, isCurrentlyOnWifi } from "@/lib/offline/network-status";
+import { isBuiltInYear } from "@/lib/bs-range";
 
 /**
  * Offline packs: which public data is saved for a chosen BS-year window.
@@ -47,7 +48,7 @@ import { isCurrentlyOnline, isCurrentlyOnWifi } from "@/lib/offline/network-stat
  * duplicated here.
  */
 
-export type PackGroupId = "calendar" | "sky" | "daily" | "documents";
+export type PackGroupId = "calendar" | "sky" | "daily" | "documents" | "sait" | "kundali" | "cities";
 
 export const PACK_GROUPS: {
   id: PackGroupId;
@@ -59,6 +60,9 @@ export const PACK_GROUPS: {
   { id: "sky", perYear: true },
   { id: "daily", perYear: true },
   { id: "documents", perYear: false },
+  { id: "sait", perYear: false },
+  { id: "kundali", perYear: false },
+  { id: "cities", perYear: false },
 ];
 
 export interface PackSelection {
@@ -89,6 +93,8 @@ export interface PackProgress {
   bytes: number;
   skippedRequests: number;
   error: string | null;
+  /** How far along the whole job is, 0 to 1 (within a unit too), for a percentage. */
+  fraction: number;
 }
 
 export interface SavedPack {
@@ -179,8 +185,10 @@ export async function clearSavedPacks(): Promise<void> {
 // ── What each group saves ──────────────────────────────────────────────────
 
 type Task = () => Promise<unknown>;
+type Tally = { failures: number; consecutive: number; onTask?: (done: number, total: number) => void };
 
-async function runTasks(tasks: Task[], tally: { failures: number; consecutive: number }): Promise<void> {
+async function runTasks(tasks: Task[], tally: Tally): Promise<void> {
+  let done = 0;
   for (const task of tasks) {
     try {
       await task();
@@ -192,12 +200,14 @@ async function runTasks(tasks: Task[], tally: { failures: number; consecutive: n
       tally.consecutive += 1;
       if (tally.consecutive >= MAX_CONSECUTIVE_FAILURES) throw err;
     }
+    tally.onTask?.(++done, tasks.length);
     await delay(THROTTLE_MS);
   }
 }
 
-async function runConcurrent(tasks: Task[], width: number, tally: { failures: number; consecutive: number }) {
+async function runConcurrent(tasks: Task[], width: number, tally: Tally) {
   let next = 0;
+  let done = 0;
   const worker = async () => {
     while (next < tasks.length) {
       const index = next++;
@@ -210,6 +220,7 @@ async function runConcurrent(tasks: Task[], width: number, tally: { failures: nu
         tally.consecutive += 1;
         if (tally.consecutive >= MAX_CONSECUTIVE_FAILURES) throw err;
       }
+      tally.onTask?.(++done, tasks.length);
     }
   };
   await Promise.all(Array.from({ length: width }, worker));
@@ -297,16 +308,7 @@ async function dailyTasks(
 
 async function documentsTasks(): Promise<Task[]> {
   const list = await fetchDocuments();
-  // Reference text that only the server has (sait, festivals and the panchanga are computed on the
-  // phone): the sait guides, the kundali yoga and bhava reference, and the popular cities for the place list.
-  const tasks: Task[] = [
-    () => fetchSaitYears(),
-    () => fetchSaitAbout(),
-    ...SITEMAP_SAIT_CATEGORIES.map((category) => () => fetchSaitAboutCategory(category)),
-    () => fetchYogaReference(),
-    () => fetchBhavaReference(),
-    () => fetchPopularCities(),
-  ];
+  const tasks: Task[] = [];
   for (const summary of list.documents) {
     tasks.push(async () => {
       const detail = await fetchDocumentDetail(summary.slug);
@@ -318,11 +320,21 @@ async function documentsTasks(): Promise<Task[]> {
   return tasks;
 }
 
+// Reference text only the server has (sait, festivals and the panchanga are computed on the phone),
+// each its own choice: the sait guides, the kundali yoga and bhava reference, the popular cities.
+const saitTasks = (): Task[] => [
+  () => fetchSaitYears(),
+  () => fetchSaitAbout(),
+  ...SITEMAP_SAIT_CATEGORIES.map((category) => () => fetchSaitAboutCategory(category)),
+];
+const kundaliTasks = (): Task[] => [() => fetchYogaReference(), () => fetchBhavaReference()];
+const citiesTasks = (): Task[] => [() => fetchPopularCities()];
+
 async function runGroup(
   group: PackGroupId,
   year: number | null,
   location: LocationParams | undefined,
-  tally: { failures: number; consecutive: number },
+  tally: Tally,
   options?: { dailyLimitDays?: number },
 ): Promise<void> {
   switch (group) {
@@ -334,6 +346,12 @@ async function runGroup(
       return runConcurrent(await dailyTasks(year!, location, options?.dailyLimitDays), DAILY_CONCURRENCY, tally);
     case "documents":
       return runTasks(await documentsTasks(), tally);
+    case "sait":
+      return runTasks(saitTasks(), tally);
+    case "kundali":
+      return runTasks(kundaliTasks(), tally);
+    case "cities":
+      return runTasks(citiesTasks(), tally);
   }
 }
 
@@ -353,30 +371,39 @@ export async function estimatePackSize(
   if (!OFFLINE_STORE_SUPPORTED) {
     return { years: 0, sampleYear: selection.startYear, perGroup: {}, totalBytes: 0 };
   }
-  const years = yearsIn(selection);
-  const sampleYear = Math.min(Math.max(currentBsYear, selection.startYear), selection.endYear);
-  const tally = { failures: 0, consecutive: 0 };
-  wheelMemo.clear();
+  // Built-in years (BS 1950-2150) are computed on the phone: nothing of theirs is saved, so only the
+  // years outside are measured, on the one nearest the reader's year.
+  const outside = yearsIn(selection).filter((y) => !isBuiltInYear(y));
+  const sampleYear = outside.length
+    ? outside.reduce((best, y) => (Math.abs(y - currentBsYear) < Math.abs(best - currentBsYear) ? y : best))
+    : null;
+  const once = (g: PackGroupId) => !PACK_GROUPS.find((x) => x.id === g)?.perYear;
+  const groups = selection.groups.filter((g) => once(g) || sampleYear != null);
   const perGroup: PackSizeEstimate["perGroup"] = {};
-  const total = selection.groups.length;
   let completed = 0;
+  const report = (group: PackGroupId | null, within: number) =>
+    onProgress?.({
+      status: "measuring",
+      completed,
+      total: groups.length,
+      currentYear: sampleYear,
+      currentGroup: group,
+      bytes: captureTotals().bytes,
+      skippedRequests: tally.failures,
+      error: null,
+      fraction: groups.length ? (completed + within) / groups.length : 1,
+    });
+  const tally: Tally = { failures: 0, consecutive: 0 };
+  wheelMemo.clear();
 
   const end = beginCapture({ skipExisting: false });
   try {
-    for (const group of selection.groups) {
-      onProgress?.({
-        status: "measuring",
-        completed,
-        total,
-        currentYear: sampleYear,
-        currentGroup: group,
-        bytes: captureTotals().bytes,
-        skippedRequests: tally.failures,
-        error: null,
-      });
+    for (const group of groups) {
+      tally.onTask = (done, total) => report(group, done / Math.max(1, total));
+      report(group, 0);
       resetCaptureCounters();
       const sampleDaily = group === "daily" ? DAILY_SAMPLE_DAYS : undefined;
-      await runGroup(group, group === "documents" ? null : sampleYear, selection.location, tally, {
+      await runGroup(group, once(group) ? null : sampleYear, selection.location, tally, {
         dailyLimitDays: sampleDaily,
       });
       const { bytes, count } = captureTotals();
@@ -387,7 +414,7 @@ export async function estimatePackSize(
     end();
   }
 
-  // Scale the measured sample up to the whole window.
+  // Scale the measured sample up to the years outside the built-in range.
   let totalBytes = 0;
   const scaled: PackSizeEstimate["perGroup"] = {};
   for (const group of selection.groups) {
@@ -395,15 +422,15 @@ export async function estimatePackSize(
     let factor = 1;
     if (group === "daily") {
       // The sample covered DAILY_SAMPLE_DAYS of a ~365-day year.
-      factor = (years.length * 365) / DAILY_SAMPLE_DAYS;
+      factor = (outside.length * 365) / DAILY_SAMPLE_DAYS;
     } else if (PACK_GROUPS.find((g) => g.id === group)?.perYear) {
-      factor = years.length;
+      factor = outside.length;
     }
     const bytes = Math.round(sample.bytes * factor);
     scaled[group] = { bytes, requests: Math.round(sample.requests * factor) };
     totalBytes += bytes;
   }
-  return { years: years.length, sampleYear, perGroup: scaled, totalBytes };
+  return { years: outside.length, sampleYear: sampleYear ?? selection.startYear, perGroup: scaled, totalBytes };
 }
 
 // ── Download ───────────────────────────────────────────────────────────────
@@ -417,12 +444,13 @@ export interface RunPackOptions {
 
 function workUnits(selection: PackSelection): { year: number | null; group: PackGroupId }[] {
   const units: { year: number | null; group: PackGroupId }[] = [];
-  for (const year of yearsIn(selection)) {
+  // Built-in years need nothing saved: the phone computes them from the sky it carries.
+  for (const year of yearsIn(selection).filter((y) => !isBuiltInYear(y))) {
     for (const group of selection.groups) {
       if (PACK_GROUPS.find((g) => g.id === group)?.perYear) units.push({ year, group });
     }
   }
-  if (selection.groups.includes("documents")) units.push({ year: null, group: "documents" });
+  for (const g of PACK_GROUPS) if (!g.perYear && selection.groups.includes(g.id)) units.push({ year: null, group: g.id });
   return units;
 }
 
@@ -455,8 +483,13 @@ export async function runPackDownload(
     bytes: 0,
     skippedRequests: 0,
     error: null,
+    fraction: 0,
   };
-  const emit = () => options.onProgress?.({ ...progress });
+  const emit = () => {
+    if (progress.status !== "running") progress.fraction = progress.status === "done" ? 1 : progress.fraction;
+    else if (!progress.currentGroup) progress.fraction = units.length ? progress.completed / units.length : 1;
+    options.onProgress?.({ ...progress });
+  };
   emit();
 
   if (!OFFLINE_STORE_SUPPORTED) {
@@ -465,7 +498,11 @@ export async function runPackDownload(
     return progress;
   }
 
-  const tally = { failures: 0, consecutive: 0 };
+  const tally: Tally = { failures: 0, consecutive: 0 };
+  tally.onTask = (done, total) => {
+    progress.fraction = (progress.completed + done / Math.max(1, total)) / Math.max(1, units.length);
+    options.onProgress?.({ ...progress });
+  };
   wheelMemo.clear();
   resetCaptureCounters();
   const end = beginCapture({ skipExisting: true });
@@ -503,6 +540,7 @@ export async function runPackDownload(
 
       pack.done.push(key);
       progress.completed += 1;
+      progress.fraction = progress.completed / units.length;
       progress.bytes = captureTotals().bytes;
       progress.skippedRequests = tally.failures;
       await writeSavedPack({ ...pack, updatedAt: Date.now() });

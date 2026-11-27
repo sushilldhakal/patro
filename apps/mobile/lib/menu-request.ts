@@ -87,14 +87,21 @@ export function useRemindersChanged(onChange: () => void) {
   }, [onChange]);
 }
 
-const locationListeners = new Set<Listener>();
+/** A chosen place, handed back instead of becoming the app's place (a birth place in a profile form). */
+export type PlacePick = (place: { label: string; params: { lat?: number; lon?: number; timezone?: string; city_id?: number } }) => void;
+const locationListeners = new Set<(onPick?: PlacePick) => void>();
 
-/** Asks the root to open the place picker (the location button in the header and the Duo toolbar). */
-export function requestLocationPicker() {
-  locationListeners.forEach((open) => open());
+/**
+ * Asks the root to open the place picker (the location button in the header and the Duo toolbar).
+ * With `onPick`, the place the reader chooses is handed back and the app's own place stays as it was.
+ * (Used straight as an onPress handler too, so anything that is not a function is ignored.)
+ */
+export function requestLocationPicker(onPick?: unknown) {
+  const pick = typeof onPick === "function" ? (onPick as PlacePick) : undefined;
+  locationListeners.forEach((open) => open(pick));
 }
 
-export function useLocationPickerRequest(onOpen: () => void) {
+export function useLocationPickerRequest(onOpen: (onPick?: PlacePick) => void) {
   useEffect(() => {
     locationListeners.add(onOpen);
     return () => {

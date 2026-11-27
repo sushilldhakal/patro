@@ -42,6 +42,8 @@ export const mobileShellClasses = {
   offlinePrimary: "mt-4 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 active:opacity-80 disabled:opacity-50",
   offlineTrack: "mt-2 h-1.5 overflow-hidden rounded-full bg-muted",
   offlineResume: "mt-4 flex-row items-center gap-2 rounded-xl border border-border bg-card p-4",
+  offlineSettingRow: "flex-row items-center gap-3 border-t border-border pt-3",
+  offlineClearRow: "flex-row items-center gap-2 border-t border-border pt-3",
   offlineWifi: "mt-5 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80",
   offlineSwitch: "h-6 w-11 justify-center rounded-full px-0.5",
   offlineKnob: "h-5 w-5 rounded-full bg-white shadow",

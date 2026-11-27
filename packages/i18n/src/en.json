@@ -22,6 +22,14 @@
     "kundali_note": "The Surya Siddhanta uses its own ayanamsha, so the ayanamsha chosen above does not apply."
   },
   "offline": {
+    "range_title": "Offline: BS {{start}}–{{end}}",
+    "range_body": "The calendar, festivals, sait, panchanga and rashifal for these years work without internet, for every saved place.",
+    "extra_caption_fixed": "Choose only what you want kept offline",
+    "built_in_title": "Built into the app",
+    "built_in_body": "BS {{start}}–{{end}}: calendar, festivals, sait, panchanga and rashifal work offline for any saved place, with nothing to download.",
+    "extra_title": "Extra downloads",
+    "extra_caption": "Years outside BS {{start}}–{{end}}, and scripture and reference texts",
+    "nothing_to_download": "Nothing to download",
     "place_title": "Which place?",
     "place_hint": "The download is for this place. Add the places you may switch to as well: saved places are worked out on the phone, so you can pick them offline too.",
     "place_change": "Change or add places",
@@ -39,8 +47,20 @@
         "hint": "Every day's panchanga, muhurta, gochar and rashifal (can be very large)"
       },
       "documents": {
-        "name": "Scripture & reference texts",
-        "hint": "All texts, sait guides, kundali yoga and bhava reference, main cities (audio is not included)"
+        "name": "Scripture texts",
+        "hint": "All texts (audio is not included)"
+      },
+      "sait": {
+        "name": "Sait guides",
+        "hint": "What each sait means and its rules"
+      },
+      "kundali": {
+        "name": "Kundali reference",
+        "hint": "Yoga and bhava explanations"
+      },
+      "cities": {
+        "name": "Main cities",
+        "hint": "Cities offered when you look for a place"
       }
     },
     "range_unavailable": "Only BS {{start}}–{{end}} is available.",
@@ -617,6 +637,11 @@
     },
     "settings": {
       "about": "About",
+      "units": "Units",
+      "units_caption": "How weather, distance and time are shown",
+      "clock": "Time",
+      "clock_12": "12-hour",
+      "clock_24": "24-hour",
       "title": "Settings",
       "notifications_reminders": "Notifications & reminders",
       "language_calendar": "Language & calendar",
@@ -636,6 +661,25 @@
       "language_ne": "Nepali",
       "language_en": "English",
       "saved_places": "Saved places",
+      "saved_places_body": "Places to switch to in one tap, even offline",
+      "notifications_body": "Daily rashifal, briefing and shubh / ashubh reminders",
+      "notifications_hero": "Choose what the app reminds you about, and when.",
+      "home_screen_row": "{{count}} of {{total}} sections shown",
+      "preferences": "Preferences",
+      "preferences_body": "Language, calendar, theme and calculation",
+      "preferences_hero": "How the app speaks, looks and works out the panchanga for you.",
+      "tab_general": "General",
+      "tab_appearance": "Appearance",
+      "tab_astrology": "Astrology",
+      "language_display": "Language & dates",
+      "language_display_caption": "The app's language and which calendar dates are shown in",
+      "theme_caption": "Pick how the app looks. System follows your phone.",
+      "theme_light_hint": "Bright and clear",
+      "theme_dark_hint": "Easy on the eyes",
+      "theme_system_hint": "Follows your phone",
+      "calculation_caption": "How tithi, sankranti and kundali are worked out",
+      "about_body": "Version, privacy, terms and support",
+      "version": "Version",
       "about_legal": "About & legal",
       "notifications": "Daily notifications",
       "daily_briefing_sign_in": "Sign in to get each profile's daily do's and don'ts.",
@@ -692,6 +736,12 @@
       "group_general": "General",
       "group_notifications": "Notifications & events",
       "group_data": "Data & storage",
+      "group_profiles": "Calendar & profiles",
+      "group_privacy": "Privacy & data",
+      "profiles_body": "Birth details for kundali and personal rashifal",
+      "events_body": "Your events, and sync to your phone's calendar",
+      "offline_body": "Calendar years kept on this phone",
+      "eyebrow_settings": "Settings",
       "back": "Back",
       "offline_downloads_aren_t_available_on": "Offline downloads aren't available on this platform. Use the Android or iOS app.",
       "ok_download_totalbytes": "OK — download {{totalBytes}}",
@@ -714,6 +764,48 @@
       "profile_and_settings": "Profile & settings",
       "main": "Main",
       "offline_download": "Offline download"
+    },
+    "notify": {
+      "choose": "Choose what you receive",
+      "choose_caption": "Each has its own switch; pick the time here",
+      "rashifal": "Daily rashifal",
+      "rashifal_personal": "Every morning at 7, for your default profile",
+      "rashifal_guest": "Every morning at 7, for the rashi you pick below",
+      "briefing_at": "Each profile's do's and don'ts at {{time}}",
+      "reminders_on": "{{count}} reminders on",
+      "off_title": "Notifications are off",
+      "off_body": "Turn on notifications for this app in your phone's settings."
+    },
+    "me": {
+      "section_basic": "Basic information",
+      "section_birth": "Birth details",
+      "title": "My profile",
+      "edit": "Edit profile",
+      "personal": "Personal information",
+      "contact": "Contact information",
+      "place_time": "Place & time",
+      "full_name": "Full name",
+      "gender": "Gender",
+      "birth": "Birth date & time",
+      "birth_place": "Birth place",
+      "email": "Email",
+      "phone": "Phone number",
+      "country": "Country",
+      "timezone": "Time zone",
+      "not_set": "Not set",
+      "no_profile": "Add your birth details to fill this in.",
+      "signin": "Sign-in",
+      "signin_caption": "How the app opens on this phone",
+      "face_id": "Sign in with {{label}}",
+      "calendar_sync": "Google / Apple Calendar",
+      "signin_methods": "Sign-in methods",
+      "signin_methods_body": "Email and password, Google, Apple or Facebook: any of them with {{email}} opens this same account.",
+      "account": "Account",
+      "view": "View profile"
+    },
+    "time": {
+      "am": "am",
+      "pm": "pm"
     },
     "app_header": {
       "nepali_calendar_and_panchanga": "Nepali calendar and Panchanga"
@@ -5575,8 +5667,18 @@
       "mph": "Miles per hour",
       "kn": "Knots",
       "mm": "Millimetres",
-      "in": "Inches"
+      "in": "Inches",
+      "km": "Kilometres",
+      "mi": "Miles",
+      "hpa": "Hectopascals (hPa)",
+      "inhg": "Inches of mercury (inHg)",
+      "mmhg": "Millimetres of mercury (mmHg)"
     },
+    "mi": "{{value}} mi",
+    "inhg": "{{value}} inHg",
+    "mmhg": "{{value}} mmHg",
+    "units_dist": "Distance",
+    "units_pressure": "Pressure",
     "units": "Units",
     "pressure": "Pressure",
     "hpa": "{{value}} hPa",

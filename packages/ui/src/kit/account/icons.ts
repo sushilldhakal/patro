@@ -1,4 +1,5 @@
 import type { IconNode } from "@vedic-patro/ui/contract";
+import { illustration, midnight } from "@vedic-patro/design-tokens";
 
 /** Lucide node lists for the profile page's rows. Copied so neither half imports lucide-react. */
 export const iconUsers: IconNode = [ ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", }], ["path", { d: "M16 3.128a4 4 0 0 1 0 7.744", }], ["path", { d: "M22 21v-2a4 4 0 0 0-3-3.87", }], ["circle", { cx: "9", cy: "7", r: "4", }] ];
@@ -40,7 +41,20 @@ export const iconHouse: IconNode = [["path", { d: "M15 21v-8a1 1 0 0 0-1-1h-4a1 
 export const iconMapPin: IconNode = [["path", { d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" }], ["circle", { cx: "12", cy: "10", r: "3" }]];
 export const iconInfo: IconNode = [["circle", { cx: "12", cy: "12", r: "10" }], ["path", { d: "M12 16v-4" }], ["path", { d: "M12 8h.01" }]];
 
+export const iconSliders: IconNode = [["path", { d: "M10 5H3" }], ["path", { d: "M12 19H3" }], ["path", { d: "M14 3v4" }], ["path", { d: "M16 17v4" }], ["path", { d: "M21 12h-9" }], ["path", { d: "M21 19h-5" }], ["path", { d: "M21 5h-7" }], ["path", { d: "M8 10v4" }], ["path", { d: "M8 12H3" }]];
+export const iconSun: IconNode = [["circle", { cx: "12", cy: "12", r: "4" }], ["path", { d: "M12 2v2" }], ["path", { d: "M12 20v2" }], ["path", { d: "m4.93 4.93 1.41 1.41" }], ["path", { d: "m17.66 17.66 1.41 1.41" }], ["path", { d: "M2 12h2" }], ["path", { d: "M20 12h2" }], ["path", { d: "m6.34 17.66-1.41 1.41" }], ["path", { d: "m19.07 4.93-1.41 1.41" }]];
+export const iconMoon: IconNode = [["path", { d: "M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" }]];
+export const iconSmartphone: IconNode = [["rect", { width: "14", height: "20", x: "5", y: "2", rx: "2", ry: "2" }], ["path", { d: "M12 18h.01" }]];
+export const iconSparkles: IconNode = [["path", { d: "M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" }], ["path", { d: "M20 2v4" }], ["path", { d: "M22 4h-4" }], ["circle", { cx: "4", cy: "20", r: "2" }]];
+export const iconLayout: IconNode = [["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1" }], ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1" }], ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1" }], ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1" }]];
+
 export const ACCOUNT_ICONS = {
+  sliders: iconSliders,
+  sun: iconSun,
+  moon: iconMoon,
+  phone: iconSmartphone,
+  sparkles: iconSparkles,
+  layout: iconLayout,
   home: iconHouse,
   "map-pin": iconMapPin,
   info: iconInfo,
@@ -62,4 +76,18 @@ export const ACCOUNT_ICONS = {
   "file-text": iconFileText,
   mail: iconMail,
   globe: iconGlobe,
+} as const;
+
+/** Row icon colours; the tile behind is the same colour, faint. */
+export const ACCOUNT_TINTS = {
+  teal: midnight.teal,
+  indigo: illustration.blue67,
+  violet: illustration.blue56,
+  blue: illustration.blue59,
+  amber: illustration.orange50,
+  orange: illustration.orange53c,
+  green: illustration.green45,
+  pink: illustration.pink60,
+  red: illustration.red60,
+  gray: illustration.gray46,
 } as const;

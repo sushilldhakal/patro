@@ -14,11 +14,11 @@ const ROLES = { light: mobileRoles("light"), dark: mobileRoles("dark") };
  * website draws. react-native-svg needs a real colour, so the tone's theme
  * role is looked up for the current light/dark scheme.
  */
-export function Icon({ node, size = "md", tone = "foreground", filled, strokeWidth, label, testID }: IconProps) {
+export function Icon({ node, size = "md", tone = "foreground", color: fixed, filled, strokeWidth, label, testID }: IconProps) {
   const { colorScheme } = useColorScheme();
   const px = typeof size === "number" ? size : iconSize[size];
   // `onBrand` sits on a fixed brand surface, so it is the same off-white in both themes.
-  const color = tone === "onBrand" ? brand.offWhite : ROLES[colorScheme === "dark" ? "dark" : "light"][iconToneRole[tone]];
+  const color = fixed ?? (tone === "onBrand" ? brand.offWhite : ROLES[colorScheme === "dark" ? "dark" : "light"][iconToneRole[tone]]);
   return (
     <Svg
       width={px}

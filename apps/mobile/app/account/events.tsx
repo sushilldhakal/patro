@@ -29,7 +29,7 @@ export default function AccountEventsScreen() {
   const items = (events.data ?? []).slice(0, 8);
 
   return (
-    <InnerPage title={t("ui.account.events_and_sync")}>
+    <InnerPage title={t("ui.account.events_and_sync")} subtitle={t("ui.account.events_body")}>
       <ListGroup>
         <ListRow icon="calendar-add" title={t("events.create")} onPress={requestAddReminder} />
       </ListGroup>

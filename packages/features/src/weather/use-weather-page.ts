@@ -1,3 +1,4 @@
+import { formatClock12, getClockStyle } from "@vedic-patro/domain/calendar/clock-style";
 /**
  * Weather page logic, shared by the website (`apps/web/src/pages/Weather.tsx`) and
  * the app (`apps/mobile/app/weather.tsx`). The server snaps the place to its nearest
@@ -87,6 +88,8 @@ export type WeatherPage = {
     unitsTemp: string;
     unitsWind: string;
     unitsRain: string;
+    unitsDist: string;
+    unitsPressure: string;
   };
   /** The reader's units (kept on the device), and the choices for each. */
   units: {
@@ -172,16 +175,18 @@ export type WeatherPage = {
   toggleDay: (key: string) => void;
 };
 
-const UNITS_KEY = "weather.units.v1";
+/** Where the reader's units are kept (the weather page and Preferences → General share them). */
+export const WEATHER_UNITS_KEY = "weather.units.v1";
+const UNITS_KEY = WEATHER_UNITS_KEY;
 
-function parseUnits(raw: string): WeatherUnits {
+export function parseUnits(raw: string): WeatherUnits {
   try {
     const v = JSON.parse(raw) as Partial<Record<keyof WeatherUnits, unknown>>;
     const pick = <K extends keyof WeatherUnits>(k: K): WeatherUnits[K] =>
       (WEATHER_UNIT_CHOICES[k] as readonly unknown[]).includes(v[k])
         ? (v[k] as WeatherUnits[K])
         : DEFAULT_WEATHER_UNITS[k];
-    return { temp: pick("temp"), wind: pick("wind"), rain: pick("rain") };
+    return { temp: pick("temp"), wind: pick("wind"), rain: pick("rain"), dist: pick("dist"), pressure: pick("pressure") };
   } catch {
     return DEFAULT_WEATHER_UNITS;
   }
@@ -197,9 +202,8 @@ export function placeClock(
   const hhmm = new Date(nowMs + utcOffsetSeconds * 1000)
     .toISOString()
     .slice(11, 16);
-  if (lang !== "en") return digits(hhmm);
-  const h = Number(hhmm.slice(0, 2));
-  return `${h % 12 || 12}:${hhmm.slice(3)} ${h < 12 ? "am" : "pm"}`;
+  const twelve = (getClockStyle() ?? (lang === "en" ? "12" : "24")) === "12";
+  return digits(twelve ? formatClock12(hhmm, lang) : hhmm);
 }
 
 /** The parts of the page that belong to one place, so every pager page can draw its own. */
@@ -434,6 +438,8 @@ export function useWeatherPage({
       unitsTemp: t("weather.units_temp"),
       unitsWind: t("weather.units_wind"),
       unitsRain: t("weather.units_rain"),
+      unitsDist: t("weather.units_dist"),
+      unitsPressure: t("weather.units_pressure"),
       close: t("common.close"),
     },
     placeName,
@@ -454,6 +460,8 @@ export function useWeatherPage({
           id,
           label: t(`weather.unit_name.${id}`),
         })),
+        dist: WEATHER_UNIT_CHOICES.dist.map((id) => ({ id, label: t(`weather.unit_name.${id}`) })),
+        pressure: WEATHER_UNIT_CHOICES.pressure.map((id) => ({ id, label: t(`weather.unit_name.${id}`) })),
       },
     },
     places: {

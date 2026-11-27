@@ -6,7 +6,7 @@ import { iconToneClass } from "../classes";
 import type { IconProps } from "../contract";
 
 /** Draws a Lucide node list as inline SVG, coloured by the tone's text class (currentColor). */
-export function Icon({ node, size = "md", tone = "foreground", filled, strokeWidth, label, className, webClassName, testID }: IconProps) {
+export function Icon({ node, size = "md", tone = "foreground", color, filled, strokeWidth, label, className, webClassName, testID }: IconProps) {
   const px = typeof size === "number" ? size : iconSize[size];
   return (
     <svg
@@ -23,6 +23,7 @@ export function Icon({ node, size = "md", tone = "foreground", filled, strokeWid
       aria-label={label}
       aria-hidden={label ? undefined : true}
       data-testid={testID}
+      style={color ? { color } : undefined}
       className={cn("shrink-0", iconToneClass[tone], className, webClassName)}
     >
       {node.map(([tag, attrs], i) => {

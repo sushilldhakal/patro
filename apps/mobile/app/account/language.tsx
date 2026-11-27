@@ -1,13 +1,6 @@
-import { InnerPage } from "@/components/account/AccountList";
-import { LanguageCalendarSettings } from "@/components/account/SettingsPanel";
-import { useLocale } from "@/lib/i18n";
+import { Redirect } from "expo-router";
 
-/** Profile → Language & calendar. */
-export default function LanguageSettingsScreen() {
-  const { t } = useLocale();
-  return (
-    <InnerPage title={t("ui.settings.language_calendar")}>
-      <LanguageCalendarSettings />
-    </InnerPage>
-  );
+/** Old link: language and calendar now live on Preferences → General. */
+export default function LanguageRedirect() {
+  return <Redirect href={"/account/preferences?tab=general" as never} />;
 }

@@ -5,3 +5,8 @@
  */
 export const BS_SUPPORTED_START_YEAR = 1700;
 export const BS_SUPPORTED_END_YEAR = 2200;
+
+/** The BS years whose sky ships inside the app (assets/sky, lib/sky.ts): computed on the phone, offline, with nothing to download. */
+export const SKY_BUILT_IN_START_YEAR = 1950;
+export const SKY_BUILT_IN_END_YEAR = 2150;
+export const isBuiltInYear = (year: number) => year >= SKY_BUILT_IN_START_YEAR && year <= SKY_BUILT_IN_END_YEAR;

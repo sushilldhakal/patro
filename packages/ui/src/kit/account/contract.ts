@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
-import type { ACCOUNT_ICONS } from "./icons";
+import type { ACCOUNT_ICONS, ACCOUNT_TINTS } from "./icons";
 
 /** The profile page as a list, drawn the same on the website and in the app: titled groups of rows. */
 export type AccountIconName = keyof typeof ACCOUNT_ICONS;
+export type AccountTint = keyof typeof ACCOUNT_TINTS;
 
 export type ListGroupProps = {
   title?: string;
@@ -19,6 +20,8 @@ export type ListRowProps = {
   onPress?: () => void;
   /** A control on the right instead of the chevron (a switch). */
   trailing?: ReactNode;
+  /** The icon's colour on its round tile (each row its own, like the reference settings). Default teal. */
+  tint?: AccountTint;
   /** "danger" tints the icon and title red (sign out, delete). */
   tone?: "default" | "danger";
 };

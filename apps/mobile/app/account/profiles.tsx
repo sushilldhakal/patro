@@ -30,7 +30,7 @@ export default function ProfilesScreen() {
 
   if (status === "loading") {
     return (
-      <InnerPage title={copy.profilesTitle}>
+      <InnerPage title={copy.profilesTitle} subtitle={t("ui.account.profiles_body")}>
         <View className="items-center py-12">
           <VedicPatroLoader />
         </View>
@@ -40,7 +40,7 @@ export default function ProfilesScreen() {
 
   if (status === "signed-out" || !user) {
     return (
-      <InnerPage title={copy.profilesTitle}>
+      <InnerPage title={copy.profilesTitle} subtitle={t("ui.account.profiles_body")}>
         <View className={accountClasses.signedOutBox}>
           <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
             {t("ui.account.log_in_to_view_your_account")}
@@ -52,7 +52,7 @@ export default function ProfilesScreen() {
   }
 
   return (
-    <InnerPage title={copy.profilesTitle}>
+    <InnerPage title={copy.profilesTitle} subtitle={t("ui.account.profiles_body")}>
       <View>
       <View className={cn("flex-row", accountClasses.sectionRow)}>
         <Text className={accountClasses.sectionTitle} style={nepaliTextStyle()}>

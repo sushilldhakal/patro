@@ -5,6 +5,7 @@ import { haptics } from "@vedic-patro/ui/motion";
 import { locateDevice } from "@/components/panchanga/locate-device";
 import { PlacesScreen, placesStorage } from "@/components/weather/WeatherPlacesScreen";
 import { usePanchangaLocation, type PanchangaLocation } from "@/lib/use-panchanga-location";
+import type { PlacePick } from "@/lib/menu-request";
 
 /**
  * The header's place picker: the weather page's places screen itself (same cards, मुख्य default, ⋯ edit
@@ -12,13 +13,15 @@ import { usePanchangaLocation, type PanchangaLocation } from "@/lib/use-panchang
  * tapping a card, making one primary, or adding one from search sets the app's place.
  * Mounted only while open, so the list and GPS are read fresh each time.
  */
-export function LocationPlacesScreen({ open, onClose }: { open: boolean; onClose: () => void }) {
-  return open ? <Picker onClose={onClose} /> : null;
+export function LocationPlacesScreen({ open, onClose, onPick }: { open: boolean; onClose: () => void; onPick?: PlacePick }) {
+  return open ? <Picker onClose={onClose} onPick={onPick} /> : null;
 }
 
-function Picker({ onClose }: { onClose: () => void }) {
+function Picker({ onClose, onPick }: { onClose: () => void; onPick?: PlacePick }) {
   const { t } = useLocale();
-  const { location, setLocation } = usePanchangaLocation();
+  const { location, setLocation: setAppLocation } = usePanchangaLocation();
+  // Pick mode (a birth place): the choice goes back to the caller; the app's place stays.
+  const setLocation = (next: PanchangaLocation) => (onPick ? onPick(next) : setAppLocation(next));
   const page = useWeatherPage({ location, locate: locateDevice, storage: placesStorage });
   const { places } = page;
 
@@ -48,7 +51,7 @@ function Picker({ onClose }: { onClose: () => void }) {
         places.makePrimary(id);
         haptics.tick();
         const p = places.pages.find((x) => x.id === id);
-        if (p) setLocation({ label: p.location.label || p.name, params: p.location.params });
+        if (p && !onPick) setLocation({ label: p.location.label || p.name, params: p.location.params });
       },
       pick: (next) => {
         picked.current = next;

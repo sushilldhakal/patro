@@ -5,6 +5,8 @@ import type { Profile, ProfileInput } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
 import { DEFAULT_PANCHANGA_LOCATION, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { ProfileForm as Shared } from "@vedic-patro/ui/kit/jyotish";
+import { DateField, TimeField } from "@/components/ui/WheelPickers";
+import { requestLocationPicker, type PlacePick } from "@/lib/menu-request";
 
 export { EMPTY_PROFILE, profileToInput } from "@vedic-patro/features/account";
 
@@ -50,15 +52,24 @@ export function ProfileForm({
       store={store}
       minimal={minimal}
       afterSave={(isNew) => void afterProfileSaved(lang === "en" ? "en" : "ne", isNew)}
+      // The birth place: the app's Location screen (saved places, search), handing the choice back here.
       renderPlace={({ onSelectLabel }) => (
         <PatroHeaderLocation
           location={birthLocation}
-          onLocationChange={(loc) => {
-            setBirthLocation(loc);
-            onSelectLabel(loc.label, loc.params.lat, loc.params.lon, loc.params.timezone);
+          onLocationChange={() => {}}
+          open={false}
+          onOpenChange={(next) => {
+            if (!next) return;
+            requestLocationPicker(((loc) => {
+              const picked = loc as PanchangaLocation;
+              setBirthLocation(picked);
+              onSelectLabel(picked.label, picked.params.lat, picked.params.lon, picked.params.timezone);
+            }) satisfies PlacePick);
           }}
         />
       )}
+      renderDate={(a) => <DateField {...a} />}
+      renderTime={(a) => <TimeField {...a} />}
     />
   );
 }

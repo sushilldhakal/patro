@@ -1,60 +1,26 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, TextInput, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Alert, Pressable, Switch, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { AppShell } from "@/components/AppShell";
+import { InnerPage, SettingsCard } from "@/components/account/AccountList";
+import { cn } from "@vedic-patro/design-tokens/cn";
+import { SKY_BUILT_IN_END_YEAR, SKY_BUILT_IN_START_YEAR } from "@/lib/bs-range";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
-import { maxOfflineSpanYears } from "@/lib/patro-browse-years";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import { requestLocationPicker } from "@/lib/menu-request";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";
-import { clampToSupportedBsRange } from "@/lib/offline/offline-range";
 import { PACK_GROUPS, type PackGroupId, type PackSizeEstimate } from "@/lib/offline/offline-pack";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
-import { formatByteSize, parsePositiveYear } from "@vedic-patro/features/common";
+import { formatByteSize } from "@vedic-patro/features/common";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
 /** Copy keys for each download group (`offline.group.<id>.name` / `.hint`). */
 const groupName = (id: PackGroupId) => `offline.group.${id}.name`;
 const groupHint = (id: PackGroupId) => `offline.group.${id}.hint`;
-
-function YearInput({
-  label,
-  value,
-  onChange,
-  invalid,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  invalid: boolean;
-}) {
-  const colors = useThemeColors();
-  return (
-    <View className="flex-1">
-      <Text className={msc.offlineYearLabel} style={nepaliTextStyle(12)}>
-        {label}
-      </Text>
-      <TextInput
-        value={value}
-        onChangeText={(t) => onChange(t.replace(/[^0-9]/g, "").slice(0, 5))}
-        keyboardType="number-pad"
-        maxLength={5}
-        style={{
-          borderColor: invalid ? colors.destructive : colors.border,
-          color: colors.foreground,
-          backgroundColor: colors.card,
-        }}
-        className={msc.offlineYearInput}
-      />
-    </View>
-  );
-}
 
 export default function OfflineDataScreen() {
   const { t, digits } = useLocale();
@@ -75,36 +41,14 @@ export default function OfflineDataScreen() {
     clearOfflineData,
   } = useOfflineData();
 
-  const maxSpan = maxOfflineSpanYears();
-  const nowBs = useMemo(() => getCurrentBs().year, []);
-  const [from, setFrom] = useState(String(summary.minYear ?? nowBs - 5));
-  const [to, setTo] = useState(String(summary.maxYear ?? nowBs + 25));
-  const [groups, setGroups] = useState<PackGroupId[]>(["calendar", "sky"]);
+  // The offline range is fixed: BS 1950-2150, the years the app works out on the phone.
+  const startYear: number = SKY_BUILT_IN_START_YEAR;
+  const endYear: number = SKY_BUILT_IN_END_YEAR;
+  const [groups, setGroups] = useState<PackGroupId[]>(["calendar", "documents", "sait", "kundali", "cities"]);
   const [measured, setMeasured] = useState<{ key: string; est: PackSizeEstimate } | null>(null);
   const [busy, setBusy] = useState<"idle" | "measuring" | "downloading" | "clearing">("idle");
   const [failure, setFailure] = useState<string | null>(null);
-  const seeded = useRef(false);
-
-  // Start the pickers from what is already on the device, once it is known.
-  useEffect(() => {
-    if (seeded.current || summary.minYear == null || summary.maxYear == null) return;
-    seeded.current = true;
-    setFrom(String(summary.minYear));
-    setTo(String(summary.maxYear));
-  }, [summary.minYear, summary.maxYear]);
-
-  const startYear = parsePositiveYear(from);
-  const endYear = parsePositiveYear(to);
-  const bounds = clampToSupportedBsRange({ startYear: 1, endYear: 99999 });
-  const rangeProblem: string | null = (() => {
-    if (startYear == null || endYear == null) return t("ui.account.enter_both_years");
-    if (startYear > endYear) return t("ui.account.the_first_year_must_not_be");
-    if (startYear < bounds.startYear || endYear > bounds.endYear)
-      return t("offline.range_unavailable", { start: digits(bounds.startYear), end: digits(bounds.endYear) });
-    if (endYear - startYear > maxSpan)
-      return t("offline.span_too_long", { max: digits(maxSpan) });
-    return null;
-  })();
+  const rangeProblem: string | null = null;
 
   const valid = rangeProblem == null && startYear != null && endYear != null;
   const selectionKey = valid ? `${startYear}-${endYear}:${[...groups].sort().join(",")}` : "";
@@ -172,24 +116,25 @@ export default function OfflineDataScreen() {
 
   if (!OFFLINE_STORE_SUPPORTED) {
     return (
-      <AppShell title={t("ui.account.offline_data")}>
+      <InnerPage title={t("ui.account.offline_data")}>
         <View className={msc.offlineEmpty}>
           <Ionicons name="phone-portrait-outline" size={36} color={colors.mutedForeground} />
           <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
             {t("ui.account.offline_downloads_aren_t_available_on")}
           </Text>
         </View>
-      </AppShell>
+      </InnerPage>
     );
   }
 
   const est = estimateFresh ? measured!.est : null;
+  const pct = (f: number) => `${digits(Math.round(Math.min(1, Math.max(0, f)) * 100))}%`;
+  const stepLabel =
+    (progress.currentYear != null && PACK_GROUPS.find((g) => g.id === progress.currentGroup)?.perYear ? `${digits(progress.currentYear)} · ` : "") +
+    (progress.currentGroup ? t(groupName(progress.currentGroup)) : "");
 
   return (
-    <AppShell
-      title={t("ui.account.offline_data")}
-      subtitle={t("ui.account.pick_the_years_to_keep_on")}
-    >
+    <InnerPage title={t("ui.account.offline_data")} subtitle={t("ui.account.pick_the_years_to_keep_on")}>
       {!isOnline ? (
         <View
           style={{ borderColor: withAlpha(illustration.orange50, 0.5), backgroundColor: withAlpha(illustration.orange50, 0.12) }}
@@ -202,247 +147,167 @@ export default function OfflineDataScreen() {
         </View>
       ) : null}
 
-      <View className={msc.offlineCard}>
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
-          {t("ui.account.currently_on_this_device")}
-        </Text>
-        {summary.years.length > 0 ? (
-          <>
-            <Text className={msc.offlineStat} style={nepaliTextStyle(24)}>
-              {digits(summary.minYear!)} – {digits(summary.maxYear!)}{" "}
-              <Text className="text-body font-medium text-muted-foreground" style={nepaliTextStyle(13)}>
-                {t("patro_date.era_bs")}
-              </Text>
-            </Text>
-            <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {t("ui.account.length_years_bytes_stored", { length: digits(summary.years.length), bytes: formatByteSize(summary.bytes) })}
-            </Text>
-          </>
-        ) : (
-          <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(14)}>
-            {t("ui.account.nothing_downloaded_yet")}
-          </Text>
-        )}
-        {unfinished && !running ? (
-          <Pressable
-            onPress={() => void resumeDownload()}
-            disabled={!isOnline}
-            className={msc.offlineGhost}
-          >
-            <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-              {t("ui.account.resume_unfinished_download")}
-            </Text>
-          </Pressable>
-        ) : null}
-      </View>
-
-      {/* The pack is saved for the app's place; the picker is the same saved-places list as the header's. */}
-      <View className={msc.offlineCard}>
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
-          {t("offline.place_title")}
-        </Text>
-        <View className="mt-2 flex-row items-center gap-2">
-          <Ionicons name="location-outline" size={18} color={colors.secondary} />
-          <Text className="text-body flex-1 font-medium text-foreground" numberOfLines={1} style={nepaliTextStyle(15)}>
+      {/* The offline range, fixed: what works without internet, for the chosen place. */}
+      <SettingsCard
+        icon="calendar"
+        tint="green"
+        title={t("offline.range_title", { start: digits(startYear), end: digits(endYear) })}
+        caption={t("offline.range_body")}
+      >
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="location-outline" size={16} color={colors.secondary} />
+          <Text className="flex-1 text-sm font-medium text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
             {location.label}
           </Text>
+          <Pressable onPress={requestLocationPicker} disabled={running} accessibilityRole="button" hitSlop={8}>
+            <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(14)}>
+              {t("offline.place_change")}
+            </Text>
+          </Pressable>
         </View>
-        <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-          {t("offline.place_hint")}
-        </Text>
-        <Pressable onPress={requestLocationPicker} disabled={running} accessibilityRole="button" className={msc.offlineGhost}>
-          <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-            {t("offline.place_change")}
-          </Text>
-        </Pressable>
-      </View>
+      </SettingsCard>
 
-      <View className={msc.offlineCardLoose}>
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
-          {t("ui.account.which_years_do_you_need")}
-        </Text>
-        <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-          {t("offline.pick_years_hint", { max: digits(maxSpan) })}
-        </Text>
-        <View className="mt-3 flex-row gap-3">
-          <YearInput label={t("ui.account.from_bs")} value={from} onChange={(v) => { setFrom(v); setMeasured(null); }} invalid={rangeProblem != null} />
-          <YearInput label={t("ui.account.to_bs")} value={to} onChange={(v) => { setTo(v); setMeasured(null); }} invalid={rangeProblem != null} />
-        </View>
-        {rangeProblem ? (
-          <Text className="text-caption mt-2 text-destructive" style={nepaliTextStyle(12)}>
-            {rangeProblem}
-          </Text>
-        ) : (
-          <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
-            {t("offline.years_selected", { count: digits(endYear! - startYear! + 1) })}
-          </Text>
-        )}
+      {/* Extra years and the texts only the server has. */}
+      <SettingsCard
+        icon="download"
+        tint="orange"
+        title={t("offline.extra_title")}
+        caption={t("offline.extra_caption_fixed")}
+      >
 
-        <Text className={msc.offlineFieldLabel} style={nepaliTextStyle(12)}>
-          {t("ui.account.what_to_include")}
-        </Text>
-        {PACK_GROUPS.map((g) => {
-          const on = groups.includes(g.id);
-          return (
-            <Pressable
-              key={g.id}
-              onPress={() => {
-                toggleGroup(g.id);
-                setMeasured(null);
-              }}
-              disabled={g.required || running}
-              className={msc.offlineOption}
-            >
-              <Ionicons
-                name={on ? "checkbox" : "square-outline"}
-                size={20}
-                color={on ? colors.secondary : colors.mutedForeground}
-              />
-              <View className="flex-1">
-                <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
-                  {t(groupName(g.id))}
-                </Text>
-                <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-                  {t(groupHint(g.id))}
-                </Text>
+        <View className="gap-1">
+          {PACK_GROUPS.filter((g) => !g.perYear).map((g) => {
+            const on = groups.includes(g.id);
+            return (
+              <View key={g.id} className="flex-row items-center gap-3 py-2">
+                <View className="min-w-0 flex-1">
+                  <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+                    {t(groupName(g.id))}
+                  </Text>
+                  <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+                    {t(groupHint(g.id))}
+                    {est?.perGroup[g.id] ? ` · ${formatByteSize(est.perGroup[g.id]!.bytes)}` : ""}
+                  </Text>
+                </View>
+                <Switch
+                  value={on}
+                  disabled={g.required || running || measuring}
+                  onValueChange={() => {
+                    toggleGroup(g.id);
+                    setMeasured(null);
+                  }}
+                  trackColor={{ true: colors.secondary }}
+                  accessibilityLabel={t(groupName(g.id))}
+                />
               </View>
-              {est?.perGroup[g.id] ? (
-                <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-                  {formatByteSize(est.perGroup[g.id]!.bytes)}
-                </Text>
-              ) : null}
-            </Pressable>
-          );
-        })}
+            );
+          })}
+        </View>
 
-        {est ? (
+        {measuring ? (
+          <ProgressBlock
+            label={`${t("ui.account.measuring_size")} ${pct(progress.fraction)}`}
+            detail={stepLabel}
+            fraction={progress.fraction}
+          />
+        ) : est ? (
           <View className={msc.offlineEstimate}>
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {t("ui.account.total_to_download")}
             </Text>
             <Text className="text-display font-bold text-foreground" style={nepaliTextStyle(24)}>
-              {formatByteSize(est.totalBytes)}
-            </Text>
-            <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {t("offline.estimate_note", { years: digits(est.years), sample: digits(est.sampleYear) })}
+              {est.totalBytes > 0 ? formatByteSize(est.totalBytes) : t("offline.nothing_to_download")}
             </Text>
           </View>
         ) : null}
 
         {failure ? (
-          <Text className="text-caption mt-3 text-destructive" style={nepaliTextStyle(12)}>
+          <Text className="text-caption text-destructive" style={nepaliTextStyle(12)}>
             {failure}
           </Text>
         ) : null}
 
-        {est ? (
-          <Pressable
-            disabled={!valid || running || !isOnline}
-            onPress={() => void onDownload()}
-            className={msc.offlinePrimary}
-          >
-            {running ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="download-outline" size={18} color={neutral.white} />}
+        {running ? null : est && est.totalBytes > 0 ? (
+          <Pressable disabled={!valid || !isOnline} onPress={() => void onDownload()} className={msc.offlinePrimary}>
+            <Ionicons name="download-outline" size={18} color={neutral.white} />
             <Text className="text-body font-semibold" style={{ color: neutral.white }}>
               {t("ui.account.ok_download_totalbytes", { totalBytes: formatByteSize(est.totalBytes) })}
             </Text>
           </Pressable>
-        ) : (
-          <Pressable
-            disabled={!valid || measuring || running || !isOnline}
-            onPress={() => void onMeasure()}
-            className={msc.offlinePrimary}
-          >
+        ) : est ? null : (
+          <Pressable disabled={!valid || measuring || !isOnline} onPress={() => void onMeasure()} className={msc.offlinePrimary}>
             {measuring ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="speedometer-outline" size={18} color={neutral.white} />}
             <Text className="text-body font-semibold" style={{ color: neutral.white }}>
-              {measuring
-                ? t("ui.account.measuring_size")
-                : t("ui.account.check_download_size")}
+              {measuring ? `${t("ui.account.measuring_size")} ${pct(progress.fraction)}` : t("ui.account.check_download_size")}
             </Text>
           </Pressable>
         )}
-      </View>
 
-      {running || progress.status === "paused" || progress.status === "error" ? (
-        <View className={msc.offlineCardAfter}>
-          <View className="flex-row items-center justify-between">
-            <Text className="text-caption font-medium text-foreground" style={nepaliTextStyle(12)}>
-              {progress.status === "error"
-                ? t("ui.account.something_went_wrong")
-                : progress.status === "paused"
-                  ? t("ui.account.paused_continues_when_the_connection_is")
-                  : t("ui.account.downloading")}
+        {running || progress.status === "paused" || progress.status === "error" ? (
+          <View className="gap-2">
+            <ProgressBlock
+              label={
+                progress.status === "error"
+                  ? t("ui.account.something_went_wrong")
+                  : progress.status === "paused"
+                    ? t("ui.account.paused_continues_when_the_connection_is")
+                    : `${t("ui.account.downloading")} ${pct(progress.fraction)}`
+              }
+              detail={`${stepLabel}${progress.bytes > 0 ? ` · ${formatByteSize(progress.bytes)}` : ""}`}
+              fraction={progress.fraction}
+            />
+            {progress.skippedRequests > 0 ? (
+              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+                {t("offline.skipped", { count: digits(progress.skippedRequests) })}
+              </Text>
+            ) : null}
+            {running ? (
+              <Pressable onPress={cancelDownload} className={msc.offlineGhost}>
+                <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+                  {t("vastu.compass.stop")}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ) : progress.status === "done" ? (
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="checkmark-circle" size={18} color={colors.secondary} />
+            <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
+              {t("ui.account.download_complete_these_years_now_work")}
+            </Text>
+          </View>
+        ) : null}
+      </SettingsCard>
+
+      {/* What is on the phone, and how it downloads. */}
+      <SettingsCard icon="phone" tint="blue" title={t("ui.account.currently_on_this_device")}>
+        <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
+          {summary.years.length > 0
+            ? `${digits(summary.minYear!)} – ${digits(summary.maxYear!)} ${t("patro_date.era_bs")} · ${t("ui.account.length_years_bytes_stored", { length: digits(summary.years.length), bytes: formatByteSize(summary.bytes) })}`
+            : t("ui.account.nothing_downloaded_yet")}
+        </Text>
+        {unfinished && !running ? (
+          <Pressable onPress={() => void resumeDownload()} disabled={!isOnline} className={msc.offlineGhost}>
+            <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+              {t("ui.account.resume_unfinished_download")}
+            </Text>
+          </Pressable>
+        ) : null}
+        <View className={msc.offlineSettingRow}>
+          <View className="min-w-0 flex-1">
+            <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+              {t("ui.account.download_over_wi_fi_only")}
             </Text>
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-              {digits(progress.completed)}/{digits(progress.total)}
+              {t("ui.account.waits_for_wi_fi_before_downloading")}
             </Text>
           </View>
-          <View className={msc.offlineTrack}>
-            <View
-              style={{
-                width: `${progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0}%`,
-                backgroundColor: colors.secondary,
-              }}
-              className="h-full rounded-full"
-            />
-          </View>
-          <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
-            {progress.currentYear != null ? `${digits(progress.currentYear)} · ` : ""}
-            {progress.currentGroup ? t(groupName(progress.currentGroup)) : ""}
-            {progress.bytes > 0 ? ` · ${formatByteSize(progress.bytes)}` : ""}
-          </Text>
-          {progress.skippedRequests > 0 ? (
-            <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {t("offline.skipped", { count: digits(progress.skippedRequests) })}
-            </Text>
-          ) : null}
-          {running ? (
-            <Pressable
-              onPress={cancelDownload}
-              className={msc.offlineGhost}
-            >
-              <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
-                {t("vastu.compass.stop")}
-              </Text>
-            </Pressable>
-          ) : null}
+          <Switch value={wifiOnly} onValueChange={setWifiOnly} trackColor={{ true: colors.secondary }} accessibilityLabel={t("ui.account.download_over_wi_fi_only")} />
         </View>
-      ) : progress.status === "done" ? (
-        <View className={msc.offlineResume}>
-          <Ionicons name="checkmark-circle" size={18} color={colors.secondary} />
-          <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
-            {t("ui.account.download_complete_these_years_now_work")}
-          </Text>
-        </View>
-      ) : null}
-
-      <Pressable
-        onPress={() => setWifiOnly(!wifiOnly)}
-        className={msc.offlineWifi}
-      >
-        <View className="flex-1 pr-3">
-          <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
-            {t("ui.account.download_over_wi_fi_only")}
-          </Text>
-          <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
-            {t("ui.account.waits_for_wi_fi_before_downloading")}
-          </Text>
-        </View>
-        <View
-          style={{ backgroundColor: wifiOnly ? colors.secondary : colors.border }}
-          className={msc.offlineSwitch}
-        >
-          <View
-            style={{ transform: [{ translateX: wifiOnly ? 20 : 0 }] }}
-            className={msc.offlineKnob}
-          />
-        </View>
-      </Pressable>
-
-      <View className={msc.offlineDangerZone}>
         <Pressable
           disabled={busy !== "idle" || running || summary.bytes === 0}
           onPress={onClear}
-          className={msc.offlineDanger}
+          className={cn(msc.offlineClearRow, summary.bytes === 0 && "opacity-50")}
         >
           {busy === "clearing" ? (
             <ActivityIndicator size="small" color={colors.destructive} />
@@ -453,7 +318,30 @@ export default function OfflineDataScreen() {
             {t("ui.account.clear_offline_data_2")}
           </Text>
         </Pressable>
+      </SettingsCard>
+    </InnerPage>
+  );
+}
+
+/** A labelled progress bar: what is happening with its percentage, the bar, and the current step. */
+function ProgressBlock({ label, detail, fraction }: { label: string; detail: string; fraction: number }) {
+  const colors = useThemeColors();
+  return (
+    <View className="gap-1.5">
+      <Text className="text-caption font-medium text-foreground" style={nepaliTextStyle(12)}>
+        {label}
+      </Text>
+      <View className={msc.offlineTrack}>
+        <View
+          style={{ width: `${Math.round(Math.min(1, Math.max(0, fraction)) * 100)}%`, backgroundColor: colors.secondary }}
+          className="h-full rounded-full"
+        />
       </View>
-    </AppShell>
+      {detail ? (
+        <Text className="text-caption text-muted-foreground" numberOfLines={1} style={nepaliTextStyle(12)}>
+          {detail}
+        </Text>
+      ) : null}
+    </View>
   );
 }

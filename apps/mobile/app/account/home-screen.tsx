@@ -1,13 +1,6 @@
-import { InnerPage } from "@/components/account/AccountList";
-import { HomeScreenSettings } from "@/components/account/SettingsPanel";
-import { useLocale } from "@/lib/i18n";
+import { Redirect } from "expo-router";
 
-/** Profile → Home screen: which sections the home page shows. */
-export default function HomeScreenSettingsScreen() {
-  const { t } = useLocale();
-  return (
-    <InnerPage title={t("ui.settings.home_screen")}>
-      <HomeScreenSettings />
-    </InnerPage>
-  );
+/** Old link: the home screen sections now live on Preferences → Appearance. */
+export default function HomeScreenRedirect() {
+  return <Redirect href={"/account/preferences?tab=appearance" as never} />;
 }

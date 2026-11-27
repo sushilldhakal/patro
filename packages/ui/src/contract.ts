@@ -203,6 +203,8 @@ export type IconProps = StyleProps & {
   size?: IconSize | number;
   /** Default `foreground`. */
   tone?: IconTone;
+  /** A fixed colour instead of the tone (a tinted settings icon). */
+  color?: string;
   /** Solid glyph (a filled star or flag). */
   filled?: boolean;
   strokeWidth?: number;

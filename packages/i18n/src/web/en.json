@@ -22,6 +22,14 @@
     "kundali_note": "The Surya Siddhanta uses its own ayanamsha, so the ayanamsha chosen above does not apply."
   },
   "offline": {
+    "range_title": "Offline: BS {{start}}–{{end}}",
+    "range_body": "The calendar, festivals, sait, panchanga and rashifal for these years work without internet, for every saved place.",
+    "extra_caption_fixed": "Choose only what you want kept offline",
+    "built_in_title": "Built into the app",
+    "built_in_body": "BS {{start}}–{{end}}: calendar, festivals, sait, panchanga and rashifal work offline for any saved place, with nothing to download.",
+    "extra_title": "Extra downloads",
+    "extra_caption": "Years outside BS {{start}}–{{end}}, and scripture and reference texts",
+    "nothing_to_download": "Nothing to download",
     "place_title": "Which place?",
     "place_hint": "The download is for this place. Add the places you may switch to as well: saved places are worked out on the phone, so you can pick them offline too.",
     "place_change": "Change or add places",
@@ -39,8 +47,20 @@
         "hint": "Every day's panchanga, muhurta, gochar and rashifal (can be very large)"
       },
       "documents": {
-        "name": "Scripture & reference texts",
-        "hint": "All texts, sait guides, kundali yoga and bhava reference, main cities (audio is not included)"
+        "name": "Scripture texts",
+        "hint": "All texts (audio is not included)"
+      },
+      "sait": {
+        "name": "Sait guides",
+        "hint": "What each sait means and its rules"
+      },
+      "kundali": {
+        "name": "Kundali reference",
+        "hint": "Yoga and bhava explanations"
+      },
+      "cities": {
+        "name": "Main cities",
+        "hint": "Cities offered when you look for a place"
       }
     },
     "range_unavailable": "Only BS {{start}}–{{end}} is available.",
@@ -4217,8 +4237,18 @@
       "mph": "Miles per hour",
       "kn": "Knots",
       "mm": "Millimetres",
-      "in": "Inches"
+      "in": "Inches",
+      "km": "Kilometres",
+      "mi": "Miles",
+      "hpa": "Hectopascals (hPa)",
+      "inhg": "Inches of mercury (inHg)",
+      "mmhg": "Millimetres of mercury (mmHg)"
     },
+    "mi": "{{value}} mi",
+    "inhg": "{{value}} inHg",
+    "mmhg": "{{value}} mmHg",
+    "units_dist": "Distance",
+    "units_pressure": "Pressure",
     "units": "Units",
     "pressure": "Pressure",
     "hpa": "{{value}} hPa",
@@ -5596,6 +5626,11 @@
       "account_data_body": "Permanently remove your account and everything saved with it.",
       "group_account": "Account",
       "back": "Back"
+    },
+    "me": {
+      "section_basic": "Basic information",
+      "section_birth": "Birth details",
+      "contact": "Contact information"
     },
     "auth": {
       "apple_sign_in_failed": "Apple sign-in failed",

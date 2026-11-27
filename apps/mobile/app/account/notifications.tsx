@@ -6,7 +6,7 @@ import { useLocale } from "@/lib/i18n";
 export default function NotificationsSettingsScreen() {
   const { t } = useLocale();
   return (
-    <InnerPage title={t("ui.settings.notifications_reminders")}>
+    <InnerPage title={t("ui.settings.notifications_reminders")} subtitle={t("ui.settings.notifications_hero")}>
       <NotificationSettings />
     </InnerPage>
   );

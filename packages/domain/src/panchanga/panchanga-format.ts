@@ -1,3 +1,4 @@
+import { formatClock12, getClockStyle } from "../calendar/clock-style";
 import { adToBS, AD_MONTH_NAMES_NE, AD_MONTHS_SHORT, BS_MONTH_NAMES, BS_MONTHS_NE } from "../calendar/bs-calendar";
 import { getCalendarSystem, type CalendarSystem } from "../calendar/calendar-system";
 import { GRAHA_NAME, type GrahaKey } from "../jyotish/graha-details";
@@ -25,7 +26,9 @@ export function formatTimeShort(time?: string | null): string | undefined {
 export function formatClockNepali(time?: string | null, lang?: string): string | undefined {
   if (!time) return undefined;
   const short = formatTimeShort(time) ?? time;
-  return toNepaliDigits(short, lang);
+  // The reader's 12-hour clock, when they chose it (Preferences → General).
+  const shown = getClockStyle() === "12" && /^\d\d:\d\d$/.test(short) ? formatClock12(short, lang) : short;
+  return toNepaliDigits(shown, lang);
 }
 
 export type AyanaMark = "उ" | "द";
