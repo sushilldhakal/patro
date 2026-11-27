@@ -407,7 +407,8 @@ export function PlacesScreen({
           goes back, like a pushed page's edge swipe. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={swipeBack}>
-      <Animated.View className="flex-1 bg-background" style={[{ paddingTop: insets.top }, slide]}>
+      <Animated.View style={[styles.fill, slide]}>
+      <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className={cn("flex-row", wc.topBar, "pr-3")}>
           <PressScale
             accessibilityRole="button"
@@ -512,6 +513,7 @@ export function PlacesScreen({
             </Animated.View>
           </Pressable>
         ) : null}
+      </View>
       </Animated.View>
       </GestureDetector>
       </GestureHandlerRootView>
@@ -525,3 +527,5 @@ export function PlacesScreen({
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({ fill: { flex: 1 } });
