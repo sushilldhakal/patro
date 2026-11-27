@@ -72,7 +72,17 @@ export interface PackSelection {
   location: LocationParams | undefined;
   /** Cache key of `location`, to tell packs for different places apart. */
   locationKey: string;
+  /** Scripture slugs to save with the `documents` group; missing = every text (packs saved before the choice). */
+  documents?: string[];
 }
+
+/**
+ * Approximate on-phone size of the one-off groups, measured against the live API on 2026-11-27, so the
+ * size shows before anything downloads. shortcut: fixed numbers, re-measure when these payloads change a lot.
+ */
+export const GROUP_APPROX_BYTES: Partial<Record<PackGroupId, number>> = { sait: 90_000, kundali: 1_050_000, cities: 2_500 };
+/** Scripture size from its verse count: ~1.2 KB a shloka (text, meanings, commentary) plus the contents page. */
+export const documentApproxBytes = (doc: { shloka_count: number }) => 4_000 + doc.shloka_count * 1_200;
 
 export interface PackSizeEstimate {
   years: number;
@@ -121,8 +131,10 @@ export function yearsIn(selection: Pick<PackSelection, "startYear" | "endYear">)
   return out;
 }
 
-function unitKey(year: number | null, group: PackGroupId): string {
-  return year == null ? `once:${group}` : `${year}:${group}`;
+type Unit = { year: number | null; group: PackGroupId; slug?: string };
+
+function unitKey(year: number | null, group: PackGroupId, slug?: string): string {
+  return year == null ? `once:${group}${slug ? `:${slug}` : ""}` : `${year}:${group}`;
 }
 
 function isOfflineFailure(err: unknown): boolean {
@@ -306,10 +318,10 @@ async function dailyTasks(
   return tasks;
 }
 
-async function documentsTasks(): Promise<Task[]> {
+async function documentsTasks(slug?: string): Promise<Task[]> {
   const list = await fetchDocuments();
   const tasks: Task[] = [];
-  for (const summary of list.documents) {
+  for (const summary of list.documents.filter((d) => !slug || d.slug === slug)) {
     tasks.push(async () => {
       const detail = await fetchDocumentDetail(summary.slug);
       for (const chapter of detail.chapters) {
@@ -335,7 +347,7 @@ async function runGroup(
   year: number | null,
   location: LocationParams | undefined,
   tally: Tally,
-  options?: { dailyLimitDays?: number },
+  options?: { dailyLimitDays?: number; slug?: string },
 ): Promise<void> {
   switch (group) {
     case "calendar":
@@ -345,7 +357,7 @@ async function runGroup(
     case "daily":
       return runConcurrent(await dailyTasks(year!, location, options?.dailyLimitDays), DAILY_CONCURRENCY, tally);
     case "documents":
-      return runTasks(await documentsTasks(), tally);
+      return runTasks(await documentsTasks(options?.slug), tally);
     case "sait":
       return runTasks(saitTasks(), tally);
     case "kundali":
@@ -442,15 +454,21 @@ export interface RunPackOptions {
   shouldContinue?: () => boolean;
 }
 
-function workUnits(selection: PackSelection): { year: number | null; group: PackGroupId }[] {
-  const units: { year: number | null; group: PackGroupId }[] = [];
+function workUnits(selection: PackSelection): Unit[] {
+  const units: Unit[] = [];
   // Built-in years need nothing saved: the phone computes them from the sky it carries.
   for (const year of yearsIn(selection).filter((y) => !isBuiltInYear(y))) {
     for (const group of selection.groups) {
       if (PACK_GROUPS.find((g) => g.id === group)?.perYear) units.push({ year, group });
     }
   }
-  for (const g of PACK_GROUPS) if (!g.perYear && selection.groups.includes(g.id)) units.push({ year: null, group: g.id });
+  for (const g of PACK_GROUPS) {
+    if (g.perYear || !selection.groups.includes(g.id)) continue;
+    // Each chosen scripture is its own unit, so adding one later downloads only that one.
+    if (g.id === "documents" && selection.documents) {
+      for (const slug of selection.documents) units.push({ year: null, group: g.id, slug });
+    } else units.push({ year: null, group: g.id });
+  }
   return units;
 }
 
@@ -474,9 +492,12 @@ export async function runPackDownload(
   };
 
   const units = workUnits(selection);
+  // An older pack's `once:documents` already holds every text.
+  const isDone = (u: Unit) =>
+    pack.done.includes(unitKey(u.year, u.group, u.slug)) || (u.slug != null && pack.done.includes(unitKey(null, u.group)));
   const progress: PackProgress = {
     status: "running",
-    completed: units.filter((u) => pack.done.includes(unitKey(u.year, u.group))).length,
+    completed: units.filter((u) => isDone(u)).length,
     total: units.length,
     currentYear: null,
     currentGroup: null,
@@ -508,8 +529,8 @@ export async function runPackDownload(
   const end = beginCapture({ skipExisting: true });
   try {
     for (const unit of units) {
-      const key = unitKey(unit.year, unit.group);
-      if (pack.done.includes(key)) continue;
+      const key = unitKey(unit.year, unit.group, unit.slug);
+      if (isDone(unit)) continue;
 
       if (options.shouldContinue && !options.shouldContinue()) {
         progress.status = "cancelled";
@@ -528,7 +549,7 @@ export async function runPackDownload(
       emit();
 
       try {
-        await runGroup(unit.group, unit.year, selection.location, tally);
+        await runGroup(unit.group, unit.year, selection.location, tally, { slug: unit.slug });
       } catch (err) {
         progress.status = isOfflineFailure(err) ? "paused" : "error";
         progress.error = isOfflineFailure(err) ? null : err instanceof Error ? err.message : String(err);

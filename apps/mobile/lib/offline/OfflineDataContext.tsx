@@ -88,7 +88,7 @@ interface OfflineDataContextValue {
   wifiOnly: boolean;
   setWifiOnly: (value: boolean) => void;
   /** Selection helper: the location the pack will be saved for. */
-  selectionFor: (startYear: number, endYear: number, groups: PackGroupId[]) => PackSelection;
+  selectionFor: (startYear: number, endYear: number, groups: PackGroupId[], documents?: string[]) => PackSelection;
   /** Measures a sample so the real download size can be shown before the user agrees. */
   estimate: (selection: PackSelection) => Promise<PackSizeEstimate>;
   /** Downloads the selection. Call only after the user has seen the size and agreed. */
@@ -161,9 +161,9 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const selectionFor = useCallback(
-    (startYear: number, endYear: number, groups: PackGroupId[]): PackSelection => {
+    (startYear: number, endYear: number, groups: PackGroupId[], documents?: string[]): PackSelection => {
       const params: LocationParams | undefined = locationRef.current.params;
-      return { startYear, endYear, groups, location: params, locationKey: locationCacheKey(params) };
+      return { startYear, endYear, groups, location: params, locationKey: locationCacheKey(params), ...(documents ? { documents } : {}) };
     },
     [],
   );

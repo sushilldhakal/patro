@@ -40,6 +40,8 @@ export const mobileShellClasses = {
   offlineOption: "flex-row items-start gap-3 py-2 active:opacity-80",
   offlineEstimate: "mt-3 rounded-lg border border-border bg-background p-3",
   offlinePrimary: "mt-4 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 active:opacity-80 disabled:opacity-50",
+  offlinePressRow: "flex-row items-center gap-3 py-2 active:opacity-70",
+  offlineDocTitle: "min-w-0 flex-1 text-sm text-foreground",
   offlineTrack: "mt-2 h-1.5 overflow-hidden rounded-full bg-muted",
   offlineResume: "mt-4 flex-row items-center gap-2 rounded-xl border border-border bg-card p-4",
   offlineSettingRow: "flex-row items-center gap-3 border-t border-border pt-3",
