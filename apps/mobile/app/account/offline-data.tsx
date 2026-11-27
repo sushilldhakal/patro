@@ -9,6 +9,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
+import type { SavedItemId } from "@/lib/offline/offline-items";
 import { requestLocationPicker } from "@/lib/menu-request";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";
@@ -40,6 +41,7 @@ export default function OfflineDataScreen() {
     resumeDownload,
     cancelDownload,
     clearOfflineData,
+    removeItem,
   } = useOfflineData();
 
   // The offline range is fixed: BS 1950-2150, the years the app works out on the phone.
@@ -54,8 +56,11 @@ export default function OfflineDataScreen() {
   useEffect(() => {
     void fetchDocuments().then((r) => setDocs(r.documents)).catch(() => {});
   }, []);
-  const docsBytes = docs.filter((d) => chosenDocs.includes(d.slug)).reduce((n, d) => n + documentApproxBytes(d), 0);
-  const totalBytes = groups.reduce((n, g) => n + (GROUP_APPROX_BYTES[g] ?? 0), 0) + docsBytes;
+  // Saved already (until the data is cleared or lost): shown on and locked, and not counted again.
+  const extraSaved = (id: PackGroupId) => id !== "documents" && summary.savedExtras.includes(id);
+  const docSaved = (slug: string) => summary.savedDocs.includes(slug);
+  const docsBytes = docs.filter((d) => chosenDocs.includes(d.slug) && !docSaved(d.slug)).reduce((n, d) => n + documentApproxBytes(d), 0);
+  const totalBytes = groups.filter((g) => !extraSaved(g)).reduce((n, g) => n + (GROUP_APPROX_BYTES[g] ?? 0), 0) + docsBytes;
   const [failure, setFailure] = useState<string | null>(null);
   const rangeProblem: string | null = null;
 
@@ -66,18 +71,45 @@ export default function OfflineDataScreen() {
     setGroups((prev) => (prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]));
   };
 
-  const orderedGroups = PACK_GROUPS.map((g) => g.id).filter((id) => groups.includes(id) || (id === "documents" && chosenDocs.length > 0));
+  const newDocs = chosenDocs.filter((slug) => !docSaved(slug));
+  const orderedGroups = PACK_GROUPS.map((g) => g.id).filter((id) => (groups.includes(id) && !extraSaved(id)) || (id === "documents" && newDocs.length > 0));
 
   const onDownload = async () => {
     if (!valid || totalBytes === 0) return;
     setFailure(null);
     setBusy("downloading");
     try {
-      const result = await startDownload(selectionFor(startYear!, endYear!, orderedGroups, chosenDocs));
+      const result = await startDownload(selectionFor(startYear!, endYear!, orderedGroups, newDocs));
       if (result.status === "error") setFailure(result.error);
     } finally {
       setBusy("idle");
     }
+  };
+
+  const itemTitle = (id: SavedItemId) => {
+    if (id.startsWith("doc:")) {
+      const d = docs.find((x) => x.slug === id.slice(4));
+      return d ? (lang === "en" ? d.title_en : d.title_ne) : id.slice(4);
+    }
+    return id === "other" ? t("offline.other_data") : t(groupName(id as PackGroupId));
+  };
+
+  const onRemove = (id: SavedItemId) => {
+    Alert.alert(t("offline.remove_title", { name: itemTitle(id) }), t("offline.remove_body"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("offline.remove"),
+        style: "destructive",
+        onPress: async () => {
+          setBusy("clearing");
+          try {
+            await removeItem(id);
+          } finally {
+            setBusy("idle");
+          }
+        },
+      },
+    ]);
   };
 
   const onClear = () => {
@@ -166,7 +198,8 @@ export default function OfflineDataScreen() {
 
         <View className="gap-1">
           {PACK_GROUPS.filter((g) => !g.perYear && g.id !== "documents").map((g) => {
-            const on = groups.includes(g.id);
+            const saved = extraSaved(g.id);
+            const on = saved || groups.includes(g.id);
             return (
               <View key={g.id} className="flex-row items-center gap-3 py-2">
                 <View className="min-w-0 flex-1">
@@ -174,12 +207,12 @@ export default function OfflineDataScreen() {
                     {t(groupName(g.id))}
                   </Text>
                   <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-                    {t(groupHint(g.id))} · ≈{formatByteSize(GROUP_APPROX_BYTES[g.id] ?? 0)}
+                    {t(groupHint(g.id))} · {saved ? t("offline.saved") : `≈${formatByteSize(GROUP_APPROX_BYTES[g.id] ?? 0)}`}
                   </Text>
                 </View>
                 <Switch
                   value={on}
-                  disabled={g.required || running}
+                  disabled={g.required || saved || running}
                   onValueChange={() => toggleGroup(g.id)}
                   trackColor={{ true: colors.secondary }}
                   accessibilityLabel={t(groupName(g.id))}
@@ -195,8 +228,8 @@ export default function OfflineDataScreen() {
                 {t(groupName("documents"))}
               </Text>
               <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-                {t("offline.docs_chosen", { count: digits(chosenDocs.length), total: digits(docs.length) })}
-                {chosenDocs.length ? ` · ≈${formatByteSize(docsBytes)}` : ""}
+                {t("offline.docs_chosen", { count: digits(docs.filter((d) => docSaved(d.slug) || chosenDocs.includes(d.slug)).length), total: digits(docs.length) })}
+                {docsBytes > 0 ? ` · ≈${formatByteSize(docsBytes)}` : ""}
               </Text>
             </View>
             <Ionicons name={docsOpen ? "chevron-up" : "chevron-down"} size={18} color={colors.mutedForeground} />
@@ -204,21 +237,24 @@ export default function OfflineDataScreen() {
           {docsOpen ? (
             <View className="gap-0.5 pl-2">
               {docs.map((d) => {
-                const on = chosenDocs.includes(d.slug);
+                const saved = docSaved(d.slug);
+                const on = saved || chosenDocs.includes(d.slug);
                 return (
                   <Pressable
                     key={d.slug}
-                    disabled={running}
+                    disabled={saved || running}
                     onPress={() => setChosenDocs((prev) => (on ? prev.filter((x) => x !== d.slug) : [...prev, d.slug]))}
                     accessibilityRole="checkbox"
-                    accessibilityState={{ checked: on }}
+                    accessibilityState={{ checked: on, disabled: saved }}
                     className={msc.offlinePressRow}
                   >
                     <Ionicons name={on ? "checkbox" : "square-outline"} size={20} color={on ? colors.secondary : colors.mutedForeground} />
                     <Text className={msc.offlineDocTitle} numberOfLines={1} style={nepaliTextStyle(14)}>
                       {lang === "en" ? d.title_en : d.title_ne}
                     </Text>
-                    <Text className="text-caption text-muted-foreground">≈{formatByteSize(documentApproxBytes(d))}</Text>
+                    <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+                      {saved ? t("offline.saved") : `≈${formatByteSize(documentApproxBytes(d))}`}
+                    </Text>
                   </Pressable>
                 );
               })}
@@ -282,10 +318,31 @@ export default function OfflineDataScreen() {
       {/* What is on the phone, and how it downloads. */}
       <SettingsCard icon="phone" tint="blue" title={t("ui.account.currently_on_this_device")}>
         <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
-          {summary.years.length > 0
-            ? `${digits(summary.minYear!)} – ${digits(summary.maxYear!)} ${t("patro_date.era_bs")} · ${t("ui.account.length_years_bytes_stored", { length: digits(summary.years.length), bytes: formatByteSize(summary.bytes) })}`
-            : t("ui.account.nothing_downloaded_yet")}
+          {summary.items.length > 0 ? t("offline.stored_total", { bytes: formatByteSize(summary.bytes) }) : t("ui.account.nothing_downloaded_yet")}
         </Text>
+        {/* Each saved item with its real size; the bin removes just that one. */}
+        {summary.items.map((item) => (
+          <View key={item.id} className="flex-row items-center gap-3 py-1.5">
+            <View className="min-w-0 flex-1">
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(15)}>
+                {itemTitle(item.id)}
+              </Text>
+              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+                {formatByteSize(item.bytes)}
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => onRemove(item.id)}
+              disabled={busy !== "idle" || running}
+              accessibilityRole="button"
+              accessibilityLabel={`${t("offline.remove")} ${itemTitle(item.id)}`}
+              hitSlop={8}
+              className="size-10 items-center justify-center active:opacity-60"
+            >
+              <Ionicons name="trash-outline" size={20} color={colors.destructive} />
+            </Pressable>
+          </View>
+        ))}
         {unfinished && !running ? (
           <Pressable onPress={() => void resumeDownload()} disabled={!isOnline} className={msc.offlineGhost}>
             <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>

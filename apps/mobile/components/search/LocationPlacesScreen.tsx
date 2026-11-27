@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Dimensions } from "react-native";
 import { router } from "expo-router";
+import { SidebarDrawer } from "@/components/AppHeader";
+import { isLargeScreenSize } from "@/lib/responsive";
 import { useWeatherPage, type WeatherPage } from "@vedic-patro/features/weather";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { haptics } from "@vedic-patro/ui/motion";
@@ -16,10 +19,42 @@ import type { PlacePick } from "@/lib/menu-request";
  */
 let pendingPick: PlacePick | undefined;
 
-/** Pushes the picker as a stack page (app/places), so it slides in and swipes back like every page. */
+let openPanel: ((request: { onPick?: PlacePick }) => void) | null = null;
+
+/**
+ * Opens the picker: a sidebar from the left edge on a big screen (isLargeScreenSize) (the side menu's size,
+ * LocationPlacesPanelHost), otherwise a stack page (app/places) that slides in and swipes back.
+ */
 export function openLocationPlaces(onPick?: PlacePick) {
+  const { width, height } = Dimensions.get("window");
+  if (openPanel && isLargeScreenSize(width, height)) {
+    openPanel({ onPick });
+    return;
+  }
   pendingPick = onPick;
   router.push("/places");
+}
+
+/** Wide screens: the same picker (cards, search at the foot) in the side menu's sidebar. Mounted once at the root. */
+export function LocationPlacesPanelHost() {
+  const [request, setRequest] = useState<{ onPick?: PlacePick } | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    openPanel = (next) => {
+      setRequest(next);
+      setVisible(true);
+    };
+    return () => {
+      openPanel = null;
+    };
+  }, []);
+  const close = useCallback(() => setVisible(false), []);
+  const dismissed = useCallback(() => setRequest(null), []);
+  return (
+    <SidebarDrawer visible={visible} onClose={close} onDismissed={dismissed}>
+      {request ? <Picker onClose={close} onPick={request.onPick} /> : null}
+    </SidebarDrawer>
+  );
 }
 
 /** The app/places route. */

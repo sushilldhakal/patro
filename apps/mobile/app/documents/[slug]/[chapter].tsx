@@ -12,6 +12,8 @@ import { useDocumentAudioSession } from "@/lib/documents/document-audio-session"
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
+import { useHeaderHasBack } from "@/lib/header-back";
 
 /** One chapter of a chaptered document — the app's drawing of `useDocumentChapter` (@vedic-patro/features). */
 export default function DocumentChapterScreen() {
@@ -53,14 +55,17 @@ export default function DocumentChapterScreen() {
     }
   }, [audio.activePlaying, audio.activeProgress, audio.hasNext, audio.nextVerse, page.shlokas]);
   const [jump, setJump] = useState<{ label: string; nonce: number } | null>(null);
+  const phoneBar = useHeaderHasBack();
 
   if (page.redirectToDocument && slug) {
     return <Redirect href={`/documents/${slug}` as never} />;
   }
 
   const backHref = slug ? `/documents/${slug}` : "/documents";
+  const bar = <PageBackBar title={page.docTitle ?? ""} subtitle={page.displayTitle} fallback={backHref} />;
   const frame = (children: React.ReactNode) => (
     <View className={cn("flex-1 gap-4 bg-background", documentsClasses.frame)}>
+      {bar}
       <DocumentBackLink href={backHref} label={copy.backToChapters} />
       {children}
     </View>
@@ -74,6 +79,14 @@ export default function DocumentChapterScreen() {
 
   const header = (
     <View className="gap-2 pb-3">
+      {/* The app has back, title and chapter in its top bar (PageBackBar); the progress stays here. */}
+      {phoneBar ? (
+        page.progress ? (
+          <Text className={cn(documentsClasses.readerBarSide, "self-end")} numberOfLines={1}>
+            {page.progress}
+          </Text>
+        ) : null
+      ) : (
       <View className={documentsClasses.readerBar}>
         <View className={documentsClasses.readerBarSlot}>
           <DocumentBackLink href={backHref} label={copy.backToChapters} />
@@ -92,6 +105,7 @@ export default function DocumentChapterScreen() {
           {page.progress}
         </Text>
       </View>
+      )}
       <DocumentJumpForm
         chapterNumbers={page.chapterNumbers}
         chapterPrefixes={page.chapterPrefixes}
@@ -151,6 +165,7 @@ export default function DocumentChapterScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      {bar}
       <DocumentReader
         key={`${slug}-${chapterNumber}`}
         rows={page.rows}

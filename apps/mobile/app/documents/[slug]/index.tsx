@@ -15,12 +15,23 @@ import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { reportNavScrollJS } from "@/lib/nav-compact";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
+import { useHeaderHasBack } from "@/lib/header-back";
 
 function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpChapter?: (anchor: string) => void }) {
   const { header, copy } = page;
+  const phoneBar = useHeaderHasBack();
   if (!header) return null;
   return (
     <View className="gap-2">
+      {/* The app has back and title in its top bar (PageBackBar); the count stays here, on the right. */}
+      {phoneBar ? (
+        header.subtitle ? (
+          <Text className={cn(documentsClasses.readerBarSide, "self-end")} numberOfLines={1}>
+            {header.subtitle}
+          </Text>
+        ) : null
+      ) : (
       <View className={documentsClasses.readerBar}>
         <View className={documentsClasses.readerBarSlot}>
           <DocumentBackLink href="/documents" label={copy.backToList} />
@@ -32,6 +43,7 @@ function DocHeader({ page, onJumpChapter }: { page: DocumentDetailPage; onJumpCh
           {header.subtitle}
         </Text>
       </View>
+      )}
       {onJumpChapter && page.chapterPills.length > 0 ? (
         <ScrollView
           horizontal
@@ -101,10 +113,12 @@ export default function DocumentDetailScreen() {
   });
   const [jumpKey, setJumpKey] = useState<{ key: string; nonce: number } | null>(null);
   const [jumpLabel, setJumpLabel] = useState<{ label: string; nonce: number } | null>(null);
+  const bar = <PageBackBar title={page.header?.title ?? page.title ?? ""} fallback="/documents" />;
 
   if (page.status === "loading") {
     return (
       <View className={cn("flex-1 bg-background", documentsClasses.frame)}>
+        {bar}
         <DocumentBackLink href="/documents" label={copy.backToList} />
         <LoadingState />
       </View>
@@ -113,6 +127,7 @@ export default function DocumentDetailScreen() {
   if (page.status !== "ready" || !doc) {
     return (
       <View className={cn("flex-1 bg-background", documentsClasses.frame)}>
+        {bar}
         <DocumentBackLink href="/documents" label={copy.backToList} />
         {page.status === "error" ? (
           <ErrorState message={copy.loadError} onRetry={page.retry} />
@@ -129,6 +144,7 @@ export default function DocumentDetailScreen() {
     const chapterCols = cardGridColumns(Math.min(windowWidth, 1400) - 32);
     return (
       <View className="flex-1 bg-background">
+        {bar}
         <FlatList
           data={page.chapters}
           keyExtractor={(c) => String(c.number)}
@@ -170,6 +186,7 @@ export default function DocumentDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      {bar}
       <DocumentReader
         rows={page.rows}
         audio={audio}

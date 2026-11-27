@@ -1,3 +1,4 @@
+import { useOverlayHeaderTopInset } from "@/lib/overlay-header";
 import type { ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
 import { DURATION, useReducedMotionPref } from "@vedic-patro/ui/motion";
@@ -62,6 +63,8 @@ export function PanchangaSplitShell({
   const showSidebar = useShowPanchangaSidebar();
   const pageScrollRef = useScrollToTopOnRouteChange();
   const refreshControl = usePageRefreshControl();
+  // The app bar floats over the page (lib/overlay-header.ts); the rail starts below it, not under it.
+  const headerRows = useOverlayHeaderTopInset();
 
   const mainInner = (
     <View className={mainScroll ? "gap-4" : "min-h-0 flex-1"}>{children}</View>
@@ -128,7 +131,7 @@ export function PanchangaSplitShell({
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: navBottom }}
+          contentContainerStyle={{ paddingTop: headerRows, paddingBottom: navBottom }}
         >
           <PanchangaSidebarNav
             className="w-full border-0"

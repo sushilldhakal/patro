@@ -5,6 +5,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { useLearnArticle } from "@vedic-patro/features/learn";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
 import { LearnArticleView } from "@/components/learn/LearnArticleView";
 import { Text } from "@/components/ui/Text";
 import { useThemeColors } from "@/lib/theme-context";
@@ -34,7 +35,8 @@ export default function LearnArticleScreen() {
 
   return (
     <AppShell scroll scrollRef={scrollRef} showHeader={false} title={copy.navTitle}>
-      {/* Web's "← Learn" link above the article; a phone has the top bar's back key instead. */}
+      <PageBackBar title={copy.navTitle} subtitle={article.topic?.sectionLabel} fallback="/learn" />
+      {/* Web's "← Learn" link above the article; the app has the top bar's back key instead. */}
       {headerHasBack ? null : (
         <Pressable
           onPress={() => router.push("/learn")}

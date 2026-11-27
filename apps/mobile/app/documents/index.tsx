@@ -8,6 +8,8 @@ import { useThemeColors } from "@/lib/theme-context";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AppShell } from "@/components/AppShell";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
+import { useHeaderHasBack } from "@/lib/header-back";
 import { DocumentCard } from "@vedic-patro/ui/kit/jyotish";
 import { Grid } from "@vedic-patro/ui";
 import { Text } from "@/components/ui/Text";
@@ -23,6 +25,7 @@ export default function DocumentsScreen() {
   const active = typeof params.category === "string" && isDocumentCategoryId(params.category) ? params.category : "all";
   const view = params.view === "list" ? "list" : "grid";
   const page = useDocumentsPage(active);
+  const phoneBar = useHeaderHasBack();
   const select = (id: string, nextView: string = view) =>
     router.setParams({
       category: id === "all" ? undefined : id,
@@ -50,12 +53,18 @@ export default function DocumentsScreen() {
 
   return (
     <AppShell title={page.copy.title} showHeader={false}>
+      <PageBackBar title={page.copy.title} fallback="/" />
       <View className="gap-8">
-        <PageHeader
-          icon={<AppNavIcon name="book-open" size={24} color={colors.secondary} />}
-          title={page.copy.title}
-          subtitle={page.copy.subtitle}
-        />
+        {/* The app has the title in its top bar; only the line under it stays in the page. */}
+        {phoneBar ? (
+          <Text className="text-body text-muted-foreground">{page.copy.subtitle}</Text>
+        ) : (
+          <PageHeader
+            icon={<AppNavIcon name="book-open" size={24} color={colors.secondary} />}
+            title={page.copy.title}
+            subtitle={page.copy.subtitle}
+          />
+        )}
         {page.status === "loading" ? (
           <LoadingState />
         ) : page.status === "error" ? (

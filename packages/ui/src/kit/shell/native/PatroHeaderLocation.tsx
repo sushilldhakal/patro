@@ -54,7 +54,7 @@ export function PatroHeaderLocation({ location, onLocationChange, locate, classN
             </Text>
           </View>
         ) : (
-          <Text numberOfLines={1} className={cn(cls.locationName, dense ? "max-w-24" : "max-w-32")}>
+          <Text numberOfLines={1} className={cls.locationName}>
             {picker.labelMain}
           </Text>
         )}

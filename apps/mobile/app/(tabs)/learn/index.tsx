@@ -3,6 +3,7 @@ import { Pressable, ScrollView, TextInput, View, useWindowDimensions } from "rea
 import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
 import { Text } from "@/components/ui/Text";
 import { useLearnHub, type LearnHubModule, type LearnTopicCard as LearnTopic } from "@vedic-patro/features/learn";
 import { LearnTopicCard } from "@vedic-patro/ui/kit/learn";
@@ -146,6 +147,7 @@ export default function LearnScreen() {
 
   return (
     <AppShell showHeader={false} title={copy.navTitle} scrollRef={scrollRef}>
+      <PageBackBar title={copy.navTitle} fallback="/" />
       <View className="gap-8" onLayout={(e) => (pageY.current = e.nativeEvent.layout.y)}>
         <View className={cn(learnHero, "gap-8")}>
           <View>

@@ -1,3 +1,4 @@
+import { listSavedItems, removeSavedItem, type SavedItem, type SavedItemId } from "@/lib/offline/offline-items";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { readJsonMeta, writeJsonMeta } from "@/lib/offline/offline-db";
 import { tokenStore } from "@/lib/auth/client";
@@ -47,6 +48,12 @@ export interface OfflineSummary {
   bytes: number;
   requests: number;
   groups: PackGroupId[];
+  /** What is on the phone, item by item with its real size (lib/offline/offline-items). */
+  items: SavedItem[];
+  /** Extras saved for every place (sait, kundali, cities), so they are not offered again. */
+  savedExtras: PackGroupId[];
+  /** Scripture slugs saved. */
+  savedDocs: string[];
 }
 
 const EMPTY_SUMMARY: OfflineSummary = {
@@ -56,9 +63,12 @@ const EMPTY_SUMMARY: OfflineSummary = {
   bytes: 0,
   requests: 0,
   groups: [],
+  items: [],
+  savedExtras: [],
+  savedDocs: [],
 };
 
-function summarize(pack: SavedPack | undefined, totals: { count: number; bytes: number }): OfflineSummary {
+function summarize(pack: SavedPack | undefined, totals: { count: number; bytes: number }, items: SavedItem[]): OfflineSummary {
   const years = new Set<number>();
   const groups = new Set<PackGroupId>();
   for (const key of pack?.done ?? []) {
@@ -71,9 +81,13 @@ function summarize(pack: SavedPack | undefined, totals: { count: number; bytes: 
     years: sorted,
     minYear: sorted[0] ?? null,
     maxYear: sorted[sorted.length - 1] ?? null,
-    bytes: totals.bytes,
     requests: totals.count,
     groups: [...groups],
+    // What is really on disk, not what a pack record says: data lost or removed is offered again.
+    bytes: items.reduce((n, i) => n + i.bytes, 0),
+    items,
+    savedExtras: items.map((i) => i.id).filter((id): id is "sait" | "kundali" | "cities" => id === "sait" || id === "kundali" || id === "cities"),
+    savedDocs: items.filter((i) => i.id.startsWith("doc:")).map((i) => i.id.slice(4)),
   };
 }
 
@@ -99,6 +113,8 @@ interface OfflineDataContextValue {
   /** One year's calendar group — the "download for offline use" prompt on the home screen. */
   downloadYear: (year: number) => Promise<void>;
   refreshSummary: () => Promise<void>;
+  /** Deletes one saved item (a scripture, the sait guides…) so it can be downloaded again. */
+  removeItem: (id: SavedItemId) => Promise<void>;
   clearOfflineData: () => Promise<void>;
 }
 
@@ -125,19 +141,19 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
   wifiOnlyRef.current = wifiOnly;
 
   const refreshSummary = useCallback(async () => {
-    const [packs, totals, legacy] = await Promise.all([
+    const [packs, totals, legacy, items] = await Promise.all([
       readSavedPacks(),
       offlineHttpSummary(),
       listDownloadedYears(locationRef.current.params),
+      listSavedItems(),
     ]);
     const mine = packs[packKey(locationCacheKey(locationRef.current.params))];
-    const next = summarize(mine, totals);
+    const next = summarize(mine, totals, items);
     if (legacy.years.length > 0) {
       const years = [...new Set([...next.years, ...legacy.years])].sort((a, b) => a - b);
       next.years = years;
       next.minYear = years[0] ?? null;
       next.maxYear = years[years.length - 1] ?? null;
-      next.bytes += legacy.approxBytes;
     }
     setSummary(next);
     setUnfinished(mine && !mine.finished ? mine : null);
@@ -238,6 +254,14 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
     [startDownload, selectionFor],
   );
 
+  const removeItem = useCallback(
+    async (id: SavedItemId) => {
+      await removeSavedItem(id);
+      await refreshSummary();
+    },
+    [refreshSummary],
+  );
+
   const clearOfflineData = useCallback(async () => {
     runningRef.current = false;
     await clearOfflineHttp();
@@ -264,6 +288,7 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
       isYearAvailableOffline,
       downloadYear,
       refreshSummary,
+      removeItem,
       clearOfflineData,
     }),
     [
@@ -282,6 +307,7 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
       isYearAvailableOffline,
       downloadYear,
       refreshSummary,
+      removeItem,
       clearOfflineData,
     ],
   );

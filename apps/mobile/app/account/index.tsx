@@ -126,8 +126,14 @@ export default function AccountScreen() {
 
         <ListGroup title={t("ui.account.group_general")}>
           <ListRow icon="map-pin" tint="teal" title={t("ui.settings.saved_places")} subtitle={location.label} onPress={requestLocationPicker} />
-          {/* Events, tasks, appointments, reminders and their alerts: one page (notification settings inside). */}
-          <ListRow icon="calendar" tint="amber" title={t("ui.account.events_and_sync")} subtitle={t("ui.account.events_body")} onPress={go("/account/events")} />
+          <ListRow icon="calendar" tint="green" title={t("ui.account.events_and_sync")} subtitle={t("ui.account.events_body")} onPress={go("/account/events")} />
+          <ListRow
+            icon="notifications"
+            tint="amber"
+            title={t("ui.settings.notifications_reminders")}
+            subtitle={t("ui.settings.notifications_body")}
+            onPress={go("/account/notifications")}
+          />
           <ListRow
             icon="sliders"
             tint="violet"

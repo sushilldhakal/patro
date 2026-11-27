@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Linking, Platform, Pressable, Share, View } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { validTimeZone } from "@vedic-patro/domain/calendar/zoned-time";
 import { useCalendarFeed } from "@vedic-patro/features/events";
@@ -9,7 +9,6 @@ import { InnerPage, ListGroup, ListRow } from "@/components/account/AccountList"
 import { EventEditSheet } from "@/components/events/EventEditSheet";
 import { EventForm } from "@/components/events/EventForm";
 import { PhoneCalendarsCard } from "@/components/events/PhoneCalendarsCard";
-import { RemindersPanel } from "@/components/reminders/RemindersPanel";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { SwipeableRow } from "@/components/ui/SwipeableRow";
@@ -29,17 +28,15 @@ const TABS: Tab[] = ["event", "task", "appointment"];
 const kindOf = (e: CalendarEvent): Tab => (e.kind === "task" || e.kind === "reminder" ? "task" : e.kind === "appointment" ? "appointment" : "event");
 
 /**
- * Events, notifications and reminders in one page: three tabs (events, tasks, appointments), each with
- * its coming items and a "+"; Tasks also holds the शुभ/अशुभ window, rashifal and daily-briefing alerts.
- * At the foot, both ways of calendar sync: the phone's Google / iCloud calendars in and out, and the
+ * Events in three tabs (events, tasks, appointments), each with its coming items and a "+". The शुभ/अशुभ,
+ * rashifal and daily-briefing alerts live in Settings → Notifications & reminders. At the foot, both ways of calendar sync: the phone's Google / iCloud calendars in and out, and the
  * account's private feed for Google / Apple Calendar. Guests' items stay on the phone (lib/events/api).
  */
 export default function EventsScreen() {
   const { t, lang } = useLocale();
   const l = lang === "en" ? "en" : "ne";
   const colors = useThemeColors();
-  const router = useRouter();
-  const params = useLocalSearchParams<{ tab?: string; window?: string }>();
+  const params = useLocalSearchParams<{ tab?: string }>();
   const [tab, setTab] = useState<Tab>(TABS.includes(params.tab as Tab) ? (params.tab as Tab) : "event");
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<CalendarEvent | null>(null);
@@ -106,15 +103,6 @@ export default function EventsScreen() {
           ))
         )}
       </ListGroup>
-
-      {tab === "task" ? (
-        <>
-          <RemindersPanel window={params.window} />
-          <ListGroup>
-            <ListRow icon="reminders" title={t("ui.settings.notifications_reminders")} onPress={() => router.push("/account/notifications" as never)} />
-          </ListGroup>
-        </>
-      ) : null}
 
       {/* Sync, both ways: the phone's Google / iCloud calendars in and the app's items out… */}
       <PhoneCalendarsCard onImported={() => void queryClient.invalidateQueries({ queryKey: ["events"] })} />

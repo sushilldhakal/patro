@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSyncExternalStore } from "react";
 import { Easing, makeMutable, withTiming } from "react-native-reanimated";
 
@@ -58,6 +59,17 @@ export function registerOverlayPage(): () => void {
 /** True while the focused page lets the bar float over it. */
 export function useOverlayHeaderActive(): boolean {
   return useSyncExternalStore(subscribe, () => pages > 0, () => false);
+}
+
+/**
+ * Room a fixed column (a sidebar rail) leaves at its top so the floating bar never covers it: the
+ * status bar plus the bar's rows while the bar floats, else 0 (the bar then takes its own room).
+ */
+export function useOverlayHeaderTopInset(): number {
+  const active = useOverlayHeaderActive();
+  const rows = useOverlayHeaderRowsHeight();
+  const { top } = useSafeAreaInsets();
+  return active && rows > 0 ? top + rows : 0;
 }
 
 /** Room the page leaves at its top for the floating bar's rows (0 until measured). */

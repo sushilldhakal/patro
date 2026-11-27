@@ -215,6 +215,24 @@ export async function offlineHttpSummary(): Promise<{ count: number; bytes: numb
   return { count: row?.count ?? 0, bytes: row?.bytes ?? 0 };
 }
 
+/** Every saved response's key and size, for the per-item list on the offline page. */
+export async function listOfflineKeys(): Promise<{ key: string; bytes: number }[]> {
+  if (!OFFLINE_STORE_SUPPORTED) return [];
+  const db = await getOfflineDb();
+  return db.getAllAsync<{ key: string; bytes: number }>("SELECT key, COALESCE(bytes, 0) AS bytes FROM offline_http");
+}
+
+/** Removes these saved responses and their files. */
+export async function deleteOfflineKeys(keys: string[]): Promise<void> {
+  if (!OFFLINE_STORE_SUPPORTED || keys.length === 0) return;
+  const db = await getOfflineDb();
+  for (const key of keys) {
+    const row = await db.getFirstAsync<{ file: string | null }>("SELECT file FROM offline_http WHERE key = ?", [key]);
+    await db.runAsync("DELETE FROM offline_http WHERE key = ?", [key]);
+    await deletePayloadFile(row?.file);
+  }
+}
+
 export async function clearOfflineHttp(): Promise<void> {
   if (!OFFLINE_STORE_SUPPORTED) return;
   const db = await getOfflineDb();

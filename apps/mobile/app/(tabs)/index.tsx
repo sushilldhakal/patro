@@ -221,9 +221,9 @@ function HomeScreen() {
   const windowDays = plannerKind === "week" || plannerKind === "day" || plannerKind === "multi" ? plannerDays(plannerKind, anchor) : [];
   // A saved Week on a phone becomes Multi Day; a tablet offers only Day, Week, Month and Panchanga.
   useEffect(() => {
-    const fit = width >= 768 ? adaptTabletHomeView(patroView) : adaptHomeView(patroView, false);
+    const fit = isTablet ? adaptTabletHomeView(patroView) : adaptHomeView(patroView, false);
     if (fit !== patroView) setPatroView(fit);
-  }, [patroView, width, setPatroView]);
+  }, [patroView, isTablet, setPatroView]);
   const daySlots = useBestSlots(windowDays, location.params, windowDays.length > 0);
   const personalDays = usePersonalDays(windowDays, location.params, isAuthenticated && windowDays.length > 0);
   // The planner and the header's month follow each other: stepping a week into another month (BS, or AD

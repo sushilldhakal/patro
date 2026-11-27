@@ -1,5 +1,6 @@
+import { useLayoutMode } from "@/lib/responsive";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Platform, View, useWindowDimensions } from "react-native";
+import { Animated, Easing, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useThemeColors } from "@/lib/theme-context";
@@ -70,14 +71,14 @@ export function BsMonthHeaderTitle({
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   // Seven day columns need room: a phone gets Multi Day (two days) instead of Week.
-  const { width } = useWindowDimensions();
+  const { isLargeScreen } = useLayoutMode();
   const tablet = useTabletHeader();
   const yearLine = usePatroYearLine(browseEra, year);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   // Phone: month, day, multi day, year, panchanga, list in the menu. Tablet: Day | Week | Month |
   // Panchanga, four choices the top bar shows as a segmented switch like iPad Calendar's.
-  const views = width >= 768 ? TABLET_HOME_VIEWS : homeViewsFor(false);
+  const views = isLargeScreen ? TABLET_HOME_VIEWS : homeViewsFor(false);
   usePageViewMenu([
     {
       key: "view",

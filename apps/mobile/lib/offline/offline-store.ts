@@ -123,6 +123,14 @@ export async function listDownloadedYears(location?: LocationParams): Promise<Do
   };
 }
 
+/** Bytes of the years an older build saved in its own table, every place. */
+export async function legacyYearsBytes(): Promise<number> {
+  if (!OFFLINE_STORE_SUPPORTED) return 0;
+  const db = await getOfflineDb();
+  const row = await db.getFirstAsync<{ bytes: number | null }>("SELECT SUM(LENGTH(payload)) AS bytes FROM bs_year_cache");
+  return row?.bytes ?? 0;
+}
+
 /** Every year an older build saved in its own table, for every place (they predate computed months). */
 export async function clearLegacyYears(): Promise<void> {
   if (!OFFLINE_STORE_SUPPORTED) return;

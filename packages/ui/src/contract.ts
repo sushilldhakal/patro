@@ -109,6 +109,8 @@ export type TextProps = StyleProps & {
   as?: TextTag;
   /** Truncate after this many lines. */
   numberOfLines?: number;
+  /** App only: shrink the font (down to 70%) to fit `numberOfLines` instead of truncating. */
+  shrinkToFit?: boolean;
 };
 
 // ─── Input ───────────────────────────────────────────────────────────────────

@@ -70,8 +70,8 @@ function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
 }
 
 /**
- * The Tasks tab's alerts: शुभ/अशुभ window reminders, rashifal and the daily briefing, each profile's
- * guidance today. Moved here from the old /reminders page, which now opens this tab.
+ * The Reminders page (Settings → Notifications & reminders): शुभ/अशुभ window reminders, rashifal and the daily briefing,
+ * each profile's guidance today.
  */
 export function RemindersPanel({ window: windowKey }: { window?: string }) {
   const { t, pick, lang } = useLocale();

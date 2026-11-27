@@ -6,7 +6,6 @@ import { mobileRoles } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { calendarClasses as cal } from "@vedic-patro/design-tokens/classes/calendar-classes";
 import { homeClasses as home } from "@vedic-patro/design-tokens/classes/home-classes";
-import { softBreakTithi } from "@vedic-patro/domain/calendar/tithi-soft-break";
 import { eventsOnDate } from "@vedic-patro/features/events";
 import { useBsCalendarGrid } from "@vedic-patro/features/home";
 import { haptics } from "@vedic-patro/ui/motion";
@@ -98,8 +97,8 @@ export function BsCalendarGrid({
   // The website sets the date at text-3xl on a phone too; the app's 2xl read small beside it.
   const dayNumClass = "text-3xl";
   const tithiRowMinH = lang === "en" ? 14 : 18;
-  /* English names are long ("Chaturdashi"): on a phone they get a smaller size, may wrap to a second
-     line at a syllable, and start below the moon so the two never overlap. */
+  /* English names are long ("Chaturdashi"): on a phone they sit on the moon's line like the Nepali
+     ones, stop short of the moon, and shrink to fit one line. */
   const englishPhone = lang === "en" && isCompact;
   const moonSize = width >= 640 ? 16 : 14;
   const moonInset = isCompact ? 0 : 4;
@@ -198,14 +197,17 @@ export function BsCalendarGrid({
                   {!isCompact && leftFest ? <VerticalEdgeLabel text={leftFest} side="left" color={isPublicHoliday ? roles.danger : roles.foreground} /> : null}
                   {!isCompact && rightFest ? <VerticalEdgeLabel text={rightFest} side="right" color={isPublicHoliday ? roles.danger : roles.foreground} /> : null}
 
-                  <View className="w-full flex-row items-start justify-start" style={{ minHeight: tithiRowMinH, paddingTop: englishPhone ? moonSize - 4 : 0 }}>
+                  <View className="w-full flex-row items-start justify-start" style={{ minHeight: tithiRowMinH, paddingRight: englishPhone ? moonSize + 2 : 0 }}>
                     {tithi ? (
-                      <Text
-                        numberOfLines={Platform.OS === "android" ? undefined : englishPhone ? 2 : 1}
-                        className={cn("flex-1", cal.tithi, "text-left", isTablet ? "text-sm" : englishPhone ? "text-diagram-xs leading-tight" : cal.tithiPhone)}
-                      >
-                        {clipToCell(englishPhone ? softBreakTithi(tithi) : tithi, col, englishPhone ? 1 : 0.85)}
-                      </Text>
+                      englishPhone ? (
+                        <Text numberOfLines={1} shrinkToFit className={cn("flex-1", cal.tithi, "text-left text-diagram-xs leading-tight")}>
+                          {tithi}
+                        </Text>
+                      ) : (
+                        <Text numberOfLines={ONE_LINE} className={cn("flex-1", cal.tithi, "text-left", isTablet ? "text-sm" : cal.tithiPhone)}>
+                          {clipToCell(tithi, col, 0.85)}
+                        </Text>
+                      )
                     ) : isEnriching && !isOutside ? (
                       <View className={cal.tithiPending} />
                     ) : (

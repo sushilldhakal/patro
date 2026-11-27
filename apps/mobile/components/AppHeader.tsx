@@ -1,3 +1,4 @@
+import { isLargeScreenSize } from "@/lib/responsive";
 import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
 import { Icon } from "@vedic-patro/ui";
 import { shellIcons, topBarControlSize } from "@vedic-patro/ui/kit/shell";
@@ -17,7 +18,7 @@ import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { requestAddReminder, requestLocationPicker, requestOpenMenu, requestSearch, requestSignIn, useOpenMenuRequest } from "@/lib/menu-request";
-import { useTopBarElement, useTopBarHeader } from "@/components/navigation/TopBarSlot";
+import { useTopBarElement, useTopBarHeader, useTopBarPinned } from "@/components/navigation/TopBarSlot";
 import { HeaderDateTitle } from "@/components/patro-date/HeaderDateTitle";
 import { PatroHeaderLocation } from "@/components/patro-date/PatroHeaderLocation";
 import { ThemeScope, useThemeColors } from "@/lib/theme-context";
@@ -92,7 +93,7 @@ export function NavDrawerHost() {
  * Tablet: the side menu as a sidebar sliding in from the left edge, like iPad Calendar's
  * calendars list, with the page dimmed beside it. A tap beside it or the close button closes it.
  */
-function SidebarDrawer({
+export function SidebarDrawer({
   visible,
   onClose,
   onDismissed,
@@ -231,8 +232,18 @@ function ViewSegmentedSwitch() {
   const sections = usePageViewSections();
   if (!sections) return null;
   if (sections.length !== 1 || sections[0]!.options.length > 4) return <ViewMenuButton />;
-  const { options } = sections[0]!;
-  const iconic = options.every((option) => option.icon);
+  return <SegmentGroup options={sections[0]!.options} />;
+}
+
+/**
+ * One group of view choices as a segmented switch. A choice with an icon shows only the icon until it
+ * is chosen; the chosen one opens into a pill with its icon and name. A choice without an icon always
+ * shows its name. A press folds the old pill and opens the new one.
+ */
+function SegmentGroup({ options }: { options: PageViewOption[] }) {
+  const hasIcon = (option: PageViewOption) => Boolean(option.icon || option.ionicon);
+  const anyIcon = options.some(hasIcon);
+  const colors = useThemeColors();
   return (
     <Animated.View
       layout={SEGMENT_LAYOUT}
@@ -241,7 +252,9 @@ function ViewSegmentedSwitch() {
       style={{ borderCurve: "continuous" }}
     >
       {options.map((option) => {
+        const iconic = hasIcon(option);
         const showLabel = !iconic || option.active;
+        const tone = option.active ? "foreground" : "muted";
         return (
           <Animated.View key={option.key} layout={SEGMENT_LAYOUT} className="h-full">
             <Pressable
@@ -261,9 +274,13 @@ function ViewSegmentedSwitch() {
               )}
               style={{ borderCurve: "continuous" }}
             >
-              {option.icon ? <Icon node={option.icon} size={20} tone={option.active ? "foreground" : "muted"} /> : null}
+              {option.icon ? (
+                <Icon node={option.icon} size={20} tone={tone} />
+              ) : option.ionicon ? (
+                <Ionicons name={option.ionicon as never} size={18} color={option.active ? colors.foreground : colors.mutedForeground} />
+              ) : null}
               {showLabel ? (
-                <Animated.View entering={iconic ? SEGMENT_LABEL_IN : undefined} exiting={iconic ? SEGMENT_LABEL_OUT : undefined}>
+                <Animated.View entering={anyIcon ? SEGMENT_LABEL_IN : undefined} exiting={anyIcon ? SEGMENT_LABEL_OUT : undefined}>
                   <Text
                     className={cn("text-body font-medium", option.active ? "text-foreground" : "text-muted-foreground")}
                     style={nepaliTextStyle(15)}
@@ -278,6 +295,24 @@ function ViewSegmentedSwitch() {
         );
       })}
     </Animated.View>
+  );
+}
+
+/**
+ * Big screens (isLargeScreenSize: iPad, Android tablets, an unfolded tri-fold): the page's views laid out in the bar instead of
+ * behind the ☰ menu. Each plain group is a segmented switch; a titled list (the profiles) stays a pill
+ * with the chosen name that opens its list.
+ */
+function WideViewBar({ sections }: { sections: PageViewSection[] }) {
+  const groups = sections.filter((x) => !x.title && x.placement !== "tabs");
+  const lists = sections.filter((x) => x.title && x.placement !== "tabs");
+  return (
+    <View className="flex-row items-center gap-2">
+      {groups.map((x) => (
+        <SegmentGroup key={x.key} options={x.options} />
+      ))}
+      {lists.length > 0 ? <ViewMenuButton only={lists} dropdown /> : null}
+    </View>
   );
 }
 
@@ -431,6 +466,7 @@ export function ViewMenuButton({ only, dropdown }: { only?: PageViewSection[]; d
   const close = () => setAnchor(null);
 
   if (!sections) return null;
+  if (!dropdown && isLargeScreenSize(width, height)) return <WideViewBar sections={sections} />;
   // The dropdown shows the chosen option, or the first one (signed out: "sign in").
   const flat = sections.flatMap((x) => x.options);
   const dropdownLabel = (flat.find((o) => o.active) ?? flat[0])?.label ?? "";
@@ -610,9 +646,14 @@ function AppHeaderView() {
   const insets = useSafeAreaInsets();
   const dateControls = useTopBarElement();
   const dateHeader = useTopBarHeader();
+  // A page with a back · title · search bar keeps it in place while it scrolls (PageBackBar).
+  const pinnedBar = useTopBarPinned();
   const router = useRouter();
   // The date controls' band is exactly one key tall, so they line up with the buttons either side.
-  const controlSize = topBarControlSize(useWindowDimensions().width);
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const controlSize = topBarControlSize(windowWidth);
+  // Big screens (iPad, tablets, an unfolded tri-fold): the views sit in the bar as buttons.
+  const wideViews = isLargeScreenSize(windowWidth, windowHeight);
   const tablet = useTabletHeader();
   // iPad: the phone's rows, at the tablet page inset so they line up with the cards below.
   const wide = useTabletUi();
@@ -670,7 +711,7 @@ function AppHeaderView() {
           <View className="ml-auto flex-row items-center gap-2">
             {/* Two keys, like home's row 1: search, then profile. The page's views sit in row 2's
                 toggle; the menu only when they don't fit there. */}
-            {pageViews && !viewToggle && !viewDropdown ? <ViewMenuButton only={rest} /> : null}
+            {pageViews && (wideViews || (!viewToggle && !viewDropdown)) ? <ViewMenuButton only={rest} /> : null}
             <HeaderButton icon="search-outline" label={t("ui.search.search")} onPress={requestSearch} />
             <HeaderButton
               icon={isAuthenticated ? "person-circle-outline" : "person-outline"}
@@ -695,8 +736,8 @@ function AppHeaderView() {
           />
           {/* Right: the page's own views (अहोरात्र | दिन-रात, कृष्ण | शुक्ल…). No BS | AD here: the
               pages follow the app's setting (home, Settings). */}
-          {viewToggle ? <PageViewToggle options={viewToggle} /> : null}
-          {viewDropdown ? <ViewMenuButton only={viewDropdown} dropdown /> : null}
+          {viewToggle && !wideViews ? <PageViewToggle options={viewToggle} /> : null}
+          {viewDropdown && !wideViews ? <ViewMenuButton only={viewDropdown} dropdown /> : null}
         </View>
         {tabsSection ? (
           <View
@@ -725,7 +766,7 @@ function AppHeaderView() {
           {tablet ? <HeaderButton icon="sidebar" label={t("menu_open")} onPress={requestOpenMenu} /> : null}
           {/* The page's date controls (TopBarSlot), in a fixed-height band: their own bottom margins would
               otherwise make the bar grow. */}
-          <View className="min-w-0 flex-1 justify-start overflow-hidden" style={{ height: controlSize }}>{dateControls}</View>
+          <View className="min-w-0 flex-1 justify-start overflow-hidden" style={pinnedBar ? { minHeight: controlSize } : { height: controlSize }}>{dateControls}</View>
         </View>
         {tablet ? <ViewSegmentedSwitch /> : null}
         <View className={cn("flex-row items-center justify-end gap-2", tablet && "min-w-0 flex-1")}>
@@ -753,7 +794,7 @@ function AppHeaderView() {
     // on iOS, which hid the first row under the band and left a blank gap below the bar.
     <View style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 20, paddingTop: insets.top }} pointerEvents="box-none">
       <Animated.View
-        style={shiftStyle}
+        style={pinnedBar ? undefined : shiftStyle}
         onLayout={(e) => setOverlayHeaderHeights(dateHeader && !tablet ? row1H.current : 0, e.nativeEvent.layout.height)}
       >
         {rows}

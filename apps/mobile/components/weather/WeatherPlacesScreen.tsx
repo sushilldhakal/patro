@@ -1,3 +1,5 @@
+import { SidebarDrawer } from "@/components/AppHeader";
+import { useLayoutMode } from "@/lib/responsive";
 import { useEffect, useState, type ReactNode } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, View, type PressableProps } from "react-native";
 import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
@@ -357,6 +359,8 @@ function PlaceCard({
  * The places screen (the ☰ in the sky): every saved place with its temperature now, today's
  * low / high and its local time; a search bar at the bottom adds one; ⋯ holds edit list and units.
  */
+const noop = () => {};
+
 export function PlacesScreen({
   page,
   title,
@@ -372,6 +376,7 @@ export function PlacesScreen({
   onChoose?: (index: number) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { isLargeScreen } = useLayoutMode();
   const { places, copy, units } = page;
   const [menuOpen, setMenuOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
@@ -505,6 +510,15 @@ export function PlacesScreen({
     </>
   );
   if (asPage) return <>{body}{sheets}</>;
+  // Big screens: the list slides in from the left as a sidebar, the side menu's size, over the page.
+  if (isLargeScreen) {
+    return (
+      <SidebarDrawer visible={places.listOpen} onClose={close} onDismissed={noop}>
+        <GestureHandlerRootView style={{ flex: 1 }}>{body}</GestureHandlerRootView>
+        {sheets}
+      </SidebarDrawer>
+    );
+  }
   return (
     <Modal
       visible={places.listOpen}

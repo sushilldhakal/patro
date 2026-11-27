@@ -190,6 +190,10 @@ export async function retireOutdatedOfflineData(): Promise<boolean> {
   return true;
 }
 
+export async function writeSavedPacks(packs: Record<string, SavedPack>): Promise<void> {
+  await writeJsonMeta(PACK_META_KEY, packs);
+}
+
 export async function clearSavedPacks(): Promise<void> {
   await writeJsonMeta(PACK_META_KEY, {});
 }

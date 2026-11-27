@@ -2,6 +2,8 @@ import { FlatList, Pressable, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { isVerseDetailKind, useVerseDetailList } from "@vedic-patro/features/documents";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
+import { useHeaderHasBack } from "@/lib/header-back";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Text } from "@/components/ui/Text";
 import { reportNavScrollJS } from "@/lib/nav-compact";
@@ -20,11 +22,12 @@ export default function VerseDetailScreen() {
   const bottom = useNavBottomPadding(isTablet);
   const { kind, value, slug } = useLocalSearchParams<{ kind: string; value?: string; slug?: string }>();
   const list = useVerseDetailList(isVerseDetailKind(kind) ? kind : null, typeof value === "string" ? value : "", slug);
+  const phoneBar = useHeaderHasBack();
 
   const header = (
     <View className="gap-4 pb-6">
       <DocumentBackLink href="/documents" label={list.copy.back} />
-      <Text className={documentsClasses.chapterTitle}>{list.copy.heading}</Text>
+      {phoneBar ? null : <Text className={documentsClasses.chapterTitle}>{list.copy.heading}</Text>}
       {list.status === "ready" ? <Text className={documentsClasses.chapterProgress}>{list.copy.count}</Text> : null}
       {list.status === "loading" ? <LoadingState /> : null}
       {list.status === "error" ? <ErrorState message={list.copy.loadError} /> : null}
@@ -34,6 +37,7 @@ export default function VerseDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <PageBackBar title={list.copy.heading} fallback="/documents" />
       <FlatList
         data={list.rows}
         keyExtractor={(row) => row.key}

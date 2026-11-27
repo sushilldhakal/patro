@@ -73,7 +73,7 @@ const TIGHT_LEADING = /\bleading-(?:none|tight)\b/g;
  * View, so every run gets the body size and foreground colour unless its
  * classes say otherwise — the same defaults the website's page text has.
  */
-export function Text({ variant, numberOfLines, as, className, nativeClassName, children, testID }: TextProps) {
+export function Text({ variant, numberOfLines, shrinkToFit, as, className, nativeClassName, children, testID }: TextProps) {
   const merged = cn(variant && textVariantClass[variant], className, nativeClassName);
   const sized = TYPE_SCALE.test(merged) ? merged : cn("text-body", merged);
   const tinted = /\btext-/.test(sized.replace(TEXT_NOT_COLOR, "")) ? sized : cn("text-foreground", sized);
@@ -86,6 +86,8 @@ export function Text({ variant, numberOfLines, as, className, nativeClassName, c
       className={cn("font-sans", colored)}
       style={[{ fontFamily: familyFor(colored), fontWeight: "normal" }, ANDROID_PADDING, devanagari ? NO_TRACKING : undefined]}
       numberOfLines={numberOfLines}
+      adjustsFontSizeToFit={shrinkToFit}
+      minimumFontScale={shrinkToFit ? 0.7 : undefined}
       accessibilityRole={as && /^h\d$/.test(as) ? "header" : undefined}
       testID={testID}
     >

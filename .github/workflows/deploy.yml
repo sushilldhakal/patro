@@ -20,6 +20,9 @@ jobs:
   # The Rust API binary, built on GitHub's ARM runner (same Ubuntu 24.04 / aarch64 as the VM) so the
   # VM never compiles. Runs beside the website build; the VM installs it only when apps/rust changed.
   rust:
+    # A push whose last commit says [skip deploy] (an app-only release that still touches packages/**)
+    # builds and deploys nothing: no Rust binary, no website, no Cloudflare. The deploy job needs this one.
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip deploy]') }}
     runs-on: ubuntu-24.04-arm
     defaults:
       run:

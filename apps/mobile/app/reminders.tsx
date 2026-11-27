@@ -1,7 +1,15 @@
-import { Redirect, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
+import { InnerPage } from "@/components/account/AccountList";
+import { RemindersPanel } from "@/components/reminders/RemindersPanel";
+import { useLocale } from "@/lib/i18n";
 
-/** Reminders now live in Events → Tasks (with the शुभ/अशुभ window that a home-page bell asked for). */
-export default function RemindersRedirect() {
+/** Settings → Notifications & reminders → Reminders: शुभ/अशुभ window alerts (a home-page bell opens one by `window`). */
+export default function RemindersScreen() {
+  const { t } = useLocale();
   const { window } = useLocalSearchParams<{ window?: string }>();
-  return <Redirect href={{ pathname: "/account/events", params: { tab: "task", ...(window ? { window } : {}) } } as never} />;
+  return (
+    <InnerPage title={t("ui.settings.reminders")} subtitle={t("ui.settings.reminders_body")}>
+      <RemindersPanel window={window} />
+    </InnerPage>
+  );
 }

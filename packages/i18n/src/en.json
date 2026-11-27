@@ -30,6 +30,13 @@
     "extra_title": "Extra downloads",
     "extra_caption": "Years outside BS {{start}}–{{end}}, and scripture and reference texts",
     "nothing_to_download": "Nothing to download",
+    "saved": "Saved on this phone",
+    "stored_total": "{{bytes}} saved on this phone",
+    "other_data": "Other (older years and daily detail)",
+    "remove": "Remove",
+    "remove_title": "Remove {{name}}?",
+    "remove_body": "It is deleted from this phone. You can download it again any time.",
+    "docs_chosen": "{{count}} of {{total}} chosen",
     "place_title": "Which place?",
     "place_hint": "The download is for this place. Add the places you may switch to as well: saved places are worked out on the phone, so you can pick them offline too.",
     "place_change": "Change or add places",
@@ -5376,6 +5383,7 @@
     }
   },
   "weather_card": {
+    "swipe_hint": "Swipe left or right for your other saved places",
     "rain": "{{pct}} rain",
     "aqi": "AQI {{n}}",
     "humidity": "Humidity",

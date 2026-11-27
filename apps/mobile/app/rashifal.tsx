@@ -1,5 +1,6 @@
+import { useLayoutMode } from "@/lib/responsive";
 import { useMemo, useState } from "react";
-import { Pressable, View, useWindowDimensions } from "react-native";
+import { Pressable, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useRashifalPage } from "@vedic-patro/features/rashifal";
 import { RASHIFAL_PERIODS, type RashifalPeriod } from "@vedic-patro/api-client";
@@ -52,9 +53,9 @@ export default function RashifalScreen() {
 
   // Phone: the twelve as a wheel under the period tabs, the chosen sign's reading below it.
   const tablet = useTabletUi();
-  const { width } = useWindowDimensions();
+  const { isLargeScreen } = useLayoutMode();
   const choice = useRashifalSignChoice(page.general.status === "ready" ? page.general.signs : []);
-  const showWheel = !tablet && width < 768 && !page.profile && page.general.status === "ready" && choice.ready;
+  const showWheel = !tablet && !isLargeScreen && !page.profile && page.general.status === "ready" && choice.ready;
   const WHEEL_VISIBLE = 112;
 
   const loading = page.profile ? page.personal.status === "loading" : page.general.status === "loading";

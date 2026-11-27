@@ -5,6 +5,26 @@ export type Breakpoint = "phone" | "largePhone" | "tablet" | "desktop";
 
 export const BREAKPOINTS = breakpoints;
 
+export type LayoutMode = "mobile" | "tablet" | "desktop";
+
+/**
+ * The big-screen UI's switch, for every device in both orientations: 600pt wide and more, except a
+ * phone turned sideways (under 500pt tall). Phones (either way up) and a folded tri-fold get the
+ * phone UI; an unfolded tri-fold, every iPad (mini included) and Android tablets get the big one.
+ */
+export function isLargeScreenSize(width: number, height: number): boolean {
+  const isPhoneLandscape = width >= 600 && height < 500;
+  return width >= 600 && !isPhoneLandscape;
+}
+
+export function useLayoutMode() {
+  const { width, height } = useWindowDimensions();
+  const isLargeScreen = isLargeScreenSize(width, height);
+  // A third tier for the widest screens (13" iPad Pro, a tri-fold in landscape).
+  const mode: LayoutMode = !isLargeScreen ? "mobile" : width >= 1024 ? "desktop" : "tablet";
+  return { mode, isLargeScreen, isPortrait: height >= width, isLandscape: width > height, width, height };
+}
+
 export function useBreakpoint() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
@@ -19,9 +39,10 @@ export function useBreakpoint() {
     height,
     isLandscape,
     bp,
-    isPhone: bp === "phone" || bp === "largePhone",
-    isTablet: bp === "tablet" || bp === "desktop",
-    isCompact: width < BREAKPOINTS.md,
+    // Phone or big-screen UI: the one rule (isLargeScreenSize), so a phone on its side stays a phone.
+    isPhone: !isLargeScreenSize(width, height),
+    isTablet: isLargeScreenSize(width, height),
+    isCompact: !isLargeScreenSize(width, height),
     isNarrow: width < BREAKPOINTS.sm,
     isCalendarWide: width >= BREAKPOINTS.calendarWide,
     columns: width >= BREAKPOINTS.lg ? 2 : 1,

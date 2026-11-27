@@ -68,6 +68,13 @@ export const strings = {
     en: "Years outside BS {{start}}–{{end}}, and scripture and reference texts",
   },
   "offline.nothing_to_download": { ne: "डाउनलोड गर्नु पर्दैन", en: "Nothing to download" },
+  "offline.saved": { ne: "फोनमा सुरक्षित", en: "Saved on this phone" },
+  "offline.stored_total": { ne: "जम्मा {{bytes}} फोनमा सुरक्षित", en: "{{bytes}} saved on this phone" },
+  "offline.other_data": { ne: "अन्य (पुराना वर्ष र दैनिक विवरण)", en: "Other (older years and daily detail)" },
+  "offline.remove": { ne: "हटाउनुहोस्", en: "Remove" },
+  "offline.remove_title": { ne: "{{name}} हटाउने?", en: "Remove {{name}}?" },
+  "offline.remove_body": { ne: "यो फोनबाट हट्छ। चाहिएमा फेरि डाउनलोड गर्न सकिन्छ।", en: "It is deleted from this phone. You can download it again any time." },
+  "offline.docs_chosen": { ne: "{{total}} मध्ये {{count}} छानिएको", en: "{{count}} of {{total}} chosen" },
   "offline.place_title": { ne: "कुन ठाउँको लागि?", en: "Which place?" },
   "offline.place_hint": {
     ne: "डाउनलोड यो ठाउँको लागि हुन्छ। पछि सर्न सक्ने ठाउँहरू पनि थप्नुहोस्: सुरक्षित ठाउँहरूको पात्रो फोनमै गणना हुन्छ, अफलाइनमा पनि छान्न सकिन्छ।",
@@ -5979,6 +5986,7 @@ export const strings = {
   "sidebar_nav.items.weather.label": { ne: "मौसम", en: "Weather" },
   "sidebar_nav.items.news.label": { ne: "समाचार", en: "News" },
   // ─── Home weather card: short labels only ────────────────────────────────
+  "weather_card.swipe_hint": { ne: "अर्को सुरक्षित ठाउँको मौसम हेर्न दायाँ वा बायाँ स्वाइप गर्नुहोस्", en: "Swipe left or right for your other saved places" },
   "weather_card.rain": { ne: "{{pct}} वर्षा", en: "{{pct}} rain" },
   "weather_card.aqi": { ne: "AQI {{n}}", en: "AQI {{n}}" },
   "weather_card.humidity": { ne: "आर्द्रता", en: "Humidity" },

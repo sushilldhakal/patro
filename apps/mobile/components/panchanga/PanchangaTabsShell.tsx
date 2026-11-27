@@ -1,3 +1,4 @@
+import { useOverlayHeaderTopInset } from "@/lib/overlay-header";
 import { createContext, useContext, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { usePathname } from "expo-router";
@@ -105,6 +106,8 @@ export function PanchangaTabsShell({
   const shellRoute = isPanchangaShellRoute(pathname);
   const showRail = shellRoute && wideEnough;
   const scrollBottom = floatingNavBottomPadding(isTablet);
+  // The app bar floats over the page; the rail's list starts below it instead of under it.
+  const railTop = useOverlayHeaderTopInset();
   // Same page inset as home and AppShell from 768 up, so the header lines up with every page.
   const pagePadH = isCompact ? PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING_WIDE;
 
@@ -142,7 +145,7 @@ export function PanchangaTabsShell({
                     backgroundColor: colors.background,
                   }}
                 >
-                  <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scrollBottom }}>
+                  <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: railTop, paddingBottom: scrollBottom }}>
                     <PanchangaSidebarNav className="w-full border-0" />
                   </ScrollView>
                 </View>
@@ -204,7 +207,7 @@ export function PanchangaTabsShell({
                 backgroundColor: colors.background,
               }}
             >
-              <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scrollBottom }}>
+              <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: railTop, paddingBottom: scrollBottom }}>
                 <PanchangaSidebarNav className="w-full border-0" />
               </ScrollView>
             </View>

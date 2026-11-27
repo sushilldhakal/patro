@@ -7,7 +7,6 @@ import { normalizeMobilePathname } from "@/lib/mobile-nav";
  */
 const APP_ONLY_SHELL_PATHS = [
   "/rashifal",
-  "/reminders",
   "/panchanga/choghadiya",
   "/panchanga/hora",
   "/panchanga/lagna",

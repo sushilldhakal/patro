@@ -22,6 +22,7 @@ import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useKundaliSection, useResetKundaliSection } from "@/lib/kundali/use-kundali-section";
 import { useHeaderHasBack } from "@/lib/header-back";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { GUEST_PROFILE_ID, saveGuestProfile, useGuestProfile } from "@/lib/kundali/guest-profile";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -80,7 +81,12 @@ export default function KundaliDetailScreen() {
   const topBar = (
     <View className={cn(kundaliClasses.topBar, "mb-4")}>
       {/* The top bar's back key does this on a phone: one back key, not two. */}
-      {headerHasBack ? <View /> : (
+      {headerHasBack ? (
+        <>
+          <View />
+          <PageBackBar title={profile?.full_name ?? copy.backAll} fallback="/kundali" />
+        </>
+      ) : (
         <Pressable onPress={() => router.back()} className={cn(kundaliClasses.backLink, "active:opacity-70")}>
           <Ionicons name="arrow-back" size={18} color={colors.foreground} />
           <Text className={kundaliClasses.backLinkText} style={nepaliTextStyle(14)}>
