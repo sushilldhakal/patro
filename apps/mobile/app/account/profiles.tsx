@@ -51,6 +51,20 @@ export default function ProfilesScreen() {
     );
   }
 
+  // Add / edit is a page of its own, as My profile's edit is, not a form squeezed under the list.
+  if (editing !== null) {
+    return (
+      <InnerPage title={editing === "new" ? copy.addProfile : t("ui.me.edit")}>
+        <ProfileForm
+          initial={editing === "new" ? EMPTY_PROFILE : profileToInput(editing)}
+          existing={editing === "new" ? undefined : editing}
+          onCancel={page.cancelEdit}
+          onSaved={page.onProfileSaved}
+        />
+      </InnerPage>
+    );
+  }
+
   return (
     <InnerPage title={copy.profilesTitle} subtitle={t("ui.account.profiles_body")}>
       <View>
@@ -58,14 +72,12 @@ export default function ProfilesScreen() {
         <Text className={accountClasses.sectionTitle} style={nepaliTextStyle()}>
           {copy.profilesTitle}
         </Text>
-        {editing === null ? (
-          <Button
-            label={copy.addProfile}
-            size="sm"
-            onPress={page.startNew}
-            icon={<Ionicons name="add" size={14} color={inkOn(colors.secondary)} />}
-          />
-        ) : null}
+        <Button
+          label={copy.addProfile}
+          size="sm"
+          onPress={page.startNew}
+          icon={<Ionicons name="add" size={14} color={inkOn(colors.secondary)} />}
+        />
       </View>
 
       {page.loadError ? (
@@ -74,14 +86,7 @@ export default function ProfilesScreen() {
         </Text>
       ) : null}
 
-      {editing !== null ? (
-        <ProfileForm
-          initial={editing === "new" ? EMPTY_PROFILE : profileToInput(editing)}
-          existing={editing === "new" ? undefined : editing}
-          onCancel={page.cancelEdit}
-          onSaved={page.onProfileSaved}
-        />
-      ) : page.listStatus === "loading" ? (
+      {page.listStatus === "loading" ? (
         <View className={cn("items-center", accountClasses.loadingBox)}>
           <VedicPatroLoader label={null} size={INLINE_LOADER_SIZE} />
         </View>

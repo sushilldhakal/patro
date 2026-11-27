@@ -90,6 +90,11 @@ export const accountClasses = {
 
   // ── Profile form ──────────────────────────────────────────────────────────
   profileForm: "gap-4",
+  /** The form's head: the name's initial in a circle and the name as it is typed. */
+  formHead: "items-center gap-2 pb-1",
+  formAvatar: "size-20 items-center justify-center rounded-full border-2 border-secondary/40 bg-secondary/15",
+  formAvatarText: "text-3xl font-bold text-secondary",
+  formHeadName: "text-xl font-bold text-foreground",
   fieldRow: "gap-4",
   checkRow: "items-center gap-2",
   checkText: "text-sm text-foreground",

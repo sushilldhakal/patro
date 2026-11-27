@@ -155,6 +155,11 @@ export function useWeatherPlaces({
       setIndex((exists >= 0 ? exists : places.length - 1) + 1);
     },
     makePrimary: (id: string) => persist({ ...saved, primaryId: id }),
+    /** A saved place's own name ("Home", "Ama's house"); its city and coordinates stay. */
+    rename: (id: string, label: string) => {
+      const name = label.trim();
+      if (name) persist({ ...saved, places: saved.places.map((p) => (p.id === id ? { ...p, label: name } : p)) });
+    },
     remove: (id: string) => {
       const places = saved.places.filter((p) => p.id !== id);
       persist({

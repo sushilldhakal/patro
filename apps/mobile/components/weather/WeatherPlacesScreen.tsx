@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, View, type PressableProps } from "react-native";
-import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
+import { useEffect, useState, type ReactNode } from "react";
+import { Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type PressableProps } from "react-native";
+import Animated, { FadeIn, LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { WeatherPage } from "@vedic-patro/features/weather";
@@ -8,11 +8,13 @@ import { cn } from "@vedic-patro/design-tokens/cn";
 import { weatherClasses as wc } from "@vedic-patro/design-tokens/classes/weather-classes";
 import { CSS_EASE_OUT, DURATION, PRESS_SCALE, useReducedMotionPref } from "@vedic-patro/ui/motion";
 import { UiIcon, WeatherGlyph } from "@vedic-patro/ui/kit/weather";
-import { Sheet } from "@vedic-patro/ui";
+import { Input, Sheet } from "@vedic-patro/ui";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { LocationSearchSheet } from "@/components/search/LocationSearchSheet";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { __iconNode as Trash2Node } from "lucide-react/dist/esm/icons/trash-2";
+import { __iconNode as PencilNode } from "lucide-react/dist/esm/icons/pencil";
 import { SwipeableRow } from "@/components/ui/SwipeableRow";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -171,17 +173,76 @@ function UnitsSheet({
   );
 }
 
+/** A saved place's edit sheet (swipe-left pencil, or a long press): its name, make it primary, remove it. */
+function EditPlaceSheet({ page, id, onClose }: { page: WeatherPage; id: string | null; onClose: () => void }) {
+  const { places, copy } = page;
+  const place = places.pages.find((p) => p.id === id);
+  const [name, setName] = useState("");
+  useEffect(() => {
+    if (place) setName(place.name);
+    // Only when a different place opens: typing must not be reset by a re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+  const save = () => {
+    if (place && name.trim() && name.trim() !== place.name) places.rename(place.id, name);
+    onClose();
+  };
+  return (
+    <Sheet open={place != null} onClose={onClose} title={copy.editPlace} closeLabel={copy.close} placement="center">
+      <Text className={accountClasses.label} style={nepaliTextStyle()}>
+        {copy.placeName}
+      </Text>
+      <Input value={name} onChange={setName} onSubmit={save} className={accountClasses.input} />
+      <View className={cn("flex-row", wc.dialogActions)}>
+        <PressScale
+          accessibilityRole="button"
+          onPress={() => {
+            if (place) places.remove(place.id);
+            onClose();
+          }}
+          className={wc.chip}
+        >
+          <Text className={wc.chipText} style={nepaliTextStyle()}>
+            {copy.remove}
+          </Text>
+        </PressScale>
+        {place && !place.primary ? (
+          <PressScale
+            accessibilityRole="button"
+            onPress={() => {
+              places.makePrimary(place.id);
+              save();
+            }}
+            className={wc.chip}
+          >
+            <Text className={wc.chipText} style={nepaliTextStyle()}>
+              {copy.makePrimary}
+            </Text>
+          </PressScale>
+        ) : null}
+        <PressScale accessibilityRole="button" onPress={save} className={wc.chipActive}>
+          <Text className={wc.chipTextActive} style={nepaliTextStyle()}>
+            {copy.save}
+          </Text>
+        </PressScale>
+      </View>
+    </Sheet>
+  );
+}
+
 /** One saved place: name, local time, temperature now, condition and today's low / high. */
 function PlaceCard({
   page,
   place,
   index,
   onChoose,
+  onEdit,
 }: {
   page: WeatherPage;
   place: WeatherPage["places"]["pages"][number];
   index: number;
   onChoose?: (index: number) => void;
+  onEdit: (id: string) => void;
 }) {
   const { places, copy } = page;
   const p = place;
@@ -190,6 +251,8 @@ function PlaceCard({
       <Pressable
         accessibilityRole="button"
         disabled={places.editing}
+        // Hold for the place's edit sheet (name, primary, remove); "here" is the GPS city, nothing to edit.
+        onLongPress={p.here ? undefined : () => onEdit(p.id)}
         onPress={() => {
           if (onChoose) return onChoose(index);
           places.select(index);
@@ -272,11 +335,17 @@ function PlaceCard({
   );
   return (
     <Animated.View layout={LinearTransition.duration(200)}>
-      {/* Swipe left for the bin, or all the way across to remove; "here" can't be removed. */}
+      {/* Swipe left for edit and the bin, or all the way across to remove; "here" can't be removed. */}
       {p.here || places.editing ? (
         card
       ) : (
-        <SwipeableRow actionLabel={`${copy.remove}: ${p.name}`} icon={Trash2Node} fullSwipe onAction={() => places.remove(p.id)}>
+        <SwipeableRow
+          actionLabel={`${copy.remove}: ${p.name}`}
+          icon={Trash2Node}
+          fullSwipe
+          onAction={() => places.remove(p.id)}
+          secondary={{ label: `${copy.editPlace}: ${p.name}`, icon: PencilNode, onAction: () => onEdit(p.id) }}
+        >
           {card}
         </SwipeableRow>
       )}
@@ -303,27 +372,42 @@ export function PlacesScreen({
   const { places, copy, units } = page;
   const [menuOpen, setMenuOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
-  const close = () => places.setListOpen(false);
-  // Right-swipe from anywhere (vertical scrolls win): back, as on any pushed page.
+  const [editId, setEditId] = useState<string | null>(null);
+  // Pushed like any settings page: slides in from the right, follows the finger on a right swipe and
+  // slides back out (the page under it shows through the transparent modal).
+  const { width } = useWindowDimensions();
+  const reduced = useReducedMotionPref();
+  const x = useSharedValue(width);
+  useEffect(() => {
+    if (places.listOpen) x.set(withTiming(0, { duration: reduced ? 0 : DURATION.slow }));
+    else x.set(width);
+  }, [places.listOpen, reduced, width, x]);
+  const finish = () => places.setListOpen(false);
+  const close = () => x.set(withTiming(width, { duration: reduced ? 0 : DURATION.standard }, (done) => done && runOnJS(finish)()));
   const swipeBack = Gesture.Pan()
-    .runOnJS(true)
     .activeOffsetX(24)
     .failOffsetY([-14, 14])
+    .onUpdate((e) => {
+      x.set(Math.max(0, e.translationX));
+    })
     .onEnd((e) => {
-      if (e.translationX > 80 || e.velocityX > 600) close();
+      const out = e.translationX > width / 3 || e.velocityX > 600;
+      x.set(withTiming(out ? width : 0, { duration: DURATION.standard }, (done) => done && out && runOnJS(finish)()));
     });
+  const slide = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
   return (
     <Modal
       visible={places.listOpen}
-      animationType="slide"
-      presentationStyle="fullScreen"
+      animationType="none"
+      transparent
+      presentationStyle="overFullScreen"
       onRequestClose={close}
     >
       {/* A Modal is its own root: gestures need their own root view inside it. A swipe to the right
           goes back, like a pushed page's edge swipe. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={swipeBack}>
-      <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <Animated.View className="flex-1 bg-background" style={[{ paddingTop: insets.top }, slide]}>
         <View className={cn("flex-row", wc.topBar, "pr-3")}>
           <PressScale
             accessibilityRole="button"
@@ -367,7 +451,7 @@ export function PlacesScreen({
 
         <ScrollView contentContainerClassName="gap-3 px-2.5 pb-4 pt-2">
           {places.pages.map((p, i) => (
-            <PlaceCard key={p.id} page={page} place={p} index={i} onChoose={onChoose} />
+            <PlaceCard key={p.id} page={page} place={p} index={i} onChoose={onChoose} onEdit={setEditId} />
           ))}
         </ScrollView>
 
@@ -428,7 +512,7 @@ export function PlacesScreen({
             </Animated.View>
           </Pressable>
         ) : null}
-      </View>
+      </Animated.View>
       </GestureDetector>
       </GestureHandlerRootView>
       <UnitsSheet
@@ -436,6 +520,7 @@ export function PlacesScreen({
         open={unitsOpen}
         onClose={() => setUnitsOpen(false)}
       />
+      <EditPlaceSheet page={page} id={editId} onClose={() => setEditId(null)} />
       <AddFlow page={page} />
     </Modal>
   );

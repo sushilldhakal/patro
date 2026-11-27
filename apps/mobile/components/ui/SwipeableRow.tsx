@@ -20,6 +20,8 @@ type Props = {
   icon?: LucideIconNode;
   /** Swiping all the way to the left edge runs the action without a tap, as in Mail. */
   fullSwipe?: boolean;
+  /** A second, non-destructive action left of the first (an edit pencil beside the bin). */
+  secondary?: { label: string; icon: LucideIconNode; onAction: () => void };
 };
 
 /**
@@ -30,12 +32,13 @@ type Props = {
  *
  * Swiping is a shortcut: give the row a visible way to do the same thing as well.
  */
-export function SwipeableRow({ children, actionLabel, onAction, actionWidth = 88, icon, fullSwipe = false }: Props) {
+export function SwipeableRow({ children, actionLabel, onAction, actionWidth = 88, icon, fullSwipe = false, secondary }: Props) {
   const colors = useThemeColors();
   const { width } = useWindowDimensions();
+  const open = secondary ? actionWidth * 2 : actionWidth;
   const snapPoints = useMemo(
-    () => ({ x: fullSwipe ? [-width, -actionWidth, 0] : [-actionWidth, 0] }),
-    [actionWidth, fullSwipe, width],
+    () => ({ x: fullSwipe ? [-width, -open, 0] : [-open, 0] }),
+    [open, fullSwipe, width],
   );
   const closed = fullSwipe ? 2 : 1;
   // Stable, so the pan isn't rebuilt on every render.
@@ -48,7 +51,7 @@ export function SwipeableRow({ children, actionLabel, onAction, actionWidth = 88
     initialIndex: closed,
     onSnap: fullSwipe ? onSnap : undefined,
   });
-  const revealed = useGestureProgress(x, [0, -actionWidth]);
+  const revealed = useGestureProgress(x, [0, -open]);
 
   /* One animated style, everything in it: a `style={[plain, animated]}` array drops the plain part. */
   const actionStyle = useAnimatedStyle(() => ({
@@ -56,13 +59,27 @@ export function SwipeableRow({ children, actionLabel, onAction, actionWidth = 88
     top: 0,
     right: 0,
     bottom: 0,
-    width: Math.max(actionWidth, -x.get()),
+    width: Math.max(open, -x.get()),
+    flexDirection: "row",
     opacity: interpolate(revealed.get(), [0, 0.5, 1], [0, 0.6, 1], Extrapolation.CLAMP),
-  }), [actionWidth]);
+  }), [open]);
 
   return (
     <View style={styles.clip}>
       <Animated.View style={actionStyle} pointerEvents="box-none">
+        {secondary ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={secondary.label}
+            style={[styles.secondaryButton, { backgroundColor: colors.secondary, width: actionWidth }]}
+            onPress={() => {
+              snapTo({ x: closed });
+              secondary.onAction();
+            }}
+          >
+            <LucideNative node={secondary.icon} size={22} color={brand.offWhite} strokeWidth={2.2} />
+          </Pressable>
+        ) : null}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={actionLabel}
@@ -91,5 +108,6 @@ export function SwipeableRow({ children, actionLabel, onAction, actionWidth = 88
 const styles = StyleSheet.create({
   clip: { overflow: "hidden", borderRadius: radius.xl },
   // Pinned to the right edge, so the bin stays under the finger's side while the red widens.
-  actionButton: { flex: 1, alignSelf: "flex-end", alignItems: "center", justifyContent: "center" },
+  actionButton: { flex: 1, alignItems: "center", justifyContent: "center" },
+  secondaryButton: { alignItems: "center", justifyContent: "center" },
 });

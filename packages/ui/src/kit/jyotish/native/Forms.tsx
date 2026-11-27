@@ -19,7 +19,7 @@ import type {
   OwnerCompatibilityProps,
   ProfileFormProps,
 } from "../contract";
-import { iconCalendarClock, iconChevronDown, iconChevronRight, iconClock, iconGlobe, iconMapPin, iconNavigation, iconPencil, iconSparkles, iconStar } from "../icons";
+import { iconCalendarClock, iconChevronDown, iconChevronRight, iconClock, iconGlobe, iconMapPin, iconPencil, iconSparkles, iconStar } from "../icons";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -69,6 +69,16 @@ export function ProfileForm({ initial, existing, onCancel, onSaved, afterSave, s
   // In cards, as the reference edit-profile screen: who, birth details, contact; then a full-width save.
   return (
     <Box className={accountClasses.profileForm}>
+      <Box className={accountClasses.formHead}>
+        <Box className={accountClasses.formAvatar}>
+          {form.full_name.trim() ? (
+            <Text className={accountClasses.formAvatarText}>{form.full_name.trim().charAt(0).toUpperCase()}</Text>
+          ) : (
+            <Icon node={iconSparkles} size={30} tone="secondary" />
+          )}
+        </Box>
+        {form.full_name.trim() ? <Text numberOfLines={1} className={accountClasses.formHeadName}>{form.full_name.trim()}</Text> : null}
+      </Box>
       <FormSection icon={iconStar} title={copy.sectionBasic}>
         <Field label={copy.fullName}><Input value={form.full_name} onChange={f.setName} className={accountClasses.input} /></Field>
         <Field label={copy.gender}><Chips options={f.genders} /></Field>
@@ -308,43 +318,69 @@ export function KundaliProfilePicker({ selectedId, onSelect, bindOpen, onPrefetc
     );
   }
   if (picker.status === "error") return <Text className={kundaliDetailClasses.milanPicker.errorText}>{picker.errorText}</Text>;
-  const rowIcon = { dob: iconClock, place: iconMapPin, latLon: iconNavigation, timezone: iconGlobe } as const;
   return (
     <>
       {picker.cards.length === 0 ? (
         <Box className={kundaliDetailClasses.milanPicker.emptyBoxCentered}>
-          <Text>{picker.empty.title}</Text>
-          <Text>{picker.empty.hint}</Text>
+          <Box className={pickerCard.emptyIcon}>
+            <Icon node={iconSparkles} size={28} tone="secondary" />
+          </Box>
+          <Text className={pickerCard.emptyTitle}>{picker.empty.title}</Text>
+          <Text className={pickerCard.emptyHint}>{picker.empty.hint}</Text>
           <Button label={picker.empty.action} onPress={picker.openAdd} icon={<Icon node={iconSparkles} size={16} tone="foreground" />} />
         </Box>
       ) : (
         <Box className="gap-3">
           {picker.cards.map((card) => (
-            <Box key={card.id} className={cn(pickerCard.card, card.active ? pickerCard.cardActive : pickerCard.cardIdle)}>
-              <Box className={pickerCard.head} nativeClassName="flex-row">
-                <Box className="min-w-0 flex-1">
-                  <Text className={pickerCard.nameText}>{card.name}</Text>
-                  {card.isDefault ? <Icon node={iconStar} size={14} tone="secondary" /> : null}
-                  {card.gender ? <Text className={pickerCard.gender}>{card.gender}</Text> : null}
+            // The whole card opens the kundali; the pencil edits. No raw lat/lon or timezone: the place says it.
+            <Pressable
+              key={card.id}
+              onPress={() => { onPrefetch?.(card.id); card.view(); }}
+              label={card.viewLabel}
+              className={cn(pickerCard.card, card.active ? pickerCard.cardActive : pickerCard.cardIdle)}
+            >
+              <Box className="items-center gap-3" nativeClassName="flex-row">
+                <Box className={card.active ? pickerCard.avatarActive : pickerCard.avatar}>
+                  <Text className={card.active ? pickerCard.avatarTextActive : pickerCard.avatarText}>{card.name.trim().charAt(0).toUpperCase()}</Text>
                 </Box>
-                <Pressable onPress={card.edit} label={picker.editLabel}><Icon node={iconPencil} size={16} tone="muted" /></Pressable>
+                <Box className="min-w-0 flex-1 gap-0.5">
+                  <Text numberOfLines={1} className={cn(pickerCard.nameText, "text-lg")}>{card.name}</Text>
+                  <Box className="items-center gap-2" nativeClassName="flex-row flex-wrap">
+                    {card.isDefault ? (
+                      <Box className={pickerCard.badge}>
+                        <Icon node={iconStar} size={11} tone="secondary" />
+                        <Text className={pickerCard.badgeText}>{picker.defaultLabel}</Text>
+                      </Box>
+                    ) : null}
+                    {card.gender ? <Text className={pickerCard.subText}>{card.gender}</Text> : null}
+                  </Box>
+                </Box>
+                <Pressable onPress={card.edit} label={picker.editLabel} className={pickerCard.editButton}>
+                  <Icon node={iconPencil} size={16} tone="foreground" />
+                </Pressable>
               </Box>
-              {(["dob", "place", "latLon", "timezone"] as const).map((key) => (
-                <Box key={key} className={pickerCard.row} nativeClassName="flex-row">
-                  <Icon node={rowIcon[key]} size={14} tone="muted" />
-                  <Text className={pickerCard.rowLabel}>{card.rows[key].label}:</Text>
-                  <Text className={pickerCard.rowValue}>{card.rows[key].value}</Text>
+              <Box className={pickerCard.infoBox}>
+                <Box className="items-center gap-2" nativeClassName="flex-row">
+                  <Icon node={iconClock} size={15} tone="muted" />
+                  <Text numberOfLines={1} className={pickerCard.infoText}>{card.rows.dob.value}</Text>
                 </Box>
-              ))}
-              <Button label={card.viewLabel} onPress={() => { onPrefetch?.(card.id); card.view(); }} variant={card.active ? "default" : "outline"} size="sm" className="mt-auto w-full" />
-            </Box>
+                <Box className="items-center gap-2" nativeClassName="flex-row">
+                  <Icon node={iconMapPin} size={15} tone="muted" />
+                  <Text numberOfLines={1} className={pickerCard.infoText}>{card.rows.place.value}</Text>
+                </Box>
+              </Box>
+              <Box className="items-center justify-between" nativeClassName="flex-row">
+                <Text className={cn(pickerCard.badgeText, "text-sm")}>{card.viewLabel}</Text>
+                <Icon node={iconChevronRight} size={18} tone="secondary" />
+              </Box>
+            </Pressable>
           ))}
         </Box>
       )}
       <Sheet open={picker.dialogOpen} onClose={picker.closeDialog} title={picker.dialogTitle}>
         {picker.dialog ? (
           <>
-            <Text>{picker.dialogHint}</Text>
+            <Text className={pickerCard.emptyHint}>{picker.dialogHint}</Text>
             {renderForm({
               initial: picker.dialog.existing ? profileToInput(picker.dialog.existing) : EMPTY_PROFILE,
               existing: picker.dialog.existing,

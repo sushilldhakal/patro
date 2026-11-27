@@ -54,6 +54,20 @@ export function cityItemLabel(city: City, lang: string): string {
   return `${cityLabel(city)}, ${country}`;
 }
 
+/**
+ * Nepal first from the curated district list, then the backend's cities. The backend's Nepal towns
+ * (Kewalpur and the other villages the list lacks) stay; only those repeating a listed city, by name
+ * or within 5 km, are dropped so a district HQ is shown once.
+ */
+export function mergeCityResults(nepal: City[], server: City[]): City[] {
+  const near = (a: City, b: City) => Math.abs(a.lat - b.lat) < 0.045 && Math.abs(a.lon - b.lon) < 0.05;
+  const name = (c: City) => (c.ascii_name || c.name).toLowerCase();
+  const rest = server.filter(
+    (c) => c.country?.toUpperCase() !== "NP" || !nepal.some((n) => name(n) === name(c) || near(n, c)),
+  );
+  return [...nepal, ...rest];
+}
+
 /** Why the device position could not be read; anything else reads as "not found". */
 export type GeoLocateErrorCode = "unavailable" | "denied" | "timeout";
 
@@ -102,13 +116,10 @@ export function useCitySearch({
     staleTime: 60_000,
   });
 
-  // Nepal comes from the curated local list; other countries from the backend
-  // (its vague NP entries are dropped so Nepal is shown only once, cleanly).
-  const results = useMemo<City[]>(() => {
-    const nepal = searchNepalCities(debouncedQuery).map((c) => nepalCityToCity(c, lang));
-    const world = (searchData?.cities ?? []).filter((c) => c.country?.toUpperCase() !== "NP");
-    return [...nepal, ...world];
-  }, [debouncedQuery, lang, searchData]);
+  const results = useMemo<City[]>(
+    () => mergeCityResults(searchNepalCities(debouncedQuery).map((c) => nepalCityToCity(c, lang)), searchData?.cities ?? []),
+    [debouncedQuery, lang, searchData],
+  );
 
   const reset = () => {
     setQuery("");

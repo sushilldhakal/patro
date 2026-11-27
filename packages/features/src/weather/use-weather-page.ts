@@ -81,6 +81,9 @@ export type WeatherPage = {
     remove: string;
     swipeHint: string;
     editList: string;
+    editPlace: string;
+    placeName: string;
+    save: string;
     done: string;
     moreOptions: string;
     searchPlace: string;
@@ -131,6 +134,7 @@ export type WeatherPage = {
     prev: () => void;
     remove: (id: string) => void;
     makePrimary: (id: string) => void;
+    rename: (id: string, label: string) => void;
     /** The "+" drawer (search a city to add). */
     addOpen: boolean;
     setAddOpen: (open: boolean) => void;
@@ -431,6 +435,9 @@ export function useWeatherPage({
       remove: t("weather.remove"),
       swipeHint: t("weather.swipe_hint"),
       editList: t("weather.edit_list"),
+      editPlace: t("weather.edit_place"),
+      placeName: t("weather.place_name"),
+      save: t("common.save"),
       done: t("weather.done"),
       moreOptions: t("weather.more_options"),
       searchPlace: t("weather.search_place"),
@@ -489,6 +496,7 @@ export function useWeatherPage({
       next: places.next,
       prev: places.prev,
       remove: places.remove,
+      rename: places.rename,
       makePrimary: places.makePrimary,
       addOpen,
       setAddOpen,

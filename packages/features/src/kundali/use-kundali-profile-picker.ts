@@ -67,6 +67,7 @@ export function useKundaliProfilePicker({
       action: t("kundali.first_profile"),
     },
     editLabel: t("kundali.edit_profile"),
+    defaultLabel: t("account_page.default"),
     cards: (profiles ?? []).map(card),
     openAdd: () => setDialog({ mode: "add" }),
     dialogOpen: dialog !== null,
