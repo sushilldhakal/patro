@@ -14,6 +14,7 @@ import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { syncNotifications } from "@/lib/notifications/sync";
 import { DEFAULT_BRIEFING, type BriefingSettings } from "@/lib/notifications/types";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
+import { HOME_SECTIONS, setHomeSectionShown, useHomeSections } from "@/lib/home-sections";
 import { useTheme, useThemeColors, type ThemePreference } from "@/lib/theme-context";
 import { useAyanamshaMode } from "@vedic-patro/features/kundali";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
@@ -153,6 +154,47 @@ export function AppearanceSettings() {
   );
 }
 
+/** One switch per optional home-page section; the calendar and panchanga always stay. */
+export function HomeScreenSettings() {
+  const { t } = useLocale();
+  const colors = useThemeColors();
+  const { isAuthenticated } = useAuth();
+  const { shown } = useHomeSections();
+  return (
+    <View className="gap-3">
+      <Text className={accountClasses.settingsRowText} style={nepaliTextStyle(13)}>
+        {t("ui.settings.home_screen_body")}
+      </Text>
+      <SectionTitle>{t("ui.settings.home_sections")}</SectionTitle>
+      <Card className="gap-4">
+        {HOME_SECTIONS.map((id) => {
+          const title = t(`ui.settings.home_${id}`);
+          return (
+            <View key={id} className="flex-row items-center justify-between gap-3">
+              <View className="min-w-0 flex-1">
+                <Text className={accountClasses.settingsRowTitle} style={nepaliTextStyle(15)}>
+                  {title}
+                </Text>
+                {id === "watchlist" && !isAuthenticated ? (
+                  <Text className={accountClasses.settingsRowText} style={nepaliTextStyle(13)}>
+                    {t("ui.settings.home_watchlist_sign_in")}
+                  </Text>
+                ) : null}
+              </View>
+              <Switch
+                value={shown(id)}
+                onValueChange={(on) => setHomeSectionShown(id, on)}
+                trackColor={{ true: colors.secondary }}
+                accessibilityLabel={title}
+              />
+            </View>
+          );
+        })}
+      </Card>
+    </View>
+  );
+}
+
 /** Downloads over Wi-Fi only, and the link to the offline data page. */
 function OfflineSettings() {
   const { t, digits } = useLocale();
@@ -198,6 +240,7 @@ export function SettingsPanel() {
       <NotificationSettings />
       <LanguageCalendarSettings />
       <AppearanceSettings />
+      <HomeScreenSettings />
       <OfflineSettings />
     </View>
   );

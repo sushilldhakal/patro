@@ -20,6 +20,7 @@ import { afterProfileDeleted } from "@/lib/notifications/triggers";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { runningBuildLine } from "@/lib/build-info";
+import { HOME_SECTIONS, useHomeSections } from "@/lib/home-sections";
 
 /**
  * The profile page, in categories like iOS Settings: who you are (or log in), your account (saved
@@ -36,6 +37,7 @@ export default function AccountScreen() {
   const { calendar } = useCalendarSystem();
   const { system } = useCalculationSystem();
   const offline = useOfflineData();
+  const homeSections = useHomeSections();
   const page = useAccountPage({
     auth,
     onProfileDeleted: () => void afterProfileDeleted(lang === "en" ? "en" : "ne"),
@@ -145,6 +147,12 @@ export default function AccountScreen() {
             onPress={go("/account/language")}
           />
           <ListRow icon="palette" title={t("ui.settings.appearance")} value={themeLabel} onPress={go("/account/appearance")} />
+          <ListRow
+            icon="home"
+            title={t("ui.settings.home_screen")}
+            value={t("ui.settings.home_shown_count", { count: digits(HOME_SECTIONS.length - homeSections.hiddenCount) })}
+            onPress={go("/account/home-screen")}
+          />
           <ListRow
             icon="download"
             title={t("ui.account.offline_data")}

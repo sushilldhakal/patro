@@ -34,6 +34,7 @@ import { SiteFooter } from "@/components/branding/SiteFooter";
 import { AdhikMaasNotice } from "@vedic-patro/ui/kit/shell";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { useHomePatroView } from "@/lib/patro-view";
+import { useHomeSections } from "@/lib/home-sections";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
 import { useQueryClient } from "@tanstack/react-query";
@@ -174,6 +175,7 @@ function HomeScreen() {
   const refreshControl = usePageRefreshControl();
   const { t, digits, lang } = useLocale();
   const { isAuthenticated } = useAuth();
+  const { shown } = useHomeSections();
   const userEvents = useUserEvents(isAuthenticated);
   const { width, isTablet, isPhone, isCompact } = useBreakpoint();
   const navBottom = useNavBottomPadding(isTablet);
@@ -659,27 +661,36 @@ function HomeScreen() {
         {/* Upcoming festivals, as on the web: its own section at the end of
             the home page, OUTSIDE the aside's bordered card — not inside it.
             Three cards in a row, swipe left and right for more. */}
-        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
-          <UpcomingFestivalsSlider location={location.params} horizontalInset={cardInset} />
-        </View>
-        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
-          <NewsSlider horizontalInset={cardInset} />
-        </View>
+        {/* Each optional section can be hidden in Profile → Home screen (lib/home-sections). */}
+        {shown("festivals") ? (
+          <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+            <UpcomingFestivalsSlider location={location.params} horizontalInset={cardInset} />
+          </View>
+        ) : null}
+        {shown("news") ? (
+          <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+            <NewsSlider horizontalInset={cardInset} />
+          </View>
+        ) : null}
         {/* A card, not a slider: the panchanga card's edges (the card inset, no slider padding). */}
-        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
-          <WeatherCard location={location.params} label={location.label} />
-        </View>
-        <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
-          <MarketSlider horizontalInset={cardInset} />
-        </View>
+        {shown("weather") ? (
+          <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+            <WeatherCard location={location.params} label={location.label} />
+          </View>
+        ) : null}
+        {shown("gold") || shown("forex") ? (
+          <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
+            <MarketSlider horizontalInset={cardInset} metals={shown("gold")} forex={shown("forex")} />
+          </View>
+        ) : null}
         {/* Signed-in readers: what they starred, or a button to start a watchlist. */}
-        {isAuthenticated ? (
+        {isAuthenticated && shown("watchlist") ? (
           <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
             <WatchlistCard />
           </View>
         ) : null}
         {/* NEPSE after the first screen, so its request never races the calendar's. */}
-        {belowFoldReady ? (
+        {belowFoldReady && shown("shares") ? (
           <View className="mt-4 gap-4" style={{ paddingHorizontal: cardInset }}>
             <TopMoversCard />
             <MostTradedCard horizontalInset={cardInset} />

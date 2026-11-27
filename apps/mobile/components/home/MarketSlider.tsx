@@ -18,8 +18,13 @@ import {
  */
 export function MarketSlider({
   horizontalInset = 0,
+  metals: showMetals = true,
+  forex: showForex = true,
 }: {
   horizontalInset?: number;
+  /** Profile → Home screen can hide either half. */
+  metals?: boolean;
+  forex?: boolean;
 }) {
   const { t } = useLocale();
   const colors = useThemeColors();
@@ -28,9 +33,11 @@ export function MarketSlider({
   const metals = useMetalPrices();
   const forex = useForexRates();
   const cardWidth = sliderCardWidth(windowWidth, horizontalInset);
-  const loading = metals.status === "loading" && forex.status === "loading";
+  const metalsOff = !showMetals || metals.status === "error";
+  const forexOff = !showForex || forex.status === "error";
+  const loading = (metalsOff || metals.status === "loading") && (forexOff || forex.status === "loading");
 
-  if (metals.status === "error" && forex.status === "error") return null;
+  if (metalsOff && forexOff) return null;
 
   return (
     <View>
@@ -70,7 +77,7 @@ export function MarketSlider({
               />
             ))
           : null}
-        {metals.cards.map((c) => (
+        {(showMetals ? metals.cards : []).map((c) => (
           <MetalCard
             key={c.id}
             card={c}
@@ -79,7 +86,7 @@ export function MarketSlider({
             tenGram={metals.copy.tenGram}
           />
         ))}
-        {forex.cards.map((c) => (
+        {(showForex ? forex.cards : []).map((c) => (
           <ForexCard
             key={c.code}
             card={c}
