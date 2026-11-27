@@ -1,5 +1,3 @@
-import { importWithRetry } from "@/lib/lazy-route";
-
 /** Path prefixes → lazy page chunks (mirrors router.tsx lazyRoute imports). */
 const PATH_LOADERS: { match: RegExp; load: () => Promise<unknown> }[] = [
   { match: /^\/holidays$/, load: () => import("../pages/Holidays") },
@@ -29,6 +27,15 @@ const PATH_LOADERS: { match: RegExp; load: () => Promise<unknown> }[] = [
 
 const preloaded = new Set<string>();
 
+/**
+ * A prefetch is only a warm-up: a stale chunk after a redeploy must not reload the page the reader
+ * is on, nor surface as an unhandled rejection (PATRO-WEB-E). The route's own lazyRoute recovers
+ * when they actually navigate there.
+ */
+function warm(load: () => Promise<unknown>) {
+  load().catch(() => {});
+}
+
 function loaderForPath(pathname: string) {
   return PATH_LOADERS.find(({ match }) => match.test(pathname))?.load;
 }
@@ -38,7 +45,7 @@ export function preloadPanchangaRoute(pathname: string) {
   const load = loaderForPath(pathname);
   if (!load || preloaded.has(pathname)) return;
   preloaded.add(pathname);
-  void importWithRetry(load);
+  warm(load);
 }
 
 /** Prefetch all sidebar route chunks after the shell mounts. */
@@ -47,7 +54,7 @@ export function preloadAllPanchangaRoutes() {
     const key = `panchanga-chunk-${index}`;
     if (preloaded.has(key)) return;
     preloaded.add(key);
-    void importWithRetry(load);
+    warm(load);
   });
 }
 
