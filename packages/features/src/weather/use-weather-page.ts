@@ -461,7 +461,12 @@ export function useWeatherPage({
         view: views[i]!,
         summary: summaryOf(views[i]!, pageQueries[i]!.data),
         id: p.id,
-        name: nameOf(p),
+        // "Here" is named by its city (GPS: the forecast's nearest city; else the app's place); the card's arrow marks it as here.
+        name:
+          p.id === HERE_ID
+            ? placeNameFor(p, pageQueries[i]!.data, places.gpsOn).split(",")[0]!.trim() ||
+              t("weather.current_location")
+            : nameOf(p),
         primary: p.id === places.primaryId,
         here: p.id === HERE_ID,
         location: {
