@@ -1,7 +1,6 @@
-import { Alert, Linking, Pressable, Switch, View } from "react-native";
+import { Alert, Pressable, Switch, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useAccountPage } from "@vedic-patro/features/account";
-import { useSiteFooter } from "@vedic-patro/features/common";
 import { brand, illustration } from "@vedic-patro/design-tokens";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/design-tokens/cn";
@@ -14,18 +13,18 @@ import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useBiometricLock } from "@/lib/auth/BiometricLock";
 import { useCalculationSystem, useCalendarSystem, useLocale } from "@/lib/i18n";
-import { requestSignIn } from "@/lib/menu-request";
+import { requestLocationPicker, requestSignIn } from "@/lib/menu-request";
+import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { afterProfileDeleted } from "@/lib/notifications/triggers";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
-import { runningBuildLine } from "@/lib/build-info";
 import { HOME_SECTIONS, useHomeSections } from "@/lib/home-sections";
 
 /**
- * The profile page, in categories like iOS Settings: who you are (or log in), your account (saved
- * profiles, Face ID, sign out), then the settings — notifications and reminders, language and calendar,
- * appearance, offline data — each on an inner page of its own. Deleting the account sits at the foot.
+ * The profile page, in short groups like iOS Settings: who you are (or log in), General (saved places,
+ * language and calendar, appearance, home screen), notifications and events, your account (profiles,
+ * Face ID), data and storage, then one About row. Each opens an inner page of its own.
  */
 export default function AccountScreen() {
   const { t, lang, digits } = useLocale();
@@ -38,6 +37,7 @@ export default function AccountScreen() {
   const { system } = useCalculationSystem();
   const offline = useOfflineData();
   const homeSections = useHomeSections();
+  const { location } = usePanchangaLocation();
   const page = useAccountPage({
     auth,
     onProfileDeleted: () => void afterProfileDeleted(lang === "en" ? "en" : "ne"),
@@ -45,9 +45,6 @@ export default function AccountScreen() {
   const { status, user, copy, verification } = page;
   const signedIn = status !== "signed-out" && Boolean(user);
   const go = (href: string) => () => router.push(href as never);
-  // Privacy, terms, support and the website: here in Settings rather than at the foot of every page.
-  const about = useSiteFooter();
-  const ABOUT_ICON = { privacy: "lock", terms: "file-text", support: "mail", site: "globe" } as const;
 
   if (status === "loading") {
     return (
@@ -103,12 +100,28 @@ export default function AccountScreen() {
           </View>
         ) : null}
 
-        {signedIn ? (
-          <ListGroup title={t("ui.account.group_calendar")}>
-            <ListRow icon="calendar" title={t("ui.account.events_and_sync")} onPress={go("/account/events")} />
-            <ListRow icon="reminders" title={t("ui.settings.reminders")} onPress={go("/reminders")} />
-          </ListGroup>
-        ) : null}
+        <ListGroup title={t("ui.account.group_general")}>
+          <ListRow icon="map-pin" title={t("ui.settings.saved_places")} value={location.label} onPress={requestLocationPicker} />
+          <ListRow
+            icon="language"
+            title={t("ui.settings.language_calendar")}
+            subtitle={system === "drik" ? t("calculation_system.drik") : t("calculation_system.surya_siddhanta")}
+            value={languageValue}
+            onPress={go("/account/language")}
+          />
+          <ListRow icon="palette" title={t("ui.settings.appearance")} value={themeLabel} onPress={go("/account/appearance")} />
+          <ListRow
+            icon="home"
+            title={t("ui.settings.home_screen")}
+            value={t("ui.settings.home_shown_count", { count: digits(HOME_SECTIONS.length - homeSections.hiddenCount) })}
+            onPress={go("/account/home-screen")}
+          />
+        </ListGroup>
+
+        <ListGroup title={t("ui.account.group_notifications")}>
+          <ListRow icon="notifications" title={t("ui.settings.notifications_reminders")} onPress={go("/account/notifications")} />
+          {signedIn ? <ListRow icon="calendar" title={t("ui.account.events_and_sync")} onPress={go("/account/events")} /> : null}
+        </ListGroup>
 
         {signedIn ? (
           <ListGroup title={t("ui.account.group_account")}>
@@ -133,43 +146,21 @@ export default function AccountScreen() {
                 }
               />
             ) : null}
-            <ListRow icon="shield" title={t("ui.account.account_data")} onPress={go("/account/data")} />
           </ListGroup>
         ) : null}
 
-        <ListGroup title={t("ui.settings.title")}>
-          <ListRow icon="notifications" title={t("ui.settings.notifications_reminders")} onPress={go("/account/notifications")} />
-          <ListRow
-            icon="language"
-            title={t("ui.settings.language_calendar")}
-            subtitle={system === "drik" ? t("calculation_system.drik") : t("calculation_system.surya_siddhanta")}
-            value={languageValue}
-            onPress={go("/account/language")}
-          />
-          <ListRow icon="palette" title={t("ui.settings.appearance")} value={themeLabel} onPress={go("/account/appearance")} />
-          <ListRow
-            icon="home"
-            title={t("ui.settings.home_screen")}
-            value={t("ui.settings.home_shown_count", { count: digits(HOME_SECTIONS.length - homeSections.hiddenCount) })}
-            onPress={go("/account/home-screen")}
-          />
+        <ListGroup title={t("ui.account.group_data")}>
           <ListRow
             icon="download"
             title={t("ui.account.offline_data")}
             value={years > 0 ? digits(years) : undefined}
             onPress={go("/account/offline-data")}
           />
+          {signedIn ? <ListRow icon="shield" title={t("ui.account.account_data")} onPress={go("/account/data")} /> : null}
         </ListGroup>
 
-        <ListGroup title={t("ui.settings.about")}>
-          {about.map((link) => (
-            <ListRow
-              key={link.id}
-              icon={ABOUT_ICON[link.id as keyof typeof ABOUT_ICON] ?? "globe"}
-              title={link.label}
-              onPress={link.kind === "page" ? go(link.path) : () => void Linking.openURL(link.url)}
-            />
-          ))}
+        <ListGroup>
+          <ListRow icon="info" title={t("ui.settings.about_legal")} onPress={go("/account/about")} />
         </ListGroup>
 
         {signedIn ? (
@@ -178,10 +169,6 @@ export default function AccountScreen() {
           </ListGroup>
         ) : null}
 
-        {/* Version, for testers and support: where iOS Settings and most apps keep it, not in the menu. */}
-        <Text className="text-center text-xs text-muted-foreground" selectable>
-          {runningBuildLine()}
-        </Text>
       </View>
     </AppShell>
   );

@@ -8217,6 +8217,11 @@ export const strings = {
   "ui.account.account_data": { ne: "खाताको डेटा", en: "Account data" },
   "ui.account.account_data_body": { ne: "तपाईंको खाता र त्यससँग जोडिएको सबै डेटा स्थायी रूपमा हटाउन सकिन्छ।", en: "Permanently remove your account and everything saved with it." },
   "ui.account.group_account": { ne: "खाता", en: "Account" },
+  "ui.account.group_general": { ne: "सामान्य", en: "General" },
+  "ui.account.group_notifications": { ne: "सूचना र कार्यक्रम", en: "Notifications & events" },
+  "ui.account.group_data": { ne: "डेटा र भण्डारण", en: "Data & storage" },
+  "ui.settings.saved_places": { ne: "सुरक्षित स्थानहरू", en: "Saved places" },
+  "ui.settings.about_legal": { ne: "बारेमा र नीति", en: "About & legal" },
   "ui.account.back": { ne: "पछाडि", en: "Back" },
   "ui.settings.notifications": { ne: "दैनिक सूचना", en: "Daily notifications" },
   "ui.settings.daily_briefing_sign_in": {
