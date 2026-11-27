@@ -9,6 +9,8 @@ import { useThemeColors } from "@/lib/theme-context";
 import { getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
 import { maxOfflineSpanYears } from "@/lib/patro-browse-years";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
+import { requestLocationPicker } from "@/lib/menu-request";
+import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";
 import { clampToSupportedBsRange } from "@/lib/offline/offline-range";
 import { PACK_GROUPS, type PackGroupId, type PackSizeEstimate } from "@/lib/offline/offline-pack";
@@ -57,6 +59,7 @@ function YearInput({
 export default function OfflineDataScreen() {
   const { t, digits } = useLocale();
   const colors = useThemeColors();
+  const { location } = usePanchangaLocation();
   const {
     isOnline,
     summary,
@@ -231,6 +234,27 @@ export default function OfflineDataScreen() {
             </Text>
           </Pressable>
         ) : null}
+      </View>
+
+      {/* The pack is saved for the app's place; the picker is the same saved-places list as the header's. */}
+      <View className={msc.offlineCard}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          {t("offline.place_title")}
+        </Text>
+        <View className="mt-2 flex-row items-center gap-2">
+          <Ionicons name="location-outline" size={18} color={colors.secondary} />
+          <Text className="text-body flex-1 font-medium text-foreground" numberOfLines={1} style={nepaliTextStyle(15)}>
+            {location.label}
+          </Text>
+        </View>
+        <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
+          {t("offline.place_hint")}
+        </Text>
+        <Pressable onPress={requestLocationPicker} disabled={running} accessibilityRole="button" className={msc.offlineGhost}>
+          <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+            {t("offline.place_change")}
+          </Text>
+        </Pressable>
       </View>
 
       <View className={msc.offlineCardLoose}>

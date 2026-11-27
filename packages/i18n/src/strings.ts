@@ -51,6 +51,12 @@ export const strings = {
   },
 
   /* ── offline (the app's offline data page) ──────────────────────────────── */
+  "offline.place_title": { ne: "कुन ठाउँको लागि?", en: "Which place?" },
+  "offline.place_hint": {
+    ne: "डाउनलोड यो ठाउँको लागि हुन्छ। पछि सर्न सक्ने ठाउँहरू पनि थप्नुहोस्: सुरक्षित ठाउँहरूको पात्रो फोनमै गणना हुन्छ, अफलाइनमा पनि छान्न सकिन्छ।",
+    en: "The download is for this place. Add the places you may switch to as well: saved places are worked out on the phone, so you can pick them offline too.",
+  },
+  "offline.place_change": { ne: "ठाउँ बदल्नुहोस् वा थप्नुहोस्", en: "Change or add places" },
   "offline.group.calendar.name": { ne: "पात्रो, चाडपर्व र साइत", en: "Calendar, festivals & sait" },
   "offline.group.calendar.hint": {
     ne: "महिनाको पात्रो, बिदा, चाडपर्व, साइत, अधिक मास",

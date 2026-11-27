@@ -22,6 +22,9 @@
     "kundali_note": "The Surya Siddhanta uses its own ayanamsha, so the ayanamsha chosen above does not apply."
   },
   "offline": {
+    "place_title": "Which place?",
+    "place_hint": "The download is for this place. Add the places you may switch to as well: saved places are worked out on the phone, so you can pick them offline too.",
+    "place_change": "Change or add places",
     "group": {
       "calendar": {
         "name": "Calendar, festivals & sait",
