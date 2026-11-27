@@ -36,6 +36,13 @@ const BACKFILL_START: Duration = Duration::from_secs(60);
 const BACKFILL_GAP: Duration = Duration::from_secs(2);
 /// Daily history is backfilled from this day (NEPSE's online records start around 2000).
 const BACKFILL_FROM: i64 = 946_684_800;
+/// Prices older than this (seconds since the last good read) are not served while trading is
+/// on: six missed 30-second reads.
+const STALE_OPEN_SECS: i64 = 180;
+/// …and outside trading: three missed 15-minute reads.
+const STALE_CLOSED_SECS: i64 = 45 * 60;
+/// The error log goes up after this many failed reads in a row.
+const FAILURES_BEFORE_ERROR: u32 = 3;
 
 /// One scrip's quote, as the app shows it.
 #[derive(Debug, Clone, Serialize)]
@@ -85,6 +92,32 @@ pub struct Live {
     pub scrips: usize,
     /// Every traded scrip, by turnover.
     pub stocks: Vec<Quote>,
+    /// The feed stopped (merolagani changed or blocked the read): no prices are sent, and the
+    /// apps hide every share price rather than show old ones as current.
+    pub stale: bool,
+}
+
+impl Live {
+    /// Whether the last good read is too old to show, at unix second `now`.
+    #[must_use]
+    pub fn is_stale(&self, now: Timestamp) -> bool {
+        let limit = if self.market_open || trading_window(now) {
+            STALE_OPEN_SECS
+        } else {
+            STALE_CLOSED_SECS
+        };
+        self.fetched_at == 0 || now.as_second() - self.fetched_at > limit
+    }
+
+    /// What is served when [`Self::is_stale`]: the flag and the read time, no prices.
+    #[must_use]
+    pub fn stale_marker(&self) -> Self {
+        Self {
+            fetched_at: self.fetched_at,
+            stale: true,
+            ..Self::default()
+        }
+    }
 }
 
 /// The shared NEPSE recorder. Clones share one store.
@@ -151,16 +184,20 @@ impl NepseService {
         });
         let service = self.clone();
         tokio::spawn(async move {
+            let mut failures = 0_u32;
             loop {
-                if let Err(error) = service.poll().await {
-                    tracing::warn!(%error, "NEPSE read failed");
+                match service.poll().await {
+                    Ok(()) => failures = 0,
+                    Err(error) => {
+                        failures += 1;
+                        if failures >= FAILURES_BEFORE_ERROR {
+                            tracing::error!(%error, failures, "NEPSE reads keep failing; share prices are hidden once stale");
+                        } else {
+                            tracing::warn!(%error, "NEPSE read failed");
+                        }
+                    }
                 }
-                let wait = if trading_window(Timestamp::now()) {
-                    POLL_OPEN
-                } else {
-                    POLL_CLOSED
-                };
-                tokio::time::sleep(wait).await;
+                tokio::time::sleep(poll_wait(Timestamp::now())).await;
             }
         });
     }
@@ -449,6 +486,10 @@ impl NepseService {
         let now = Timestamp::now();
         let names = self.names().await;
         let live = parse_summary(&body, now, &names)?;
+        // A changed handler can still answer "ok" with nothing in it; that is a failed read.
+        if live.stocks.is_empty() {
+            return Err("market summary has no scrips".into());
+        }
         let live = Arc::new(live);
         let service = self.clone();
         let snapshot = Arc::clone(&live);
@@ -707,6 +748,7 @@ fn parse_summary(
         transactions: raw.overall.tn.parse().unwrap_or(0.0),
         scrips: stocks.len(),
         stocks,
+        stale: false,
     })
 }
 
@@ -762,6 +804,21 @@ fn trading_window(now: Timestamp) -> bool {
     npt_clock(now).is_some_and(|m| (10 * 60 + 55..15 * 60 + 10).contains(&m))
 }
 
+/// How long to sleep after a read: 30 s in the trading window, else 15 min, but never past
+/// the window's start, so the morning's first read is on time.
+fn poll_wait(now: Timestamp) -> Duration {
+    if trading_window(now) {
+        return POLL_OPEN;
+    }
+    let open = 10 * 60 + 55;
+    match npt_clock(now) {
+        Some(m) if m < open => POLL_CLOSED.min(Duration::from_secs(
+            u64::from((open - m).unsigned_abs()) * 60,
+        )),
+        _ => POLL_CLOSED,
+    }
+}
+
 fn round2(x: f64) -> f64 {
     (x * 100.0).round() / 100.0
 }
@@ -779,6 +836,55 @@ mod tests {
 
     fn at(iso: &str) -> Timestamp {
         iso.parse().expect("valid timestamp")
+    }
+
+    #[test]
+    fn stale_after_missed_reads() {
+        let names = HashMap::new();
+        let read = at("2026-11-26T06:00:00Z"); // 11:45 NPT, Thursday, open
+        let live = parse_summary(BODY, read, &names).expect("parses");
+        assert!(
+            !live.is_stale(at("2026-11-26T06:02:00Z")),
+            "two minutes old while open"
+        );
+        assert!(
+            live.is_stale(at("2026-11-26T06:04:00Z")),
+            "four minutes old while open"
+        );
+        let closed = parse_summary(BODY, at("2026-11-28T06:00:00Z"), &names).expect("parses");
+        assert!(
+            !closed.is_stale(at("2026-11-28T06:30:00Z")),
+            "half an hour on Saturday"
+        );
+        assert!(
+            closed.is_stale(at("2026-11-28T07:00:00Z")),
+            "an hour on Saturday"
+        );
+        assert!(Live::default().is_stale(read), "never read");
+        let marker = live.stale_marker();
+        assert!(
+            marker.stale && marker.stocks.is_empty(),
+            "no prices when stale"
+        );
+    }
+
+    #[test]
+    fn wakes_at_the_open() {
+        // 10:50 NPT Thursday: five minutes to the window.
+        assert_eq!(
+            poll_wait(at("2026-11-26T05:05:00Z")),
+            Duration::from_secs(300)
+        );
+        assert_eq!(
+            poll_wait(at("2026-11-26T05:30:00Z")),
+            POLL_OPEN,
+            "in the window"
+        );
+        assert_eq!(
+            poll_wait(at("2026-11-26T12:00:00Z")),
+            POLL_CLOSED,
+            "evening"
+        );
     }
 
     #[test]

@@ -28,6 +28,7 @@ export default function NepseMostTradedScreen() {
         <RankingPage
           loading={most.loading}
           empty={!most.list.length}
+          unavailable={most.unavailable}
           chips={
             <>
               <FilterChip icon={ListFilterNode} label={sorts.find((s) => s.id === by)!.label} onPress={() => setSheet("by")} />

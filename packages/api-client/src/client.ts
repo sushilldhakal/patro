@@ -652,6 +652,8 @@ export type NepseLive = {
   transactions: number;
   scrips: number;
   stocks: NepseQuote[];
+  /** The server's feed stopped: no prices are sent and none may be shown. Older servers omit it. */
+  stale?: boolean;
 };
 
 /** `[unix seconds, price, cumulative volume]`. */

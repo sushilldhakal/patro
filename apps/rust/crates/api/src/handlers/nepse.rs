@@ -20,6 +20,13 @@ use crate::state::AppState;
 /// Nothing has been read yet and merolagani cannot be reached.
 pub async fn live(State(state): State<AppState>) -> AppResult<impl IntoResponse> {
     let live = state.nepse.live().await.map_err(upstream)?;
+    // The feed stopped: send no prices, so no app shows old ones as current.
+    if live.is_stale(jiff::Timestamp::now()) {
+        return Ok((
+            [(header::CACHE_CONTROL, "public, max-age=30")],
+            Json(live.stale_marker()),
+        ));
+    }
     let cache = if live.market_open {
         "public, max-age=15"
     } else {

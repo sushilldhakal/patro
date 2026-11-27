@@ -26,14 +26,38 @@ export type NepseRange = "1D" | "1W" | "1M" | "6M" | "1Y" | "5Y" | "ALL";
 export const NEPSE_RANGES: NepseRange[] = ["1D", "1W", "1M", "6M", "1Y", "5Y", "ALL"];
 const RANGE_DAYS: Record<NepseRange, number> = { "1D": 0, "1W": 7, "1M": 31, "6M": 183, "1Y": 366, "5Y": 1827, ALL: Infinity };
 
-/** The whole market, refreshed every 30 s while trading is open. */
+/** Prices older than this (seconds since the server's read) are never shown while trading is on… */
+const MAX_AGE_OPEN_S = 180;
+/** …and outside trading (the server reads every 15 minutes then). */
+const MAX_AGE_CLOSED_S = 45 * 60;
+/** Outside trading the list is still re-read this often, so its age is checked again. */
+const CLOSED_REFRESH_MS = 5 * 60_000;
+
+/**
+ * Whether these prices may be shown at `nowMs`: the server says its feed is fine, there are
+ * prices, and the read is recent. A blocked or changed merolagani, a stuck server or a phone
+ * restoring yesterday's cache all fail this, and then no share price is shown anywhere.
+ */
+export function nepseLiveTrusted(live: NepseLive, nowMs: number): boolean {
+  const age = nowMs / 1000 - live.fetched_at;
+  return !live.stale && live.stocks.length > 0 && age <= (live.market_open ? MAX_AGE_OPEN_S : MAX_AGE_CLOSED_S);
+}
+
+/**
+ * The whole market, refreshed every 30 s while trading is open. `data` is undefined unless
+ * {@link nepseLiveTrusted}, so every card, row and page that reads it hides its prices;
+ * `unavailable` says the prices were withheld (as opposed to still loading).
+ */
 export function useNepseLive() {
-  return useQuery<NepseLive>({
+  const query = useQuery<NepseLive>({
     queryKey: nepseKeys.live(),
     queryFn: fetchNepseLive,
     staleTime: 15_000,
-    refetchInterval: (q) => (q.state.data?.market_open ? LIVE_REFRESH_MS : false),
+    refetchInterval: (q) => (q.state.data?.market_open ? LIVE_REFRESH_MS : CLOSED_REFRESH_MS),
   });
+  const trusted = query.data && nepseLiveTrusted(query.data, Date.now()) ? query.data : undefined;
+  // Not while a read is under way (a cold start restoring an old cache): only once it settled.
+  return { ...query, data: trusted, unavailable: !query.isLoading && !query.isFetching && !trusted };
 }
 
 /** One scrip: its live quote and the chart for `range` (labels and prices, oldest first). */
@@ -80,6 +104,8 @@ export function useNepseStock(symbol: string, range: NepseRange) {
     : null;
   return {
     quote,
+    /** Prices withheld (see {@link nepseLiveTrusted}); `quote` is null then. */
+    unavailable: live.unavailable,
     marketOpen: open,
     asOf: live.data?.as_of ?? null,
     chart: { labels, values },
@@ -123,7 +149,13 @@ export function useNepsePeriod(period: NepsePeriod) {
       return [{ quote: q, change: q.ltp - start, percent: ((q.ltp - start) / start) * 100, volume: r[2], turnover: r[3] }];
     });
   }
-  return { ranked, live, loading: live.isLoading || (days > 0 && periodQuery.isLoading), error: live.isError || periodQuery.isError };
+  return {
+    ranked,
+    live,
+    unavailable: live.unavailable,
+    loading: live.isLoading || (days > 0 && periodQuery.isLoading),
+    error: live.isError || periodQuery.isError,
+  };
 }
 
 /** Biggest gainers or losers over `period`, among scrips that traded enough to count. */

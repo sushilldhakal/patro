@@ -5327,6 +5327,7 @@
     "shares_live": "Live · {{date}} {{time}}",
     "shares_closed": "Market closed · {{date}} {{time}}",
     "shares_error": "Share prices could not be loaded. Try again shortly.",
+    "shares_unavailable": "Share prices are unavailable right now, so none are shown. They come back as soon as fresh prices arrive.",
     "shares_turnover": "Turnover (Rs crore)",
     "shares_volume": "Shares traded",
     "shares_trades": "Transactions",

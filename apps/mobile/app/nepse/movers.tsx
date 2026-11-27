@@ -29,6 +29,7 @@ export default function NepseMoversScreen() {
         <RankingPage
           loading={movers.loading}
           empty={!movers.list.length}
+          unavailable={movers.unavailable}
           chips={
             <>
               <FilterChip icon={ListFilterNode} label={directions.find((d) => d.id === direction)!.label} onPress={() => setSheet("direction")} />

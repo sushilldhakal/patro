@@ -732,8 +732,11 @@ function SharesTab() {
         />
       )}
       {live.isLoading ? <SkeletonPulse className="h-96 rounded-3xl" /> : null}
-      {live.isError && !data ? (
-        <Text className="text-base text-muted-foreground">{t("market.shares_error")}</Text>
+      {/* No prices (feed stopped, too old, or not loaded): say so, never show old ones. */}
+      {live.unavailable ? (
+        <Text className="text-base text-muted-foreground">
+          {t(live.data === undefined && live.isError ? "market.shares_error" : "market.shares_unavailable")}
+        </Text>
       ) : null}
       {data ? (
         <>

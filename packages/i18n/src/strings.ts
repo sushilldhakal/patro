@@ -6016,6 +6016,7 @@ export const strings = {
   "market.shares_live": { ne: "प्रत्यक्ष · {{date}} {{time}}", en: "Live · {{date}} {{time}}" },
   "market.shares_closed": { ne: "बजार बन्द · {{date}} {{time}}", en: "Market closed · {{date}} {{time}}" },
   "market.shares_error": { ne: "शेयर भाउ लोड हुन सकेन। केही बेरपछि फेरि प्रयास गर्नुहोस्।", en: "Share prices could not be loaded. Try again shortly." },
+  "market.shares_unavailable": { ne: "अहिले शेयर भाउ उपलब्ध छैन, त्यसैले कुनै भाउ देखाइएको छैन। नयाँ भाउ आउनेबित्तिकै फेरि देखिन्छ।", en: "Share prices are unavailable right now, so none are shown. They come back as soon as fresh prices arrive." },
   "market.shares_turnover": { ne: "कारोबार रकम (रु करोड)", en: "Turnover (Rs crore)" },
   "market.shares_volume": { ne: "कारोबार भएका शेयर", en: "Shares traded" },
   "market.shares_trades": { ne: "कारोबार संख्या", en: "Transactions" },

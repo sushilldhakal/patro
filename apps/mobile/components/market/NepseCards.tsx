@@ -295,11 +295,14 @@ export function RankingPage({
   chips,
   loading,
   empty,
+  unavailable = false,
   children,
 }: {
   chips: ReactNode;
   loading: boolean;
   empty: boolean;
+  /** Prices withheld: says so instead of "nothing to rank". */
+  unavailable?: boolean;
   children: ReactNode;
 }) {
   const { t } = useLocale();
@@ -310,7 +313,9 @@ export function RankingPage({
         {loading ? (
           <Text className="py-10 text-center text-sm text-muted-foreground">{t("market.loading")}</Text>
         ) : empty ? (
-          <Text className="py-10 text-center text-sm text-muted-foreground">{t("market.ranking_empty")}</Text>
+          <Text className="py-10 text-center text-sm text-muted-foreground">
+            {t(unavailable ? "market.shares_unavailable" : "market.ranking_empty")}
+          </Text>
         ) : (
           children
         )}

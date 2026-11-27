@@ -108,7 +108,9 @@ export default function NepseStockScreen() {
         ) : page.loading ? (
           <SkeletonPulse className="h-24 rounded-2xl" />
         ) : (
-          <Text className="text-base text-muted-foreground">{t("market.shares_not_traded")}</Text>
+          <Text className="text-base text-muted-foreground">
+            {t(page.unavailable ? "market.shares_unavailable" : "market.shares_not_traded")}
+          </Text>
         )}
 
         <View className="gap-3">
