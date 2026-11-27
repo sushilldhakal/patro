@@ -361,8 +361,11 @@ export function PlacesScreen({
   page,
   title,
   onChoose,
+  asPage,
 }: {
   page: WeatherPage;
+  /** Drawn as a pushed stack page (the header's picker, app/places) instead of in its own Modal. */
+  asPage?: boolean;
   /** The header's picker names it "Location"; the weather page keeps its own title. */
   title?: string;
   /** Tapping a place: by default it shows that place's forecast. */
@@ -382,6 +385,126 @@ export function PlacesScreen({
     .onEnd((e) => {
       if (e.translationX > 80 || e.velocityX > 600) close();
     });
+  const body = (
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+      <View className={cn("flex-row", wc.topBar, "pr-3")}>
+        <PressScale
+          accessibilityRole="button"
+          accessibilityLabel={copy.back}
+          onPress={close}
+          hitSlop={8}
+          className="size-11 items-center justify-center"
+        >
+          <UiIcon name="arrow-left" size={24} tone="foreground" />
+        </PressScale>
+        <Text
+          className={wc.placesTitle}
+          numberOfLines={1}
+          style={nepaliTextStyle()}
+        >
+          {title ?? copy.placesTitle}
+        </Text>
+        {places.editing ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => places.setEditing(false)}
+            hitSlop={8}
+            className="min-h-11 justify-center px-2"
+          >
+            <Text className={wc.chipText} style={nepaliTextStyle()}>
+              {copy.done}
+            </Text>
+          </Pressable>
+        ) : (
+          <PressScale
+            accessibilityRole="button"
+            accessibilityLabel={copy.moreOptions}
+            onPress={() => setMenuOpen(true)}
+            hitSlop={8}
+            className={wc.roundButton}
+          >
+            <UiIcon name="ellipsis" size={22} tone="foreground" />
+          </PressScale>
+        )}
+      </View>
+
+      <ScrollView contentContainerClassName="gap-3 px-2.5 pb-4 pt-2">
+        {places.pages.map((p, i) => (
+          <PlaceCard key={p.id} page={page} place={p} index={i} onChoose={onChoose} onEdit={setEditId} />
+        ))}
+      </ScrollView>
+
+      <View
+        className="px-4 pt-2"
+        style={{ paddingBottom: insets.bottom + 8 }}
+      >
+        <Pressable
+          accessibilityRole="search"
+          accessibilityLabel={copy.searchPlace}
+          onPress={() => places.setAddOpen(true)}
+          className={cn(wc.searchBar, "active:opacity-80")}
+        >
+          <UiIcon name="search" size={20} />
+          <Text className={wc.searchBarText} style={nepaliTextStyle()}>
+            {copy.searchPlace}
+          </Text>
+        </Pressable>
+      </View>
+
+      {menuOpen ? (
+        <Pressable
+          accessibilityLabel={copy.close}
+          onPress={() => setMenuOpen(false)}
+          style={StyleSheet.absoluteFill}
+        >
+          <Animated.View
+            entering={FadeIn.duration(150)}
+            className={wc.menuCard}
+            style={{ top: insets.top + 52 }}
+          >
+            <MenuItem
+              label={copy.editList}
+              onPress={() => {
+                setMenuOpen(false);
+                places.setEditing(true);
+              }}
+            />
+            {units.options.temp.map((o) => (
+              <MenuItem
+                key={o.id}
+                label={o.label}
+                checked={units.value.temp === o.id}
+                onPress={() => {
+                  setMenuOpen(false);
+                  units.set({ temp: o.id });
+                }}
+              />
+            ))}
+            <MenuItem
+              label={copy.units}
+              chevron
+              onPress={() => {
+                setMenuOpen(false);
+                setUnitsOpen(true);
+              }}
+            />
+          </Animated.View>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+  const sheets = (
+    <>
+      <UnitsSheet
+        page={page}
+        open={unitsOpen}
+        onClose={() => setUnitsOpen(false)}
+      />
+      <EditPlaceSheet page={page} id={editId} onClose={() => setEditId(null)} />
+      <AddFlow page={page} />
+    </>
+  );
+  if (asPage) return <>{body}{sheets}</>;
   return (
     <Modal
       visible={places.listOpen}
@@ -393,121 +516,10 @@ export function PlacesScreen({
           goes back, like a pushed page's edge swipe. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={swipeBack}>
-      <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
-        <View className={cn("flex-row", wc.topBar, "pr-3")}>
-          <PressScale
-            accessibilityRole="button"
-            accessibilityLabel={copy.back}
-            onPress={close}
-            hitSlop={8}
-            className="size-11 items-center justify-center"
-          >
-            <UiIcon name="arrow-left" size={24} tone="foreground" />
-          </PressScale>
-          <Text
-            className={wc.placesTitle}
-            numberOfLines={1}
-            style={nepaliTextStyle()}
-          >
-            {title ?? copy.placesTitle}
-          </Text>
-          {places.editing ? (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => places.setEditing(false)}
-              hitSlop={8}
-              className="min-h-11 justify-center px-2"
-            >
-              <Text className={wc.chipText} style={nepaliTextStyle()}>
-                {copy.done}
-              </Text>
-            </Pressable>
-          ) : (
-            <PressScale
-              accessibilityRole="button"
-              accessibilityLabel={copy.moreOptions}
-              onPress={() => setMenuOpen(true)}
-              hitSlop={8}
-              className={wc.roundButton}
-            >
-              <UiIcon name="ellipsis" size={22} tone="foreground" />
-            </PressScale>
-          )}
-        </View>
-
-        <ScrollView contentContainerClassName="gap-3 px-2.5 pb-4 pt-2">
-          {places.pages.map((p, i) => (
-            <PlaceCard key={p.id} page={page} place={p} index={i} onChoose={onChoose} onEdit={setEditId} />
-          ))}
-        </ScrollView>
-
-        <View
-          className="px-4 pt-2"
-          style={{ paddingBottom: insets.bottom + 8 }}
-        >
-          <Pressable
-            accessibilityRole="search"
-            accessibilityLabel={copy.searchPlace}
-            onPress={() => places.setAddOpen(true)}
-            className={cn(wc.searchBar, "active:opacity-80")}
-          >
-            <UiIcon name="search" size={20} />
-            <Text className={wc.searchBarText} style={nepaliTextStyle()}>
-              {copy.searchPlace}
-            </Text>
-          </Pressable>
-        </View>
-
-        {menuOpen ? (
-          <Pressable
-            accessibilityLabel={copy.close}
-            onPress={() => setMenuOpen(false)}
-            style={StyleSheet.absoluteFill}
-          >
-            <Animated.View
-              entering={FadeIn.duration(150)}
-              className={wc.menuCard}
-              style={{ top: insets.top + 52 }}
-            >
-              <MenuItem
-                label={copy.editList}
-                onPress={() => {
-                  setMenuOpen(false);
-                  places.setEditing(true);
-                }}
-              />
-              {units.options.temp.map((o) => (
-                <MenuItem
-                  key={o.id}
-                  label={o.label}
-                  checked={units.value.temp === o.id}
-                  onPress={() => {
-                    setMenuOpen(false);
-                    units.set({ temp: o.id });
-                  }}
-                />
-              ))}
-              <MenuItem
-                label={copy.units}
-                chevron
-                onPress={() => {
-                  setMenuOpen(false);
-                  setUnitsOpen(true);
-                }}
-              />
-            </Animated.View>
-          </Pressable>
-        ) : null}
-      </View>
+      {body}
       </GestureDetector>
       </GestureHandlerRootView>
-      <UnitsSheet
-        page={page}
-        open={unitsOpen}
-        onClose={() => setUnitsOpen(false)}
-      />
-      <EditPlaceSheet page={page} id={editId} onClose={() => setEditId(null)} />
-      <AddFlow page={page} />
+      {sheets}
     </Modal>
   );
 }

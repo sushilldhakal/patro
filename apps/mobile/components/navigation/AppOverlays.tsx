@@ -3,7 +3,7 @@ import { NavDrawerHost } from "@/components/AppHeader";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { QuickReminderSheet } from "@/components/reminders/QuickReminderSheet";
 import { FestivalSearchSheet } from "@/components/search/FestivalSearchSheet";
-import { LocationPlacesScreen } from "@/components/search/LocationPlacesScreen";
+import { openLocationPlaces } from "@/components/search/LocationPlacesScreen";
 import { useAddReminderRequest, useLocationPickerRequest, useSearchRequest, useSignInRequest, type PlacePick } from "@/lib/menu-request";
 
 /**
@@ -16,14 +16,7 @@ export function AppOverlays() {
   const [authOpen, setAuthOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
-  const [placeOpen, setPlaceOpen] = useState(false);
-  const [placePick, setPlacePick] = useState<{ fn: PlacePick } | null>(null);
-  useLocationPickerRequest(
-    useCallback((onPick?: PlacePick) => {
-      setPlacePick(onPick ? { fn: onPick } : null);
-      setPlaceOpen(true);
-    }, []),
-  );
+  useLocationPickerRequest(useCallback((onPick?: PlacePick) => openLocationPlaces(onPick), []));
   useSignInRequest(useCallback(() => setAuthOpen(true), []));
   useSearchRequest(useCallback(() => setSearchOpen(true), []));
   const [reminderDate, setReminderDate] = useState<string | undefined>(undefined);
@@ -35,14 +28,11 @@ export function AppOverlays() {
   );
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   const closeReminder = useCallback(() => setReminderOpen(false), []);
-  const closePlace = useCallback(() => setPlaceOpen(false), []);
   return (
     <>
       <NavDrawerHost />
       <FestivalSearchSheet open={searchOpen} onClose={closeSearch} />
       <QuickReminderSheet open={reminderOpen} date={reminderDate} onClose={closeReminder} />
-      {/* The place picker, drawn like the weather places screen; every screen's usePanchangaLocation follows it. */}
-      <LocationPlacesScreen open={placeOpen} onClose={closePlace} onPick={placePick?.fn} />
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
     </>
   );

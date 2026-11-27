@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { router } from "expo-router";
 import { useWeatherPage, type WeatherPage } from "@vedic-patro/features/weather";
 import { useLocale } from "@vedic-patro/i18n/react";
 import { haptics } from "@vedic-patro/ui/motion";
@@ -13,8 +14,19 @@ import type { PlacePick } from "@/lib/menu-request";
  * tapping a card, making one primary, or adding one from search sets the app's place.
  * Mounted only while open, so the list and GPS are read fresh each time.
  */
-export function LocationPlacesScreen({ open, onClose, onPick }: { open: boolean; onClose: () => void; onPick?: PlacePick }) {
-  return open ? <Picker onClose={onClose} onPick={onPick} /> : null;
+let pendingPick: PlacePick | undefined;
+
+/** Pushes the picker as a stack page (app/places), so it slides in and swipes back like every page. */
+export function openLocationPlaces(onPick?: PlacePick) {
+  pendingPick = onPick;
+  router.push("/places");
+}
+
+/** The app/places route. */
+export function LocationPlacesPage() {
+  const [onPick] = useState(() => pendingPick);
+  useEffect(() => () => { pendingPick = undefined; }, []);
+  return <Picker onClose={() => router.canGoBack() && router.back()} onPick={onPick} />;
 }
 
 function Picker({ onClose, onPick }: { onClose: () => void; onPick?: PlacePick }) {
@@ -66,5 +78,5 @@ function Picker({ onClose, onPick }: { onClose: () => void; onPick?: PlacePick }
   };
 
   // The search and "make it primary?" sheets are drawn inside PlacesScreen, over the list.
-  return <PlacesScreen page={pickerPage} title={t("location.label")} onChoose={(i) => use(places.pages[i])} />;
+  return <PlacesScreen asPage page={pickerPage} title={t("location.label")} onChoose={(i) => use(places.pages[i])} />;
 }
