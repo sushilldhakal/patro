@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type PressableProps } from "react-native";
-import Animated, { FadeIn, LinearTransition, runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { Modal, Pressable, ScrollView, StyleSheet, View, type PressableProps } from "react-native";
+import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
 import { cssInterop } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { WeatherPage } from "@vedic-patro/features/weather";
@@ -373,41 +373,26 @@ export function PlacesScreen({
   const [menuOpen, setMenuOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  // Pushed like any settings page: slides in from the right, follows the finger on a right swipe and
-  // slides back out (the page under it shows through the transparent modal).
-  const { width } = useWindowDimensions();
-  const reduced = useReducedMotionPref();
-  const x = useSharedValue(width);
-  useEffect(() => {
-    if (places.listOpen) x.set(withTiming(0, { duration: reduced ? 0 : DURATION.slow }));
-    else x.set(width);
-  }, [places.listOpen, reduced, width, x]);
-  const finish = () => places.setListOpen(false);
-  const close = () => x.set(withTiming(width, { duration: reduced ? 0 : DURATION.standard }, (done) => done && runOnJS(finish)()));
+  const close = () => places.setListOpen(false);
+  // Right-swipe from anywhere (vertical scrolls win): back, as on any pushed page.
   const swipeBack = Gesture.Pan()
+    .runOnJS(true)
     .activeOffsetX(24)
     .failOffsetY([-14, 14])
-    .onUpdate((e) => {
-      x.set(Math.max(0, e.translationX));
-    })
     .onEnd((e) => {
-      const out = e.translationX > width / 3 || e.velocityX > 600;
-      x.set(withTiming(out ? width : 0, { duration: DURATION.standard }, (done) => done && out && runOnJS(finish)()));
+      if (e.translationX > 80 || e.velocityX > 600) close();
     });
-  const slide = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
   return (
     <Modal
       visible={places.listOpen}
-      animationType="none"
-      transparent
-      presentationStyle="overFullScreen"
+      animationType="slide"
+      presentationStyle="fullScreen"
       onRequestClose={close}
     >
       {/* A Modal is its own root: gestures need their own root view inside it. A swipe to the right
           goes back, like a pushed page's edge swipe. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={swipeBack}>
-      <Animated.View style={[styles.fill, slide]}>
       <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className={cn("flex-row", wc.topBar, "pr-3")}>
           <PressScale
@@ -514,7 +499,6 @@ export function PlacesScreen({
           </Pressable>
         ) : null}
       </View>
-      </Animated.View>
       </GestureDetector>
       </GestureHandlerRootView>
       <UnitsSheet
@@ -527,5 +511,3 @@ export function PlacesScreen({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({ fill: { flex: 1 } });
