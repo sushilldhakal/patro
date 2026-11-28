@@ -18,7 +18,8 @@
     "@vedic-patro/domain": "*",
     "@vedic-patro/drawing": "*",
     "@vedic-patro/read-models": "*",
-    "@vedic-patro/i18n": "*"
+    "@vedic-patro/i18n": "*",
+    "@vedic-patro/icons": "*"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.101.0",

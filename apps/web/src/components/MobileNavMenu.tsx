@@ -30,6 +30,8 @@ const MAIN_ROUTES: { id: FeatureId; to: string; withSearch?: boolean }[] = [
   { id: "vastu", to: "/vastu" },
   { id: "learn", to: "/learn" },
   { id: "documents", to: "/documents" },
+  { id: "shanti", to: "/shanti-vidhi" },
+  { id: "more", to: "/more" },
 ];
 
 function TileIcon({ icon: Icon }: { icon: LucideIcon }) {
@@ -68,7 +70,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
   const rawSearch = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
   const urlBrowse = parseEraFromUrl(rawSearch, lang === "en" ? "en" : "ne");
   const { current: ritu, loading: rituLoading } = useCurrentRitu(location);
-  const mainLabel = Object.fromEntries(menu.main.map((m) => [m.id, m.label])) as Record<string, string>;
+  const mainLabel = Object.fromEntries([...menu.main, ...menu.appOnly.mainExtra].map((m) => [m.id, m.label])) as Record<string, string>;
   const browse = { year: urlBrowse.year, month: urlBrowse.month };
 
   const go = (to: string, search?: Record<string, unknown>, params?: Record<string, string>) => () => {
@@ -112,7 +114,8 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
       if (section.id === "tables") sectionItems.unshift(mainTile("panchanga"));
       return sectionItems;
     });
-    if (category.id === "jyotish") items.push(mainTile("vastu"), mainTile("learn"));
+    // As in the app: the jyotish tab ends with vastu, learn, shanti and More (every page on one screen).
+    if (category.id === "jyotish") items.push(mainTile("vastu"), mainTile("learn"), mainTile("shanti"), mainTile("more"));
     const sections: MobileNavSection[] = [{ id: category.id, title: "", items }];
     return { category, sections };
   });

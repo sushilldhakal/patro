@@ -30,7 +30,7 @@ import {
 import { fetchDocumentChapter, fetchDocumentDetail, fetchDocuments } from "@/lib/documents/api";
 import { ELEMENT_META } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { formatBsDateKey } from "@vedic-patro/domain/calendar/patro-day";
-import { SITEMAP_SAIT_CATEGORIES } from "@/lib/sitemap-routes";
+import { SITEMAP_SAIT_CATEGORIES } from "@vedic-patro/features/common";
 import { OFFLINE_STORE_SUPPORTED, readJsonMeta, writeJsonMeta } from "@/lib/offline/offline-db";
 import { beginCapture, captureTotals, clearOfflineHttp, OfflineMissError, resetCaptureCounters } from "@/lib/offline/offline-http";
 import { calculationKey } from "@vedic-patro/domain/calendar/calculation-system";

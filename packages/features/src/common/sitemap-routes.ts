@@ -1,4 +1,4 @@
-import type { DrawerIconName } from "@/lib/drawer-icons";
+import type { NavIconName as DrawerIconName } from "@vedic-patro/icons";
 import { tFor } from "@vedic-patro/i18n/runtime";
 
 /** All public routes aligned with vedicpatro.com sitemap. Icons match the web drawer (Lucide). */

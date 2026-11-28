@@ -19,7 +19,7 @@ import {
   SITEMAP_ROUTES,
   SITEMAP_SAIT_CATEGORIES,
   type SitemapRoute,
-} from "@/lib/sitemap-routes";
+} from "@vedic-patro/features/common";
 import { CEREMONY_META, ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga/panchanga-elements";
 import { elementHref } from "@/lib/element-routes";
 import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";

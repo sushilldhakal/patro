@@ -21,6 +21,8 @@ const ALLOWED = [
   "@vedic-patro/i18n/runtime",
   "@vedic-patro/i18n/react",
   "@vedic-patro/design-tokens",
+  // Icon names only (which Lucide icon means what), no renderer.
+  "@vedic-patro/icons",
 ];
 
 function walk(dir) {
