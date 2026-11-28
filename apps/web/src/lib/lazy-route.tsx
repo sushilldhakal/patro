@@ -29,7 +29,9 @@ function reloadOnce(): boolean {
   return true;
 }
 
-const STALE_CHUNK = /Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module/i;
+// A deleted hashed chunk is answered with the SPA's index.html, so Chrome also reports a MIME error (PATRO-WEB-G).
+export const STALE_CHUNK =
+  /Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module|is not a valid JavaScript MIME type/i;
 
 /**
  * Chunk imports outside lazyRoute/importWithRetry (Vite's preload helper, a library's own

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { memo, useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { adMonthLabel, bsMonthLabel, getBSMonthLength, getCurrentBs } from "@vedic-patro/domain/calendar/bs-calendar";
@@ -38,8 +38,21 @@ export function DateField({ value, era, onChange, placeholder }: { value: string
   const [draft, setDraft] = useState(init);
   const [open, setOpen] = useState(false);
   const monthName = (m: number) => (era === "ad" ? adMonthLabel(m, lang) : bsMonthLabel(m, lang));
-  const years = Array.from({ length: 151 }, (_, i) => nowYear - 140 + i).reverse();
   const maxDay = daysIn(era, draft.y, draft.m);
+  // Stable props: the native iOS picker reloads every column on any prop update, and a reload
+  // while the reader is touching another column frees cells mid hit-test (Sentry PATRO-15).
+  const dayItems = useMemo(() => Array.from({ length: maxDay }, (_, i) => ({ value: i + 1, label: digits(i + 1) })), [maxDay, digits]);
+  const monthItems = useMemo(
+    () => Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: era === "ad" ? adMonthLabel(i + 1, lang) : bsMonthLabel(i + 1, lang) })),
+    [era, lang],
+  );
+  const yearItems = useMemo(
+    () => Array.from({ length: 151 }, (_, i) => nowYear + 10 - i).map((y) => ({ value: y, label: digits(y) })),
+    [nowYear, digits],
+  );
+  const setDay = useMemo(() => (d: number) => setDraft((prev) => ({ ...prev, d })), []);
+  const setMonth = useMemo(() => (m: number) => setDraft((prev) => ({ ...prev, m })), []);
+  const setYear = useMemo(() => (y: number) => setDraft((prev) => ({ ...prev, y })), []);
   const shown = parsed ? `${digits(init.d)} ${monthName(init.m)} ${digits(init.y)}` : "";
 
   return (
@@ -61,9 +74,9 @@ export function DateField({ value, era, onChange, placeholder }: { value: string
           setOpen(false);
         }}
       >
-        <Wheel value={draft.d} items={Array.from({ length: maxDay }, (_, i) => ({ value: i + 1, label: digits(i + 1) }))} onChange={(d) => setDraft({ ...draft, d })} />
-        <Wheel flex={2} value={draft.m} items={Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: monthName(i + 1) }))} onChange={(m) => setDraft({ ...draft, m })} />
-        <Wheel value={draft.y} items={years.map((y) => ({ value: y, label: digits(y) }))} onChange={(y) => setDraft({ ...draft, y })} />
+        <Wheel value={draft.d} items={dayItems} onChange={setDay} />
+        <Wheel flex={2} value={draft.m} items={monthItems} onChange={setMonth} />
+        <Wheel value={draft.y} items={yearItems} onChange={setYear} />
       </WheelSheet>
     </>
   );
@@ -77,6 +90,15 @@ export function TimeField({ value, onChange, placeholder }: { value: string; onC
   const [draft, setDraft] = useState(init);
   const [open, setOpen] = useState(false);
   const am = [t("ui.time.am"), t("ui.time.pm")];
+  const amPm = am.join("|");
+  const hour12Items = useMemo(() => Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: digits(i + 1) })), [digits]);
+  const hour24Items = useMemo(() => Array.from({ length: 24 }, (_, i) => ({ value: i, label: digits(pad(i)) })), [digits]);
+  const minuteItems = useMemo(() => Array.from({ length: 60 }, (_, i) => ({ value: i, label: digits(pad(i)) })), [digits]);
+  const amPmItems = useMemo(() => amPm.split("|").map((label, i) => ({ value: i, label })), [amPm]);
+  const setHour12 = useMemo(() => (h12: number) => setDraft((prev) => ({ ...prev, h: (h12 % 12) + (prev.h >= 12 ? 12 : 0) })), []);
+  const setPm = useMemo(() => (pm: number) => setDraft((prev) => ({ ...prev, h: (prev.h % 12) + (pm ? 12 : 0) })), []);
+  const setHour = useMemo(() => (h: number) => setDraft((prev) => ({ ...prev, h })), []);
+  const setMinute = useMemo(() => (m: number) => setDraft((prev) => ({ ...prev, m })), []);
   const shown = parsed
     ? twelve
       ? `${digits(init.h % 12 || 12)}:${digits(pad(init.m))} ${am[init.h < 12 ? 0 : 1]}`
@@ -104,22 +126,14 @@ export function TimeField({ value, onChange, placeholder }: { value: string; onC
       >
         {twelve ? (
           <>
-            <Wheel
-              value={draft.h % 12 || 12}
-              items={Array.from({ length: 12 }, (_, i) => ({ value: i + 1, label: digits(i + 1) }))}
-              onChange={(h12) => setDraft({ ...draft, h: (h12 % 12) + (draft.h >= 12 ? 12 : 0) })}
-            />
-            <Wheel value={draft.m} items={Array.from({ length: 60 }, (_, i) => ({ value: i, label: digits(pad(i)) }))} onChange={(m) => setDraft({ ...draft, m })} />
-            <Wheel
-              value={draft.h >= 12 ? 1 : 0}
-              items={am.map((label, i) => ({ value: i, label }))}
-              onChange={(pm) => setDraft({ ...draft, h: (draft.h % 12) + (pm ? 12 : 0) })}
-            />
+            <Wheel value={draft.h % 12 || 12} items={hour12Items} onChange={setHour12} />
+            <Wheel value={draft.m} items={minuteItems} onChange={setMinute} />
+            <Wheel value={draft.h >= 12 ? 1 : 0} items={amPmItems} onChange={setPm} />
           </>
         ) : (
           <>
-            <Wheel value={draft.h} items={Array.from({ length: 24 }, (_, i) => ({ value: i, label: digits(pad(i)) }))} onChange={(h) => setDraft({ ...draft, h })} />
-            <Wheel value={draft.m} items={Array.from({ length: 60 }, (_, i) => ({ value: i, label: digits(pad(i)) }))} onChange={(m) => setDraft({ ...draft, m })} />
+            <Wheel value={draft.h} items={hour24Items} onChange={setHour} />
+            <Wheel value={draft.m} items={minuteItems} onChange={setMinute} />
           </>
         )}
       </WheelSheet>
@@ -161,7 +175,7 @@ function WheelSheet({ open, onClose, onDone, children }: { open: boolean; onClos
   );
 }
 
-function Wheel({ value, items, onChange, flex = 1 }: { value: number; items: { value: number; label: string }[]; onChange: (v: number) => void; flex?: number }) {
+const Wheel = memo(function Wheel({ value, items, onChange, flex = 1 }: { value: number; items: { value: number; label: string }[]; onChange: (v: number) => void; flex?: number }) {
   const colors = useThemeColors();
   return (
     <View style={{ flex }}>
@@ -172,4 +186,4 @@ function Wheel({ value, items, onChange, flex = 1 }: { value: number; items: { v
       </Picker>
     </View>
   );
-}
+});

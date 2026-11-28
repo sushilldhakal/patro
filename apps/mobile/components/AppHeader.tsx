@@ -255,7 +255,9 @@ export function HeaderButton({
 const SEGMENT_EASE = REasing.bezier(0.23, 1, 0.32, 1);
 const SEGMENT_LAYOUT = LinearTransition.duration(220).easing(SEGMENT_EASE).reduceMotion(ReduceMotion.System);
 const SEGMENT_LABEL_IN = FadeIn.duration(160).delay(60).reduceMotion(ReduceMotion.System);
-const SEGMENT_LABEL_OUT = FadeOut.duration(100).reduceMotion(ReduceMotion.System);
+// No exit fade on Android: Reanimated keeps the exiting view in its parent, and Fabric then fails to
+// insert the next label there ("child already has a parent", Sentry PATRO-14).
+const SEGMENT_LABEL_OUT = Platform.OS === "android" ? undefined : FadeOut.duration(100).reduceMotion(ReduceMotion.System);
 
 /**
  * Tablet: the page's view choices as a segmented switch in the top bar, like iPad Calendar's

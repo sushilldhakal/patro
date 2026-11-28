@@ -124,6 +124,14 @@ Sentry.init({
 Sentry.setTag("low_memory_mode", IS_LOW_MEMORY_DEVICE ? "on" : "off");
 if (DEVICE_MEMORY_GB !== null) Sentry.setTag("device_ram_gb", String(DEVICE_MEMORY_GB));
 
+// expo-gl throws from its surface-created event when this JS runtime has no GL bindings yet (seen
+// right as an OTA downloads, PATRO-16). Uncaught, that closes the app; the 3D scene just stays blank.
+const reportGlobalError = ErrorUtils.getGlobalHandler();
+ErrorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
+  if ((error as { code?: string } | null)?.code === "ERR_GL_NOT_AVAILABLE") return;
+  reportGlobalError(error, isFatal);
+});
+
 Observe.configure({
   environment: Updates.channel || (__DEV__ ? "development" : "production"),
   integrations: {

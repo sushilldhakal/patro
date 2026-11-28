@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react";
+import { STALE_CHUNK } from "@/lib/lazy-route";
 
 /** The nagosi/patro-web project. A DSN only lets a client send events, and it ships in every page anyway. */
 const PATRO_WEB_DSN = "https://5129ff672e18ccefb0cc56e8280c8616@o4512190691934208.ingest.de.sentry.io/4512281767706704";
@@ -18,7 +19,7 @@ export function initSentry() {
     integrations: [Sentry.browserTracingIntegration()],
     tracesSampleRate: 0.1,
     beforeSend(event) {
-      return isForeignStackOverflow(event) ? null : event;
+      return isForeignStackOverflow(event) || isStaleChunk(event) ? null : event;
     },
   });
 }
@@ -34,6 +35,14 @@ function isForeignStackOverflow(event: Sentry.ErrorEvent): boolean {
   if (!overflow) return false;
   const frames = values.flatMap((v) => v.stacktrace?.frames ?? []);
   return !frames.some((f) => /\/assets\/[^/]+\.js/.test(f.abs_path ?? f.filename ?? ""));
+}
+
+/**
+ * A page open across a deploy asks for chunks the new build deleted; lazy-route reloads it onto the
+ * new build, so these are deploy noise, not defects (PATRO-WEB-2, -E, -F, -G).
+ */
+function isStaleChunk(event: Sentry.ErrorEvent): boolean {
+  return (event.exception?.values ?? []).some((v) => STALE_CHUNK.test(v.value ?? ""));
 }
 
 /** React 19 root error hooks, reporting what React catches or cannot recover from. */
