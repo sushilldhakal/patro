@@ -159,3 +159,60 @@ fn outside_the_kernel_it_says_so() {
         "the text answers anywhere"
     );
 }
+
+/// Eclipses against NASA's canon (Espenak, eclipse.gsfc.nasa.gov decade tables): type, and the
+/// time of greatest eclipse compared in TT (NASA prints TD), so ΔT is not part of the check.
+#[test]
+fn eclipses_match_nasa() {
+    use astronomy::drik_eclipse::{DrikEclipseType as T, lunar_eclipses, solar_eclipses};
+    let Some(System::Drik(sky)) = system() else {
+        return;
+    };
+    let jd = |y: i32, m: u32, d: u32, h: u32, mi: u32, s: u32| {
+        // Meeus 7.1, Gregorian.
+        let (y, m) = if m <= 2 { (y - 1, m + 12) } else { (y, m) };
+        let a = (f64::from(y) / 100.0).floor();
+        let b = 2.0 - a + (a / 4.0).floor();
+        (365.25 * (f64::from(y) + 4716.0)).floor()
+            + (30.6001 * f64::from(m + 1)).floor()
+            + f64::from(d)
+            + b
+            - 1524.5
+            + (f64::from(h) * 3600.0 + f64::from(mi) * 60.0 + f64::from(s)) / 86_400.0
+    };
+    let (start, end) = (jd(2026, 1, 1, 0, 0, 0), jd(2028, 1, 1, 0, 0, 0));
+    let (lat, lon) = KATHMANDU;
+    let lunar = [
+        (T::Total, jd(2026, 3, 3, 11, 34, 52)),
+        (T::Partial, jd(2026, 8, 28, 4, 14, 4)),
+        (T::Penumbral, jd(2027, 2, 20, 23, 14, 6)),
+        (T::Penumbral, jd(2027, 7, 18, 16, 4, 9)),
+        (T::Penumbral, jd(2027, 8, 17, 7, 14, 59)),
+    ];
+    let solar = [
+        (T::Annular, jd(2026, 2, 17, 12, 13, 5)),
+        (T::Total, jd(2026, 8, 12, 17, 47, 5)),
+        (T::Annular, jd(2027, 2, 6, 16, 0, 47)),
+        (T::Total, jd(2027, 8, 2, 10, 7, 49)),
+    ];
+    for (got, want, what) in [
+        (
+            lunar_eclipses(sky, start, end, lat, lon),
+            &lunar[..],
+            "lunar",
+        ),
+        (
+            solar_eclipses(sky, start, end, lat, lon),
+            &solar[..],
+            "solar",
+        ),
+    ] {
+        assert_eq!(got.len(), want.len(), "{what}: {got:?}");
+        for (e, (wt, wj)) in got.iter().zip(want) {
+            assert_eq!(e.eclipse_type, *wt, "{what} {wj}");
+            let off = (ephdata::deltat::ut_to_tt(e.max_jd) - wj) * 86_400.0;
+            // Found within 1.6 s; a shallow penumbral eclipse has the flattest minimum.
+            assert!(off.abs() < 5.0, "{what} {wj}: {off:.1} s from NASA");
+        }
+    }
+}

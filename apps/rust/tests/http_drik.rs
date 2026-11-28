@@ -68,7 +68,9 @@ fn shape_diff(a: &Value, b: &Value, at: &str) -> Option<String> {
             }
         }
         (Value::Number(x), Value::Number(y)) if x.is_i64() == y.is_i64() => None,
-        (Value::Null, Value::Null)
+        // A value the text does not give (null under Surya Siddhanta, e.g. the ayanamsha, which
+        // the client applies) may be filled under drik.
+        (Value::Null, _)
         | (Value::Bool(_), Value::Bool(_))
         | (Value::String(_), Value::String(_)) => None,
         _ => Some(format!("{at}: {a} vs {b}").chars().take(160).collect()),
@@ -114,6 +116,29 @@ async fn a_month_a_year_and_an_instant_have_the_same_shape() {
         "/v1/planetary/positions?datetime=2026-11-22T10:00:00%2B05:45",
     ] {
         same_shape(&app, path).await;
+    }
+}
+
+#[tokio::test]
+async fn eclipses_answer_under_drik() {
+    let Some(app) = app() else { return };
+    // Same fields as the text's eclipses; contact times may be null in one and not the other
+    // (an eclipse not seen here, or a penumbral phase the text does not give).
+    for path in [
+        "/v1/nepal/eclipse/lunar/year/2083?era=bs",
+        "/v1/nepal/eclipse/solar/year/2083?era=bs",
+    ] {
+        let (ss_status, _, ss) = get(&app, path).await;
+        let (status, headers, drik) = get(&app, &format!("{path}&siddhanta=drik")).await;
+        assert_eq!((ss_status, status), (200, 200), "{path}");
+        assert_eq!(headers["x-siddhanta"], "drik", "{path}");
+        let keys = |v: &Value| {
+            v["events"][0]
+                .as_object()
+                .map(|o| o.keys().cloned().collect::<Vec<_>>())
+        };
+        assert!(keys(&drik).is_some(), "{path}: no drik eclipses");
+        assert_eq!(keys(&ss), keys(&drik), "{path}");
     }
 }
 

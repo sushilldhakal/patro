@@ -14,6 +14,7 @@
 pub mod angles;
 pub mod cache;
 pub mod drik;
+pub mod drik_eclipse;
 mod drik_lagna;
 pub mod engine;
 pub mod events;

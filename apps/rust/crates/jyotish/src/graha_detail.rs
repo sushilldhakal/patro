@@ -532,10 +532,7 @@ pub fn eclipse_span(
     which: astronomy::surya_siddhanta::EclipseKind,
     location: &Location,
 ) -> Value {
-    use astronomy::surya_siddhanta::{
-        Direction, Eclipse, EclipseKind, altitude, next_eclipse, solar_eclipse_local,
-    };
-    let solar = which == EclipseKind::Solar;
+    let solar = which == astronomy::surya_siddhanta::EclipseKind::Solar;
     let kind = if solar { "solar" } else { "lunar" };
     let scan_end = jd_end + 1.0;
     let zone = &location.zone;
@@ -549,12 +546,93 @@ pub fn eclipse_span(
         jd.filter(|v| *v != 0.0)
             .map_or(Value::Null, |v| json!(local_iso(v)))
     };
+    let found = eclipses_in(jd_start, scan_end, which, location);
     let mut events = Vec::new();
+    for Found {
+        etype,
+        max_jd,
+        visible,
+        begin,
+        end,
+        penumbral,
+    } in found
+    {
+        let (type_ne, type_en) = match (solar, etype) {
+            (true, "total") => ("पूर्ण सूर्यग्रहण", "Total solar eclipse"),
+            (true, "annular") => ("वलयाकार सूर्यग्रहण", "Annular solar eclipse"),
+            (true, _) => ("आंशिक सूर्यग्रहण", "Partial solar eclipse"),
+            (false, "total") => ("पूर्ण चन्द्रग्रहण", "Total lunar eclipse"),
+            (false, "penumbral") => ("उपच्छाया चन्द्रग्रहण", "Penumbral lunar eclipse"),
+            (false, _) => ("आंशिक चन्द्रग्रहण", "Partial lunar eclipse"),
+        };
+        let (max_utc, date_jd) = if let Some(max) = UtcInstant::from_jd_truncated(max_jd) {
+            (max.to_string(), zone.local(max).day().to_jd_ut())
+        } else {
+            let max = JdInstant(max_jd);
+            (max.to_string(), max.civil_fields(zone).day.to_jd_ut())
+        };
+        events.push(json!({
+            "kind": kind, "type": etype, "type_ne": type_ne, "type_en": type_en,
+            "max_utc": max_utc, "max_local": local_iso(max_jd),
+            "date_jd": date_jd, "visible": visible,
+            "begin_local": local(begin), "end_local": local(end),
+            "penumbral_begin_local": local(penumbral.map(|p| p.0)),
+            "penumbral_end_local": local(penumbral.map(|p| p.1)),
+        }));
+    }
+    json!({
+        "kind": kind, "range_start_jd": jd_start, "range_end_jd": jd_end,
+        "location": location.as_json(), "events": events,
+    })
+}
+
+/// One eclipse before it is written out.
+struct Found {
+    etype: &'static str,
+    max_jd: f64,
+    visible: bool,
+    begin: Option<f64>,
+    end: Option<f64>,
+    penumbral: Option<(f64, f64)>,
+}
+
+/// The eclipses of one kind whose middle falls in `[jd_start, scan_end)`: drik from our own
+/// ephemeris' geometry (`astronomy::drik_eclipse`), Surya Siddhanta by the text's rules.
+fn eclipses_in(
+    jd_start: f64,
+    scan_end: f64,
+    which: astronomy::surya_siddhanta::EclipseKind,
+    location: &Location,
+) -> Vec<Found> {
+    use astronomy::surya_siddhanta::{
+        Direction, Eclipse, EclipseKind, altitude, next_eclipse, solar_eclipse_local,
+    };
+    let solar = which == EclipseKind::Solar;
+    if let astronomy::System::Drik(sky) = location.system {
+        let (lat, lon) = (location.lat, location.lon);
+        let list = if solar {
+            astronomy::drik_eclipse::solar_eclipses(sky, jd_start, scan_end, lat, lon)
+        } else {
+            astronomy::drik_eclipse::lunar_eclipses(sky, jd_start, scan_end, lat, lon)
+        };
+        return list
+            .into_iter()
+            .map(|e| Found {
+                etype: e.eclipse_type.name(),
+                max_jd: e.max_jd,
+                visible: e.visible,
+                begin: e.begin_jd,
+                end: e.end_jd,
+                penumbral: e.penumbral,
+            })
+            .collect();
+    }
+    let mut found = Vec::new();
     let mut cursor = jd_start;
     let mut guard = 0;
     while cursor < scan_end && guard < 60 {
         guard += 1;
-        let found = next_eclipse(
+        let next = next_eclipse(
             cursor,
             if solar {
                 EclipseKind::Solar
@@ -563,12 +641,12 @@ pub fn eclipse_span(
             },
             Direction::Forward,
         );
-        let Some(found) = found else { break };
-        let max_jd = found.max_jd();
+        let Some(next) = next else { break };
+        let max_jd = next.max_jd();
         if max_jd >= scan_end {
             break;
         }
-        let (etype, visible, begin, end) = match found {
+        let (etype, visible, begin, end) = match next {
             Eclipse::Solar(e) => {
                 let seen = solar_eclipse_local(max_jd, location.lat, location.lon);
                 (
@@ -585,30 +663,15 @@ pub fn eclipse_span(
                 e.partial.map(|p| p.1),
             ),
         };
-        let (type_ne, type_en) = match (solar, etype) {
-            (true, "total") => ("पूर्ण सूर्यग्रहण", "Total solar eclipse"),
-            (true, "annular") => ("वलयाकार सूर्यग्रहण", "Annular solar eclipse"),
-            (true, _) => ("आंशिक सूर्यग्रहण", "Partial solar eclipse"),
-            (false, "total") => ("पूर्ण चन्द्रग्रहण", "Total lunar eclipse"),
-            (false, _) => ("आंशिक चन्द्रग्रहण", "Partial lunar eclipse"),
-        };
-        let (max_utc, date_jd) = if let Some(max) = UtcInstant::from_jd_truncated(max_jd) {
-            (max.to_string(), zone.local(max).day().to_jd_ut())
-        } else {
-            let max = JdInstant(max_jd);
-            (max.to_string(), max.civil_fields(zone).day.to_jd_ut())
-        };
-        events.push(json!({
-            "kind": kind, "type": etype, "type_ne": type_ne, "type_en": type_en,
-            "max_utc": max_utc, "max_local": local_iso(max_jd),
-            "date_jd": date_jd, "visible": visible,
-            "begin_local": local(begin), "end_local": local(end),
-            "penumbral_begin_local": null, "penumbral_end_local": null,
-        }));
+        found.push(Found {
+            etype,
+            max_jd,
+            visible,
+            begin,
+            end,
+            penumbral: None,
+        });
         cursor = max_jd + 10.0;
     }
-    json!({
-        "kind": kind, "range_start_jd": jd_start, "range_end_jd": jd_end,
-        "location": location.as_json(), "events": events,
-    })
+    found
 }

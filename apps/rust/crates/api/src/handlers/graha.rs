@@ -257,15 +257,6 @@ pub(crate) async fn eclipse_year(
         Ok(r) => r,
         Err(resp) => return resp,
     };
-    if r.loc.system.is_drik() {
-        // Eclipses are computed from the text's own Moon latitude and shadow rules; drik has
-        // no ported rule set (Besselian elements) yet, so say so rather than serve the
-        // text's eclipses under drik's name.
-        return detail(
-            StatusCode::NOT_IMPLEMENTED,
-            "eclipses are not available with siddhanta=drik yet; use siddhanta=surya_siddhanta",
-        );
-    }
     let which = if kind == "solar" {
         astronomy::surya_siddhanta::EclipseKind::Solar
     } else {

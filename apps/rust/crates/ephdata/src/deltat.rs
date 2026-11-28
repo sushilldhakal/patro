@@ -1,4 +1,5 @@
-//! ΔT = TT − UT1, and UT → TDB, our own: the Espenak–Meeus polynomials (NASA, 2006).
+//! ΔT = TT − UT1, and UT → TDB, our own: the Espenak–Meeus polynomials (NASA, 2006), with
+//! the measured values for 2005–2026 and a forecast that starts from them.
 //!
 //! Before 1955 and after the last measured year ΔT is a fit or a forecast, so a Moon
 //! longitude carries that uncertainty (0.5″ per ~1 s of ΔT). It is the one input the
@@ -10,6 +11,16 @@ pub const J2000: f64 = 2_451_545.0;
 fn poly(t: f64, c: &[f64]) -> f64 {
     c.iter().rev().fold(0.0, |acc, k| acc * t + k)
 }
+
+/// First year of [`MEASURED`].
+const MEASURED_FROM: f64 = 2005.0;
+/// Year of the last entry of [`MEASURED`].
+const MEASURED_TO: f64 = 2026.0;
+/// ΔT (s) at the start of each year 2005–2026, measured (IERS / USNO; 2025–2026 provisional).
+const MEASURED: [f64; 22] = [
+    64.69, 64.85, 65.15, 65.46, 65.78, 66.07, 66.32, 66.60, 66.91, 67.28, 67.64, 68.10, 68.59,
+    68.97, 69.22, 69.36, 69.36, 69.29, 69.20, 69.18, 69.14, 69.10,
+];
 
 /// ΔT in seconds at a decimal year.
 #[must_use]
@@ -91,7 +102,20 @@ pub fn delta_t_seconds(year: f64) -> f64 {
                 0.000_023_735_99,
             ],
         ),
-        y if y < 2050.0 => poly(y - 2000.0, &[62.92, 0.322_17, 0.005_589]),
+        y if y < 2026.0 => {
+            // Measured (IERS / USNO), linear between the starts of years.
+            let i = (y - MEASURED_FROM) as usize;
+            let f = y - MEASURED_FROM - i as f64;
+            MEASURED[i] + f * (MEASURED[i + 1] - MEASURED[i])
+        }
+        // Forecast: Espenak–Meeus 2005–2050, moved to start from the last measured value and
+        // eased back onto itself by 2050. On its own it said 75.2 s for 2026 where the Earth
+        // gave 69.1 s (it has been turning faster), which put every drik UT time ~6 s early.
+        y if y < 2050.0 => {
+            let em = |y: f64| poly(y - 2000.0, &[62.92, 0.322_17, 0.005_589]);
+            let last = MEASURED[MEASURED.len() - 1];
+            em(y) + (last - em(MEASURED_TO)) * (2050.0 - y) / (2050.0 - MEASURED_TO)
+        }
         y if y < 2150.0 => parabola(y) - 0.5628 * (2150.0 - y),
         y => parabola(y),
     }
