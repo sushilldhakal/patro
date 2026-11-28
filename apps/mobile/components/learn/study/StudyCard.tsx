@@ -6,6 +6,7 @@
  * The website's classes are `tmCardPadLg`, `edReadout`, `edScrubWrap`,
  * `edPresets` and `tmCardCap`; each piece here is the app's drawing of one.
  */
+import { useContentWidth } from "@/lib/responsive";
 import type { ReactNode } from "react";
 import { Pressable, View, useWindowDimensions } from "react-native";
 import Slider from "@react-native-community/slider";
@@ -93,7 +94,7 @@ export type StudyReadout = { k: string; v: string; mono?: boolean; amber?: boole
 /** Two columns on a phone, four from 560pt — the website's `edReadout` grid. */
 export function StudyReadouts({ items }: { items: StudyReadout[] }) {
   const ink = useStudyInk();
-  const { width } = useWindowDimensions();
+  const width = useContentWidth();
   const cols = width >= 560 ? 4 : 2;
   return (
     <View className="flex-row flex-wrap px-1" style={{ rowGap: 10 }}>
@@ -251,7 +252,7 @@ export function StudyReadoutGrid({ children }: { children: ReactNode }) {
 
 /** `edRo` — one readout cell. */
 export function StudyRo({ children }: { children: ReactNode }) {
-  const { width } = useWindowDimensions();
+  const width = useContentWidth();
   return (
     <View className="min-w-0 gap-0.5 pr-3" style={{ width: width >= 560 ? "25%" : "50%" }}>
       {children}

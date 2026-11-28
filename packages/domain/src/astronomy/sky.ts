@@ -66,7 +66,7 @@ export interface SkyIo {
 }
 
 /** Bump when the files change shape, so an older cache is ignored. */
-export const SKY_DATA_VERSION = "v2";
+export const SKY_DATA_VERSION = "v3";
 
 /** Days of a batch the app asks the server for. */
 export const TILE_DAYS = 3200;

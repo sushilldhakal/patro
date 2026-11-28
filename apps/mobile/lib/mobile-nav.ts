@@ -4,6 +4,7 @@ import { tFor } from "@vedic-patro/i18n/runtime";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDuoPushedPage } from "@/lib/duo-page-context";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
+import { useNavMode } from "@/lib/responsive";
 
 /**
  * Primary floating bottom nav — matches web header sections, सिकाइ last. साइत holds the slot the
@@ -59,6 +60,8 @@ export function useNavBottomPadding(isTablet: boolean): number {
   const { bottom } = useSafeAreaInsets();
   const pushed = useDuoPushedPage();
   const { horizontal } = useDuoRail();
+  // A big screen's menu is the side rail, not a bottom bar: only the home indicator to clear.
+  if (useNavMode() !== "floating") return bottom + PAGE_PADDING_Y;
   // The app's bottom bar: every phone, and the iPhone Duo in portrait.
   if (!IS_IPHONE_DUO || horizontal) return floatingNavBottomPadding(isTablet);
   return pushed ? bottom + PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING;

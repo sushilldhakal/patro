@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { useContentWidth } from "@/lib/responsive";
+import { Pressable, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useNewsPage, type NewsCardView } from "@vedic-patro/features/news";
 import { useThemeColors } from "@/lib/theme-context";
@@ -29,7 +30,7 @@ export function NewsSlider({
   const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   const page = useNewsPage();
   const cardWidth = sliderCardWidth(windowWidth, horizontalInset);
   // Top stories first, then the rest of the latest, without repeats.

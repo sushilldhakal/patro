@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { useContentWidth } from "@/lib/responsive";
+import { Pressable, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useForexRates, useMetalPrices } from "@vedic-patro/features/home";
 import { useLocale } from "@/lib/i18n";
@@ -29,7 +30,7 @@ export function MarketSlider({
   const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   const metals = useMetalPrices();
   const forex = useForexRates();
   const cardWidth = sliderCardWidth(windowWidth, horizontalInset);

@@ -16,6 +16,7 @@
     "switch_aria": "Choose calculation",
     "drik_hint": "Modern ephemeris, as most panchangas use",
     "surya_siddhanta": "Surya Siddhanta",
+    "surya_short": "Surya",
     "surya_siddhanta_hint": "Traditional formulas, back to Satya Yuga",
     "onboarding_title": "Which calculation should the panchanga follow?",
     "note": "The panchanga, calendar and kundali are all computed this way. Surya Siddhanta tithis and sankrantis can differ from drik by a few hours.",

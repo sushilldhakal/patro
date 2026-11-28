@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { usePathname } from "expo-router";
 import { useMobileNavMenu, type NavMenuCategory } from "@vedic-patro/features/common";
@@ -78,7 +78,7 @@ export function useNavPages(): { key: string; label: string; href: string; icon:
  * tile grid. The tile drawing is `@vedic-patro/ui/kit/shell`; this file supplies the routes, icons and
  * the app's own extra entries (home, daily panchanga, reminders, 3D sky, vastu, learn…).
  */
-export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: string) => void; trailing?: ReactNode }) {
+export function MobileNavMenu({ onNavigate, trailing, cols }: { onNavigate: (href: string) => void; trailing?: ReactNode; cols?: number }) {
   const menu = useMobileNavMenu();
   const pathname = usePathname();
   const colors = useThemeColors();
@@ -119,9 +119,10 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
 
   const all = menu.categories.map((category) => ({ category, sections: sectionsOf(category) }));
   // Open on the tab that holds the page being looked at.
-  const [tab, setTab] = useState<NavCategoryId>(
-    () => all.find(({ sections }) => sections.some((s) => s.items.some((i) => i.active)))?.category.id ?? "calendar",
-  );
+  const pageTab = all.find(({ sections }) => sections.some((s) => s.items.some((i) => i.active)))?.category.id ?? "calendar";
+  const [tab, setTab] = useState<NavCategoryId>(pageTab);
+  // The iPad menu stays built between opens: follow the page when it changes.
+  useEffect(() => setTab(pageTab), [pageTab]);
   const current = all.find(({ category }) => category.id === tab) ?? all[0]!;
 
   return (
@@ -178,7 +179,7 @@ export function MobileNavMenu({ onNavigate, trailing }: { onNavigate: (href: str
               importantForAccessibility={shown ? "auto" : "no-hide-descendants"}
               style={shown ? undefined : { position: "absolute", top: 0, left: 0, right: 0, opacity: 0 }}
             >
-              <MobileNavMenuView label={menu.navAria} sections={sections} />
+              <MobileNavMenuView label={menu.navAria} sections={sections} cols={cols} />
             </View>
           );
         })}

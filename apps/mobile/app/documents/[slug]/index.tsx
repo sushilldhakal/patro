@@ -1,5 +1,6 @@
+import { useContentWidth } from "@/lib/responsive";
 import { useState } from "react";
-import { FlatList, Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { cardGridColumns } from "@vedic-patro/ui";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
@@ -100,7 +101,7 @@ export default function DocumentDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const page = useDocumentDetail(slug);
   const library = useDocumentLibraryOptions();
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   const { doc, copy } = page;
   // The shared player: it keeps playing after the reader leaves this page.
   const audio = useDocumentAudioSession({

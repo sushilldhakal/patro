@@ -1,4 +1,6 @@
-import { useWindowDimensions } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
+import { usePathname } from "expo-router";
+import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { breakpoints, size } from "@vedic-patro/design-tokens";
 
 export type Breakpoint = "phone" | "largePhone" | "tablet" | "desktop";
@@ -25,9 +27,47 @@ export function useLayoutMode() {
   return { mode, isLargeScreen, isPortrait: height >= width, isLandscape: width > height, width, height };
 }
 
-export function useBreakpoint() {
+/** How the main menu draws: a fixed sidebar with labels (wide iPad window, landscape), a slim rail of
+ *  icons with labels under them (iPad portrait), or the floating bottom bar (phones, a narrowed iPad
+ *  window in Split View / Slide Over / Stage Manager). Goes by the window, so a resize switches it.
+ *  The iPhone Duo keeps its own native bars; the website its own layout. */
+export type NavMode = "sidebar" | "rail" | "floating";
+export const NAV_SIDEBAR_WIDTH = 272;
+export const NAV_RAIL_WIDTH = 112;
+const NAV_RAIL_MIN_WIDTH = 700;
+const NAV_SIDEBAR_MIN_WIDTH = 1100;
+
+export function navModeFor(width: number, height: number): NavMode {
+  if (IS_IPHONE_DUO || Platform.OS === "web" || !isLargeScreenSize(width, height) || width < NAV_RAIL_MIN_WIDTH) return "floating";
+  return width >= NAV_SIDEBAR_MIN_WIDTH ? "sidebar" : "rail";
+}
+
+export function navSideWidth(mode: NavMode): number {
+  return mode === "sidebar" ? NAV_SIDEBAR_WIDTH : mode === "rail" ? NAV_RAIL_WIDTH : 0;
+}
+
+/** Full-screen pages (weather, seasons): no sidebar or rail beside them, so they get the whole width;
+ *  each has its own back arrow. */
+const FULL_SCREEN_ROUTES: ReadonlySet<string> = new Set(["/weather", "/ritu"]);
+
+export function useNavMode(): NavMode {
   const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
+  const pathname = usePathname();
+  return FULL_SCREEN_ROUTES.has(pathname) ? "floating" : navModeFor(width, height);
+}
+
+/** The page area's width: the window less the fixed sidebar or rail. Size content from this, not the window. */
+export function useContentWidth(): number {
+  const { width } = useWindowDimensions();
+  return width - navSideWidth(useNavMode());
+}
+
+export function useBreakpoint() {
+  const { width: windowWidth, height } = useWindowDimensions();
+  // Phone or big-screen UI is the window's; every width-based layout value below is the page area's.
+  const large = isLargeScreenSize(windowWidth, height);
+  const width = windowWidth - navSideWidth(useNavMode());
+  const isLandscape = windowWidth > height;
 
   let bp: Breakpoint = "phone";
   if (width >= BREAKPOINTS.lg) bp = "desktop";
@@ -40,9 +80,9 @@ export function useBreakpoint() {
     isLandscape,
     bp,
     // Phone or big-screen UI: the one rule (isLargeScreenSize), so a phone on its side stays a phone.
-    isPhone: !isLargeScreenSize(width, height),
-    isTablet: isLargeScreenSize(width, height),
-    isCompact: !isLargeScreenSize(width, height),
+    isPhone: !large,
+    isTablet: large,
+    isCompact: !large,
     isNarrow: width < BREAKPOINTS.sm,
     isCalendarWide: width >= BREAKPOINTS.calendarWide,
     columns: width >= BREAKPOINTS.lg ? 2 : 1,

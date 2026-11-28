@@ -1,5 +1,6 @@
+import { useContentWidth } from "@/lib/responsive";
 import { useRef, type ComponentRef } from "react";
-import { Pressable, ScrollView, TextInput, View, useWindowDimensions } from "react-native";
+import { Pressable, ScrollView, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
@@ -126,7 +127,7 @@ export default function LearnScreen() {
   const hub = useLearnHub();
   const { copy } = hub;
   const openTopic = (slug: string) => router.push(hrefForLearnSlug(slug));
-  const { width } = useWindowDimensions();
+  const width = useContentWidth();
   const wide = width >= 640;
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   /* Where each path's section sits in the scroll content: page column + modules list + module. */

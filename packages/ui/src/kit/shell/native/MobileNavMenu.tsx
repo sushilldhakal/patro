@@ -4,7 +4,7 @@ import { Box, Grid, Pressable, Text } from "@vedic-patro/ui";
 import type { MobileNavMenuProps } from "../contract";
 
 /** Drawer tiles. Each app supplies the icon and where the tile goes. */
-export function MobileNavMenu({ label, sections, className }: MobileNavMenuProps) {
+export function MobileNavMenu({ label, sections, className, cols = 4 }: MobileNavMenuProps) {
   return (
     <Box as="nav" label={label} className={cn(nav.root, className)}>
       {sections.map((section, index) => (
@@ -17,7 +17,7 @@ export function MobileNavMenu({ label, sections, className }: MobileNavMenuProps
               <Box className={nav.accent} />
             </Box>
           ) : null}
-          <Grid cols={{ base: 4 }} gap={6}>
+          <Grid cols={{ base: cols }} gap={6}>
             {section.items.map((item) => (
               <Pressable
                 key={item.key}

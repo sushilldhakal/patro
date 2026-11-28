@@ -40,6 +40,8 @@ import { SplashIntro } from "@/components/branding/SplashIntro";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useNavMode } from "@/lib/responsive";
+import { AppSidebar } from "@/components/navigation/AppSidebar";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { AppOverlays } from "@/components/navigation/AppOverlays";
 import { GlobalAudioBar } from "@/components/documents/GlobalAudioBar";
@@ -437,6 +439,8 @@ function RootShell({
 }) {
   const { colors, isDark } = useTheme();
   const railFade = useRailPageAnimation();
+  // iPad and tablets: the fixed sidebar or rail sits beside the pages (lib/responsive.ts navModeFor).
+  const navMode = useNavMode();
   // The native headers (iPhone Duo toolbar) take their light/dark style and tint from the navigation
   // theme — expo-router's own copy, not @react-navigation/native's. Without one they stay on the light
   // default, so in dark mode the toolbar buttons were light glass with dark icons.
@@ -478,6 +482,9 @@ function RootShell({
       {ready && onboarded === false ? (
         <OnboardingScreen onComplete={onOnboarded} />
       ) : (
+        <View style={styles.navRow}>
+        {navMode !== "floating" ? <AppSidebar mode={navMode} /> : null}
+        <View style={styles.navPages}>
         <Stack
           key={NOTO_LOADS_AT_RUNTIME && !fontsLoaded ? "fonts-loading" : "fonts-ready"}
           screenOptions={{
@@ -528,6 +535,8 @@ function RootShell({
           <Stack.Screen name="rashifal" options={{ fullScreenGestureEnabled: false }} />
           {/* aakash-gochar zooms out of its home card natively on iOS 18+ (Link.AppleZoom); elsewhere a normal push. */}
         </Stack>
+        </View>
+        </View>
       )}
       {ready && onboarded ? <AppOverlays /> : null}
       {/* A document's recording plays on across pages; the mini player shows it everywhere else. */}
@@ -576,6 +585,8 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 }
 
 const styles = StyleSheet.create({
+  navRow: { flex: 1, flexDirection: "row" },
+  navPages: { flex: 1, minWidth: 0 },
   fontGate: {
     alignItems: "center",
     justifyContent: "center",

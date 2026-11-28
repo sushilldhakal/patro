@@ -1,5 +1,6 @@
+import { useContentWidth } from "@/lib/responsive";
 import { useCallback, useMemo, type ReactNode } from "react";
-import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated, { Extrapolation, interpolate, useAnimatedStyle } from "react-native-reanimated";
 import { useGestureProgress, useSpringPan } from "@vedic-patro/ui/gestures";
@@ -34,7 +35,7 @@ type Props = {
  */
 export function SwipeableRow({ children, actionLabel, onAction, actionWidth = 88, icon, fullSwipe = false, secondary }: Props) {
   const colors = useThemeColors();
-  const { width } = useWindowDimensions();
+  const width = useContentWidth();
   const open = secondary ? actionWidth * 2 : actionWidth;
   const snapPoints = useMemo(
     () => ({ x: fullSwipe ? [-width, -open, 0] : [-open, 0] }),

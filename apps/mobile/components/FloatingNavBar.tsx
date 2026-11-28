@@ -15,7 +15,7 @@ import { KUNDALI_NAV_GROUPS, defaultChildForGroup, isKundaliNavGroupActive, type
 import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
 import { IS_IPHONE_DUO } from "@/lib/iphone-duo";
 import { useDuoRail } from "@/lib/duo-rail";
-import { useBreakpoint } from "@/lib/responsive";
+import { useBreakpoint, useNavMode } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/design-tokens/cn";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -175,7 +175,10 @@ const GLASS = Platform.OS === "ios" && requireOptionalNativeModule("ExpoGlassEff
  */
 export function FloatingNavBar({ duoPortrait }: { duoPortrait?: boolean } = {}) {
   const { horizontal } = useDuoRail();
+  // A big screen has the fixed sidebar or rail instead (AppSidebar).
+  const navMode = useNavMode();
   if (IS_IPHONE_DUO && !(duoPortrait && horizontal)) return null;
+  if (navMode !== "floating") return null;
   return <FloatingNavBarView />;
 }
 

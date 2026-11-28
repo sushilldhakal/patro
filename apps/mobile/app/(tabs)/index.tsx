@@ -22,6 +22,7 @@ import { HomeAsideTabBar, type AsideTabId } from "@/components/home/HomeAsideTab
 import { UpcomingFestivalsSlider } from "@/components/home/UpcomingFestivalsSlider";
 import { NewsSlider } from "@/components/home/NewsSlider";
 import { MarketSlider } from "@/components/home/MarketSlider";
+import { WideRow } from "@/components/ui/WideRow";
 import { MostTradedCard, TopMoversCard, WatchlistCard } from "@/components/market/NepseCards";
 import { WeatherCard } from "@/components/home/WeatherCard";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
@@ -683,17 +684,15 @@ function HomeScreen() {
             <MarketSlider horizontalInset={cardInset} metals={shown("gold")} forex={shown("forex")} />
           </View>
         ) : null}
-        {/* Signed-in readers: what they starred, or a button to start a watchlist. */}
-        {isAuthenticated && shown("watchlist") ? (
-          <View className="mt-4" style={{ paddingHorizontal: cardInset }}>
-            <WatchlistCard />
-          </View>
-        ) : null}
-        {/* NEPSE after the first screen, so its request never races the calendar's. */}
-        {belowFoldReady && shown("shares") ? (
+        {/* Signed-in readers: what they starred, or a button to start a watchlist. NEPSE after the
+            first screen, so its request never races the calendar's. Side by side on a big screen. */}
+        {(isAuthenticated && shown("watchlist")) || (belowFoldReady && shown("shares")) ? (
           <View className="mt-4 gap-4" style={{ paddingHorizontal: cardInset }}>
-            <TopMoversCard />
-            <MostTradedCard horizontalInset={cardInset} />
+            <WideRow>
+              {isAuthenticated && shown("watchlist") ? <WatchlistCard /> : null}
+              {belowFoldReady && shown("shares") ? <TopMoversCard /> : null}
+            </WideRow>
+            {belowFoldReady && shown("shares") ? <MostTradedCard horizontalInset={cardInset} /> : null}
           </View>
         ) : null}
 

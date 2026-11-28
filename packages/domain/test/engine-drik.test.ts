@@ -15,7 +15,19 @@ type Case = { path: string; status: number; body: string };
 const cases = JSON.parse(gunzipSync(readFileSync(new URL("./fixtures/drik-golden.json.gz", import.meta.url))).toString()) as Case[];
 
 /** Noise the server's own rounding makes: not a different answer. */
-const noise = (err: string) => /\.vipala: \d+ vs \d+$/.test(err) || /akshamsha\.sign: (rin vs dhan|dhan vs rin)$/.test(err);
+const noise = (err: string) =>
+  /\.vipala: \d+ vs \d+$/.test(err) ||
+  /akshamsha\.sign: (rin vs dhan|dhan vs rin)$/.test(err) ||
+  // A segment ending within seconds of UTC midnight: the two sides' few-second drift puts it on either
+  // side, and `spans_midnight` (UTC, on both) appears on one only. No screen reads it.
+  spansMidnightOnly(err);
+
+function spansMidnightOnly(err: string): boolean {
+  const m = /: keys (\S+) vs (\S+)$/.exec(err);
+  if (!m) return false;
+  const strip = (keys: string) => keys.split(",").filter((k) => k !== "spans_midnight").join(",");
+  return m[1] !== m[2] && strip(m[1]) === strip(m[2]);
+}
 
 async function answer(local: LocalCalendar, path: string): Promise<Record<string, unknown> | null | "skip"> {
   const [route, query = ""] = path.split("?");

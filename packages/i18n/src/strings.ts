@@ -39,6 +39,7 @@ export const strings = {
   "calculation_system.switch_aria": { ne: "गणना पद्धति छान्नुहोस्", en: "Choose calculation" },
   "calculation_system.drik_hint": { ne: "आधुनिक खगोल गणना, धेरैजसो पात्रोले प्रयोग गर्ने", en: "Modern ephemeris, as most panchangas use" },
   "calculation_system.surya_siddhanta": { ne: "सूर्य सिद्धान्त", en: "Surya Siddhanta" },
+  "calculation_system.surya_short": { ne: "सूर्य", en: "Surya" },
   "calculation_system.surya_siddhanta_hint": { ne: "परम्परागत सूत्र, सत्य युगसम्मको गणना", en: "Traditional formulas, back to Satya Yuga" },
   "calculation_system.onboarding_title": { ne: "पात्रो र कुण्डली कुन गणनामा आधारित होस्?", en: "Which calculation should the panchanga follow?" },
   "calculation_system.note": {

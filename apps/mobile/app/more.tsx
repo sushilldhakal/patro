@@ -1,21 +1,16 @@
-import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga/panchanga-i18n";
+import { elementTitle } from "@vedic-patro/domain/panchanga/panchanga-i18n";
 import { translateKey } from "@vedic-patro/domain/locale";
-import { Linking, Platform, Pressable, Share, View } from "react-native";
+import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import { AppShell } from "@/components/AppShell";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { useBreakpoint } from "@/lib/responsive";
+import { useContentWidth } from "@/lib/responsive";
+import { PageBackBar } from "@/components/navigation/PageBackBar";
+import { MobileNavMenu as MobileNavMenuView, type MobileNavItem, type MobileNavSection } from "@vedic-patro/ui/kit/shell";
 import { Card } from "@/components/ui/Card";
 import { API_BASE } from "@/lib/api";
-import {
-  APP_VERSION,
-  SUPPORT_EMAIL,
-  feedbackMailto,
-  reviewUrl,
-  storeListingUrl,
-} from "@/lib/store-links";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { APP_VERSION, SUPPORT_EMAIL } from "@/lib/store-links";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import {
@@ -37,52 +32,6 @@ import {
 import { tFor } from "@vedic-patro/i18n/runtime";
 import { mobileShellClasses as msc } from "@vedic-patro/design-tokens/classes/shell/mobile-shell-classes";
 
-function ActionRow({
-  onPress,
-  label,
-  icon,
-}: {
-  onPress: () => void;
-  label: string;
-  icon: DrawerIconName;
-}) {
-  const colors = useThemeColors();
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      className={msc.moreRow}
-    >
-      <AppNavIcon name={icon} size={20} color={colors.secondary} />
-      <Text className={msc.moreRowLabel}>{label}</Text>
-      <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
-    </Pressable>
-  );
-}
-
-function RouteRow({
-  path,
-  label,
-  icon,
-}: {
-  path: string;
-  label: string;
-  icon: DrawerIconName;
-}) {
-  const router = useRouter();
-  const colors = useThemeColors();
-  return (
-    <Pressable
-      onPress={() => router.push(path as never)}
-      className={msc.moreRow}
-    >
-      <AppNavIcon name={icon} size={20} color={colors.secondary} />
-      <Text className={msc.moreRowLabel}>{label}</Text>
-      <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
-    </Pressable>
-  );
-}
-
 const GROUP_TITLE: Record<SitemapRoute["group"], { ne: string; en: string }> = {
   main: { get ne() { return tFor("ne", "ui.navigation.main"); }, get en() { return tFor("en", "ui.navigation.main"); } },
   panchanga: { get ne() { return tFor("ne", "learn.diagrams.hierarchy_converge"); }, get en() { return tFor("en", "learn.diagrams.hierarchy_converge"); } },
@@ -98,7 +47,6 @@ function routesByGroup(group: SitemapRoute["group"]) {
 
 export default function MoreScreen() {
   const { t, pick, lang } = useLocale();
-  const { isTablet } = useBreakpoint();
 
   const learnExtra = SITEMAP_LEARN_SLUGS.map((slug) => {
     const topic = LEARN_LIBRARY_BY_SLUG[slug];
@@ -128,101 +76,43 @@ export default function MoreScreen() {
     };
   });
 
-  const { isCalendarWide } = useBreakpoint();
+  const router = useRouter();
+  const colors = useThemeColors();
+  const width = useContentWidth();
+  // Tiles like the side menu's: 4 a row on a phone, more on a big screen instead of a long list.
+  const cols = width >= 1000 ? 8 : width >= 700 ? 6 : 4;
+  const tile = (key: string, path: string, label: string, icon: DrawerIconName): MobileNavItem => ({
+    key,
+    label,
+    icon: <AppNavIcon name={icon} size={20} color={colors.danger} />,
+    onPress: () => router.push(path as never),
+  });
+  const sections: MobileNavSection[] = [
+    ...(["main", "panchanga", "jyotish", "tools"] as const).flatMap((group) => {
+      const routes = routesByGroup(group);
+      if (!routes.length) return [];
+      const items = routes.map((r) => tile(r.path, r.path, pick(r.ne, r.en), r.icon));
+      if (group === "tools") items.push(tile("/account", "/account", t("ui.common.account"), "user"));
+      return [{ id: group, title: pick(GROUP_TITLE[group].ne, GROUP_TITLE[group].en), items }];
+    }),
+    { id: "elements", title: t("ui.more.panchanga_elements"), items: elementRoutes.map((r) => tile(r.path, r.path, r.label, r.icon)) },
+    { id: "sait", title: t("ui.more.ceremony_muhurta"), items: saitRoutes.map((r) => tile(r.path, r.path, r.label, r.icon)) },
+    {
+      id: "learn",
+      title: t("ui.more.learn_articles"),
+      items: [
+        tile("/learn/history", "/learn/history", t("ui.more.history"), "calendar-clock"),
+        ...learnExtra.map((r) => tile(r.path, r.path, r.label, r.icon)),
+      ],
+    },
+  ];
 
   return (
     <AppShell title={t("ui.more.more")} showHeader={false}>
-      <View className={isTablet ? msc.moreTabletStack : msc.moreStack}>
-        {(["main", "panchanga", "jyotish", "tools"] as const).map((group) => {
-          const routes = routesByGroup(group);
-          if (!routes.length) return null;
-          const title = GROUP_TITLE[group];
-          return (
-            <Card key={group} className={isTablet ? msc.moreTabletCard : undefined}>
-              <Text className={msc.moreGroupTitle}>
-                {pick(title.ne, title.en)}
-              </Text>
-              {routes.map((r) => (
-                <RouteRow key={r.path} path={r.path} label={pick(r.ne, r.en)} icon={r.icon} />
-              ))}
-              {group === "tools" ? (
-                <RouteRow path="/account" label={t("ui.common.account")} icon="user" />
-              ) : null}
-            </Card>
-          );
-        })}
-
-        <Card className={isTablet ? msc.moreTabletCard : undefined}>
-          <Text className={msc.moreGroupTitle}>
-            {t("ui.more.panchanga_elements")}
-          </Text>
-          {elementRoutes.map((r) => (
-            <RouteRow key={r.path} path={r.path} label={r.label} icon={r.icon} />
-          ))}
-        </Card>
-
-        <Card className={isTablet ? msc.moreTabletCard : undefined}>
-          <Text className={msc.moreGroupTitle}>
-            {t("ui.more.learn_articles")}
-          </Text>
-          <RouteRow
-            path="/learn/history"
-            label={t("ui.more.history")}
-            icon="calendar-clock"
-          />
-          {learnExtra.map((r) => (
-            <RouteRow key={r.path} path={r.path} label={r.label} icon={r.icon} />
-          ))}
-        </Card>
-
-        <Card className={isTablet ? msc.moreWideCard : undefined}>
-          <Text className={msc.moreGroupTitle}>
-            {t("ui.more.ceremony_muhurta")}
-          </Text>
-          {saitRoutes.map((r) => (
-            <RouteRow key={r.path} path={r.path} label={r.label} icon={r.icon} />
-          ))}
-        </Card>
-
+      <PageBackBar title={t("ui.more.more")} fallback="/" />
+      <View className="gap-4">
         <Card>
-          <Text className={msc.moreGroupTitle}>
-            {t("ui.more.settings")}
-          </Text>
-          <View className={msc.moreSettingRow}>
-            <Text className="text-body font-medium text-foreground">{t("ui.common.theme")}</Text>
-            <ThemeSwitcher showLabel />
-          </View>
-          <ActionRow
-            label={t("ui.more.rate_vedic_patro")}
-            icon="star"
-            onPress={() => void Linking.openURL(reviewUrl(Platform.OS)).catch(() => {})}
-          />
-          <ActionRow
-            label={t("ui.more.send_feedback")}
-            icon="heart"
-            onPress={() =>
-              void Linking.openURL(
-                feedbackMailto(`Vedic Patro ${APP_VERSION} feedback`),
-              ).catch(() => {})
-            }
-          />
-          <ActionRow
-            label={t("ui.more.share_the_app")}
-            icon="sparkles"
-            onPress={() =>
-              void Share.share({
-                message: t("ui.more.vedic_patro_nepali_calendar_panchanga_os", { OS: storeListingUrl(Platform.OS) }),
-              }).catch(() => {})
-            }
-          />
-        </Card>
-
-        <Card>
-          <Text className={msc.moreGroupTitle}>
-            {t("ui.more.legal")}
-          </Text>
-          <RouteRow path="/privacy" label={t("auth.privacy")} icon="shield" />
-          <RouteRow path="/terms" label={t("auth.terms")} icon="file-text" />
+          <MobileNavMenuView label={t("ui.more.more")} sections={sections} cols={cols} />
         </Card>
 
         <Card>

@@ -8,6 +8,7 @@
  * second, which is also what positions the text labels over the canvas.
  */
 
+import { useContentWidth } from "@/lib/responsive";
 import { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
 import {
   Modal,
@@ -1242,7 +1243,8 @@ export function AakashGocharSky({
     setSelectedKey((prev) => (key === null ? null : prev === key ? null : key));
   }, []);
 
-  const { height: windowHeight, width: windowWidth } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   const insets = useSafeAreaInsets();
   /* Fullscreen runs under the status bar, so the HUD and the zoom buttons have
      to start below the clock and the battery — and below the notch, which the

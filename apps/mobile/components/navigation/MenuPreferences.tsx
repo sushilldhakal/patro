@@ -1,67 +1,117 @@
-import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
-import { useThemeColors } from "@/lib/theme-context";
-import { CalculationSystemToggle, CalendarSystemToggle } from "@vedic-patro/ui/kit/shell";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { useTheme } from "@/lib/theme-context";
+import { nepaliTextStyle } from "@/lib/nepali-text";
+import { useCalculationSystemToggle, useCalendarSystemToggle } from "@vedic-patro/features/patro-date";
+import { ListGroup, ListRow } from "@vedic-patro/ui/kit/account";
+import { nativeShadow } from "@vedic-patro/design-tokens";
+import { haptics } from "@vedic-patro/ui/motion";
+
+type Option = { key: string; label: string; icon?: keyof typeof Ionicons.glyphMap; iconOnly?: boolean; active: boolean; onPress: () => void };
 
 /**
  * The foot of the side menu, and the app's one way to the account now that the bottom bar has no
- * profile tab: "लगइन" while signed out, "सेटिङ" once signed in. Both open the profile page, which
- * leads with the sign-in card (signed out) and holds the settings (language, calendar, theme, offline
- * data) either way, so a signed-out reader still reaches them. The build line for testers is at the
- * foot of that page.
+ * profile tab: "लगइन" while signed out, "सेटिङ" once signed in. Both open the profile page.
  *
- * Above it, the switches people reach for most — BS | AD, language, theme and Drik | Surya
- * Siddhanta — one labelled row each, so they change in one tap without opening settings. Same
- * controls and order as the website's menu.
+ * Above it, the switches people reach for most (BS | AD, language, theme, Drik | Surya Siddhanta),
+ * each a full-width segmented pill under its name, every option visible, the chosen one raised.
+ * One tap changes it without opening settings.
  */
 export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => void }) {
-  const { t } = useLocale();
-  const colors = useThemeColors();
+  const { t, lang, setLang } = useLocale();
+  const { isDark, setPreference } = useTheme();
   const { isAuthenticated } = useAuth();
+  const calendar = useCalendarSystemToggle();
+  const calculation = useCalculationSystemToggle();
+
   return (
     <View className="gap-4">
-      <View className="gap-3">
-        <PreferenceRow label={t("calendar_system.label")}>
-          <CalendarSystemToggle className="h-9" />
-        </PreferenceRow>
-        <PreferenceRow label={t("language")}>
-          <LanguageSwitcher />
-        </PreferenceRow>
-        <PreferenceRow label={t("theme_label")}>
-          <ThemeSwitcher showLabel />
-        </PreferenceRow>
-        <PreferenceRow label={t("calculation_system.label")}>
-          <CalculationSystemToggle className="h-9" />
-        </PreferenceRow>
+      <View className="rounded-3xl border border-border bg-card px-4">
+        <Preference first icon="calendar-outline" label={t("calendar_system.label")}>
+          {calendar.options.map((o) => ({ key: o.calendar, label: o.label, active: o.active, onPress: () => calendar.select(o.calendar) }))}
+        </Preference>
+        <Preference icon="language-outline" label={t("language")}>
+          {[
+            { key: "ne", label: t("switch_to_nepali"), active: lang === "ne", onPress: () => void setLang("ne") },
+            { key: "en", label: t("switch_to_english"), active: lang === "en", onPress: () => void setLang("en") },
+          ]}
+        </Preference>
+        <Preference icon="contrast-outline" label={t("theme_label")}>
+          {[
+            { key: "light", label: t("theme_light"), icon: "sunny-outline", iconOnly: true, active: !isDark, onPress: () => setPreference("light") },
+            { key: "dark", label: t("theme_dark"), icon: "moon-outline", iconOnly: true, active: isDark, onPress: () => setPreference("dark") },
+          ]}
+        </Preference>
+        <Preference icon="planet-outline" label={t("calculation_system.label")}>
+          {calculation.options.map((o) => ({
+            key: o.system,
+            label: o.system === "drik" ? o.label : t("calculation_system.surya_short"),
+            active: o.active,
+            onPress: () => calculation.select(o.system),
+          }))}
+        </Preference>
       </View>
-      <Pressable
-        onPress={() => onNavigate("/account")}
-        className="flex-row items-center justify-between gap-3 active:opacity-70"
-        accessibilityRole="button"
-      >
-        <View className="min-w-0 flex-1 flex-row items-center gap-2">
-          <Ionicons name={isAuthenticated ? "settings-outline" : "person-circle-outline"} size={20} color={colors.foreground} />
-          <Text className="text-sm text-foreground">{isAuthenticated ? t("ui.settings.title") : t("ui.nav.log_in")}</Text>
-        </View>
-        <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-      </Pressable>
+      <ListGroup>
+        <ListRow
+          icon={isAuthenticated ? "sliders" : "user"}
+          tint="teal"
+          title={isAuthenticated ? t("ui.settings.title") : t("ui.nav.log_in")}
+          onPress={() => onNavigate("/account")}
+        />
+      </ListGroup>
     </View>
   );
 }
 
-function PreferenceRow({ label, children }: { label: string; children: ReactNode }) {
+/** One line: the preference's icon and name on the left, a compact segmented pill on the right. */
+function Preference({ icon, label, first, children }: { icon: keyof typeof Ionicons.glyphMap; label: string; first?: boolean; children: Option[] }) {
+  const { colors } = useTheme();
   return (
-    <View className="min-h-9 flex-row items-center justify-between gap-3">
-      <Text className="min-w-0 flex-1 text-sm text-foreground" numberOfLines={1}>
+    <View className={first ? "min-h-14 flex-row items-center gap-3" : "min-h-14 flex-row items-center gap-3 border-t border-border"}>
+      <Ionicons name={icon} size={18} color={colors.mutedForeground} />
+      <Text className="min-w-0 flex-1 text-sm font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle()}>
         {label}
       </Text>
-      {children}
+      <Segmented options={children} />
+    </View>
+  );
+}
+
+function Segmented({ options }: { options: Option[] }) {
+  const { colors } = useTheme();
+  return (
+    <View accessibilityRole="tablist" className="h-9 shrink-0 flex-row rounded-full bg-muted p-0.5">
+      {options.map((o) => (
+        <Pressable
+          key={o.key}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: o.active }}
+          accessibilityLabel={o.label}
+          onPress={() => {
+            if (o.active) return;
+            haptics.tick();
+            o.onPress();
+          }}
+          hitSlop={4}
+          className={o.iconOnly ? "w-10 items-center justify-center rounded-full active:opacity-70" : "items-center justify-center rounded-full px-3 active:opacity-70"}
+          style={o.active ? [{ backgroundColor: colors.background }, nativeShadow("sm")] : undefined}
+        >
+          {o.iconOnly && o.icon ? (
+            <Ionicons name={o.icon} size={17} color={o.active ? colors.foreground : colors.mutedForeground} />
+          ) : (
+            <Text
+              numberOfLines={1}
+              className={o.active ? "text-sm font-bold text-foreground" : "text-sm font-semibold text-muted-foreground"}
+              style={nepaliTextStyle()}
+            >
+              {o.label}
+            </Text>
+          )}
+        </Pressable>
+      ))}
     </View>
   );
 }

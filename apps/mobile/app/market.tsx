@@ -47,6 +47,7 @@ import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Change, MarketSection, QuoteRow, SearchField } from "@/components/market/MarketParts";
 import { MostTradedCard, TopMoversCard } from "@/components/market/NepseCards";
 import { useWatchlist, type WatchKind } from "@/lib/watchlist";
+import { WideRow } from "@/components/ui/WideRow";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -390,6 +391,7 @@ function MetalsTab() {
           onPress: () => router.push({ pathname: "/metals/[metal]", params: { metal: c.id } }),
         }))}
       />
+      <WideRow>
       {metals.cards.length ? (
         <Panel title={t("market.today_rates")}>
           {metals.cards.map((c) => (
@@ -452,6 +454,7 @@ function MetalsTab() {
           />
         </Panel>
       ) : null}
+      </WideRow>
     </>
   );
 }
@@ -499,6 +502,7 @@ function ForexTab() {
           onPress: () => router.push({ pathname: "/forex/[code]", params: { code: c.code } }),
         }))}
       />
+      <WideRow>
       {forex.cards.length ? (
         <Panel title={t("market.converter")}>
           <Text className="text-sm font-medium text-muted-foreground">
@@ -576,6 +580,7 @@ function ForexTab() {
           />
         </Panel>
       ) : null}
+      </WideRow>
       <Sheet
         open={picking !== null}
         onClose={() => setPicking(null)}
@@ -769,13 +774,14 @@ function SharesTab() {
                 ))}
               </View>
 
-              <MarketSection title={t("market.watchlist")} onPress={() => router.push("/watchlist")}>
-                {watched.length ? watched.slice(0, 5).map(quoteRow) : (
-                  <Text className="py-2 text-sm text-muted-foreground">{t("market.watch_empty")}</Text>
-                )}
-              </MarketSection>
-
-              <TopMoversCard />
+              <WideRow>
+                <MarketSection title={t("market.watchlist")} onPress={() => router.push("/watchlist")}>
+                  {watched.length ? watched.slice(0, 5).map(quoteRow) : (
+                    <Text className="py-2 text-sm text-muted-foreground">{t("market.watch_empty")}</Text>
+                  )}
+                </MarketSection>
+                <TopMoversCard />
+              </WideRow>
 
               <MostTradedCard horizontalInset={PAGE_HORIZONTAL_PADDING} />
 

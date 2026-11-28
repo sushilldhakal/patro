@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Linking, Pressable, View } from "react-native";
+import { Linking, Platform, Pressable, Share, View } from "react-native";
+import { APP_VERSION, feedbackMailto, reviewUrl, storeListingUrl } from "@/lib/store-links";
 import { useSiteFooter } from "@vedic-patro/features/common";
 import { Sheet } from "@vedic-patro/ui";
 import { runningBuildLine } from "@/lib/build-info";
@@ -155,6 +156,27 @@ export default function AccountScreen() {
             />
           </ListGroup>
         ) : null}
+
+        {/* Rate, feedback and share live here (not on the More page), on every phone and tablet. */}
+        <ListGroup title={t("ui.more.settings")}>
+          <ListRow icon="star" tint="amber" title={t("ui.more.rate_vedic_patro")} onPress={() => void Linking.openURL(reviewUrl(Platform.OS)).catch(() => {})} />
+          <ListRow
+            icon="heart"
+            tint="pink"
+            title={t("ui.more.send_feedback")}
+            onPress={() => void Linking.openURL(feedbackMailto(`Vedic Patro ${APP_VERSION} feedback`)).catch(() => {})}
+          />
+          <ListRow
+            icon="share"
+            tint="blue"
+            title={t("ui.more.share_the_app")}
+            onPress={() =>
+              void Share.share({
+                message: t("ui.more.vedic_patro_nepali_calendar_panchanga_os", { OS: storeListingUrl(Platform.OS) }),
+              }).catch(() => {})
+            }
+          />
+        </ListGroup>
 
         <ListGroup title={t("ui.account.group_data")}>
           <ListRow

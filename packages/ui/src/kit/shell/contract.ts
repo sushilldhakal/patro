@@ -360,6 +360,9 @@ export type MobileNavMenuProps = {
   label: string;
   sections: MobileNavSection[];
   className?: string;
+  /** Tiles per row (native): 4 in the phone sheet, 3 in the narrower iPad drawer so a long name
+   *  such as "Chandrabala" fits instead of breaking mid-word. */
+  cols?: number;
 };
 
 export type BsCalendarMoon = { tithiIndex: number; title?: string };

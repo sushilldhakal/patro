@@ -1,8 +1,8 @@
 import { useOverlayHeaderTopInset } from "@/lib/overlay-header";
 import type { ReactNode } from "react";
-import { ScrollView, View, useWindowDimensions } from "react-native";
+import { ScrollView, View } from "react-native";
 import { DURATION, useReducedMotionPref } from "@vedic-patro/ui/motion";
-import { useNavBottomPadding, PANCHANGA_SIDEBAR_MIN_WIDTH, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
+import { useNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { useThemeColors } from "@/lib/theme-context";
@@ -12,10 +12,10 @@ import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
 
 export const PANCHANGA_SIDEBAR_RAIL_WIDTH = 224;
 
-/** Matches web `calendar:block` on `PanchangaShellLayout` sidebar. */
+/** The inner pages' own section sidebar: off in the app (owner 2026-11-28). The app's main sidebar
+ *  (AppSidebar) and "More" reach every page, so a second list beside the page only took its width. */
 export function useShowPanchangaSidebar(): boolean {
-  const { width } = useWindowDimensions();
-  return width >= PANCHANGA_SIDEBAR_MIN_WIDTH;
+  return false;
 }
 
 /**

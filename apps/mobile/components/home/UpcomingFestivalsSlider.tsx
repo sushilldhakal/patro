@@ -1,5 +1,6 @@
+import { useContentWidth } from "@/lib/responsive";
 import { useMemo } from "react";
-import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
@@ -67,7 +68,7 @@ export function UpcomingFestivalsSlider({
   const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   const { data, isLoading } = useQuery({
     queryKey: holidayKeys.upcoming(90, 15, false, location),
     queryFn: () => fetchUpcomingFestivals(90, 15, false, location),

@@ -2,7 +2,7 @@ import { isLargeScreenSize } from "@/lib/responsive";
 import { useCallback, useEffect, useRef, useState, type ComponentRef } from "react";
 import { Icon } from "@vedic-patro/ui";
 import { shellIcons, topBarControlSize } from "@vedic-patro/ui/kit/shell";
-import { Animated as RNAnimated, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
+import { Animated as RNAnimated, BackHandler, Easing, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from "react-native";
 import Animated, { Easing as REasing, FadeIn, FadeOut, LinearTransition, ReduceMotion, ZoomIn, useAnimatedStyle } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { DURATION, haptics, useReducedMotionPref } from "@vedic-patro/ui/motion";
@@ -41,6 +41,7 @@ export function NavDrawerHost() {
   const tablet = useTabletUi();
   const insets = useSafeAreaInsets();
   useOpenMenuRequest(useCallback(() => setMenuOpen(true), []));
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   /* Navigate once the sheet has gone: pushing under a sheet still on screen made iOS drop it in one
      frame and hold the push until the new page had rendered. */
@@ -58,8 +59,8 @@ export function NavDrawerHost() {
   const content = (
     <View className="gap-2 pb-4 pt-1">
       {/* A close button as well as the drag down, which not everyone finds — on the tabs' row. */}
-      <MobileNavMenu onNavigate={go} trailing={<CloseButton onPress={() => setMenuOpen(false)} />} />
-      <View className="mx-4 mt-2 border-t border-border pt-4">
+      <MobileNavMenu onNavigate={go} cols={tablet ? 3 : undefined} trailing={<CloseButton onPress={() => setMenuOpen(false)} />} />
+      <View className="mx-4 mt-2">
         <MenuPreferences onNavigate={go} />
       </View>
     </View>
@@ -67,7 +68,7 @@ export function NavDrawerHost() {
 
   if (tablet) {
     return (
-      <SidebarDrawer visible={menuOpen} onClose={() => setMenuOpen(false)} onDismissed={onDismissed}>
+      <SidebarDrawer keepMounted visible={menuOpen} onClose={closeMenu} onDismissed={onDismissed}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: insets.top }}>
           {content}
         </ScrollView>
@@ -97,20 +98,41 @@ export function SidebarDrawer({
   visible,
   onClose,
   onDismissed,
+  keepMounted,
   children,
 }: {
   visible: boolean;
   onClose: () => void;
   onDismissed: () => void;
+  /** Build the content once, shortly after launch, and keep it: opening only slides it in. For the
+   *  side menu, whose three tile grids of SVG icons took a moment to build on every open. Drawn over
+   *  the app at the root (AppOverlays), so it needs no Modal. */
+  keepMounted?: boolean;
   children: React.ReactNode;
 }) {
   const colors = useThemeColors();
   const reduced = useReducedMotionPref();
   const [mounted, setMounted] = useState(visible);
   if (visible && !mounted) setMounted(true);
+  useEffect(() => {
+    if (!keepMounted) return;
+    const id = setTimeout(() => setMounted(true), 1500);
+    return () => clearTimeout(id);
+  }, [keepMounted]);
+  // Android back closes the kept-mounted drawer (the Modal did this itself).
+  useEffect(() => {
+    if (!keepMounted || !visible) return;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      onClose();
+      return true;
+    });
+    return () => sub.remove();
+  }, [keepMounted, visible, onClose]);
+  const wasOpen = useRef(false);
   const shown = useRef(new RNAnimated.Value(0)).current;
   useEffect(() => {
     if (!mounted) return;
+    if (visible) wasOpen.current = true;
     const anim = RNAnimated.timing(shown, {
       toValue: visible ? 1 : 0,
       duration: reduced ? 0 : visible ? DURATION.standard : DURATION.fast,
@@ -118,17 +140,16 @@ export function SidebarDrawer({
       useNativeDriver: true,
     });
     anim.start(({ finished }) => {
-      if (finished && !visible) {
-        setMounted(false);
+      if (finished && !visible && wasOpen.current) {
+        wasOpen.current = false;
+        if (!keepMounted) setMounted(false);
         onDismissed();
       }
     });
     return () => anim.stop();
-  }, [visible, mounted, reduced, shown, onDismissed]);
+  }, [visible, mounted, reduced, shown, onDismissed, keepMounted]);
   if (!mounted) return null;
-  return (
-    <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <ThemeScope style={{ flex: 1 }}>
+  const panel = (
       <View style={{ flex: 1, flexDirection: "row" }}>
         <RNAnimated.View
           style={{
@@ -146,7 +167,22 @@ export function SidebarDrawer({
           <RNAnimated.View style={{ flex: 1, backgroundColor: neutral.black, opacity: shown.interpolate({ inputRange: [0, 1], outputRange: [0, 0.3] }) }} />
         </Pressable>
       </View>
-      </ThemeScope>
+  );
+  if (keepMounted) {
+    return (
+      <View
+        style={[StyleSheet.absoluteFill, { zIndex: 100 }]}
+        pointerEvents={visible ? "auto" : "none"}
+        accessibilityElementsHidden={!visible}
+        importantForAccessibility={visible ? "auto" : "no-hide-descendants"}
+      >
+        {panel}
+      </View>
+    );
+  }
+  return (
+    <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+      <ThemeScope style={{ flex: 1 }}>{panel}</ThemeScope>
     </Modal>
   );
 }

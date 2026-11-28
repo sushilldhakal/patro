@@ -18,9 +18,10 @@
  * CSS decision, so there is no measurement and no layout flash.
  */
 
+import { useContentWidth } from "@/lib/responsive";
 import { G, Path, Rect, Text as SvgText } from "react-native-svg";
 import { STUDY_FONT, useStudyInk, useTm } from "@/components/learn/study/study-ink";
-import { View, useWindowDimensions } from "react-native";
+import { View } from "react-native";
 import Svg from "react-native-svg";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -468,7 +469,7 @@ function HierSvg({ w, h, children }: { w: number; h: number; children: React.Rea
 export function HierarchyFigure() {
   const { t } = useTranslation();
   const ink = useStudyInk();
-  const { width } = useWindowDimensions();
+  const width = useContentWidth();
 
   return (
     <View className="my-4 gap-2 rounded-2xl border p-3 pb-5" style={{ backgroundColor: ink.card, borderColor: ink.border }}>

@@ -26,6 +26,13 @@ const J2000 = 2451545.0;
 
 const poly = (t: number, c: readonly number[]): number => c.reduceRight((acc, k) => acc * t + k, 0);
 
+const DELTA_T_MEASURED_FROM = 2005;
+const DELTA_T_MEASURED_TO = 2026;
+/** ΔT (s) at the start of each year 2005–2026, measured (IERS / USNO; 2025–2026 provisional). */
+const DELTA_T_MEASURED: readonly number[] = [
+  64.69, 64.85, 65.15, 65.46, 65.78, 66.07, 66.32, 66.60, 66.91, 67.28, 67.64, 68.10, 68.59, 68.97, 69.22, 69.36, 69.36, 69.29, 69.20, 69.18, 69.14, 69.10,
+];
+
 /** Delta-T (TT - UT), seconds, at a decimal year: the Espenak-Meeus polynomials. */
 export function deltaTSeconds(year: number): number {
   const parabola = (y: number) => {
@@ -50,7 +57,20 @@ export function deltaTSeconds(year: number): number {
   if (year < 1961) return poly(year - 1950, [29.07, 0.407, -1 / 233, 1 / 2547]);
   if (year < 1986) return poly(year - 1975, [45.45, 1.067, -1 / 260, -1 / 718]);
   if (year < 2005) return poly(year - 2000, [63.86, 0.3345, -0.060374, 0.0017275, 0.000651814, 0.00002373599]);
-  if (year < 2050) return poly(year - 2000, [62.92, 0.32217, 0.005589]);
+  if (year < DELTA_T_MEASURED_TO) {
+    // Measured (IERS / USNO), linear between the starts of years.
+    const i = Math.floor(year - DELTA_T_MEASURED_FROM);
+    const f = year - DELTA_T_MEASURED_FROM - i;
+    return DELTA_T_MEASURED[i]! + f * (DELTA_T_MEASURED[i + 1]! - DELTA_T_MEASURED[i]!);
+  }
+  if (year < 2050) {
+    // Forecast: Espenak–Meeus 2005–2050 moved to start from the last measured value and eased back
+    // onto itself by 2050. On its own it said 75.2 s for 2026 where the Earth gave 69.1 s, which put
+    // every drik UT time ~6 s early. Same as the server (apps/rust/crates/ephdata/src/deltat.rs).
+    const em = (y: number) => poly(y - 2000, [62.92, 0.32217, 0.005589]);
+    const last = DELTA_T_MEASURED[DELTA_T_MEASURED.length - 1]!;
+    return em(year) + ((last - em(DELTA_T_MEASURED_TO)) * (2050 - year)) / (2050 - DELTA_T_MEASURED_TO);
+  }
   if (year < 2150) return parabola(year) - 0.5628 * (2150 - year);
   return parabola(year);
 }

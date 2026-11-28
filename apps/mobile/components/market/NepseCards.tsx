@@ -1,5 +1,6 @@
+import { useContentWidth } from "@/lib/responsive";
 import { useState, type ReactNode } from "react";
-import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import { withAlpha } from "@vedic-patro/design-tokens";
 import { SLIDER_TINT, TintCard } from "@/components/home/TintCard";
@@ -158,7 +159,7 @@ export function TopMoversCard() {
 export function MostTradedCard({ horizontalInset = 0 }: { horizontalInset?: number }) {
   const { t, digits } = useLocale();
   const router = useRouter();
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   const cardWidth = sliderCardWidth(windowWidth, horizontalInset);
   const most = useNepseMostTraded("turnover", "1D");
   if (!most.live.data) return null;

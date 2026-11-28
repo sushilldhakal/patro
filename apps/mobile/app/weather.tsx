@@ -4,7 +4,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   View,
   type PressableProps,
   type ScrollViewInstance,
@@ -53,7 +52,7 @@ import { Text } from "@/components/ui/Text";
 import { locateDevice } from "@/components/panchanga/locate-device";
 import { AddFlow, PlacesScreen, PressScale, placesStorage } from "@/components/weather/WeatherPlacesScreen";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useBreakpoint } from "@/lib/responsive";
+import { useBreakpoint, useContentWidth } from "@/lib/responsive";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useTheme } from "@/lib/theme-context";
 import { usePageRefreshControl } from "@/components/ui/PageRefreshControl";
@@ -522,7 +521,7 @@ function Hourly({ page }: { page: WeatherPage }) {
 
 function Daily({ page }: { page: WeatherPage }) {
   const { isNarrow, isTablet } = useBreakpoint();
-  const { width: windowWidth } = useWindowDimensions();
+  const windowWidth = useContentWidth();
   // Under this the opened day's sections stack in one column.
   const oneColumn = windowWidth < 360;
   const { copy } = page;
@@ -792,7 +791,7 @@ function pageAt(page: WeatherPage, i: number): WeatherPage {
  */
 export default function WeatherScreen() {
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const width = useContentWidth();
   const { location } = usePanchangaLocation();
   const page = useWeatherPage({
     location,
