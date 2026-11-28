@@ -5647,6 +5647,7 @@
       "yyyy_mm_dd": "वर्ष-महिना-दिन"
     },
     "common": {
+      "account": "खाता",
       "change_location": "स्थान बदल्नुहोस्",
       "close": "बन्द गर्नुहोस्",
       "earth_s_axis": "पृथ्वीको अक्ष",
@@ -5931,7 +5932,12 @@
       ]
     },
     "more": {
-      "more": "थप"
+      "ceremony_muhurta": "शुभ साइत",
+      "history": "इतिहास",
+      "learn_articles": "सिकाइ लेख",
+      "more": "थप",
+      "panchanga_elements": "पञ्चाङ्ग तत्त्व",
+      "tools": "उपकरण"
     },
     "navigation": {
       "main": "मुख्य"
@@ -6226,7 +6232,16 @@
       "x_367f4805": "फेरि लोड गर्नुहोस् / Reload"
     },
     "mobile_drawer_nav": {
+      "sun_times": "सूर्यक्रान्ति",
+      "avakahada": "अवकहडा चक्र",
       "n_3_d_sky_gochar": "3D आकाश गोचर"
+    },
+    "sitemap_routes": {
+      "year_wheel": "वार्षिक चक्र",
+      "holidays": "बिदा",
+      "abhijit": "अभिजित्",
+      "panchak": "पञ्चक",
+      "marriage_muhurta": "विवाह साइत"
     }
   }
 }

@@ -5647,6 +5647,7 @@
       "yyyy_mm_dd": "YYYY-MM-DD"
     },
     "common": {
+      "account": "Account",
       "change_location": "Change location",
       "close": "Close",
       "earth_s_axis": "Earth's axis",
@@ -5931,7 +5932,12 @@
       ]
     },
     "more": {
-      "more": "More"
+      "ceremony_muhurta": "Ceremony muhurta",
+      "history": "History",
+      "learn_articles": "Learn articles",
+      "more": "More",
+      "panchanga_elements": "Panchanga elements",
+      "tools": "Tools"
     },
     "navigation": {
       "main": "Main"
@@ -6226,7 +6232,16 @@
       "x_367f4805": "Reload"
     },
     "mobile_drawer_nav": {
+      "sun_times": "Sun times",
+      "avakahada": "Avakahada",
       "n_3_d_sky_gochar": "3D sky gochar"
+    },
+    "sitemap_routes": {
+      "year_wheel": "Year wheel",
+      "holidays": "Holidays",
+      "abhijit": "Abhijit",
+      "panchak": "Panchak",
+      "marriage_muhurta": "Marriage muhurta"
     }
   }
 }
